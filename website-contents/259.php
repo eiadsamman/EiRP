@@ -38,7 +38,7 @@ if(isset($_POST['plot'])){
 			$att->load($employee);
 			if($operation=="!"){
 				$ratt = $att->CheckIn($signer,null,$time);
-				//Main checin
+				//checin
 			}elseif($operation=="&"){
 				//31
 				//Out to rest
@@ -48,7 +48,7 @@ if(isset($_POST['plot'])){
 				//Back from rest
 				$ratt = $att->CheckIn($signer,75,$time);
 			}elseif($operation=="!!"){
-				//Main checkout
+				// checkout
 				$ratt = $att->CheckOut($signer,$time);
 			}
 			

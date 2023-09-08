@@ -1,7 +1,7 @@
 <?php
 include_once("admin/class/slo_datalist.php");
 
-use System\System;
+use System\Pool;
 use System\SLO_DataList;
 
 $slo_datalist = new SLO_DataList();
@@ -14,10 +14,10 @@ $slo_datalist = new SLO_DataList();
 </div>
 
 <datalist id="zlist">
-	<?= $slo_datalist->hr_person(System::$_user->company->id); ?>
+	<?= $slo_datalist->hr_person(Pool::$_user->company->id); ?>
 </datalist>
 <?php
-echo "<pre>" . print_r(System::$_user, true) . "</pre>";
+echo "<pre>" . print_r(Pool::$_user, true) . "</pre>";
 ?>
 
 

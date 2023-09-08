@@ -2,7 +2,7 @@
 include_once "admin/class/log.php";
 include_once "admin/class/system.php";
 
-use System\System;
+use System\Pool;
 use System\Person\Attendance;
 
 
@@ -66,7 +66,7 @@ if (isset($_POST['posubmit'])) {
 	header("HTTP_X_RESPONSE: SUCCESS");
 
 	$parameters = array(
-		"company" => System::$_user->company->id,
+		"company" => Pool::$_user->company->id,
 		"paymethod" => isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1] != 0 ? (int)$_POST['paymethod'][1] : null,
 		"section" => isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? (int)$_POST['section'][1] : null,
 		"job" => isset($_POST['section'][1]) && (int)$_POST['job'][1] != 0 ? (int)$_POST['job'][1] : null,
@@ -77,7 +77,7 @@ if (isset($_POST['posubmit'])) {
 		//"residence"=>null,
 		//"transportation"=>null,
 		"onlyselection" => $onlyselection,
-		"onlyselection_usr_id" => System::$_user->info->id,
+		"onlyselection_usr_id" => Pool::$_user->info->id,
 		"displaysuspended" => $displaysuspended,
 		"limit_date" => date("Y-m-d")
 	);
@@ -138,7 +138,7 @@ if (isset($_POST['posubmit'])) {
 			echo "<tr>";
 			echo "<td>{$data['info']['id']}</td>";
 			echo "<td>{$data['info']['name']}</td>";
-			echo "<td align=\"right\" style=\"background-image:linear-gradient(0deg,rgba(0,0,0,0) 15%, #fff 15%),linear-gradient(90deg, $colorgradient {$percentage_l}%, #ffffff {$percentage_l}%);\">" . System::formatTime($data['info']['totalAttendedTime']) . "</td>";
+			echo "<td align=\"right\" style=\"background-image:linear-gradient(0deg,rgba(0,0,0,0) 15%, #fff 15%),linear-gradient(90deg, $colorgradient {$percentage_l}%, #ffffff {$percentage_l}%);\">" . Pool::formatTime($data['info']['totalAttendedTime']) . "</td>";
 			echo "</tr>";
 		}
 		echo "
@@ -170,7 +170,7 @@ if (isset($_POST['posubmit'])) {
 			echo "<th align=\"center\">{$data['info']['timeGroup']}</th>";
 			foreach ($daysList as $dayId => $day) {
 				if (isset($data['days'][$day])) {
-					echo "<td align=\"center\">" . System::formatTime($data['days'][$day]) . "</td>";
+					echo "<td align=\"center\">" . Pool::formatTime($data['days'][$day]) . "</td>";
 				} else {
 					echo "<td align=\"center\">-</td>";
 				}
@@ -186,11 +186,11 @@ if (isset($_POST['posubmit'])) {
 			</tbody>
 		</table>
 		<script>
-			const scrollContainer = document.getElementById(\"jsTimeMatrix\");
+			const scrollPool = document.getElementById(\"jsTimeMatrix\");
 			let scrollPosition = 0;
-			scrollContainer.addEventListener(\"wheel\", (evt) => {
+			scrollPool.addEventListener(\"wheel\", (evt) => {
 				evt.preventDefault();
-				scrollContainer.scrollLeft += (evt.deltaY > 0? 1:-1) * {$settings['matrix']['column']['width']} ;		
+				scrollPool.scrollLeft += (evt.deltaY > 0? 1:-1) * {$settings['matrix']['column']['width']} ;		
 			});
 		</script>
 		";
@@ -207,7 +207,7 @@ if (isset($_POST['posubmit'])) {
 
 		foreach ($daysList as $dayId => $day) {
 			if (isset($empData['days'][$day])) {
-				$exportString .= "\t" . System::formatTime($empData['days'][$day]);
+				$exportString .= "\t" . Pool::formatTime($empData['days'][$day]);
 			} else {
 				$exportString .= "\t0";
 			}

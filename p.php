@@ -52,7 +52,7 @@ if (@!include_once("admin/class/systemuser.php")) {
 	die("<h1>503 - Service Unavailable</h1> Requested page does not exists on this server or current services are unavailable");
 }
 
-use System\System;
+use System\Pool;
 use System\Person\User;
 use System\FileSystem;
 
@@ -90,11 +90,11 @@ try {
 	die("<h1>503 - Service Unavailable</h1> Connection to database failed, try again later or contact system administrator");
 }
 $sql->set_charset('utf8');
-System::$sql = $sql;
+Pool::$sql = $sql;
 
 
 /* System Classes */
-if (!System::getBasePermission()) {
+if (!Pool::getBasePermission()) {
 	header(HTTP503);
 	die("<h1>503 - Service Unavailable</h1> Requested page does not exists on this server or current services are unavailable");
 }
@@ -118,7 +118,7 @@ $timezone->SetDateTimeZone();
 $error = new ErrorHandler(strtolower($c__settings['site']['errorlog']) == true ? true : false, $_SERVER['FILE_SYSTEM_ROOT'] . $c__settings['site']['errorlogfile']);
 
 
-System::$subdomain = isset($c__settings['site']['subdomain']) && trim($c__settings['site']['subdomain']) != "" ? trim($c__settings['site']['subdomain']) : false;
+Pool::$subdomain = isset($c__settings['site']['subdomain']) && trim($c__settings['site']['subdomain']) != "" ? trim($c__settings['site']['subdomain']) : false;
 $Languages = new Languages();
 $tables = new Tables($sql, $Languages);
 $pageinfo = false;
@@ -172,7 +172,7 @@ unset($request_uri);
 
 
 $USER = new User();
-System::$_user = $USER;
+Pool::$_user = $USER;
 $access_error = false;
 
 
@@ -191,8 +191,8 @@ if (isset($_SESSION["sur"])) {
 
 	if ($r && $row = $sql->fetch_assoc($r)) {
 		try {
-			System::$_user->load($row['usr_id']);
-			System::$_user->logged = true;
+			Pool::$_user->load($row['usr_id']);
+			Pool::$_user->logged = true;
 		} catch (PersonNotFoundException $e) {
 		}
 	}
@@ -202,7 +202,7 @@ if (isset($_SESSION["sur"])) {
 /* Users Login */
 if (isset($_POST['login'], $_POST['log_username'], $_POST['log_password'])) {
 	try {
-		if (System::$_user->login($_POST['log_username'], $_POST['log_password'], isset($_POST['remember']))) {
+		if (Pool::$_user->login($_POST['log_username'], $_POST['log_password'], isset($_POST['remember']))) {
 			if (isset($_POST['refer'])) {
 				header("Location: " . $_SERVER['HTTP_SYSTEM_ROOT'] . urldecode($_POST['refer']));
 			} else {
@@ -217,8 +217,8 @@ if (isset($_POST['login'], $_POST['log_username'], $_POST['log_password'])) {
 }
 
 /* Cookies Login */
-if (!System::$_user->logged && isset($_COOKIE) && is_array($_COOKIE) && isset($_COOKIE['cur'])) {
-	if (System::$_user->cookies_handler($_COOKIE['cur'])) {
+if (!Pool::$_user->logged && isset($_COOKIE) && is_array($_COOKIE) && isset($_COOKIE['cur'])) {
+	if (Pool::$_user->cookies_handler($_COOKIE['cur'])) {
 		header("Location: " . $_SERVER['HTTP_SYSTEM_ROOT']);
 		exit;
 	}
@@ -226,13 +226,13 @@ if (!System::$_user->logged && isset($_COOKIE) && is_array($_COOKIE) && isset($_
 
 /* Logout */
 if (isset($_GET['logout'])) {
-	if (System::$_user->logout()) {
+	if (Pool::$_user->logout()) {
 		header("Location: " . $_SERVER['HTTP_SYSTEM_ROOT']);
 		exit;
 	}
 }
 
-$c__actions = new AllowedActions(System::$_user->info->permissions ? System::$_user->info->permissions : System::$base_permission, $pageinfo['permissions']);
+$c__actions = new AllowedActions(Pool::$_user->info->permissions ? Pool::$_user->info->permissions : Pool::$base_permission, $pageinfo['permissions']);
 if ($c__actions == false) {
 	echo "Internal System Error!";
 	header(HTTP503);
@@ -244,18 +244,18 @@ if ($c__actions == false) {
 
 $fs = new FileSystem();
 $fs->setUse($pageinfo['id']);
-System::buildPrefixList();
+Pool::buildPrefixList();
 
 include("admin/methods.php");
 
 /* Deny access if pagefile request a permission & display the login form */
-if ($c__actions->deny == true && $fs->use()->id == System::$operational_page['index']) {
+if ($c__actions->deny == true && $fs->use()->id == Pool::$operational_page['index']) {
 	if (@!require_once($_SERVER['FILE_SYSTEM_ROOT'] . "/admin/forms/upper.php")) {
 		header(HTTP503);
 		exit;
 	}
-	if (is_file($_SERVER['FILE_SYSTEM_ROOT'] . "website-contents/" . System::$operational_page['login'] . ".php"))
-		if (@!require_once($_SERVER['FILE_SYSTEM_ROOT'] . "website-contents/" . System::$operational_page['login'] . ".php")) {
+	if (is_file($_SERVER['FILE_SYSTEM_ROOT'] . "website-contents/" . Pool::$operational_page['login'] . ".php"))
+		if (@!require_once($_SERVER['FILE_SYSTEM_ROOT'] . "website-contents/" . Pool::$operational_page['login'] . ".php")) {
 			header(HTTP503);
 			exit;
 		}
@@ -264,7 +264,7 @@ if ($c__actions->deny == true && $fs->use()->id == System::$operational_page['in
 		exit;
 	}
 	exit;
-} elseif ($c__actions->deny == true && $fs->use()->id == System::$operational_page['login']) {
+} elseif ($c__actions->deny == true && $fs->use()->id == Pool::$operational_page['login']) {
 } elseif ($c__actions->deny == true) {
 	header(HTTP403);
 	$access_error = 403;
@@ -272,8 +272,8 @@ if ($c__actions->deny == true && $fs->use()->id == System::$operational_page['in
 		header(HTTP503);
 		exit;
 	}
-	if (is_file($_SERVER['FILE_SYSTEM_ROOT'] . "website-contents/" . System::$operational_page['login'] . ".php"))
-		if (@!require_once($_SERVER['FILE_SYSTEM_ROOT'] . "website-contents/" . System::$operational_page['login'] . ".php")) {
+	if (is_file($_SERVER['FILE_SYSTEM_ROOT'] . "website-contents/" . Pool::$operational_page['login'] . ".php"))
+		if (@!require_once($_SERVER['FILE_SYSTEM_ROOT'] . "website-contents/" . Pool::$operational_page['login'] . ".php")) {
 			header(HTTP503);
 			exit;
 		}
@@ -286,7 +286,7 @@ if ($c__actions->deny == true && $fs->use()->id == System::$operational_page['in
 /* Update page visit count */
 if (!in_array($fs->use()->id, $__pagevisitcountexclude)) {
 	$sql->query("INSERT INTO user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value,usrset_time) 
-					VALUES (" . System::$_user->info->id . ",'system_count_page_visit',{$fs->use()->id},'1',NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
+					VALUES (" . Pool::$_user->info->id . ",'system_count_page_visit',{$fs->use()->id},'1',NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
 }
 
 /* Forward */
@@ -309,16 +309,16 @@ if ($fs->use()->id == 3) {
 
 
 /* SECTOR REGISTER */
-if (System::$_user->info && isset($_GET['--sys_sel-change'], $_GET['i']) && $_GET['--sys_sel-change'] == 'account_commit') {
-	if (System::$_user->register_account((int) $_GET['i'])) {
+if (Pool::$_user->info && isset($_GET['--sys_sel-change'], $_GET['i']) && $_GET['--sys_sel-change'] == 'account_commit') {
+	if (Pool::$_user->register_account((int) $_GET['i'])) {
 		header("Location: " . $_SERVER['HTTP_SYSTEM_ROOT'] . $fs->use()->dir . "/");
 	}
 }
 
 
 /* COMPANY REGISTER */
-if (System::$_user->info && isset($_GET['--sys_sel-change'], $_GET['i']) && $_GET['--sys_sel-change'] == 'company_commit') {
-	if (System::$_user->register_company((int) $_GET['i'])) {
+if (Pool::$_user->info && isset($_GET['--sys_sel-change'], $_GET['i']) && $_GET['--sys_sel-change'] == 'company_commit') {
+	if (Pool::$_user->register_company((int) $_GET['i'])) {
 		header("Location: " . $_SERVER['HTTP_SYSTEM_ROOT'] . $fs->use()->dir . "/");
 	}
 }
@@ -332,8 +332,8 @@ if (System::$_user->info && isset($_GET['--sys_sel-change'], $_GET['i']) && $_GE
 /* Build pagefile */
 
 /* Company selection page */
-if (System::$_user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel-change'] == "company" && $fs->use()->id != 3) {
-	$r = $sql->query("SELECT comp_name,comp_id FROM companies JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . System::$_user->info->id . ";");
+if (Pool::$_user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel-change'] == "company" && $fs->use()->id != 3) {
+	$r = $sql->query("SELECT comp_name,comp_id FROM companies JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . Pool::$_user->info->id . ";");
 	if ($r) {
 		if (@!require_once($_SERVER['FILE_SYSTEM_ROOT'] . "/admin/forms/upper.php")) {
 			header(HTTP503);
@@ -351,8 +351,8 @@ if (System::$_user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel
 	}
 }
 /* Account selection page */
-if (System::$_user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel-change'] == "account" && $fs->use()->id != 3) {
-	$r = $sql->query("SELECT prt_name,prt_id,cur_symbol,cur_name,cur_id,cur_shortname FROM `acc_accounts` LEFT JOIN currencies ON cur_id=prt_currency JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . System::$_user->info->id . ";");
+if (Pool::$_user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel-change'] == "account" && $fs->use()->id != 3) {
+	$r = $sql->query("SELECT prt_name,prt_id,cur_symbol,cur_name,cur_id,cur_shortname FROM `acc_accounts` LEFT JOIN currencies ON cur_id=prt_currency JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . Pool::$_user->info->id . ";");
 	if ($r) {
 		if (@!require_once($_SERVER['FILE_SYSTEM_ROOT'] . "/admin/forms/upper.php")) {
 			header(HTTP503);

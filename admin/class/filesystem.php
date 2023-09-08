@@ -34,19 +34,19 @@ class FileSystem
 		$this->use = new \System\FileData();
 		$this->files[0] =  new \System\FileData();
 
-		if ($r = System::$sql->query(
+		if ($r = Pool::$sql->query(
 			"SELECT 
 				trd_id, trd_directory,pfl_value,trd_parent,trd_enable, trd_visible,
 				trd_keywords, trd_description, trd_header, trd_param, trd_attrib4, trd_attrib5, pfp_value
 			FROM 
 				pagefile 
 					LEFT JOIN pagefile_language ON pfl_trd_id = trd_id AND pfl_lng_id={$language}
-					LEFT JOIN pagefile_permissions ON pfp_trd_id = trd_id AND pfp_per_id = " . (System::$_user->logged ? System::$_user->info->permissions : System::$base_permission) . " 
+					LEFT JOIN pagefile_permissions ON pfp_trd_id = trd_id AND pfp_per_id = " . (Pool::$_user->logged ? Pool::$_user->info->permissions : Pool::$base_permission) . " 
 			ORDER BY
 				trd_parent, trd_zorder
 			;"
 		)) {
-			while ($row = System::$sql->fetch_assoc($r)) {
+			while ($row = Pool::$sql->fetch_assoc($r)) {
 				$data = new \System\FileData();
 				$data->id = (int)$row['trd_id'];
 				$data->dir = $row['trd_directory'];
@@ -72,7 +72,7 @@ class FileSystem
 			}
 		}
 
-		if (false && $rper = System::$sql->query("SELECT per_id,pfp_value FROM permissions LEFT JOIN pagefile_permissions ON per_id=pfp_per_id AND pfp_trd_id={$row['id']};")) {
+		if (false && $rper = Pool::$sql->query("SELECT per_id,pfp_value FROM permissions LEFT JOIN pagefile_permissions ON per_id=pfp_per_id AND pfp_trd_id={$row['id']};")) {
 		}
 	}
 	function setUse(int $id): bool
@@ -84,6 +84,10 @@ class FileSystem
 		return false;
 	}
 
+	public function __invoke(int $id): \System\FileData|bool
+	{
+		return $this->find($id);
+	}
 	function use(): \System\FileData
 	{
 		return $this->use;

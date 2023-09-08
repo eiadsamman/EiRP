@@ -4,7 +4,7 @@ namespace System\Person;
 
 include_once("admin/class/person.php");
 
-use System\System;
+use System\Pool;
 
 class Employee extends Person
 {
@@ -18,7 +18,7 @@ class Employee extends Person
 			"id" => false,
 			"time" => 0,
 		);
-		$query = System::$sql->query("
+		$query = Pool::$sql->query("
 			SELECT 
 				ltr_id, UNIX_TIMESTAMP(ltr_ctime) AS ltr_ctime
 			FROM 
@@ -26,7 +26,7 @@ class Employee extends Person
 			WHERE
 				ltr_otime IS NULL AND ltr_usr_id = " . $this->info->id . ";");
 
-		if ($query && $row = System::$sql->fetch_assoc($query)) {
+		if ($query && $row = Pool::$sql->fetch_assoc($query)) {
 			$output = array(
 				"id" => $row['ltr_id'],
 				"time" => $row['ltr_ctime'],

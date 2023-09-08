@@ -2,7 +2,7 @@
 include_once "admin/class/log.php";
 include_once("admin/class/person.php");
 
-use System\System;
+use System\Pool;
 
 $bulkeditor					= $tables->pagefile_info(154, $Languages->get_current());
 $bulk__actions				= new AllowedActions($USER->info->permissions, $bulkeditor['permissions']);
@@ -62,7 +62,7 @@ function GetEmployeesList($limit_selection, $_TEMPLATE, $user)
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$user->info->id}
 				LEFT JOIN gender ON gnd_id=usr_gender
-				LEFT JOIN uploads ON (up_pagefile=" . System::FILE['Person']['Photo'] . " ) AND up_rel=lbr_id AND up_deleted=0
+				LEFT JOIN uploads ON (up_pagefile=" . Pool::FILE['Person']['Photo'] . " ) AND up_rel=lbr_id AND up_deleted=0
 				JOIN companies ON comp_id=lbr_company AND lbr_company={$user->company->id}
 		WHERE
 			( (lbr_role & b'001') > 0 ) AND lbr_resigndate IS NULL " . ($limit_selection ? " AND sel_usremp_emp_id IS NOT NULL " : "") . " 

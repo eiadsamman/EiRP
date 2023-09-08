@@ -26,7 +26,7 @@ Crit
 */
 'fields'=>array(
 	'cot_id' 	 	=>array(null,'ID'				,true	,null	,'primary'	,'int'		,true	,null	,null		),
-	'cot_name'		=>array(null,'Container Name'	,true	,null	,'text'		,'string'	,true	,null	,null		,'<b>char(255)</b> Container name'),
+	'cot_name'		=>array(null,'Pool Name'	,true	,null	,'text'		,'string'	,true	,null	,null		,'<b>char(255)</b> Pool name'),
 	'cot_mastercarton'=>array(null,'Available'	,true	,null	,'text'		,'int'	,true	,null	,null		,'<b>int(0-1)</b> 1: Opened, 0: Closed'),
 	'cot_init'		=>array(null,'Prefix'	,true	,null	,'text'		,'text'	,true	,null	,null		,'<b>char(2)</b> Prefix'),
 	

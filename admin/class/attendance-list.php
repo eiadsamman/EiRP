@@ -37,7 +37,7 @@ class AttendanceList extends SQL {
 				echo "\t$dayk\n";
 				foreach($dayv as $k=>$v){
 					echo "\t\t$k\n";
-					echo "\t\t\tOpnID:\t".$v[2]."\t\t\tColser ID:\t".$v[3].($v[9]!=null?"\t\t\t<b>Main Owner: </b>".$v[9]:"")."\n";
+					echo "\t\t\tOpnID:\t".$v[2]."\t\t\tColser ID:\t".$v[3].($v[9]!=null?"\t\t\t<b>Owner: </b>".$v[9]:"")."\n";
 					echo "\t\t\tStart:\t".((int)$v[0]!=0?date("Y-m-d H:i:s",$v[0]):"-")."\tEarly Start:\t".((int)$v[6]!=0?date("Y-m-d H:i:s",$v[6]):"-")."\n";
 					echo "\t\t\tClose:\t".((int)$v[1]!=0?date("Y-m-d H:i:s",$v[1]):"-")."\tLate Finish:\t".((int)$v[7]!=0?date("Y-m-d H:i:s",$v[7]):"-")."\n";
 					echo "\t\t\tStatu:\t".$v[5]."\t\t\t<span style=\"color:#f03;font-weight:bold\">".(isset($v[8])?$v[8]:"")."</span>\n";
@@ -380,7 +380,7 @@ class AttendanceList extends SQL {
 					/*EarlyStart*/$rowa['_tstart'],
 					/*CloserID*/$rowa['ltr_id'],
 					/*Status*/1,
-					/*MainOwner*/$rowa['ltr_id'],
+					/*Owner*/$rowa['ltr_id'],
 					false
 				);
 			}

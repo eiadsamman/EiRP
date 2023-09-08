@@ -21,7 +21,7 @@ class Company
 }
 
 
-class System
+class Pool
 {
 	public static $sql;
 	public static $user;
@@ -56,16 +56,16 @@ class System
 	public static function getBasePermission(): bool
 	{
 		
-		if (basename(get_class(System::$sql)) == "SQL") {
+		if (basename(get_class(static::$sql)) == "SQL") {
 			
-			$lowsetlevel = System::$sql->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
-			if ($lowsetlevel && $rowlowsetlevel = System::$sql->fetch_assoc($lowsetlevel)) {
-				System::$base_permission = (int) $rowlowsetlevel['per_id'];
+			$lowsetlevel = static::$sql->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
+			if ($lowsetlevel && $rowlowsetlevel = static::$sql->fetch_assoc($lowsetlevel)) {
+				static::$base_permission = (int) $rowlowsetlevel['per_id'];
 				
 			}
 		}
 		
-		if (System::$base_permission == 0) {
+		if (static::$base_permission == 0) {
 			return false;
 		} else {
 			return true;
@@ -73,11 +73,11 @@ class System
 	}
 	public static function buildPrefixList(): bool
 	{
-		System::$prefixList = array();
-		$r = System::$sql->query("SELECT prx_id,prx_value,prx_placeholder FROM system_prefix;");
+		static::$prefixList = array();
+		$r = static::$sql->query("SELECT prx_id,prx_value,prx_placeholder FROM system_prefix;");
 		if ($r) {
-			while ($row = System::$sql->fetch_assoc($r)) {
-				System::$prefixList[$row['prx_id']] = array($row['prx_value'], (int)$row['prx_placeholder']);
+			while ($row = static::$sql->fetch_assoc($r)) {
+				static::$prefixList[$row['prx_id']] = array($row['prx_value'], (int)$row['prx_placeholder']);
 			}
 		}
 		return true;
@@ -85,46 +85,46 @@ class System
 
 	public function TranslatePrefix(int $type, int $number): string
 	{
-		if (!is_array(System::$prefixList) || sizeof(System::$prefixList) == 0) {
+		if (!is_array(static::$prefixList) || sizeof(static::$prefixList) == 0) {
 			return (string)$number;
 		}
 		$type = (int)$type;
-		if (isset(System::$prefixList[$type])) {
-			return System::$prefixList[$type][0] . str_pad((string)$number, System::$prefixList[$type][1], "0", STR_PAD_LEFT);
+		if (isset(static::$prefixList[$type])) {
+			return static::$prefixList[$type][0] . str_pad((string)$number, static::$prefixList[$type][1], "0", STR_PAD_LEFT);
 		}
 		return (string)$number;
 	}
 	public function paddingPrefix(int $type, int $number): string
 	{
-		if (!is_array(System::$prefixList) || sizeof(System::$prefixList) == 0) {
+		if (!is_array(static::$prefixList) || sizeof(static::$prefixList) == 0) {
 			return (string)$number;
 		}
 		$type = (int)$type;
-		if (isset(System::$prefixList[$type])) {
-			return str_pad((string)$number, System::$prefixList[$type][1], "0", STR_PAD_LEFT);
+		if (isset(static::$prefixList[$type])) {
+			return str_pad((string)$number, static::$prefixList[$type][1], "0", STR_PAD_LEFT);
 		}
 		return (string)$number;
 	}
 	public static function bookmarksList(): array
 	{
 		$output = [];
-		if (basename(get_class(System::$sql)) == "SQL") {
-			$result = System::$sql->query(
+		if (basename(get_class(static::$sql)) == "SQL") {
+			$result = static::$sql->query(
 				"SELECT 
 					trd_directory, pfl_value, trd_id, trd_attrib4, trd_attrib5, bookmark_id
 				FROM 
 					pagefile 
 					JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1 
 					JOIN 
-						pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id=" . System::$_user->info->permissions . "
-							LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . System::$_user->info->id . " AND usrset_name='system_count_page_visit'	
+						pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id=" . static::$_user->info->permissions . "
+							LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . static::$_user->info->id . " AND usrset_name='system_count_page_visit'	
 					JOIN (
 						SELECT
 							usrset_usr_defind_name AS bookmark_page_id, usrset_id AS bookmark_id
 						FROM 
 							user_settings
 						WHERE 
-							usrset_usr_id= " . System::$_user->info->id . " AND usrset_name=\"system_user_bookmark\"
+							usrset_usr_id= " . static::$_user->info->id . " AND usrset_name=\"system_user_bookmark\"
 						) AS bookmarks  ON bookmarks.bookmark_page_id = trd_id
 				WHERE 
 					trd_enable = 1 
@@ -133,7 +133,7 @@ class System
 					;"
 			);
 			if ($result) {
-				while ($row = System::$sql->fetch_assoc($result)) {
+				while ($row = static::$sql->fetch_assoc($result)) {
 					$output[] = $row;
 				}
 			}
@@ -143,9 +143,9 @@ class System
 
 	public static function bookmarksStatus(int $pagefile_id): bool
 	{
-		if (basename(get_class(System::$sql)) == "SQL") {
-			$result = System::$sql->query("SELECT usrset_id AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . System::$_user->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
-			if ($result && $row = System::$sql->num_rows($result) > 0) {
+		if (basename(get_class(static::$sql)) == "SQL") {
+			$result = static::$sql->query("SELECT usrset_id AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . static::$_user->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
+			if ($result && $row = static::$sql->num_rows($result) > 0) {
 				return true;
 			}
 		}
@@ -153,9 +153,9 @@ class System
 	}
 	public static function bookmarkRemove(int $pagefile_id): bool
 	{
-		if (basename(get_class(System::$sql)) == "SQL") {
-			$result = System::$sql->query("DELETE FROM user_settings WHERE usrset_usr_id= " . System::$_user->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
-			if ($result && $row = System::$sql->affected_rows() > 0) {
+		if (basename(get_class(static::$sql)) == "SQL") {
+			$result = static::$sql->query("DELETE FROM user_settings WHERE usrset_usr_id= " . static::$_user->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
+			if ($result && $row = static::$sql->affected_rows() > 0) {
 				return true;
 			}
 		}
@@ -165,17 +165,17 @@ class System
 	public static function bookmarkAdd(int $pagefile_id): bool|null
 	{
 		#return pagefile 
-		if (basename(get_class(System::$sql)) == "SQL") {
+		if (basename(get_class(static::$sql)) == "SQL") {
 
-			$result = System::$sql->query("SELECT usrset_id AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . System::$_user->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
-			if ($result && $row = System::$sql->num_rows($result) > 0) {
+			$result = static::$sql->query("SELECT usrset_id AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . static::$_user->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
+			if ($result && $row = static::$sql->num_rows($result) > 0) {
 				return null;
 			}
 
 
-			$stmt = System::$sql->prepare(
+			$stmt = static::$sql->prepare(
 				"INSERT INTO user_settings (usrset_usr_id, usrset_name, usrset_usr_defind_name) 
-				VALUES (" . System::$_user->info->id . ", \"system_user_bookmark\" , ?);"
+				VALUES (" . static::$_user->info->id . ", \"system_user_bookmark\" , ?);"
 			);
 			if ($stmt) {
 				$stmt->bind_param("i", $pagefile_id);

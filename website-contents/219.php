@@ -1,7 +1,7 @@
 <?php
 include_once("admin/class/person.php");
 
-use System\System;
+use System\Pool;
 
 
 $perm_personal = $tables->Permissions(227, $USER->info->permissions);
@@ -70,7 +70,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "update") {
 				LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
 				LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
-				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . System::FILE['Person']['Photo'] . " AND up_deleted=0
+				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . Pool::FILE['Person']['Photo'] . " AND up_deleted=0
 				LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
 				LEFT JOIN companies ON comp_id = lbr_company
 		WHERE
@@ -88,7 +88,7 @@ $q_socialid_uploads_query = "
 		FROM uploads 
 		WHERE 
 			(" . ($arr_array_input != false ? " up_rel={$arr_array_input['usr_id']} OR " : "") . " (up_rel=0 AND up_user={$USER->info->id}))
-			AND up_deleted=0 AND (up_pagefile=" . System::FILE['Person']['Photo'] . " OR up_pagefile=" . System::FILE['Person']['ID'] . ") ORDER BY up_rel DESC, up_date DESC;";
+			AND up_deleted=0 AND (up_pagefile=" . Pool::FILE['Person']['Photo'] . " OR up_pagefile=" . Pool::FILE['Person']['ID'] . ") ORDER BY up_rel DESC, up_date DESC;";
 $q_socialid_uploads = $sql->query($q_socialid_uploads_query);
 while ($row_socialid_uploads = $sql->fetch_assoc($q_socialid_uploads)) {
 	if (!isset($arr_array_uploads[$row_socialid_uploads['up_pagefile']])) {
@@ -171,8 +171,8 @@ while ($row_socialid_uploads = $sql->fetch_assoc($q_socialid_uploads)) {
 									<span id="js_upload_list" class="js_upload_list">
 										<div id="UploadPersonalDOMHandler">
 											<?php
-											if (isset($arr_array_uploads[System::FILE['Person']['Photo']]) && is_array($arr_array_uploads[System::FILE['Person']['Photo']])) {
-												foreach ($arr_array_uploads[System::FILE['Person']['Photo']] as $fileIndex => $file) {
+											if (isset($arr_array_uploads[Pool::FILE['Person']['Photo']]) && is_array($arr_array_uploads[Pool::FILE['Person']['Photo']])) {
+												foreach ($arr_array_uploads[Pool::FILE['Person']['Photo']] as $fileIndex => $file) {
 													echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int)$file[4] == 0 ? false : true), "perosnal_image");
 												}
 											}

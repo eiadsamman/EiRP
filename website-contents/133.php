@@ -103,7 +103,7 @@ if(isset($_POST['posubmit'])){
 			
 			foreach($daysList as $dayId=>$day){
 				if(isset($empData['days'][$day])){
-					$output.="\t".System::formatTime($empData['days'][$day]);
+					$output.="\t".Pool::formatTime($empData['days'][$day]);
 				}else{
 					$output.="\t0";
 				}

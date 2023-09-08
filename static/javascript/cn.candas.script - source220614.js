@@ -131,7 +131,7 @@ candas = new Candas();
 		function imageReceived () {
 			/*(Set trigger to on for future processing )*/
 			ready_status	= true;
-			/*(Main image dimensions)*/
+			/*(Original image dimensions)*/
 			dim_imgsrc.X 	= gdImage.width;
 			dim_imgsrc.Y 	= gdImage.height;
 			

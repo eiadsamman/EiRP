@@ -4,7 +4,7 @@ include_once("admin/class/person.php");
 include_once("admin/class/Template/class.template.build.php");
 
 use Template\TemplateBuild;
-use System\System;
+use System\Pool;
 use System\SLO_DataList;
 
 $_TEMPLATE = new TemplateBuild("HIFile");
@@ -62,8 +62,8 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				$arr_socialids[$row_socialid_uploads['up_pagefile']][$row_socialid_uploads['up_id']] = array($row_socialid_uploads['up_name'], $row_socialid_uploads['up_size'], $row_socialid_uploads['up_date'], $row_socialid_uploads['up_id']);
 			}
 			$socialidphotos = "";
-			if (isset($arr_socialids[System::FILE['Person']['ID']])) {
-				foreach ($arr_socialids[System::FILE['Person']['ID']] as $k_socialid => $v_socialid) {
+			if (isset($arr_socialids[Pool::FILE['Person']['ID']])) {
+				foreach ($arr_socialids[Pool::FILE['Person']['ID']] as $k_socialid => $v_socialid) {
 					$socialidphotos .= "<a href=\"download/?id={$k_socialid}\" class=\"jq_frame_image\" data-href=\"download/?id={$k_socialid}&pr=v\">view</a>";
 				}
 			}
@@ -78,10 +78,10 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 					<td style="width:33%;min-width:200px" align="center">';
 				$img = "user.jpg";
 				if (
-					isset($arr_socialids[System::FILE['Person']['Photo']]) && is_array($arr_socialids[System::FILE['Person']['Photo']])
-					&& sizeof($arr_socialids[System::FILE['Person']['Photo']]) > 0
+					isset($arr_socialids[Pool::FILE['Person']['Photo']]) && is_array($arr_socialids[Pool::FILE['Person']['Photo']])
+					&& sizeof($arr_socialids[Pool::FILE['Person']['Photo']]) > 0
 				) {
-					$imgid = reset($arr_socialids[System::FILE['Person']['Photo']])[3];
+					$imgid = reset($arr_socialids[Pool::FILE['Person']['Photo']])[3];
 					$img = "download/?id={$imgid}&pr=t";
 					unset($imgid);
 				}
@@ -210,7 +210,7 @@ echo "<input id=\"employeIDFormSearch\" tabindex=\"1\" type=\"text\" data-slo=\"
 echo "<button type=\"button\" id=\"jQedit\" tabindex=\"2\" disabled>Edit information</button>";
 echo "<button type=\"button\" id=\"jQprintIDCard\" tabindex=\"3\" disabled>Print ID Card</button>";
 echo "</div>";
-echo "<datalist id=\"personList\">" . $slo_datalist->hr_person(System::$_user->company->id) . "</datalist>";
+echo "<datalist id=\"personList\">" . $slo_datalist->hr_person(Pool::$_user->company->id) . "</datalist>";
 echo $_TEMPLATE->CommandBarEnd();
 
 ?>

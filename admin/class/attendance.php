@@ -8,7 +8,7 @@ include_once("admin/class/employee.php");
 
 
 use Exception;
-use System\System;
+use System\Pool;
 use mysqli_result;
 
 class AlreadyCheckedoutException extends Exception
@@ -64,7 +64,7 @@ class Attendance extends Employee
 		if ((int)$companyID == 0) {
 			return false;
 		}
-		$racc = System::$sql->query("
+		$racc = Pool::$sql->query("
 			SELECT 
 				prt_id
 			FROM 
@@ -74,7 +74,7 @@ class Attendance extends Employee
 				prt_company_id = " . ((int)$companyID) . "
 			");
 		if ($racc) {
-			if ($rowacc = System::$sql->fetch_assoc($racc)) {
+			if ($rowacc = Pool::$sql->fetch_assoc($racc)) {
 				return (int)$rowacc['prt_id'];
 			}
 		}
@@ -91,7 +91,7 @@ class Attendance extends Employee
 		if (!$company) {
 			return array();
 		}
-		$racc = System::$sql->query("
+		$racc = Pool::$sql->query("
 			SELECT 
 				prt_id,prtlbr_name
 			FROM 
@@ -102,7 +102,7 @@ class Attendance extends Employee
 			");
 		if ($racc) {
 			$output = array();
-			while ($rowacc = System::$sql->fetch_assoc($racc)) {
+			while ($rowacc = Pool::$sql->fetch_assoc($racc)) {
 				$output[] = array((int)$rowacc['prt_id'], $rowacc['prtlbr_name']);
 			}
 			return $output;
@@ -120,13 +120,13 @@ class Attendance extends Employee
 			throw new AlreadyCheckedoutException("Already checked out", 21003);
 		}
 
-		System::$sql->autocommit(false);
-		$resultquery &= System::$sql->query("UPDATE labour_track SET ltr_otime = FROM_UNIXTIME({$time}), ltr_osigner=$signerID WHERE ltr_id = {$runningAtt['id']};");
+		Pool::$sql->autocommit(false);
+		$resultquery &= Pool::$sql->query("UPDATE labour_track SET ltr_otime = FROM_UNIXTIME({$time}), ltr_osigner=$signerID WHERE ltr_id = {$runningAtt['id']};");
 		if ($resultquery) {
-			System::$sql->commit();
+			Pool::$sql->commit();
 			return true;
 		} else {
-			System::$sql->rollback();
+			Pool::$sql->rollback();
 			return false;
 		}
 	}
@@ -138,7 +138,7 @@ class Attendance extends Employee
 		$accessPoint	= 0;
 		$resultquery	= true;
 		$runningAtt 	= $this->GetRunningAttendance();
-		System::$sql->autocommit(false);
+		Pool::$sql->autocommit(false);
 
 		if ($pointID == null) {
 			if (!$this->defaultCheckInAccount) {
@@ -163,22 +163,22 @@ class Attendance extends Employee
 			throw new AttendanceTimeLimitException("Time limit", 21006);
 		} elseif ($runningAtt['id'] != false && $pointID == null) {
 			/*Suspicious check-in with no previous check-out, drop latest record by setting the time diff to 0*/
-			//$resultquery &= System::$sql->query("UPDATE labour_track SET ltr_otime = FROM_UNIXTIME({$runningAtt['time']}), ltr_osigner=$signerID WHERE ltr_id = {$runningAtt['id']};");
+			//$resultquery &= Pool::$sql->query("UPDATE labour_track SET ltr_otime = FROM_UNIXTIME({$runningAtt['time']}), ltr_osigner=$signerID WHERE ltr_id = {$runningAtt['id']};");
 			throw new AttendanceDuplicateCheckin("Duplicate checking", 21007);
 		} elseif ($runningAtt['id'] != false && $pointID != null) {
 			//Close current record
-			$resultquery &= System::$sql->query("UPDATE labour_track SET ltr_otime = FROM_UNIXTIME({$time}), ltr_osigner=$signerID WHERE ltr_id = {$runningAtt['id']};");
+			$resultquery &= Pool::$sql->query("UPDATE labour_track SET ltr_otime = FROM_UNIXTIME({$time}), ltr_osigner=$signerID WHERE ltr_id = {$runningAtt['id']};");
 		}
 
 		if ($resultquery) {
-			$resultquery &= System::$sql->query("INSERT INTO labour_track (ltr_ctime,ltr_usr_id,ltr_csigner,ltr_prt_id) VALUES (FROM_UNIXTIME($time),{$this->info->id},{$signerID},$accessPoint)");
+			$resultquery &= Pool::$sql->query("INSERT INTO labour_track (ltr_ctime,ltr_usr_id,ltr_csigner,ltr_prt_id) VALUES (FROM_UNIXTIME($time),{$this->info->id},{$signerID},$accessPoint)");
 		}
 
 		if ($resultquery) {
-			System::$sql->commit();
+			Pool::$sql->commit();
 			return true;
 		} else {
-			System::$sql->rollback();
+			Pool::$sql->rollback();
 			return false;
 		}
 	}
@@ -268,7 +268,7 @@ class Attendance extends Employee
 							
 							LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 							LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
-							LEFT JOIN uploads ON (up_pagefile=" . System::FILE['Person']['Photo'] . ") AND up_rel=lbr_id AND up_deleted=0
+							LEFT JOIN uploads ON (up_pagefile=" . Pool::FILE['Person']['Photo'] . ") AND up_rel=lbr_id AND up_deleted=0
 							
 					) AS personDetails ON personDetails.lbr_id = joiner.ltr_usr_id
 							
@@ -286,7 +286,7 @@ class Attendance extends Employee
 		");
 
 
-		return System::$sql->query($r);
+		return Pool::$sql->query($r);
 	}
 
 	public function ReportOngoingBySector(array $parameters = array()): mysqli_result|bool
@@ -316,7 +316,7 @@ class Attendance extends Employee
 					FROM 
 						labour 
 							JOIN users ON lbr_id = usr_id
-							LEFT JOIN uploads ON (up_pagefile=" . System::FILE['Person']['Photo'] . ") AND up_rel=lbr_id AND up_deleted=0
+							LEFT JOIN uploads ON (up_pagefile=" . Pool::FILE['Person']['Photo'] . ") AND up_rel=lbr_id AND up_deleted=0
 					WHERE
 						lbr_company = {$parameters['company']}
 
@@ -328,7 +328,7 @@ class Attendance extends Employee
 				
 		");
 
-		return System::$sql->query($r);
+		return Pool::$sql->query($r);
 	}
 
 
@@ -415,7 +415,7 @@ class Attendance extends Employee
 							
 							LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 							LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
-							LEFT JOIN uploads ON (up_pagefile=" . System::FILE['Person']['Photo'] . ") AND up_rel=lbr_id AND up_deleted=0
+							LEFT JOIN uploads ON (up_pagefile=" . Pool::FILE['Person']['Photo'] . ") AND up_rel=lbr_id AND up_deleted=0
 						WHERE
 							lbr_company = {$parameters['company']}
 							" . (isset($parameters['paymethod']) && (int)$parameters['paymethod'] != 0 ? " AND lbr_payment_method=" . ($parameters['paymethod']) : "") . " 
@@ -430,7 +430,7 @@ class Attendance extends Employee
 				
 		");
 
-		return System::$sql->query($r);
+		return Pool::$sql->query($r);
 	}
 
 	public function ReportToday(array $parameters = array()): mysqli_result|bool

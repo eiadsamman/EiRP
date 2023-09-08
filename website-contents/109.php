@@ -3,7 +3,7 @@
 include_once "admin/class/attendance-list.php";
 include_once "admin/class/attendance.php";
 
-use System\System;
+use System\Pool;
 use System\SLO_DataList;
 
 function getAttendanceReport(&$sql, $dateFrom, $dateTo, $employeeID)
@@ -119,7 +119,7 @@ $slo_datalist = new SLO_DataList();
 </div>
 
 <datalist id="emplist">
-	<?= $slo_datalist->hr_person(System::$_user->company->id) ?>
+	<?= $slo_datalist->hr_person(Pool::$_user->company->id) ?>
 </datalist>
 
 

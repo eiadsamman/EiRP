@@ -47,7 +47,7 @@ $_TEMPLATE->Title("My Account", null, null);
 
 echo $_TEMPLATE->CommandBarStart();
 echo "<div class=\"btn-set\">";
-echo "<a class=\"as-button\" href=\"{$fs->find(263)->dir}\">{$fs->find(263)->title}</a>";
+echo "<a class=\"as-button\" href=\"{$fs(263)->dir}\">{$fs(263)->title}</a>";
 echo "</div>";
 echo $_TEMPLATE->CommandBarEnd();
 

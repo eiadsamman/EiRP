@@ -2,17 +2,17 @@
 	--widget_height: 180px;
 	
 }
-.MainpageWidget {
+.homepageWidget {
 	display: -webkit-box;display: -moz-box;display: -ms-flexbox;display: -webkit-flex;display: flex;
 	flex-wrap:wrap;
 }
-.MainpageWidget > div{
+.homepageWidget > div{
 	-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;
 	margin: 10px;
 	cursor: default;
 }
 
-.MainpageWidget > div > div {
+.homepageWidget > div > div {
 	width:100%;
 	padding:0px;
 	position: relative;

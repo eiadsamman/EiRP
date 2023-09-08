@@ -127,7 +127,7 @@ if($r=$sql->query("
 	FROM
 		labour 
 			JOIN users ON usr_id=lbr_id
-			LEFT JOIN uploads ON (up_pagefile=".System::FILE['Person']['Photo']." ) AND up_rel=lbr_id AND up_deleted=0
+			LEFT JOIN uploads ON (up_pagefile=".Pool::FILE['Person']['Photo']." ) AND up_rel=lbr_id AND up_deleted=0
 			LEFT JOIN 
 				(SELECT lty_id,lty_name,lsc_name,lsc_color FROM labour_type JOIN labour_section ON lty_section=lsc_id) AS _labour_type ON _labour_type.lty_id=lbr_type
 			LEFT JOIN labour_shifts ON lsf_id=lbr_shift

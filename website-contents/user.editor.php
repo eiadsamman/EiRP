@@ -4,7 +4,7 @@ $debug = false;
 include_once "admin/class/log.php";
 include_once("admin/class/person.php");
 
-use System\System;
+use System\Pool;
 use System\SLO_DataList;
 
 $perm_personal = $tables->Permissions(227, $USER->info->permissions);
@@ -226,10 +226,10 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 					$UploadsSep = ",";
 				}
 			}
-			$releaseUploads = $sql->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$UserID AND (up_pagefile=" . System::FILE['Person']['Photo'] . " OR up_pagefile=" . System::FILE['Person']['ID'] . ");");
+			$releaseUploads = $sql->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$UserID AND (up_pagefile=" . Pool::FILE['Person']['Photo'] . " OR up_pagefile=" . Pool::FILE['Person']['ID'] . ");");
 			if ($releaseUploads) {
 				if ($UploadsFound) {
-					if (!$sql->query("UPDATE uploads SET up_rel=$UserID WHERE up_id IN ({$UploadsIDs}) AND (up_pagefile=" . System::FILE['Person']['Photo'] . " OR up_pagefile=" . System::FILE['Person']['ID'] . ");")) {
+					if (!$sql->query("UPDATE uploads SET up_rel=$UserID WHERE up_id IN ({$UploadsIDs}) AND (up_pagefile=" . Pool::FILE['Person']['Photo'] . " OR up_pagefile=" . Pool::FILE['Person']['ID'] . ");")) {
 						$arrparser['result'] = false;
 						$arrparser['source']["global"] = "Assinging uploads to the employee failed";
 					}
@@ -381,7 +381,7 @@ $slo_datalist = new SLO_DataList();
 		<span>Employee Name \ ID</span><input type="text" id="employeIDFormSearch" data-slo=":LIST" data-list="personList" class="flex" value="<?php echo $UserFound ? $UserFound['usr_firstname'] . " " . $UserFound['usr_lastname'] : ""; ?>" <?php echo $UserFound ? "data-slodefaultid=\"" . $UserFound['usr_id'] . "\"" : ""; ?> placeholder="Select user..." />
 	</div>
 	<datalist id="personList">
-		<?= $slo_datalist->hr_person(System::$_user->company->id); ?>
+		<?= $slo_datalist->hr_person(Pool::$_user->company->id); ?>
 	</datalist>
 </div>
 
@@ -529,7 +529,7 @@ $slo_datalist = new SLO_DataList();
 				list_button: $("#js_upload_count"),
 				emptymessage: "[No files uploaded]",
 				upload_url: "<?php echo $tables->pagefile_info(186, null, "directory"); ?>",
-				relatedpagefile: <?php echo System::FILE['Person']['Photo']; ?>,
+				relatedpagefile: <?php echo Pool::FILE['Person']['Photo']; ?>,
 				multiple: false,
 				inputname: "perosnal_image",
 				domhandler: $("#UploadPersonalDOMHandler"),
@@ -545,7 +545,7 @@ $slo_datalist = new SLO_DataList();
 				list_button: $("#js_upload_count_1"),
 				emptymessage: "[No files uploaded]",
 				upload_url: "<?php echo $tables->pagefile_info(186, null, "directory"); ?>",
-				relatedpagefile: <?php echo System::FILE['Person']['ID']; ?>,
+				relatedpagefile: <?php echo Pool::FILE['Person']['ID']; ?>,
 				multiple: true,
 				inputname: "social_id_image",
 				align: "right",

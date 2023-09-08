@@ -7,7 +7,7 @@ include_once("admin/class/Template/class.template.build.php");
 
 use Exception;
 use mysqli_result;
-use System\System;
+use System\Pool;
 use Template\TemplateBuild;
 
 interface InvoiceSystem
@@ -61,7 +61,7 @@ class DocumentToken extends Exception
 
 
 
-class Invoice extends System
+class Invoice extends Pool
 {
 	private const permissionlist_pageid = 246;
 	private $permission_list = array();
@@ -103,8 +103,8 @@ class Invoice extends System
 			WHERE 
 				po_type = $docType AND po_comp_id=$company AND po_costcenter=$costcenter;";
 
-		$r = System::$sql->query($query);
-		if ($r && $row = System::$sql->fetch_assoc($r)) {
+		$r = Pool::$sql->query($query);
+		if ($r && $row = Pool::$sql->fetch_assoc($r)) {
 			return (int)$row['doc_serial'];
 		} else {
 			return false;
@@ -113,8 +113,8 @@ class Invoice extends System
 
 	private function BuildPermissionList()
 	{
-		/*$_u_persmission = System::$user['permissions'];
-		$qper = System::$sql->query("
+		/*$_u_persmission = Pool::$user['permissions'];
+		$qper = Pool::$sql->query("
 			SELECT 
 				trd_id,pfp_value,pfp_per_id
 			FROM 
@@ -122,7 +122,7 @@ class Invoice extends System
 					JOIN pagefile ON trd_id = pfp_trd_id
 			WHERE
 				trd_parent = 246 AND pfp_per_id = $_u_persmission;");
-		while($row = System::$sql->fetch_assoc( $qper)){
+		while($row = Pool::$sql->fetch_assoc( $qper)){
 			$this->permission_list[$row['trd_id']]=new AllowedActions($_u_persmission, array($row['pfp_per_id']=>$row['pfp_value']));
 		}*/
 	}
@@ -162,7 +162,7 @@ class Invoice extends System
 
 	public function GetDocChildren(int $doc_id)
 	{
-		$rpo = System::$sql->query($this->DocProccess($doc_id, 0, true));
+		$rpo = Pool::$sql->query($this->DocProccess($doc_id, 0, true));
 		if ($rpo) {
 			return $rpo;
 		} else {
@@ -177,8 +177,8 @@ class Invoice extends System
 		$current = $doc_id;
 		$safety = 0;
 		while ($current !== false) {
-			$mysqli_result = System::$sql->query("SELECT po_rel FROM inv_main WHERE po_id = $current;");
-			if ($mysqli_result and $mysqli_record = System::$sql->fetch_assoc($mysqli_result) and !is_null($mysqli_record['po_rel'])) {
+			$mysqli_result = Pool::$sql->query("SELECT po_rel FROM inv_main WHERE po_id = $current;");
+			if ($mysqli_result and $mysqli_record = Pool::$sql->fetch_assoc($mysqli_result) and !is_null($mysqli_record['po_rel'])) {
 				$current = $mysqli_record['po_rel'];
 				$chain[] = $mysqli_record['po_rel'];
 			} else {
@@ -197,7 +197,7 @@ class Invoice extends System
 
 	public function GetDocValue(int $doc_id): float|bool
 	{
-		$rpo = System::$sql->query("
+		$rpo = Pool::$sql->query("
 			SELECT
 				SUM(pols_price * pols_issued_qty) AS doc_value 
 			FROM
@@ -206,7 +206,7 @@ class Invoice extends System
 			WHERE
 				po_id=$doc_id 
 			");
-		if ($rpo && $rowpo = System::$sql->fetch_assoc($rpo)) {
+		if ($rpo && $rowpo = Pool::$sql->fetch_assoc($rpo)) {
 			if (is_null($rowpo['doc_value'])) {
 				return false;
 			} else {
@@ -296,7 +296,7 @@ class Invoice extends System
 
 	public function DocGetMaterialList(int $doc_id): mysqli_result|bool
 	{
-		$r = System::$sql->query("
+		$r = Pool::$sql->query("
 			SELECT 
 				pols_id,pols_bom_part,pols_issued_qty,pols_price,pols_discount,
 				_mat_materials.mat_long_id,_mat_materials.mat_name,_mat_materials.cat_alias,_mat_materials.mattyp_name,_mat_materials.unt_name,_mat_materials.unt_decim,

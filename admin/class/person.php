@@ -6,7 +6,7 @@ include_once("admin/class/system.php");
 
 
 use Exception;
-use System\System;
+use System\Pool;
 
 class PersonNotFoundException extends Exception
 {
@@ -45,18 +45,18 @@ class PersonData
 	public $resigned;
 }
 
-class Person extends System
+class Person extends Pool
 {
 	public $info;
 	public function __construct()
 	{
 		$this->info = new PersonData();
-		$this->info->permissions = System::$base_permission;
+		$this->info->permissions = Pool::$base_permission;
 	}
 
 	public function load(int $person_id): bool
 	{
-		$query = System::$sql->query("
+		$query = Pool::$sql->query("
 			SELECT 
 				CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) AS empname,
 				usr_id,
@@ -69,11 +69,11 @@ class Person extends System
 				labour 
 					JOIN users ON usr_id=lbr_id
 					LEFT JOIN permissions ON per_id = usr_privileges
-					LEFT JOIN uploads on lbr_id=up_rel AND up_deleted=0 AND (up_pagefile=" . System::FILE['Person']['Photo'] . ")
+					LEFT JOIN uploads on lbr_id=up_rel AND up_deleted=0 AND (up_pagefile=" . Pool::FILE['Person']['Photo'] . ")
 			WHERE
 				lbr_id='" . (int)$person_id . "';");
 
-		if ($query && $row = System::$sql->fetch_assoc($query)) {
+		if ($query && $row = Pool::$sql->fetch_assoc($query)) {
 			$this->info = new PersonData();
 			$this->info->id = (int) $row['usr_id'];
 			$this->info->name = $row['empname'];

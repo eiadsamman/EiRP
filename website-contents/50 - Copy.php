@@ -438,7 +438,7 @@ $(document).ready(function(e) {
 		list_button:$("#js_upload_count"),
 		emptymessage:"[No files uploaded]",
 		upload_url:"<?php echo $tables->pagefile_info(186,null,"directory");?>",
-		relatedpagefile:<?php echo System::FILE['Person']['Photo'];?>,
+		relatedpagefile:<?php echo Pool::FILE['Person']['Photo'];?>,
 		multiple:false,
 		inputname:"perosnal_image",
 		onupload:function(output){

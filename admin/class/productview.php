@@ -18,7 +18,7 @@ class ProductView {
 		return '
 		<script type="text/javascript">
 			$().ready(function(){
-				$(\'.cssPrdContainer.'.$this->unique.'\').productView({
+				$(\'.cssPrdPool.'.$this->unique.'\').productView({
 				speed:\'fast\',
 				thumbsNumber:'.$this->elem['thumbCount'].',	
 				thumbHeight:'.$this->elem['thumbHeight'].',
@@ -38,7 +38,7 @@ class ProductView {
 		$output='';
 		$output.='
 		<span style="clear:both;height:0px;width:0px;"></span>
-		<div class="cssPrdContainer '.$this->unique.'">
+		<div class="cssPrdPool '.$this->unique.'">
 			<table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody>
 				<tr><td align="center" style="padding-top:10px" class="pview-title"></td></tr>
 				<tr><td>

@@ -726,7 +726,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			?>
 		</tr>
 	</thead>
-	<tbody id="jQPopulateContainer"></tbody>
+	<tbody id="jQPopulatePool"></tbody>
 </table>
 
 
@@ -807,8 +807,8 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 					'search': nav.search
 				}
 			}).done(function(data) {
-				$("#jQPopulateContainer").html(data);
-				let legend = $("#jQPopulateContainer").find("td#LegendParams");
+				$("#jQPopulatePool").html(data);
+				let legend = $("#jQPopulatePool").find("td#LegendParams");
 
 				$("#jQnavTotal").val(~~legend.attr("data-total"));
 				$("#jQInputSearchOccurrence").html("Search criterias: " + legend.attr("data-searchoccurrence"));

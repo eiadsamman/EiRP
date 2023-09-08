@@ -6,7 +6,7 @@ $_TEMPLATE->SetLayout(/*Sticky Title*/ false,/*Command Bar*/ false ,/*Sticky Fra
 $_TEMPLATE->FrameTitlesStack(false);
 $_TEMPLATE->Title("Welcome", null, null);
 
-echo "<div class=\"MainpageWidget\">";
+echo "<div class=\"homepageWidget\">";
 if($rlocal=$sql->query("
 		SELECT trd_id 
 		FROM pagefile JOIN pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$USER->info->permissions}

@@ -2,7 +2,7 @@
 include_once("admin/class/Template/class.template.build.php");
 
 
-use System\System;
+use System\Pool;
 use System\Person\Attendance;
 use Template\TemplateBuild;
 
@@ -84,7 +84,7 @@ if (isset($_POST['fetch'])) {
 			echo "<td>{$row['lbr_id']} </td>";
 			echo "<td class=\"emplyee-name\">{$row['usr_firstname']} {$row['usr_lastname']}</td>";
 			echo "<td>{$row['ltr_ctime_date']} {$row['ltr_ctime_time']}</td>";
-			echo "<td class=\"elapsed\"><span>Elapsed: </span>" . System::formatTime($row['diff'], false) . "</td>";
+			echo "<td class=\"elapsed\"><span>Elapsed: </span>" . Pool::formatTime($row['diff'], false) . "</td>";
 
 			echo $pb == 2 ? "" : "<td class=\"mediabond-ignore\">{$row['prt_name']}</td>";
 

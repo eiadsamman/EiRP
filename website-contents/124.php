@@ -205,7 +205,7 @@ if(isset($_POST['delete-employee-hir']) && isset($_POST['lbr'])){
 
 ?>
 <style>
-#css_hierMain{
+#css_hierTop{
 	display: -webkit-box;
 	display: -moz-box;display: -ms-flexbox;display: -webkit-flex;display: flex;
 	-webkit-touch-callout: none;
@@ -288,7 +288,7 @@ if(isset($_POST['delete-employee-hir']) && isset($_POST['lbr'])){
 }
 </style>
 
-<div id="css_hierMain">
+<div id="css_hierTop">
 	<div id="css_hierLeft">
 		<div class="nest root" data-id="0">
 			<h1 data-parent="0" class="jQplot"><span>Root</span><button class="jQappendChild">+</button></h1>

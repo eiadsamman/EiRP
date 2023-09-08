@@ -6,7 +6,7 @@ include_once("admin/class/system.php");
 
 
 use Exception;
-use System\System;
+use System\Pool;
 
 
 
@@ -26,7 +26,7 @@ class Account
 }
 
 
-class Accounting extends System
+class Accounting extends Pool
 {
 	private $_opdef_info_array = false;
 	private $_curdef_info_array = false;

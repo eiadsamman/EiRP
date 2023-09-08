@@ -2,7 +2,7 @@
 include_once("admin/class/attendance.php");
 include_once("admin/class/Template/class.template.build.php");
 
-use System\System;
+use System\Pool;
 use System\Person\Attendance;
 use System\Person\PersonNotFoundException;
 use System\Person\PersonResignedException;
@@ -58,9 +58,9 @@ if (isset($_POST['serial'])) {
 if (isset($_POST['populate'])) {
 	$att = new Attendance();
 	$sector = (int)$_POST['populate'];
-	$r = $att->ReportOngoingBySector(["company" => System::$_user->company->id, "sector" => $sector]);
+	$r = $att->ReportOngoingBySector(["company" => Pool::$_user->company->id, "sector" => $sector]);
 	if ($r) {
-		while ($row = System::$sql->fetch_assoc($r)) {
+		while ($row = Pool::$sql->fetch_assoc($r)) {
 			$photo = $row['up_id'] != null ? "download/?id={$row['up_id']}&pr=t" : "";
 			TemplateBuild::AttendanceTicketPlot(null, $photo, $row['lbr_id'], $row['usr_firstname']);
 		}

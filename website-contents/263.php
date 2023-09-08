@@ -1,10 +1,10 @@
 <?php
 include_once("admin/class/system.php");
 
-use System\System;
+use System\Pool;
 
 if ($h__requested_with_ajax && isset($_POST['add'])) {
-	$bookmark_add = System::bookmarkAdd((int)$_POST['add']);
+	$bookmark_add = Pool::bookmarkAdd((int)$_POST['add']);
 	if ($bookmark_add == true) {
 		header("QUERY_RESULT: 1");
 		$bookmark_page = $tables->pagefile_info((int)$_POST['add']);
@@ -17,7 +17,7 @@ if ($h__requested_with_ajax && isset($_POST['add'])) {
 	exit;
 }
 if ($h__requested_with_ajax && isset($_POST['remove'])) {
-	echo System::bookmarkRemove((int)$_POST['remove']) ? "1" : "0";
+	echo Pool::bookmarkRemove((int)$_POST['remove']) ? "1" : "0";
 	exit;
 }
 
@@ -28,12 +28,12 @@ use Template\TemplateBuild;
 
 $_TEMPLATE 	= new TemplateBuild();
 $_TEMPLATE->SetWidth("800px");
-$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs->find(27)->dir}\"></a>Bookmarks", null, null);
+$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs(27)->dir}\"></a>Bookmarks", null, null);
 
 
 $count = 0;
 $buffer = "";
-foreach (System::bookmarksList() as $bookmark) {
+foreach (Pool::bookmarksList() as $bookmark) {
 	//color:#{$bookmark['trd_attrib5']}
 	//<span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px;display:inline-block;color:#555\">&#xe{$bookmark['trd_attrib4']};</span>
 	$count++;
@@ -66,7 +66,7 @@ if ($count > 0) {
 			rowowner.css("display", "none");
 
 			ajax = $.ajax({
-				url: '<?= $fs->find(263)->dir ?>',
+				url: '<?= $fs(263)->dir ?>',
 				type: 'POST',
 				data: {
 					"remove": bookmarkid

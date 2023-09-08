@@ -3,7 +3,7 @@
 include_once("admin/class/attendance.php");
 include_once("admin/class/Template/class.template.build.php");
 
-use System\System;
+use System\Pool;
 use System\Person\Attendance;
 use System\Person\PersonNotFoundException;
 use System\Person\PersonResignedException;

@@ -1,19 +1,19 @@
 <?php
 
-use System\System;
+use System\Pool;
 use Finance\Accounting;
 
 echo "
 <div style=\"min-width:300px\">
 	<div class=\"widgetWQY\" style=\"padding-right:10px;\">
 		<div>";
-if (System::$_user->account) {
+if (Pool::$_user->account) {
 	include_once("admin/class/accounting.php");
 	$accounting = new Accounting();
-	$__workingaccount = $accounting->account_information(System::$_user->account->id);
+	$__workingaccount = $accounting->account_information(Pool::$_user->account->id);
 }
-if (System::$_user->account->role->view) {
-	if (System::$_user->account->id && $__workingaccount) {
+if (Pool::$_user->account->role->view) {
+	if (Pool::$_user->account->id && $__workingaccount) {
 		echo "
 			<div style=\"color:#666;\"><b>{$USER->company->name}</b><br />{$__workingaccount['group']}<br />{$__workingaccount['name']}</div>
 			<div style=\"padding-top:10px;font-size:1.8em;font-weight:bold;color:#06c;\">" . ($__workingaccount['balance'] < 0 ? "(" . number_format(abs($__workingaccount['balance']), 2, ".", ",") . ")" : number_format(abs($__workingaccount['balance']), 2, ".", ",")) . "</div>

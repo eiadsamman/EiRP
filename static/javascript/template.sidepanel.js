@@ -1,11 +1,11 @@
 var TemplateScrollBar = function (elementId, scrollbarId) {
-	let domContainer = document.getElementById(elementId);
+	let domPool = document.getElementById(elementId);
 	let domScrollbar = document.getElementById(scrollbarId);
 	let scrollbarPadding = 5;
 	let dragstate = false;
 	let pos2 = 0, pos4 = 0;
 	if (
-		domContainer == null || domContainer == undefined ||
+		domPool == null || domPool == undefined ||
 		domScrollbar == null || domScrollbar == undefined
 	) {
 		return false;
@@ -23,21 +23,21 @@ var TemplateScrollBar = function (elementId, scrollbarId) {
 		let cord = domScrollbar.offsetTop - pos2;
 		if (cord <= scrollbarPadding) {
 			cord = scrollbarPadding;
-		} else if (cord >= (domContainer.clientHeight - domScrollbar.offsetHeight - scrollbarPadding)) {
-			cord = (domContainer.clientHeight - domScrollbar.offsetHeight - scrollbarPadding);
+		} else if (cord >= (domPool.clientHeight - domScrollbar.offsetHeight - scrollbarPadding)) {
+			cord = (domPool.clientHeight - domScrollbar.offsetHeight - scrollbarPadding);
 		}
 		domScrollbar.style.top = cord + "px";
-		domContainer.scrollTo({
-			top: (((cord - scrollbarPadding) / (domContainer.clientHeight - domScrollbar.offsetHeight - scrollbarPadding * 2) * (domContainer.scrollHeight - domContainer.clientHeight))),
+		domPool.scrollTo({
+			top: (((cord - scrollbarPadding) / (domPool.clientHeight - domScrollbar.offsetHeight - scrollbarPadding * 2) * (domPool.scrollHeight - domPool.clientHeight))),
 		});
 	};
 
 	let Init = function () {
-		domContainer.onmouseenter = function (e) {
+		domPool.onmouseenter = function (e) {
 			domScrollbar.style.display = (this.scrollHeight > this.offsetHeight) ? "block" : "none";
 		};
 		if (!__TSBfnAgent()) {
-			domContainer.addEventListener("scroll", function (e) {
+			domPool.addEventListener("scroll", function (e) {
 				if (!dragstate) {
 					domScrollbar.style.top = ((((e.target.scrollTop) / (e.target.scrollHeight - e.target.offsetHeight) * (e.target.clientHeight - 10 - domScrollbar.offsetHeight))) + scrollbarPadding) + "px";
 				}

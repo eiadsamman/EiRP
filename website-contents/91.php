@@ -276,7 +276,7 @@ if (!$__workingaccount) {
 
 	<?php
 	$_TEMPLATE->SetWidth("768px");
-	$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs->find(99)->dir}\"></a>New " . $pageinfo['title'], null, "");
+	$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs(99)->dir}\"></a>New " . $pageinfo['title'], null, "");
 
 	echo $_TEMPLATE->CommandBarStart();
 	echo "<div class=\"btn-set\" style=\"justify-content:flex-end\">";

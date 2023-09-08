@@ -1,6 +1,6 @@
 <?php
 
-use System\System;
+use System\Pool;
 use Finance\Accounting;
 use System\SLO_DataList;
 
@@ -12,16 +12,16 @@ if (isset($fs->use()->parameters) && preg_match("/help([0-9]+)/", $fs->use()->pa
 }
 if (isset($fs->use()->parameters) && preg_match("/side-panel([0-9]+)/", $fs->use()->parameters, $match)) {
 	$__side_panel = $tables->pagefile_info((int) $match[1]);
-	$__side_panel__perm = new AllowedActions(System::$_user->info->permissions, $__side_panel['permissions']);
+	$__side_panel__perm = new AllowedActions(Pool::$_user->info->permissions, $__side_panel['permissions']);
 }
 
 
 $__workingaccount = false;
 
-if (System::$_user->account && System::$_user->account->id) {
+if (Pool::$_user->account && Pool::$_user->account->id) {
 	include_once("admin/class/accounting.php");
 	$accounting = new Accounting();
-	$__workingaccount = $accounting->account_information(System::$_user->account->id);
+	$__workingaccount = $accounting->account_information(Pool::$_user->account->id);
 }
 
 include_once("admin/class/slo_datalist.php");
@@ -105,19 +105,19 @@ $slo_datalist = new SLO_DataList();
 		<div>
 			<div class="btnheader-set header-nav" style="white-space:nowrap">
 				<?php
-				if (System::$_user->logged && System::$_user->company && System::$_user->company->logo) {
-					echo "<a href=\"\" tabindex=\"-1\" title=\"Main Page\" id=\"header-menu-home\" style=\"padding:9px 8px 8px 8px\"><span><img src=\"download/?id=" . System::$_user->company->logo . "&pr=t\" height=\"30\" /></span></a>";
+				if (Pool::$_user->logged && Pool::$_user->company && Pool::$_user->company->logo) {
+					echo "<a href=\"\" tabindex=\"-1\" title=\"Homepage\" id=\"header-menu-home\" style=\"padding:9px 8px 8px 8px\"><span><img src=\"download/?id=" . Pool::$_user->company->logo . "&pr=t\" height=\"30\" /></span></a>";
 				} else {
-					echo "<a href=\"\" tabindex=\"-1\" title=\"Main Page\" id=\"header-menu-home\" class=\"ico-home\"><span></span></a>";
+					echo "<a href=\"\" tabindex=\"-1\" title=\"Homepage\" id=\"header-menu-home\" class=\"ico-home\"><span></span></a>";
 				}
-				if (System::$_user->logged) {
+				if (Pool::$_user->logged) {
 					echo "<a id=\"header-menu-button\" title=\"{$fs->use()->id}: {$fs->use()->title}, (Ctrl+m)\"><span style=\"font-family:icomoon4;\">&#xe9bd;</span></a>";
 					if ($__helper) {
 						echo "<a href=\"{$__helper['directory']}\" title=\"Help\" id=\"jqroot_help\" target=\"_blank\"><span style=\"font-family:icomoon4;\">&#xea09;</span></a>";
 					}
 
 					echo "<span class=\"gap\" style=\"text-align:right;\"></span>";
-					echo "<a href=\"{$fs->use()->dir}/?--sys_sel-change=company\" tabindex=\"-1\" title=\"Running Company\" id=\"jqroot_com\">" . (System::$_user->company->name ? System::$_user->company->name : "N/A") . "</a>";
+					echo "<a href=\"{$fs->use()->dir}/?--sys_sel-change=company\" tabindex=\"-1\" title=\"Running Company\" id=\"jqroot_com\">" . (Pool::$_user->company->name ? Pool::$_user->company->name : "N/A") . "</a>";
 					echo "<a href=\"{$fs->use()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($__workingaccount['name']) ? "<span id=\"jqroot_accgrp\">" . $__workingaccount['group'] . ": </span>" . $__workingaccount['name'] : "N/A") . "</a>";
 					if ($__workingaccount && $__workingaccount['balance'] != false) {
 						echo "<span id=\"jqroot_bal\">" . ($__workingaccount['balance'] < 0 ? "(" . number_format(abs($__workingaccount['balance']), 2, ".", ",") . ")" : number_format(abs($__workingaccount['balance']), 2, ".", ","));
@@ -134,7 +134,7 @@ $slo_datalist = new SLO_DataList();
 	</span>
 	<a href="" id="PFTrigger" style="display: none;"></a>
 
-	<?php if (System::$_user->logged) { ?>
+	<?php if (Pool::$_user->logged) { ?>
 		<span id="header-menu" class="header-menu lefthand">
 			<div>
 				<div>
@@ -149,16 +149,16 @@ $slo_datalist = new SLO_DataList();
 									pagefile 
 									JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1 
 									JOIN 
-										pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id=" . System::$_user->info->permissions . "
-											LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . System::$_user->info->id . " AND usrset_name='system_count_page_visit'	
+										pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id=" . Pool::$_user->info->permissions . "
+											LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . Pool::$_user->info->id . " AND usrset_name='system_count_page_visit'	
 								WHERE 
 									trd_enable = 1 AND trd_visible = 1
 								ORDER BY
 									(usrset_value+0) DESC,pfl_value
 								";
 
-								if ($r = System::$sql->query($q)) {
-									while ($row = System::$sql->fetch_assoc($r)) {
+								if ($r = Pool::$sql->query($q)) {
+									while ($row = Pool::$sql->fetch_assoc($r)) {
 										echo "<option data-id=\"{$row['trd_directory']}\" data-keywords=\"{$row['trd_id']}\">{$row['pagefile_title']}</option>";
 									}
 								}
@@ -170,7 +170,7 @@ $slo_datalist = new SLO_DataList();
 						<?php
 						echo "<b class=\"index-link\"><span style=\"color:#333;font-family:icomoon;\">&#xe600;</span><a class=\"alink\" href=\"\">Homepage</a></b>";
 						/*Ploting template @ class.tables.php */
-						new PagefileHierarchy($sql, System::$_user->info->permissions); ?>
+						new PagefileHierarchy($sql, Pool::$_user->info->permissions); ?>
 					</div>
 				</div>
 			</div>
@@ -190,7 +190,7 @@ $slo_datalist = new SLO_DataList();
 					</header>
 					<div style="white-space:nowrap;" class="menu-items">
 						<?php
-						if (!System::$_user->company) {
+						if (!Pool::$_user->company) {
 							echo "<div style=\"padding-left:15px;\">No company selected</div>";
 						} else {
 							$ptp = array();
@@ -200,7 +200,7 @@ $slo_datalist = new SLO_DataList();
 									prt_id,prt_name,ptp_name,cur_shortname,_fusro.comp_name,typetermPair
 								FROM 
 									acc_accounts
-									JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . System::$_user->info->id . " AND upr_prt_fetch=1
+									JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . Pool::$_user->info->id . " AND upr_prt_fetch=1
 									
 									JOIN (
 										SELECT ptp_id,ptp_name,trmgrp_name, CONCAT_WS(': ', trmgrp_name, ptp_name) AS typetermPair
@@ -213,11 +213,11 @@ $slo_datalist = new SLO_DataList();
 											comp_name,comp_id
 										FROM
 											companies
-												JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . System::$_user->info->id . "
-												JOIN user_settings ON usrset_usr_id=" . System::$_user->info->id . " AND usrset_name='system_working_company' AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
+												JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . Pool::$_user->info->id . "
+												JOIN user_settings ON usrset_usr_id=" . Pool::$_user->info->id . " AND usrset_name='system_working_company' AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
 									) AS _fusro ON _fusro.comp_id=prt_company_id
 									
-									LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id=" . System::$_user->info->id . " AND usrset_name='system_count_account_selection'
+									LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id=" . Pool::$_user->info->id . " AND usrset_name='system_count_account_selection'
 								ORDER BY
 									(usrset_value + 0) DESC,cur_id,ptp_name,prt_name
 								;"
@@ -263,8 +263,8 @@ $slo_datalist = new SLO_DataList();
 							"SELECT 
 							comp_id,comp_name 
 						FROM companies 
-							JOIN user_company ON urc_usr_comp_id = comp_id AND urc_usr_id = " . System::$_user->info->id . "
-							LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id=" . System::$_user->info->id . " AND usrset_name='system_count_company_selection'
+							JOIN user_company ON urc_usr_comp_id = comp_id AND urc_usr_id = " . Pool::$_user->info->id . "
+							LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id=" . Pool::$_user->info->id . " AND usrset_name='system_count_company_selection'
 						ORDER BY
 							(usrset_value+0) DESC"
 						);
@@ -284,11 +284,11 @@ $slo_datalist = new SLO_DataList();
 				<div>
 					<div style="white-space:nowrap;" class="menu-items">
 						<?php
-						$bookmarked = System::bookmarksStatus($fs->use()->id);
+						$bookmarked = Pool::bookmarksStatus($fs->use()->id);
 
-						echo "<div>" . System::$_user->info->name . "</div>";
+						echo "<div>" . Pool::$_user->info->name . "</div>";
 						echo "<a href=\"user-account/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"User Settings\">&#xe971;</span><span>Password & Security</span></a>";
-						echo "<a href=\"{$fs->find(263)->dir}\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"User Settings\">&#xe971;</span><span>Bookmarks management</span></a>";
+						echo "<a href=\"{$fs(263)->dir}\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"User Settings\">&#xe971;</span><span>Bookmarks management</span></a>";
 						echo "<a href=\"{$fs->use()->dir}/?logout\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Logout\">&#xe9b6;</span><span>Logout</span></a>";
 						echo "<div><span class=\"btn-set \"><span class=\"flex\" style=\"padding:10px 0px 0px 0px;background:none;border:none\">Bookmarks</span>";
 						if (!$bookmarked) {
@@ -298,7 +298,7 @@ $slo_datalist = new SLO_DataList();
 						}
 						echo "</span></div>";
 
-						foreach (System::bookmarksList() as $bookmark) {
+						foreach (Pool::bookmarksList() as $bookmark) {
 							#sticky
 							#slo search
 							#add/remove from dom

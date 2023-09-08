@@ -9,7 +9,7 @@ $material=new Materials();
     [wo_title] => test09141021
     [wo_site] => Array
         (
-            [0] => [EGP] Main: Accounting: Salary Payout
+            [0] => [EGP] : Accounting: Salary Payout
             [1] => 36
         )
 
@@ -128,7 +128,7 @@ if(isset($_POST['method'],$_POST['id'],$_POST['qty']) && $_POST['method']=="disp
 	
 	echo "</thead><tbody>";
 	
-	echo "<tr class=\"special\"><th><input type=\"checkbox\" class=\"jQcheckB\" data-rel=\"m\" /></th><th colspan=\"7\">Main material</th></tr>";
+	echo "<tr class=\"special\"><th><input type=\"checkbox\" class=\"jQcheckB\" data-rel=\"m\" /></th><th colspan=\"7\">Material</th></tr>";
 	echo "<tr><td></td><th>ID</th><th>Quantity</th><th>Unit</th><th>Each</th><th width=\"100%\">Material</th><th>Type</th><th>Available</th></tr>";
 	
 	$single=$material->Fetch((int)$_POST['id']);

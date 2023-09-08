@@ -16,7 +16,7 @@ class APIException extends Exception {
  
 
 
-class API extends System{
+class API extends Pool{
     protected $result;
     protected $key;
     
@@ -55,8 +55,8 @@ class APIAttendance extends API{
             $this->result['error'] = 22002; 
             throw new APIException("Invalid employee ID", $this->result['error']);
         }
-     	$query = System::$sql->query("SELECT usr_firstname,usr_id, usr_lastname FROM users WHERE usr_id = ".(int)$emp_id.";");
-		if($query && $row=System::$sql->fetch_assoc($query)){
+     	$query = Pool::$sql->query("SELECT usr_firstname,usr_id, usr_lastname FROM users WHERE usr_id = ".(int)$emp_id.";");
+		if($query && $row=Pool::$sql->fetch_assoc($query)){
 		    $this->employee_id = (int)$emp_id;
 		    $this->result['id'] = $row['usr_id'];
 		    $this->result['name'] = $row['usr_firstname']." ".$row['usr_lastname'];
@@ -73,8 +73,8 @@ class APIAttendance extends API{
             $this->result['error'] = 22011;
             throw new APIException("Invalid target ID", $this->result['error']);
         }
-     	$query = System::$sql->query("SELECT prtlbr_id, prtlbr_prt_id, prtlbr_name FROM partitionlabour WHERE prtlbr_prt_id = ".(int)$tr_id." AND prtlbr_op=2;");
-		if($query && $row=System::$sql->fetch_assoc($query)){
+     	$query = Pool::$sql->query("SELECT prtlbr_id, prtlbr_prt_id, prtlbr_name FROM partitionlabour WHERE prtlbr_prt_id = ".(int)$tr_id." AND prtlbr_op=2;");
+		if($query && $row=Pool::$sql->fetch_assoc($query)){
 		    $this->target_id = (int)$tr_id;
 		    $this->result['target'] = $row['prtlbr_name']; 
 		    

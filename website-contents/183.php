@@ -2,7 +2,7 @@
 include_once("admin/class/employee.php");
 include_once("admin/class/Template/class.template.build.php");
 
-use System\System;
+use System\Pool;
 use System\Person\Attendance;
 use Template\TemplateBuild;
 
@@ -39,7 +39,7 @@ if($r){
 		echo "<td>{$row['personID']}</td>";
 		echo "<td>{$row['usr_firstname']} {$row['usr_lastname']}</td>";
 		echo "<td>{$row['ltr_ctime']}</td>";
-		echo "<td style=\"min-width:100px;text-align:right\">".System::formatTime($row['timeAttended'])."</td>";
+		echo "<td style=\"min-width:100px;text-align:right\">".Pool::formatTime($row['timeAttended'])."</td>";
 		echo "<td style=\"width:100%\"></td>";
 		echo "</tr>";
 	}

@@ -6,7 +6,7 @@ include_once("admin/class/person.php");
 include_once("admin/class/accounting.php");
 
 use Exception;
-use System\System;
+use System\Pool;
 use System\Company;
 use Finance\Account;
 use Finance\AccountRole;
@@ -63,24 +63,24 @@ class User extends Person
 
 	private function load_user_selections(): void
 	{
-		$rcomp = System::$sql->query("
+		$rcomp = Pool::$sql->query("
 			SELECT comp_id,comp_name,up_id
 			FROM 
 				companies 
 					JOIN user_company ON urc_usr_id=" . static::$_user->info->id . " AND urc_usr_comp_id=comp_id
 					JOIN user_settings ON usrset_usr_id=" . static::$_user->info->id . " AND usrset_name='system_working_company' AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
-					LEFT JOIN uploads ON up_rel=comp_id AND up_pagefile=" . System::FILE['Company']['Logo'] . "
+					LEFT JOIN uploads ON up_rel=comp_id AND up_pagefile=" . Pool::FILE['Company']['Logo'] . "
 			GROUP BY
 				comp_id
 			;");
-		if ($rcomp && $rowcomp = System::$sql->fetch_assoc($rcomp)) {
+		if ($rcomp && $rowcomp = Pool::$sql->fetch_assoc($rcomp)) {
 			$this->company = new Company();
 			$this->company->id = (int)$rowcomp['comp_id'];
 			$this->company->name = $rowcomp['comp_name'];
 			$this->company->logo = (int)$rowcomp['up_id'];
 		}
 		if ($this->company) {
-			if ($racc = System::$sql->query("
+			if ($racc = Pool::$sql->query("
 					SELECT 
 						prt_id,prt_name,cur_symbol,cur_name,cur_id,cur_shortname,upr_prt_inbound,upr_prt_outbound,upr_prt_fetch,upr_prt_view
 					FROM 
@@ -91,7 +91,7 @@ class User extends Person
 					WHERE
 						prt_company_id=" . static::$_user->company->id . ";")) {
 
-				if ($rowacc = System::$sql->fetch_assoc($racc)) {
+				if ($rowacc = Pool::$sql->fetch_assoc($racc)) {
 
 					$this->account = new Account();
 					$this->account->currency = new Currency();
@@ -170,7 +170,7 @@ class User extends Person
 	private function set_login_session(string $sessionid, int $userid): void
 	{
 		$_SESSION["sur"] = $sessionid;
-		System::$sql->query(
+		Pool::$sql->query(
 			sprintf(
 				"INSERT INTO users_sessions SET usrses_session_id='%s', usrses_usr_id={$userid} ON DUPLICATE KEY UPDATE usrses_usr_id=usrses_usr_id;",
 				$sessionid
@@ -180,9 +180,9 @@ class User extends Person
 
 	public function login(string $username, string $password, bool $rememberuser = false): bool
 	{
-		$r = System::$sql->query(sprintf("SELECT usr_id,usr_username,usr_password,usr_activate FROM users WHERE usr_username='%s';", $username));
+		$r = Pool::$sql->query(sprintf("SELECT usr_id,usr_username,usr_password,usr_activate FROM users WHERE usr_username='%s';", $username));
 
-		if ($r && $row = System::$sql->fetch_assoc($r)) {
+		if ($r && $row = Pool::$sql->fetch_assoc($r)) {
 			if ($row['usr_password'] == $password) {
 				$this->load((int) $row['usr_id']);
 				if ($row['usr_activate'] == '1') {
@@ -192,10 +192,10 @@ class User extends Person
 
 					if ($rememberuser) {
 						$uni = md5(uniqid());
-						$cookieage = time() + System::$rememberloginage;
+						$cookieage = time() + Pool::$rememberloginage;
 
-						setcookie("cur", $uni, $cookieage, "/" . (System::$subdomain ? System::$subdomain . "/" : ""));
-						System::$sql->query("INSERT INTO cookies SET id='$uni', access='" . time() . "', expires='$cookieage', data='{$row['usr_id']}' ON DUPLICATE KEY UPDATE 
+						setcookie("cur", $uni, $cookieage, "/" . (Pool::$subdomain ? Pool::$subdomain . "/" : ""));
+						Pool::$sql->query("INSERT INTO cookies SET id='$uni', access='" . time() . "', expires='$cookieage', data='{$row['usr_id']}' ON DUPLICATE KEY UPDATE 
 							access='" . time() . "', expires='$cookieage', data='{$row['usr_id']}';");
 					}
 
@@ -214,9 +214,9 @@ class User extends Person
 
 	public function cookies_handler(string $cookie): bool
 	{
-		$r = System::$sql->query(sprintf("SELECT access,expires,data FROM cookies WHERE expires >= '" . time() . "' AND id='%s';", $cookie));
+		$r = Pool::$sql->query(sprintf("SELECT access,expires,data FROM cookies WHERE expires >= '" . time() . "' AND id='%s';", $cookie));
 
-		if ($r && $row = System::$sql->fetch_assoc($r)) {
+		if ($r && $row = Pool::$sql->fetch_assoc($r)) {
 
 			$this->set_login_session(md5(uniqid()), $row['data']);
 			$this->load($row['data']);
@@ -229,11 +229,11 @@ class User extends Person
 	{
 		if ($this->info) {
 			if ($this->info && isset($_COOKIE) && sizeof($_COOKIE) > 0 && isset($_COOKIE['cur'])) {
-				System::$sql->query("DELETE FROM cookies WHERE id='{$_COOKIE['cur']}' AND data='" . static::$_user->info->id . "';");
+				Pool::$sql->query("DELETE FROM cookies WHERE id='{$_COOKIE['cur']}' AND data='" . static::$_user->info->id . "';");
 			}
 			if (isset($_SESSION["sur"])) {
-				$uni = System::$sql->escape($_SESSION["sur"]);
-				System::$sql->query("DELETE FROM users_sessions WHERE usrses_session_id='$uni';");
+				$uni = Pool::$sql->escape($_SESSION["sur"]);
+				Pool::$sql->query("DELETE FROM users_sessions WHERE usrses_session_id='$uni';");
 				unset($uni);
 			}
 			//setcookie("cur", "", time() - 3600);
