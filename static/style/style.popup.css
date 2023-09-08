@@ -1,0 +1,35 @@
+/* CSS Document */
+.jqpopup{
+	display:none;
+	position:fixed;
+	top:0px;
+	padding-top: 80px;
+	right:0px;
+	left:0px;
+	bottom: 0px;
+	background-color:rgba(255,255,255,0.4);
+	z-index:39;
+	
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	-moz-backdrop-filter: blur(4px);
+	padding-bottom: 300px;
+	overflow-y: auto;
+}
+.jqpopup > span{
+	display:inline-block;
+	vertical-align:top;
+}
+.jqpopup > div{
+	display:inline-block;
+	vertical-align:middle;
+	padding:15px;
+	border:solid 1px #aaa;
+	min-width:400px;
+	max-width:1800px;
+	
+	background-color:#fff;
+	text-align:left;
+	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
+	
+}

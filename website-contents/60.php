@@ -1,0 +1,1 @@
+<?php printViewer($pageinfo['id']);?>

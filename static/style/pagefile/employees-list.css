@@ -1,0 +1,107 @@
+.empCard{
+	display:inline-block;
+	text-align:center;
+	color:#333;
+	font-size:1.1em;
+	width:188px;
+	vertical-align:top;
+	line-height:1.3em;
+	padding:10px;
+	position:relative;
+	margin: 3px;
+	border:solid 1px transparent;
+}
+.empCard > div{
+	display:block;
+	width:166px;
+	height:166px;
+	background-position:50% 50%;
+	background-size:auto 170px;
+	background-repeat: no-repeat;
+	border-radius:10px;
+	margin-bottom:5px;
+}
+.empCard:hover{
+	text-decoration:none;
+	z-index:9;
+	background-color:#e5f3ff;
+}
+.empCard[data-checked=true]{
+	background-color:#cce8ff;
+	border:solid 1px #99d1ff;
+}
+.empCard[data-checked=true]:hover{
+	background-color:#cce8ff;
+}
+
+
+
+.employee_salary{
+	position:absolute;
+	cursor:default;
+	font-size:0.9em;
+	top:148px;
+	right:18px;
+	background-color:rgba(255,255,255,0.7);
+	padding:2px 5px;
+	border-radius:4px;
+}
+
+.menu > span:before{
+	content:"\e619";
+	font-family:"icomoon";
+	position:relative;
+	left:6px;
+	top:1px;
+}
+.menu >  div{
+	display:inline-block;
+}
+.menu_screen{
+	position:relative;
+	width:0px;
+	padding:0px;
+	border:none;
+	margin:0px;
+}
+.menu_screen > div{
+	display:none;
+	border:solid 1px #ccc;
+	font-weight:normal;
+	position:absolute;
+	z-index:11;
+	white-space:normal;
+	top:29px;
+	min-width:200px;
+	padding:0px;
+	height:auto;
+	background-color:#fff;
+	left:-1px;
+}
+.menu_screen > div > div{
+	padding:6px 10px;
+	white-space:nowrap;
+	position:relative;
+	border:solid 1px transparent;
+	color:#333;
+	cursor:default;
+	line-height: 1.7em;;
+}
+
+.menu_screen > div > div > span{
+	font-family:icomoon4;
+	display:inline-block;
+	padding-right:10px;
+	color:#888;
+	
+}
+
+.menu_screen > div > div:hover{
+	text-shadow: 1px 1px 0 #fff;
+	background-color: rgba(82,168,236,.1);
+	border-color:	rgba(82,168,236,.75);
+	text-decoration:none;
+}
+.menu_screen > div > hr{
+	margin:0;
+}

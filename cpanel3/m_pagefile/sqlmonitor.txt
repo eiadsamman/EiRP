@@ -1,0 +1,33 @@
+SELECT data FROM sessions WHERE id = 'engrsnmd4edd7ofus5rfhs6boj'
+----------------------------------------
+SELECT data FROM sessions WHERE id = 'engrsnmd4edd7ofus5rfhs6boj'
+----------------------------------------
+SELECT data FROM sessions WHERE id = 'engrsnmd4edd7ofus5rfhs6boj'
+----------------------------------------
+
+SELECT 
+trd_id,trd_parent ,`trd_directory` as val1,`trd_id` as val2,`pfl_value` as val3 
+FROM 
+pagefile 
+LEFT JOIN pagefile_language ON trd_id=pfl_trd_id AND pfl_lng_id=1 
+WHERE 
+trd_id='0';
+----------------------------------------
+SELECT count(trd_id) AS zcount FROM pagefile WHERE trd_parent='0';
+----------------------------------------
+SELECT trd_id,trd_directory,trd_visible,trd_enable,trd_parent,trd_header ,pfl_value
+FROM 
+pagefile LEFT JOIN 
+(SELECT
+lng_default,lng_id,pfl_value,pfl_trd_id
+FROM
+pagefile_language JOIN languages ON lng_id=pfl_lng_id
+WHERE
+lng_default=1
+) AS _a ON _a.pfl_trd_id=trd_id
+WHERE 
+trd_parent=0 
+GROUP BY
+trd_id
+ORDER BY trd_zorder;
+----------------------------------------

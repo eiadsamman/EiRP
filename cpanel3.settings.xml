@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+<cpanel>
+	<username><![CDATA[admin]]></username>
+	<password><![CDATA[]]></password>
+	<database_check>false</database_check>
+</cpanel>
+<database>
+	<host><![CDATA[localhost]]></host>
+	<username><![CDATA[root]]></username>
+	<password><![CDATA[]]></password>
+	<name><![CDATA[eiad]]></name>
+</database>
+<site>
+	<site_version>4.2.7</site_version>
+	<subdomain><![CDATA[eiad]]></subdomain>
+	<forcehttps>false</forcehttps>
+	<index><![CDATA[index]]></index>
+	<auther><![CDATA[EES]]></auther>
+	<title><![CDATA[EES]]></title>
+	<keywords><![CDATA[]]></keywords>
+	<description><![CDATA[Persoanl accounting]]></description>
+	<timezone>Africa/Cairo</timezone>
+	<errorlog>true</errorlog>
+	<errorlogfile><![CDATA[admin/log.txt]]></errorlogfile>
+</site>
+</settings>

@@ -1,0 +1,214 @@
+.btn-set{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	flex-wrap:nowrap;
+	/*justify-content:center*/
+}
+.btn-set > *{
+	padding:6px 10px;
+	outline:none;
+	background-color:#fff;
+	border:solid 1px #ccc;
+	display:inline-block;
+	vertical-align:top;
+	height:32px;
+	position:relative;
+	margin-left:-1px;
+	white-space:nowrap;
+}
+.btn-set > label.btn-holder{
+	padding:0px;
+	height:30px;
+}
+.btn-set:first-child{
+	margin-left:0px;
+}
+.btn-set > span{
+	cursor:default;
+	background-color:#f3f3f3;
+	text-shadow:1px 1px 0px #fff;
+}
+.btn-set > span.gap{
+	background-color:transparent;
+	border-top-color:#eee;
+	border-bottom-color:#eee;
+	-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;
+}
+
+.btn-set > div{
+	cursor:default;
+	background-color:#333;
+	border-color:#000;
+	color:#fff;
+}
+.btn-set > button{
+	padding:5px 15px;
+}
+
+
+
+.btn-set > label.btn-checkbox{
+	padding:5px 10px 5px 17px;
+	height:20px;
+	cursor:default;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.btn-set.normal > label.btn-checkbox{
+	padding:1px 2px;
+	height:20px;
+}
+.btn-set.small > label.btn-checkbox{
+	padding:2px 5px;
+	height:19px;
+}
+.btn-set > label.btn-checkbox.disabled{
+	background-color:#fff;
+	pointer-events:none;
+}
+.btn-set > label.btn-checkbox.disabled > span{
+	color:#999;
+	font-size:1em;
+}
+.btn-set > label.btn-checkbox > input[type=checkbox],.btn-set > label.btn-checkbox > input[type=radio]{
+	display: none;
+}
+.btn-set > label.btn-checkbox > span{
+	display:inline-block;
+}
+.btn-set > label.btn-checkbox > input[type=checkbox]:focus ~ span,
+.btn-set > label.btn-checkbox > input[type=radio]:focus ~ span{
+	color:#06c;
+}
+.btn-set > label.btn-checkbox > input[type=checkbox] ~ span:before,.btn-set > label.btn-checkbox > input[type=radio] ~ span:before{
+	display:inline-block;
+	font-family:"theta";
+	font-size:1.1em;
+	width:10px;
+	position:relative;
+	top:0px;
+	left:-6px;
+	font-weight:normal;
+}
+.btn-set > label.btn-checkbox > input[type=checkbox]:checked ~ span:before,.btn-set > label.btn-checkbox > input[type=radio]:checked ~ span:before{
+	color:#06c;
+	font-size:0.9em;
+	position:relative;
+	content:"\e64a";
+}
+.btn-set > label.btn-checkbox > input[type=checkbox]:not(:checked) ~ span:before,.btn-set > label.btn-checkbox > input[type=radio]:not(:checked) ~ span:before{
+	color:#777;
+	font-size:0.9em;
+	position:relative;
+	content:"\e64b";
+}
+
+
+
+
+
+
+.btn-set > button,.btn-set > a,.btn-set > label.checkbox{
+	background-color:#fff;
+	background-image:-moz-linear-gradient(top,#fff,#eee);
+	background-image:-ms-linear-gradient(top,#fff,#eee);
+	background-image:-o-linear-gradient(top,#fff,#eee);
+	background-image:-webkit-linear-gradient(top,#fff,#eee);
+	background-image:linear-gradient(top,#ffffff 0,#eee 100%);
+	
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.btn-set > *:first-child{
+	border-radius:0px 0px 0px 0px;
+}
+.btn-set > *:last-child{
+	border-radius:0px 0px 0px 0px;
+}
+.btn-set > *:only-child{
+	border-radius:0px;
+}
+
+.btn-set > input:hover,.btn-set > button:hover,.btn-set > a:hover,.btn-set > label:hover{
+	border-color:#999;
+	z-index:20;
+	text-decoration:none;
+}
+.btn-set > span.cssSLO_wrap:hover{
+	z-index:20;
+}
+
+.btn-set > .alert:hover{
+	color:#f02;
+}
+.btn-set > .success:hover{
+	color:#393;
+}
+.btn-set > .info:hover{
+	color:#06c;
+}
+
+
+.btn-set.small > input,.btn-set.small > button{
+	padding:0px 10px 0px 10px;
+	height:25px !important;
+}
+.btn-set.small > span,.btn-set.small > div,.btn-set.small > a{
+	padding:3px 10px 0px 10px;
+	height:25px !important;
+	vertical-align:middle;
+}
+.btn-set.normal > input,.btn-set.normal > button{
+	padding:3px 6px;
+	height:24px;
+}
+.btn-set.normal > div,.btn-set.normal > a{
+	padding:3px 6px;
+	vertical-align:middle;
+	height:24px;
+}
+.btn-set.normal > span{
+	padding:2px 6px;
+	vertical-align:middle;
+	height:24px;
+}
+.btn-set.normal > span.cssSLO_wrap.valid:after,.btn-set.normal > span.cssSLO_wrap.unvalid:after{
+	top:3px;
+	right:6px;
+}
+
+.btn-set > input[disabled]{
+	background-color:#eee;
+	text-shadow:1px 1px 0px #fff;
+	pointer-events:none;
+}
+.btn-set > button[disabled]{
+	color:#888 !important;
+	text-shadow:1px 1px 0px #fff;
+	pointer-events:none;
+}
+.btn-set > button:active,.btn-set > a:active{
+	background-image:-webkit-linear-gradient(bottom,rgba(255,255,255,1),rgba(0,0,0,0.04));
+}
+.btn-set > input[type=text]:focus,.btn-set> button:focus,.btn-set> a:focus{
+	border-color:		rgba(82,168,236,.75);
+	box-shadow:			0 0 4px rgba(82,168,236,.5);
+	-moz-box-shadow:	0 0 4px rgba(82,168,236,.5);
+	-webkit-box-shadow:	0 0 4px rgba(82,168,236,.5);
+	z-index:20;
+}
+.btn-set > *:first-child{
+	margin-left:0px;
+}
+

@@ -1,0 +1,71 @@
+.messagesys{
+	position:fixed;
+	top:0px;
+	left:0px;
+	right:0px;
+	text-align:center;
+	pointer-events:none;
+	z-index:110;
+	font-weight:normal;
+	direction:ltr;
+	font-size:1.1em
+}
+.messagesys > div{
+	display:inline-block;
+	max-width:700px;
+	min-width:100px;
+	padding:15px 20px;
+	border:solid 1px transparent;
+	border-radius:7px;
+	border-top:none;
+	text-align:left;
+	pointer-events:all;
+	white-space:nowrap;
+	cursor:pointer;
+	margin-top:30px;
+}
+.messagesys > div > span,.messagesys > div > div{
+	display:inline-block;
+	vertical-align:top;
+	white-space:normal;
+}
+.messagesys > div > span:before{
+	font-family:theta;
+	margin-right:6px;
+	position:relative;
+	top:0px;
+	font-size:0.8em;
+}
+
+.messagesys > div.success > span:before{
+	content:"\e653";
+}
+.messagesys > div.success{
+	color:#333;
+	background-color:#f4ff82;
+}
+.messagesys > div.failure > span:before{
+	content:"\e654";
+}
+.messagesys > div.failure{
+	color:#fff;
+	background-color:#e00
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,281 @@
+.bom-table {
+	border: solid 1px #f3f3f3;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.bom-table>tfoot>tr>th,
+.bom-table>thead>tr>th,
+.bom-table>tbody>tr>th {
+	font-weight: normal;
+	border: solid 1px transparent;
+}
+
+.bom-table>tbody>tr:not(:first-child)>td,
+.bom-table>tfoot>tr:not(:first-child)>td {
+	border-top: solid 1px #f3f3f3;
+}
+
+.bom-table>tbody>tr>td,
+.bom-table>tfoot>tr>td,
+.bom-table>tbody>tr>th,
+.bom-table>tfoot>tr>th {
+	padding: 12px 8px;
+	min-height: 30px;
+	white-space: nowrap;
+	color: #333;
+}
+
+.bom-table>tbody>tr>td.console {
+	font-family: "Lucida Console", Monaco, monospace;
+	font-size: 0.9em;
+}
+
+.bom-table>tbody>tr>th {
+	padding: 12px 8px;
+	color: #3C77C3;
+	border-top: solid 1px #f3f3f3;
+	border-bottom: none;
+	border-right: none;
+	border-left: none;
+	cursor: default;
+}
+
+.bom-table>tbody>tr>th:first-child {
+	border-left: solid 1px #f3f3f3;
+}
+
+.bom-table>tbody>tr>th:last-child {
+	border-right: solid 1px #f3f3f3;
+}
+
+.bom-table>thead>tr>td {
+	border: solid 1px #f3f3f3;
+	border-left: none;
+	border-right: none;
+	padding: 12px 8px;
+	color: #3C77C3;
+	white-space: nowrap;
+	cursor: default;
+}
+
+.bom-table>thead>tr>td:first-child {
+	border-left: solid 1px #f3f3f3;
+}
+
+.bom-table>thead>tr>td:last-child {
+	border-right: solid 1px #f3f3f3;
+}
+
+.bom-table>thead>tr>th {
+	border: solid 1px #f3f3f3;
+	height: 25px;
+}
+
+
+
+
+
+
+.bom-table>tbody>tr.special>td {
+	background-color: #ffffff;
+}
+
+.bom-table>thead>tr.special>td {
+	background-color: #ffffff;
+	color: #333;
+	font-size: inherit !important;
+	font-weight: bold;
+}
+
+.bom-table>tbody>tr.special>th:first-child,
+.bom-table>tbody>tr.special>td:first-child {
+	background-color: #ffffff;
+	color: #333;
+	font-weight: bold;
+	border-left: solid 3px #f03;
+}
+
+.bom-table>thead>tr.special>td:first-child {
+	border-left: solid 3px #f03;
+}
+
+.bom-table>thead>tr.special>td>h2 {
+	color: #333;
+}
+
+.bom-table>tbody>tr.special.alert>td {
+	color: #f03;
+}
+
+.bom-table>tbody>tr.special.success>td {
+	color: #3d3;
+}
+
+.bom-table>tbody>tr.special.exclamation>td {
+	background-color: #ccc;
+}
+
+.bom-table.hover>tbody>tr:hover>td {
+	background-color: rgb(245, 245, 249);
+}
+
+
+
+.bom-table tr>td.op-edit,
+.bom-table tr>td.op-remove,
+.bom-table tr>td.op-add,
+.bom-table tr>td.op-print,
+.bom-table tr>td.op-donwload,
+.bom-table tr>td.op-display {
+	padding: 0;
+	cursor: pointer;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.bom-table tr>td.op-edit>*,
+.bom-table tr>td.op-remove>*,
+.bom-table tr>td.op-add>*,
+.bom-table tr>td.op-print>*,
+.bom-table tr>td.op-donwload>*,
+.bom-table tr>td.op-display>* {
+	display: block;
+	padding: 12px 8px;
+	color: #333;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+
+
+.bom-table tr>td.op-edit>*:before {
+	display: inline-block;
+	content: "\e62a";
+	font-family: "icomoon";
+	width: 20px;
+	text-align: center;
+}
+
+.bom-table tr>td.op-edit:hover>* {
+	color: #06c
+}
+
+.bom-table tr>td.op-remove>*:before {
+	display: inline-block;
+	content: "\e62b";
+	font-family: "icomoon";
+	width: 20px;
+	text-align: center;
+}
+
+.bom-table tr>td.op-remove:hover>* {
+	color: #f03;
+}
+
+.bom-table tr>td.op-add>*:before {
+	display: inline-block;
+	content: "\e630";
+	font-family: "icomoon";
+	width: 20px;
+	text-align: center;
+}
+
+.bom-table tr>td.op-add:hover>* {
+	color: #0066cc;
+}
+
+.bom-table tr>td.op-print>*:before {
+	display: inline-block;
+	content: "\e63b";
+	font-family: "icomoon";
+	width: 20px;
+	text-align: center;
+}
+
+.bom-table tr>td.op-print:hover>* {
+	color: #ff3c00;
+}
+
+.bom-table tr>td.op-display>*:before {
+	display: inline-block;
+	content: "\e9ce";
+	font-family: "icomoon4";
+	width: 20px;
+	text-align: center;
+}
+
+.bom-table tr>td.op-display:hover>* {
+	color: #00cc33;
+}
+
+.bom-table tr>td.op-donwload>*:before {
+	display: inline-block;
+	content: "\e60c";
+	font-family: "icomoon";
+	width: 20px;
+	text-align: center;
+}
+
+.bom-table tr>td.op-donwload:hover>* {
+	color: #0066cc;
+}
+
+
+
+.bom-table.strip>tbody>tr:nth-child(2n)>td {
+	background-color: var(--softBgColor);
+}
+
+
+@media only screen and (max-width: 480px) {
+	.bom-table.mediabond-table {
+		border: none;
+	}
+
+	.bom-table.mediabond-table>tbody>tr {
+		display: block;
+		border: none;
+	}
+
+	.bom-table.mediabond-table>tbody>tr>td,
+	.bom-table.mediabond-table>tbody>tr>th {
+		display: block;
+		border: none;
+		padding: 0px;
+	}
+
+	.bom-table.mediabond-table>tbody>tr:not(:first-child)>td,
+	.bom-table.mediabond-table>tfoot>tr:not(:first-child)>td {
+		border-top: none;
+	}
+
+	.bom-table.mediabond-table>tbody>tr>td:first-child,
+	.bom-table>tbody>tr>th:first-child {
+		min-height: 1px;
+		height: 20px;
+		color: #06c;
+		height: 20px;
+		padding: 0px;
+		padding-left: 0px;
+		padding-top: 20px;
+		border: none;
+	}
+
+	.bom-table.mediabond-table>tbody>tr.special>th:first-child {
+		background-color: #f7f7fa;
+		border: none;
+		padding: 20px 0px 5px 10px;
+		color: #06c;
+		border-bottom: solid 1px #ccc;
+	}
+
+}

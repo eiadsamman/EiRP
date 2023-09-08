@@ -1,0 +1,54 @@
+label.ios-io{
+	display:inline-block;
+	border:solid 1px #ccc;
+	width:50px;
+	position:relative;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+	padding:2px;
+	border-radius:4px;
+}
+label.ios-io > input[type=checkbox]{
+	display:none;
+}
+label.ios-io > input[type=checkbox] ~ span ~ div{
+	display:inline-block;
+	position:absolute;
+	border-width:1px;
+	border-style:solid;
+	border-color:#bbb;
+	top:1px;
+	bottom:1px;
+	width:24px;
+	border-radius:3px;
+}
+label.ios-io > input[type=checkbox]:checked ~ span ~ div{
+	right:1px;
+	background-color:#06c;
+	border-color:#05a;
+}
+label.ios-io > input[type=checkbox]:not(:checked) ~ span ~ div{
+	left:1px;
+	background-color:#ddd;
+	border-color:#bbb;
+}
+label.ios-io > input[type=checkbox]:checked ~ span:after{
+	content:"On";
+	display:inline-block;
+	position:absolute;
+	left:6px;
+	color:#06c;
+	font-weight:bold;
+	font-size:0.8em;
+}
+label.ios-io > input[type=checkbox]:not(:checked) ~ span:after{
+	content:"Off";
+	display:inline-block;
+	position:absolute;
+	right:7px;
+	color:#666;font-size:0.8em;
+}

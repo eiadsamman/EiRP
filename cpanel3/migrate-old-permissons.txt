@@ -1,0 +1,17 @@
+﻿INSERT INTO lomeena.pagefile_permissions (pfp_trd_id,pfp_per_id,pfp_value) 
+SELECT
+trd_id,per_id,val
+FROM
+(
+SELECT
+	trd_id,substring(trd_permissions,a1 + a2*10 + 1,1) AS val,(a1 + a2*10 + 1) AS pos
+FROM
+	(select 0 as a1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) AS a1,
+	(select 0 as a2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) AS a2,
+    
+    pagefile
+) AS _a JOIN permissions ON _a.pos=per_val
+WHERE
+val!=0
+
+
