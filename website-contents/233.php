@@ -179,8 +179,8 @@ if($h__requested_with_ajax && isset($_POST['vdocid'],$_POST['token'])){
 }
 
 
-use Template\TemplateBuild;
-$_TEMPLATE = new TemplateBuild();
+use Template\Body;
+$_TEMPLATE = new Body();
 $_TEMPLATE->FrameTitlesStack(true);
 
 
@@ -198,7 +198,7 @@ if($doc_id){
 		
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
-		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(240,null,"directory")."/?docid={$doc_mr['po_id']}&token=".md5("sysdoc_".$chain[0].session_id())."\">".$invoice->TranslatePrefix(Invoice::map['MAT_REQ'],$doc_mr['po_serial'])."</a>";
+		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(240,null,"directory")."/?docid={$doc_mr['po_id']}&token=".md5("sysdoc_".$chain[0].session_id())."\">".$invoice->translate_prefix(Invoice::map['MAT_REQ'],$doc_mr['po_serial'])."</a>";
 		echo "<span>New Quotation</span>";
 		echo "<span class=\"gap\"></span>";
 		if(is_null($doc_mr['po_close_date'])){
@@ -214,7 +214,7 @@ if($doc_id){
 		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Material Request Information</span>");
 		$_TEMPLATE->NewFrameBody('
 			<div class="template-gridLayout">
-				<div><span>Number</span><div>'.$invoice->TranslatePrefix(Invoice::map['MAT_REQ'],$doc_mr['po_serial']).'</div></div>
+				<div><span>Number</span><div>'.$invoice->translate_prefix(Invoice::map['MAT_REQ'],$doc_mr['po_serial']).'</div></div>
 				<div><span>Title</span><div>'.$doc_mr['po_title'].'</div></div>
 				<div></div>
 			</div>
@@ -428,7 +428,7 @@ if($doc_id){
 		
 		?>
 		<script type="text/javascript">
-			Template.HistoryEntry("<?php echo $pageinfo['directory'];?>/?docid=<?=$doc_id;?>&token=<?php echo md5("sysdoc_".$doc_id.session_id());?>", "<?php echo $pageinfo['title'];?>");
+			Template.HistoryEntry("<?php echo $fs()->dir;?>/?docid=<?=$doc_id;?>&token=<?php echo md5("sysdoc_".$doc_id.session_id());?>", "<?php echo $fs()->title;?>");
 			
 			$(document).ready(function(){
 				var slocontact=$("#jQinputContact").slo();
@@ -513,7 +513,7 @@ if($doc_id){
 					overlay.show();
 					$.ajax({
 						type:'POST',
-						url:'<?php echo $pageinfo['directory'];?>',
+						url:'<?php echo $fs()->dir;?>',
 						data:$("#jQpostFormDetails").serialize() + "&" + $("#jQpostFormMaterials").serialize() + "&" + $("#jQpostFormAdditional").serialize(),
 					}).done(function(o, textStatus, request){
 						let response=request.getResponseHeader('HTTP_X_RESPONSE');

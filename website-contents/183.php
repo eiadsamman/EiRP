@@ -2,14 +2,14 @@
 include_once("admin/class/employee.php");
 include_once("admin/class/Template/class.template.build.php");
 
-use System\Pool;
+use System\App;
 use System\Person\Attendance;
-use Template\TemplateBuild;
+use Template\Body;
 
-$_TEMPLATE = new TemplateBuild("Test");
+$_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/ true,/*Command Bar*/ true ,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
-$_TEMPLATE->Title($pageinfo['title'], null, date("Y-m-d", time()));
+$_TEMPLATE->Title($fs()->title, null, date("Y-m-d", time()));
 
 
 $dateFrom=time();
@@ -39,7 +39,7 @@ if($r){
 		echo "<td>{$row['personID']}</td>";
 		echo "<td>{$row['usr_firstname']} {$row['usr_lastname']}</td>";
 		echo "<td>{$row['ltr_ctime']}</td>";
-		echo "<td style=\"min-width:100px;text-align:right\">".Pool::formatTime($row['timeAttended'])."</td>";
+		echo "<td style=\"min-width:100px;text-align:right\">".App::formatTime($row['timeAttended'])."</td>";
 		echo "<td style=\"width:100%\"></td>";
 		echo "</tr>";
 	}

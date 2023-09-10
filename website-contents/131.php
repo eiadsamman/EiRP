@@ -1,8 +1,8 @@
 <?php
 include_once "admin/class/log.php";
-include_once "admin/class/system.php";
+include_once "admin/class/application.php";
 
-use System\Pool;
+use System\App;
 use System\Person\Attendance;
 
 
@@ -66,7 +66,7 @@ if (isset($_POST['posubmit'])) {
 	header("HTTP_X_RESPONSE: SUCCESS");
 
 	$parameters = array(
-		"company" => Pool::$_user->company->id,
+		"company" => App::$_user->company->id,
 		"paymethod" => isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1] != 0 ? (int)$_POST['paymethod'][1] : null,
 		"section" => isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? (int)$_POST['section'][1] : null,
 		"job" => isset($_POST['section'][1]) && (int)$_POST['job'][1] != 0 ? (int)$_POST['job'][1] : null,
@@ -77,7 +77,7 @@ if (isset($_POST['posubmit'])) {
 		//"residence"=>null,
 		//"transportation"=>null,
 		"onlyselection" => $onlyselection,
-		"onlyselection_usr_id" => Pool::$_user->info->id,
+		"onlyselection_usr_id" => App::$_user->info->id,
 		"displaysuspended" => $displaysuspended,
 		"limit_date" => date("Y-m-d")
 	);
@@ -138,7 +138,7 @@ if (isset($_POST['posubmit'])) {
 			echo "<tr>";
 			echo "<td>{$data['info']['id']}</td>";
 			echo "<td>{$data['info']['name']}</td>";
-			echo "<td align=\"right\" style=\"background-image:linear-gradient(0deg,rgba(0,0,0,0) 15%, #fff 15%),linear-gradient(90deg, $colorgradient {$percentage_l}%, #ffffff {$percentage_l}%);\">" . Pool::formatTime($data['info']['totalAttendedTime']) . "</td>";
+			echo "<td align=\"right\" style=\"background-image:linear-gradient(0deg,rgba(0,0,0,0) 15%, #fff 15%),linear-gradient(90deg, $colorgradient {$percentage_l}%, #ffffff {$percentage_l}%);\">" . App::formatTime($data['info']['totalAttendedTime']) . "</td>";
 			echo "</tr>";
 		}
 		echo "
@@ -170,7 +170,7 @@ if (isset($_POST['posubmit'])) {
 			echo "<th align=\"center\">{$data['info']['timeGroup']}</th>";
 			foreach ($daysList as $dayId => $day) {
 				if (isset($data['days'][$day])) {
-					echo "<td align=\"center\">" . Pool::formatTime($data['days'][$day]) . "</td>";
+					echo "<td align=\"center\">" . App::formatTime($data['days'][$day]) . "</td>";
 				} else {
 					echo "<td align=\"center\">-</td>";
 				}
@@ -186,11 +186,11 @@ if (isset($_POST['posubmit'])) {
 			</tbody>
 		</table>
 		<script>
-			const scrollPool = document.getElementById(\"jsTimeMatrix\");
+			const scrollHandler = document.getElementById(\"jsTimeMatrix\");
 			let scrollPosition = 0;
-			scrollPool.addEventListener(\"wheel\", (evt) => {
+			scrollHandler.addEventListener(\"wheel\", (evt) => {
 				evt.preventDefault();
-				scrollPool.scrollLeft += (evt.deltaY > 0? 1:-1) * {$settings['matrix']['column']['width']} ;		
+				scrollHandler.scrollLeft += (evt.deltaY > 0? 1:-1) * {$settings['matrix']['column']['width']} ;		
 			});
 		</script>
 		";
@@ -207,7 +207,7 @@ if (isset($_POST['posubmit'])) {
 
 		foreach ($daysList as $dayId => $day) {
 			if (isset($empData['days'][$day])) {
-				$exportString .= "\t" . Pool::formatTime($empData['days'][$day]);
+				$exportString .= "\t" . App::formatTime($empData['days'][$day]);
 			} else {
 				$exportString .= "\t0";
 			}
@@ -314,14 +314,14 @@ if ($h__requested_with_ajax) {
 <?php
 include_once("admin/class/Template/class.template.build.php");
 
-use Template\TemplateBuild;
+use Template\Body;
 
-$_TEMPLATE = new TemplateBuild("Test");
+$_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
 
 
-$_TEMPLATE->Title($pageinfo['title'], null, null);
+$_TEMPLATE->Title($fs()->title, null, null);
 
 echo $_TEMPLATE->CommandBarStart();
 echo "<div class=\"btn-set\">";
@@ -422,7 +422,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 			overlay.show();
 			$ajaxload = $.ajax({
 				type: "POST",
-				url: "<?php echo $pageinfo['directory']; ?>",
+				url: "<?php echo $fs()->dir; ?>",
 				data: $("#searchform").serialize()
 			}).done(function(o, textStatus, request) {
 				let response = request.getResponseHeader('HTTP_X_RESPONSE');

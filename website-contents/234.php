@@ -4,13 +4,13 @@ require_once("admin/class/invoice.php");
 require_once("admin/class/accounting.php");
 require_once("admin/class/Template/class.template.build.php");
 
-use Template\TemplateBuild;
+use Template\Body;
 use Finance\Invoice;
 use Finance\Accounting;
 use Finance\DocumentException;
 use Finance\DocumentMaterialListException;
 
-$_TEMPLATE 	= new TemplateBuild();
+$_TEMPLATE 	= new Body();
 $invoice 	= new Invoice();
 $accounting = new Accounting();
 $doc_id		= $invoice->DocumentURI();
@@ -31,14 +31,14 @@ if($doc_id){
 			$excrate = $accounting->currency_exchange($doc_rfq['po_cur_id'], $_syscur['id']);
 		}
 		
-		$_TEMPLATE->Title("Request for Quotation Record", null, $invoice->TranslatePrefix(Invoice::map['MAT_REQ'],$doc_rm['po_serial']));
+		$_TEMPLATE->Title("Request for Quotation Record", null, $invoice->translate_prefix(Invoice::map['MAT_REQ'],$doc_rm['po_serial']));
 		
 		
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
 		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(234,null,"directory")."/\" class=\"bnt-back\"></a>";
-		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(240,null,"directory")."/?docid={$chain[0]}&token=".md5("sysdoc_".$chain[0].session_id())."\">".$invoice->TranslatePrefix(Invoice::map['MAT_REQ'],$doc_rm['po_serial'])."</a>";
-		echo "<span>".$invoice->TranslatePrefix(Invoice::map['PUR_QUT'],$doc_rfq['po_serial'])."</span>";
+		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(240,null,"directory")."/?docid={$chain[0]}&token=".md5("sysdoc_".$chain[0].session_id())."\">".$invoice->translate_prefix(Invoice::map['MAT_REQ'],$doc_rm['po_serial'])."</a>";
+		echo "<span>".$invoice->translate_prefix(Invoice::map['PUR_QUT'],$doc_rfq['po_serial'])."</span>";
 		echo "<span class=\"gap\"></span>";
 		if(is_null($doc_rm['po_close_date'])){
 			echo "<button>Cancel Quotation</button>";
@@ -64,7 +64,7 @@ if($doc_id){
 		echo $_TEMPLATE->NewFrameBodyStart();
 		echo '<div class="template-gridLayout">
 				<div><span>Cost Center</span><div>'.$doc_rfq['ccc_name'].'</div></div>
-				<div><span>Number</span><div>'.$invoice->TranslatePrefix(Invoice::map['PUR_QUT'],$doc_rfq['po_serial']).'</div></div>
+				<div><span>Number</span><div>'.$invoice->translate_prefix(Invoice::map['PUR_QUT'],$doc_rfq['po_serial']).'</div></div>
 				<div><span>Title</span><div>'.$doc_rfq['po_title'].'</div></div>
 				
 			</div>
@@ -79,7 +79,7 @@ if($doc_id){
 				<div></div>
 			</div>
 			<div class="template-gridLayout">
-				<div><span>Placed By</span><div>'.$invoice->TranslatePrefix(11,$doc_rfq['doc_usr_id']).' - '.$doc_rfq['po_usr_name'].'</div></div>
+				<div><span>Placed By</span><div>'.$invoice->translate_prefix(11,$doc_rfq['doc_usr_id']).' - '.$doc_rfq['po_usr_name'].'</div></div>
 				<div></div>
 			</div>
 			<div class="template-gridLayout">
@@ -140,7 +140,7 @@ if($doc_id){
 		echo $_TEMPLATE->NewFrameBodyEnd();
 		
 		echo "<script type=\"text/javascript\">
-			Template.HistoryEntry(\"{$pageinfo['directory']}/?docid={$doc_id}&token=".md5("sysdoc_".$doc_id.session_id())."\", \"{$pageinfo['title']}\");
+			Template.HistoryEntry(\"{$fs()->dir}/?docid={$doc_id}&token=".md5("sysdoc_".$doc_id.session_id())."\", \"{$fs()->title}\");
 			$(document).ready(function(){
 				$(\"#jQsloVendorAccount\").slo().setparam({\"company\":\"{$resp['po_comp_id']}\"});
 			});
@@ -211,7 +211,7 @@ if($doc_id){
 			$rowsploted++;
 			echo "<tr>";
 			echo "<td>{$row['ccc_name']}</td>";
-			echo "<td><a href=\"".$tables->pagefile_info(234,null,"directory")."/?docid={$row['po_id']}&token=".md5("sysdoc_".$row['po_id'].session_id())."\">".$invoice->TranslatePrefix(Invoice::map['PUR_QUT'],$row['po_serial'])."</a></td>";
+			echo "<td><a href=\"".$tables->pagefile_info(234,null,"directory")."/?docid={$row['po_id']}&token=".md5("sysdoc_".$row['po_id'].session_id())."\">".$invoice->translate_prefix(Invoice::map['PUR_QUT'],$row['po_serial'])."</a></td>";
 			echo "<td></td>";
 			echo "<td>{$row['po_title']}</td>";
 			echo "<td>{$row['po_date']}</td>";

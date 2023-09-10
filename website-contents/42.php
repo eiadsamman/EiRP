@@ -148,7 +148,7 @@ $(document).ready(function(e) {
 		var count=$("#jQmanualVal").val();
 		$ajax=$.ajax({
 			data:{'manual':count},
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST"
 		}).done(function(data){
 			$("#employeesOutput").prepend(data);
@@ -159,7 +159,7 @@ $(document).ready(function(e) {
 	var addemployee=function(id){
 		$ajax=$.ajax({
 			data:{'employee':id},
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST"
 		}).done(function(data){
 			var $data=$(data);
@@ -178,7 +178,7 @@ $(document).ready(function(e) {
 	var addshift=function(id){
 		$ajax=$.ajax({
 			data:{'shift':id},
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST"
 		}).done(function(data){
 			$("#employeesOutput").prepend(data);
@@ -212,7 +212,7 @@ $(document).ready(function(e) {
 			to=$("#jQrangeTo").val();
 		$.ajax({
 			data:{'range':0,'from':from,'to':to},
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST"
 		}).done(function(data){
 			$("#employeesOutput").prepend(data);

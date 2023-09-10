@@ -244,8 +244,8 @@ if(isset($_POST['method'],$_POST['id']) && $_POST['method']=="show"){
 <?php
 
 require_once("admin/class/Template/class.template.build.php");
-use Template\TemplateBuild;
-$_TEMPLATE 	= new TemplateBuild();
+use Template\Body;
+$_TEMPLATE 	= new Body();
 $_TEMPLATE->SetWidth("800px");
 $_TEMPLATE->Title("BOM Manager", null, null);
 
@@ -307,7 +307,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 		let getUnit=function(mat_id, dom){
 			overlay.show();
 			$.ajax({
-				url:"<?php echo $pageinfo['directory'];?>",
+				url:"<?php echo $fs()->dir;?>",
 				type:"POST",
 				data:{"method":"getunit", "id":mat_id},
 			}).done(function(o, textStatus, request){

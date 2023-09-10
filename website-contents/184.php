@@ -46,7 +46,7 @@
 		}
 	}
 ?>
-<form action="<?php echo $pageinfo['directory']; ?>" method="POST">
+<form action="<?php echo $fs()->dir; ?>" method="POST">
 	<div class="btn-set">
 		<span>Date/Time</span>
 		<span>From</span>

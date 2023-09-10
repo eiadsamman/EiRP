@@ -4,13 +4,13 @@ require_once("admin/class/invoice.php");
 require_once("admin/class/accounting.php");
 require_once("admin/class/Template/class.template.build.php");
 
-use Template\TemplateBuild;
+use Template\Body;
 use Finance\Accounting;
 use Finance\Invoice;
 use Finance\DocumentException;
 use Finance\DocumentMaterialListException;
 
-$_TEMPLATE 	= new TemplateBuild();
+$_TEMPLATE 	= new Body();
 
 $invoice 	= new Invoice();
 $accounting = new Accounting();
@@ -42,9 +42,9 @@ if ($doc_id) {
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
 		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(237, null, "directory") . "/\" class=\"bnt-back\"></a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(240, null, "directory") . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $invoice->TranslatePrefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(234, null, "directory") . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $invoice->TranslatePrefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
-		echo "<span>" . $invoice->TranslatePrefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</span>";
+		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(240, null, "directory") . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(234, null, "directory") . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
+		echo "<span>" . $invoice->translate_prefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</span>";
 		echo "<span class=\"gap\"></span>";
 		echo "<a href=\"" . $tables->pagefile_info(250, null, "directory") . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-blue\">Proccess Payment</a>";
 		echo "<a href=\"" . $tables->pagefile_info(253, null, "directory") . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-blue\">Release Invoice</a>";

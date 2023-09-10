@@ -44,7 +44,7 @@
 	if($r){
 		while($row=$sql->fetch_assoc($r)){
 			echo "<tr>";
-			echo "<td>".$invoice->TranslatePrefix(1,$row['po_id'])."</td>";
+			echo "<td>".$invoice->translate_prefix(1,$row['po_id'])."</td>";
 			echo "<td>{$row['po_date']}</td>";
 			echo "<td>{$row['comp_name']}</td>";
 			echo "<td>{$row['po_title']}</td>";
@@ -90,7 +90,7 @@
 							echo "";
 						}
 						echo "<tr>";
-						echo "<td><a href=\"".$tables->pagefile_info(234,null,"directory")."/?docid={$rowlist['po_id']}&token=".(md5("sysdoc_".$rowlist['po_id'].session_id()))."\">".$invoice->TranslatePrefix(2,$rowlist['po_id'])."</a></td>";
+						echo "<td><a href=\"".$tables->pagefile_info(234,null,"directory")."/?docid={$rowlist['po_id']}&token=".(md5("sysdoc_".$rowlist['po_id'].session_id()))."\">".$invoice->translate_prefix(2,$rowlist['po_id'])."</a></td>";
 						echo "<td>{$rowlist['po_date']}</td>";
 						echo "<td>{$rowlist['doc_usr_name']}</td>";
 						echo "<td>{$rowlist['comp_name']}</td>";

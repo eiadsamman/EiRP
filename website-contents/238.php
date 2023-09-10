@@ -1,7 +1,7 @@
 <?php
 	require_once("admin/class/invoice.php");
 	include_once("admin/class/Template/class.template.build.php");
-	$_SIDE = new Template\SidePanelBuild();
+	$_SIDE = new Template\Side();
 	
 	use Finance\Invoice;
 

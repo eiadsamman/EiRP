@@ -3,8 +3,8 @@
 include_once "admin/class/attendance-list.php";
 include_once "admin/class/attendance.php";
 
-use System\Pool;
-use System\SLO_DataList;
+use System\App;
+use System\SmartListObject;
 
 function getAttendanceReport(&$sql, $dateFrom, $dateTo, $employeeID)
 {
@@ -65,8 +65,8 @@ if (isset($_POST['method'], $_POST['employeeID'], $_POST['dateFrom'], $_POST['da
 	}
 }
 
-include_once("admin/class/slo_datalist.php");
-$slo_datalist = new SLO_DataList();
+include_once("admin/class/SmartListObject.php");
+$SmartListObject = new SmartListObject();
 
 
 ?>
@@ -119,7 +119,7 @@ $slo_datalist = new SLO_DataList();
 </div>
 
 <datalist id="emplist">
-	<?= $slo_datalist->hr_person(Pool::$_user->company->id) ?>
+	<?= $SmartListObject->hr_person(App::$_user->company->id) ?>
 </datalist>
 
 
@@ -227,7 +227,7 @@ $slo_datalist = new SLO_DataList();
 					'dateFrom': SLO_dateFrom.hidden[0].val(),
 					'dateTo': SLO_dateTo.hidden[0].val(),
 				},
-				url: "<?php echo $pageinfo['directory']; ?>",
+				url: "<?php echo $fs()->dir; ?>",
 				type: "POST"
 			}).done(function(data) {
 				$("#jQoutput").html(data);

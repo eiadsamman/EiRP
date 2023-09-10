@@ -1,27 +1,28 @@
 <?php
+use System\Individual\Attendance\Registration;
 include_once("admin/class/attendance.php");
 include_once("admin/class/Template/class.template.build.php");
 
-use System\Pool;
+use System\App;
 use System\Person\Attendance;
 use System\Person\PersonNotFoundException;
 use System\Person\PersonResignedException;
-use System\Person\NotSignedInException;
-use System\Person\AttendanceSectorException;
-use System\Person\AttendanceTimeLimitException;
-use System\Person\AttendanceDuplicateCheckin;
-use Template\TemplateBuild;
+use System\Person\ExceptionNotSignedIn;
+use System\Person\LocationInvalid;
+use System\Person\ExceptionTimeLimit;
+use System\Person\AttendanceExceptionDuplicateCheckin;
+use Template\Body;
 
-$att = new Attendance();
-$loc = $att->DefaultCheckInternalAccounts($USER->company->id);
+$att = new Registration($app);
+$loc = $att->DefaultCheckInternalAccounts($app->user->company->id);
 
 
 
 if (isset($_POST['serial'])) {
-	$att = new Attendance();
+	$att = new Registration($app);
 	try {
 		$att->load((int)$_POST['serial']);
-		$ratt 	= $att->CheckIn($USER->info->id, (int)$_POST['partition']);
+		$ratt 	= $att->CheckIn( (int)$_POST['partition']);
 
 		if ($ratt) {
 			header("ATT_RESULT: OK");
@@ -32,21 +33,21 @@ if (isset($_POST['serial'])) {
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 			echo $att->info->name;
 		}
-	} catch (PersonNotFoundException $e) {
+	} catch (\System\Individual\PersonNotFoundException $e) {
 		header("ATT_RESULT: NOTFOUND");
 		header("ATT_IMAGE_ID: 0");
-	} catch (PersonResignedException $e) {
+	} catch (\System\Individual\PersonResignedException $e) {
 		header("ATT_RESULT: RESIGNED");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->name;
-	} catch (NotSignedInException $e) {
+	} catch (\System\Individual\Attendance\ExceptionNotSignedIn $e) {
 		header("ATT_RESULT: NOTSIGEND");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->name;
-	} catch (AttendanceSectorException $e) {
+	} catch (\System\Individual\Attendance\LocationInvalid $e) {
 		header("ATT_RESULT: SECTOR");
 		header("ATT_IMAGE_ID: 0");
-	} catch (AttendanceTimeLimitException $e) {
+	} catch (\System\Individual\Attendance\ExceptionTimeLimit $e) {
 		header("ATT_RESULT: TIMELIMIT");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->name;
@@ -56,24 +57,24 @@ if (isset($_POST['serial'])) {
 }
 
 if (isset($_POST['populate'])) {
-	$att = new Attendance();
+	$att = new Registration($app);
 	$sector = (int)$_POST['populate'];
-	$r = $att->ReportOngoingBySector(["company" => Pool::$_user->company->id, "sector" => $sector]);
+	$r = $att->ReportOngoingBySector(["company" => $app->user->company->id, "sector" => $sector]);
 	if ($r) {
-		while ($row = Pool::$sql->fetch_assoc($r)) {
+		while ($row = $r->fetch_assoc()) {
 			$photo = $row['up_id'] != null ? "download/?id={$row['up_id']}&pr=t" : "";
-			TemplateBuild::AttendanceTicketPlot(null, $photo, $row['lbr_id'], $row['usr_firstname']);
+			Body::AttendanceTicketPlot(null, $photo, $row['lbr_id'], $row['usr_firstname']);
 		}
 	}
 	exit;
 }
 
-$_TEMPLATE = new TemplateBuild("Test");
+$_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
 $_TEMPLATE->SetWidth("800px");
 
-$_TEMPLATE->Title($pageinfo['title'], null, null);
+$_TEMPLATE->Title($fs()->title, null, null);
 ?>
 
 
@@ -152,7 +153,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 			CurrentSelection = $(this).attr("data-id");
 			overlay.show();
 			$.ajax({
-				url: '<?php echo $pageinfo['directory']; ?>',
+				url: '<?php echo $fs()->dir; ?>',
 				method: 'POST',
 				data: {
 					'populate': CurrentSelection
@@ -179,7 +180,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 				_jqInput.val("");
 
 				$.ajax({
-					url: '<?php echo $pageinfo['directory']; ?>',
+					url: '<?php echo $fs()->dir; ?>',
 					method: 'POST',
 					data: {
 						'serial': inputid,

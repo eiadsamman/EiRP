@@ -9,7 +9,7 @@ if($rexp && $rrow = $sql->fetch_assoc($rexp)){
 
 if($expirydate!=false && $expirydate <= time()){
 	include_once("admin/class/Template/class.template.build.php");
-	$_TEMPLATE = new Template\TemplateBuild("Candas");
+	$_TEMPLATE = new Template\Body("Candas");
 	$_TEMPLATE->SetLayout(/*Sticky Title*/ true,/*Command Bar*/ false ,/*Sticky Frame*/ false);
 	$_TEMPLATE->FrameTitlesStack(true);
 	$_TEMPLATE->SetWidth("100%");
@@ -26,7 +26,7 @@ if($expirydate!=false && $expirydate <= time()){
 if(isset($_POST['method']) && $_POST['method']=="saveimage"){
 	$filename = uniqid().".png";
 	if(isset($_FILES['imagefile'])){
-		$res = move_uploaded_file($_FILES['imagefile']['tmp_name'], $_SERVER['FILE_SYSTEM_ROOT']."/".$filename);
+		$res = move_uploaded_file($_FILES['imagefile']['tmp_name'], $app->root."/".$filename);
 		if($res){
 			echo "Image saved to\n"."uploades/$filename\n\n";
 			exit;
@@ -40,8 +40,8 @@ if(isset($_POST['method']) && $_POST['method']=="saveimage"){
 }
 
 include_once("admin/class/Template/class.template.build.php");
-use Template\TemplateBuild;
-$_TEMPLATE = new TemplateBuild("Test");
+use Template\Body;
+$_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/ true,/*Command Bar*/ false ,/*Sticky Frame*/ false);
 $_TEMPLATE->FrameTitlesStack(true);
 $_TEMPLATE->SetWidth("100%");
@@ -521,6 +521,6 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null,($expirydate!=false?'<span style
 		
 	
 		p.ColorInvert(false);
-		p.LoadURL( "<?php echo $_SERVER['HTTP_SYSTEM_ROOT']."sample.png";?>" );
+		p.LoadURL( "<?php echo $app->http_root."sample.png";?>" );
 	});
 </script>

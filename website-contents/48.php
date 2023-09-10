@@ -1,12 +1,7 @@
 <?php
-include_once "admin/class/log.php";
-include_once("admin/class/person.php");
 
-use System\Pool;
+use System\App;
 
-$bulkeditor					= $tables->pagefile_info(154, $Languages->get_current());
-$bulk__actions				= new AllowedActions($USER->info->permissions, $bulkeditor['permissions']);
-$employee_salary			= $tables->pagefile_info(136, $Languages->get_current());
 $arr_feild = array(
 	"gender" => array("Gender", "G000", "usr_gender"),
 	"job" => array("Job", "E002A", "lbr_type"),
@@ -15,23 +10,13 @@ $arr_feild = array(
 	"transportation" => array("Transportation", "TRANSPORTATION", "lbr_transportation"),
 );
 
-include_once("admin/class/Template/class.template.build.php");
-
-use Template\TemplateBuild;
-
-$_TEMPLATE = new TemplateBuild("Test");
+$_TEMPLATE = new System\Template\Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
 
-
-function GetEmployeesList($limit_selection, $_TEMPLATE, $user)
+function GetEmployeesList($app, $fs, $limit_selection, $_TEMPLATE)
 {
-	global $sql, $tables;
-
 	$_TEMPLATE->EmulateHeaders();
-	$href = $tables->pagefile_info(182, null, "directory");
-	$perm_personfile_view = $tables->Permissions(182, $user->info->permissions);
-
 	$list = array();
 	$group_list = array(
 		"job_section" => 'lsc_name',
@@ -43,7 +28,7 @@ function GetEmployeesList($limit_selection, $_TEMPLATE, $user)
 	);
 	$group_name = isset($_POST['group']) && isset($group_list[$_POST['group']]) ? $group_list[$_POST['group']] : false;
 	$q = "SELECT 
-			REPLACE(REPLACE(usr_firstname,'إ','ا'),'أ','ا') AS usr_firstname,usr_id,usr_lastname,lbr_resigndate,gnd_name,
+			usr_firstname,usr_id,usr_lastname,lbr_resigndate,gnd_name,
 			lsc_name,lbr_permanentdate,CONCAT(lsc_name,' - ',lty_name) as jobtitle_group,ldn_name,trans_name,sel_usremp_emp_id,
 			lbr_fixedsalary,lbr_variable,lty_salarybasic,lsf_name,up_id
 		FROM
@@ -60,10 +45,10 @@ function GetEmployeesList($limit_selection, $_TEMPLATE, $user)
 				
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
-				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$user->info->id}
+				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$app->user->info->id}
 				LEFT JOIN gender ON gnd_id=usr_gender
-				LEFT JOIN uploads ON (up_pagefile=" . Pool::FILE['Person']['Photo'] . " ) AND up_rel=lbr_id AND up_deleted=0
-				JOIN companies ON comp_id=lbr_company AND lbr_company={$user->company->id}
+				LEFT JOIN uploads ON (up_pagefile=" . $app::FILE['Person']['Photo'] . " ) AND up_rel=lbr_id AND up_deleted=0
+				JOIN companies ON comp_id=lbr_company AND lbr_company={$app->user->company->id}
 		WHERE
 			( (lbr_role & b'001') > 0 ) AND lbr_resigndate IS NULL " . ($limit_selection ? " AND sel_usremp_emp_id IS NOT NULL " : "") . " 
 		GROUP BY
@@ -71,9 +56,9 @@ function GetEmployeesList($limit_selection, $_TEMPLATE, $user)
 		ORDER BY
 			" . ($group_name ? $group_name . ",lsc_id,usr_gender,lbr_id" : "lsc_id,usr_gender,lbr_id") . "";
 
-	if ($r = $sql->query($q)) {
+	if ($r = $app->db->query($q)) {
 
-		while ($row = $sql->fetch_assoc($r)) {
+		while ($row = $r->fetch_assoc()) {
 			if (!isset($list[$group_name ? $row[$group_name] : ""])) {
 				$list[$group_name ? $row[$group_name] : ""] = array();
 			}
@@ -86,10 +71,12 @@ function GetEmployeesList($limit_selection, $_TEMPLATE, $user)
 			foreach ($type as $row) {
 				$personalPhoto = "";
 				if (!is_null($row['up_id']) && (int)$row['up_id'] != 0) {
-					$personalPhoto = " style=\"background-image:url('" . $tables->pagefile_info(187, null, "directory") . "?id={$row['up_id']}&pr=t')\"";
+					$personalPhoto = " style=\"background-image:url('" . $fs(187)->dir . "?id={$row['up_id']}&pr=t')\"";
+				} else {
+					$personalPhoto = " style=\"background-image:url('user.jpg')\"";
 				}
-				if ($perm_personfile_view->read) {
-					$temphref = " href=\"$href/?id={$row['usr_id']}\" target=\"_blank\" ";
+				if ($fs(182)->permission->read) {
+					$temphref = " href=\"{$fs(182)->dir}/?id={$row['usr_id']}\" target=\"_blank\" ";
 				} else {
 					$temphref = "";
 				}
@@ -102,35 +89,33 @@ function GetEmployeesList($limit_selection, $_TEMPLATE, $user)
 		}
 	}
 }
-function GetTotalEmployees($user)
+function GetTotalEmployees($app): int
 {
-	global $sql;
-	$selectioncount = 0;
-	if ($r = $sql->query("
+	if ($r = $app->db->query("
 			SELECT COUNT(usr_id) AS count 
 			FROM 
 				labour 
 					JOIN users ON usr_id=lbr_id 
-					JOIN companies ON comp_id=lbr_company AND lbr_company={$user->company->id}	
+					JOIN companies ON comp_id=lbr_company AND lbr_company={$app->user->company->id}	
 			WHERE lbr_resigndate IS NULL")) {
-		if ($row = $sql->fetch_assoc($r)) {
-			$selectioncount = $row['count'];
+		if ($row = $r->fetch_assoc()) {
+			return (int)$row['count'];
 		}
 	}
-	return $selectioncount;
+	return 0;
 }
-function GetSelectedEmployees($user)
+function GetSelectedEmployees($app)
 {
-	global $sql;
+
 	$selectioncount = 0;
-	if ($rsel = $sql->query("
+	if ($r = $app->db->query("
 		SELECT 
 			COUNT(sel_usremp_emp_id) AS selectioncount 
 		FROM 
 			user_employeeselection JOIN labour ON lbr_id = sel_usremp_emp_id  AND lbr_resigndate IS NULL
 		WHERE 
-			sel_usremp_usr_id={$user->info->id}")) {
-		if ($selectioncount = $sql->fetch_assoc($rsel)) {
+			sel_usremp_usr_id={$app->user->info->id}")) {
+		if ($selectioncount = $r->fetch_assoc()) {
 			$selectioncount = $selectioncount['selectioncount'];
 		}
 	}
@@ -138,15 +123,15 @@ function GetSelectedEmployees($user)
 }
 if (isset($_POST['method']) && $_POST['method'] == 'fetch') {
 	$limit_selection = isset($_POST['limitselection']) && (int)$_POST['limitselection'] == 1 ? true : false;
-	GetEmployeesList($limit_selection, $_TEMPLATE, $USER);
+	GetEmployeesList($app, $fs, $limit_selection, $_TEMPLATE);
 	exit;
 }
 if (isset($_POST['method']) && $_POST['method'] == 'call_selected_employees_count') {
-	echo GetSelectedEmployees($USER);
+	echo GetSelectedEmployees($app);
 	exit;
 }
 if (isset($_POST['method']) && $_POST['method'] == 'call_all_employees_count') {
-	echo GetTotalEmployees($USER);
+	echo GetTotalEmployees($app);
 	exit;
 }
 
@@ -154,7 +139,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'call_all_employees_count') {
 
 
 
-$_TEMPLATE->Title($pageinfo['title'], null, null);
+$_TEMPLATE->Title($fs()->title, null, null);
 
 echo $_TEMPLATE->CommandBarStart(); ?>
 <span class="btn-set" style="position:relative;">
@@ -166,7 +151,7 @@ echo $_TEMPLATE->CommandBarStart(); ?>
 			<div id="jQaction_clearall"><span>&#xea56;</span>Clear selection</div>
 		</div>
 	</b>
-	<button id="jQselectaction" class="menu menu1_handler" type="button">Selected <div id="jQselected_employees"><?php echo GetSelectedEmployees($USER); ?></div><span></span></button>
+	<button id="jQselectaction" class="menu menu1_handler" type="button">Selected <div id="jQselected_employees"><?php echo GetSelectedEmployees($app); ?></div><span></span></button>
 	<b id="jQgroup_menu" class="menu_screen menu2">
 		<div data-status="off">
 			<div data-group="no_group" data-group_name="No Group">No Group</div>
@@ -182,7 +167,7 @@ echo $_TEMPLATE->CommandBarStart(); ?>
 	<button id="jQgroup_action" class="menu menu2_handler" type="button">Group By `<div id="jQgroup_actiontitle">Job Section</div>`<span></span></button>
 	<label class="btn-checkbox"><input type="checkbox" id="jQfilter_selection" /> <span>&nbsp;Show selection only&nbsp;</span></label>
 	<span class="gap"></span>
-	<span style="min-width:130px;text-align:right">Employees: <b id="jQtotal_employees"><?php echo GetTotalEmployees($USER); ?></b></span>
+	<span style="min-width:130px;text-align:right">Employees: <b id="jQtotal_employees"><?php echo GetTotalEmployees($app); ?></b></span>
 </span>
 <?php
 echo $_TEMPLATE->CommandBarEnd();
@@ -194,7 +179,7 @@ echo $_TEMPLATE->CommandBarEnd();
 <div class="emp_list" id="emp_list">
 	<?php
 	$_POST['group'] = 'job_section';
-	GetEmployeesList(false, $_TEMPLATE, $USER);
+	GetEmployeesList($app, $fs, false, $_TEMPLATE);
 	?>
 </div>
 
@@ -209,7 +194,7 @@ echo $_TEMPLATE->CommandBarEnd();
 					'limitselection': $("#jQfilter_selection").prop('checked') ? 1 : 0,
 					'group': $("#jQgroup_value").val()
 				},
-				url: '<?php echo $pageinfo['directory']; ?>',
+				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
 			}).done(function(data) {
 				$data = $(data);
@@ -243,7 +228,7 @@ echo $_TEMPLATE->CommandBarEnd();
 				data: {
 					'selectall': '0'
 				},
-				url: '<?php echo $tables->pagefile_info(30, null, 'directory'); ?>',
+				url: '<?= $fs(30)->dir ?>',
 				type: 'POST'
 			}).done(function(data) {
 				ajaxcall();
@@ -251,7 +236,7 @@ echo $_TEMPLATE->CommandBarEnd();
 					data: {
 						'method': 'call_selected_employees_count'
 					},
-					url: '<?php echo $pageinfo['directory']; ?>',
+					url: '<?= $fs()->dir; ?>',
 					type: 'POST'
 				}).done(function(count) {
 					$("#jQselected_employees").html(count);
@@ -268,7 +253,7 @@ echo $_TEMPLATE->CommandBarEnd();
 				data: {
 					"clearselection": ""
 				},
-				url: '<?php echo $tables->pagefile_info(30, null, 'directory'); ?>',
+				url: '<?= $fs(30)->dir ?>',
 				type: 'POST'
 			}).done(function(data) {
 				ajaxcall();

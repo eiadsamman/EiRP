@@ -24,21 +24,21 @@
 	}
 	
 	function printViewer($id){
-		global $sql,$USER;
+		global $app;
 		echo "<div id=\"cssViewer\">";
-		if($r=$sql->query("
+		if($r=$app->db->query("
 			SELECT 
 				trd_id,trd_directory,pfl_value,trd_attrib4,trd_attrib5
 			FROM 
 				pagefile 
 					JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1
-					JOIN pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$USER->info->permissions}
+					JOIN pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$app->user->info->permissions}
 			WHERE 
 				trd_parent=$id AND trd_visible=1 AND trd_enable=1 
 			ORDER BY 
 				trd_zorder
 			")){
-			while($row=$sql->fetch_assoc($r)){
+			while($row=$r->fetch_assoc()){
 				echo "<a href=\"{$row['trd_directory']}\"><span style=\"color:#".($row['trd_attrib5']==null?"333":$row['trd_attrib5'])."\">".($row['trd_attrib4']!=null?"&#xe{$row['trd_attrib4']};":"&nbsp;")."</span><h1>".$row['pfl_value']."</h1></a>";
 			}
 		}

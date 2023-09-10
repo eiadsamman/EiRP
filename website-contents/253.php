@@ -5,7 +5,7 @@ require_once("admin/class/accounting.php");
 require_once("admin/class/Template/class.template.build.php");
 
 
-use Template\TemplateBuild;
+use Template\Body;
 use Finance\Accounting;
 use Finance\Invoice;
 use Finance\DocumentException;
@@ -161,7 +161,7 @@ if($h__requested_with_ajax && isset($_POST['vdocid'],$_POST['token'])){
 
 
 
-$_TEMPLATE 	= new TemplateBuild();
+$_TEMPLATE 	= new Body();
 $doc_id		= $invoice->DocumentURI();
 if($doc_id)
 try {
@@ -436,7 +436,7 @@ try {
 			$("#jQpostSubmit").on('click',function(){
 				overlay.show();
 				$.ajax({
-					url:"<?php echo $pageinfo['directory'];?>",
+					url:"<?php echo $fs()->dir;?>",
 					type:"POST",
 					data:$("#jQpostFormDetails").serialize() + "&" + $("#jQpostFormMaterials").serialize(),
 				}).done(function(o, textStatus, request){

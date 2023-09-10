@@ -140,21 +140,21 @@ if($statement){?>
 <style type="text/css">
 	@font-face {
 		font-family: 'Urd';
-		src:url('<?= $_SERVER['HTTP_SYSTEM_ROOT'];?>static/fonts/UrdType.ttf');
-		src:url('<?= $_SERVER['HTTP_SYSTEM_ROOT'];?>static/fonts/UrdType.ttf') format('truetype');
+		src:url('<?= $app->http_root;?>static/fonts/UrdType.ttf');
+		src:url('<?= $app->http_root;?>static/fonts/UrdType.ttf') format('truetype');
 		font-weight: normal;
 		font-style: normal;
 	}
 	
 	@font-face {
 		font-family: 'ge_ss_two';
-		src:url('<?= $_SERVER['HTTP_SYSTEM_ROOT'];?>static/fonts/ge-ss-two-bold.otf');
+		src:url('<?= $app->http_root;?>static/fonts/ge-ss-two-bold.otf');
 		font-weight: bold;
 		font-style: normal;
 	}
 	@font-face {
 		font-family: 'ge_ss_two';
-		src:url('<?= $_SERVER['HTTP_SYSTEM_ROOT'];?>static/fonts/ge-ss-two-light.otf');
+		src:url('<?= $app->http_root;?>static/fonts/ge-ss-two-light.otf');
 		font-weight: lighter;
 		font-style: normal;
 	}
@@ -204,7 +204,7 @@ if($statement){?>
 					</div>
 					
 					<div><?php if(!is_null($USER->company)){?>
-						<img height="50" src="<?= $_SERVER['HTTP_SYSTEM_ROOT'];?>download/?id=<?= $USER->company->logo;?>&pr=t" />
+						<img height="50" src="<?= $app->http_root;?>download/?id=<?= $USER->company->logo;?>&pr=t" />
 					<?php }?></div>
 				</div>
 			</td>
@@ -214,9 +214,9 @@ if($statement){?>
 				<div class="o-flex right">
 					<div class="o-title">التاريــــــــــــــــــــــــــخ</div>
 					<div class="o-content"><?php echo date("Y-m-d",$statement['acm_ctime']);?></div>
-					<div style="flex:1;text-align: center;"><img src="<?=$_SERVER['HTTP_SYSTEM_ROOT'].$tables->pagefile_info(15,null,"directory")."/?c=".$system->TranslatePrefix(13,$statement['acm_id'])."&f=1&t=20";?>" /></div>
+					<div style="flex:1;text-align: center;"><img src="<?=$app->http_root.$tables->pagefile_info(15,null,"directory")."/?c=".$system->translate_prefix(13,$statement['acm_id'])."&f=1&t=20";?>" /></div>
 					<div class="o-title" style="min-width:auto;">رقم</div>
-					<div class="o-content"><?php echo $system->TranslatePrefix(13,$statement['acm_id']);?></div>
+					<div class="o-content"><?php echo $system->translate_prefix(13,$statement['acm_id']);?></div>
 					
 				</div>
 			</td>
@@ -276,7 +276,7 @@ if($statement){?>
 					
 					<div style="flex: 1;"></div>
 					<div class="o-title">رقم الحساب</div>
-					<div class="o-content"><?php echo $system->paddingPrefix(10,$statement['comp_id'])."-".$system->paddingPrefix(12,$statement['atm_account_id'])."-".$system->paddingPrefix(14, $USER->account->currency->id);?></div>
+					<div class="o-content"><?php echo $system->padding_prefix(10,$statement['comp_id'])."-".$system->padding_prefix(12,$statement['atm_account_id'])."-".$system->padding_prefix(14, $USER->account->currency->id);?></div>
 				</div>
 			</td>
 		</tr>

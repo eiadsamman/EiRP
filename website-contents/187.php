@@ -5,7 +5,7 @@ $_GET['id']=(int)$_GET['id'];
 $accepted_mimes=array("image/jpeg","image/gif","image/bmp","image/png");
 
 $file=false;
-if($r=$sql->query(sprintf("
+if($r=$app->db->query(sprintf("
 	SELECT 
 		up_id,up_name,up_size,pfp_value,up_mime
 	FROM 
@@ -13,9 +13,9 @@ if($r=$sql->query(sprintf("
 			JOIN pagefile_permissions ON pfp_trd_id=up_pagefile 
 	WHERE 
 		up_id='%d';",$_GET['id']))){
-	if($row=$sql->fetch_assoc($r)){
+	if($row=$r->fetch_assoc()){
 		if((int)$row['pfp_value']<=0){
-			header(HTTP403);exit;
+			$app->responseStatus->Forbidden;
 		}else{
 			$file=array($row['up_id'],$row['up_name'],$row['up_size'],$row['up_mime']);
 		}
@@ -24,14 +24,14 @@ if($r=$sql->query(sprintf("
 
 if(in_array($file[3], $accepted_mimes)){
 	$_GET['pr']=(isset($_GET['pr']) && in_array($_GET['pr'], array("v","t"))?"_".$_GET['pr']:false);
-	$file_dir=$_SERVER['FILE_SYSTEM_ROOT'] . "uploads" . DIRECTORY_SEPARATOR . $file[0] . $_GET['pr'];
+	$file_dir=$app->root . "uploads" . DIRECTORY_SEPARATOR . $file[0] . $_GET['pr'];
 }else{
-	$file_dir=$_SERVER['FILE_SYSTEM_ROOT'] . "uploads" . DIRECTORY_SEPARATOR . $file[0];
+	$file_dir=$app->root . "uploads" . DIRECTORY_SEPARATOR . $file[0];
 }
 
 
 if(!$file || !is_file($file_dir)){
-	header(HTTP404);exit;
+	$app->responseStatus->NotFound;
 }
 
 

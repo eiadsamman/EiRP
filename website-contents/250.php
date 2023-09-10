@@ -5,8 +5,8 @@ require_once("admin/class/accounting.php");
 require_once("admin/class/Template/class.template.build.php");
 
 
-use System\SLO_DataList;
-use Template\TemplateBuild;
+use System\SmartListObject;
+use Template\Body;
 use Finance\Accounting;
 use Finance\Invoice;
 use Finance\DocumentException;
@@ -160,9 +160,9 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 	exit;
 }
 
-include_once("admin/class/slo_datalist.php");
-$slo_datalist = new SLO_DataList();
-$_TEMPLATE 	= new TemplateBuild();
+include_once("admin/class/SmartListObject.php");
+$SmartListObject = new SmartListObject();
+$_TEMPLATE 	= new Body();
 $doc_id		= $invoice->DocumentURI();
 if ($doc_id)
 	try {
@@ -189,9 +189,9 @@ if ($doc_id)
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
 		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(251, null, "directory") . "/\" class=\"bnt-back\"></a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(240, null, "directory") . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $invoice->TranslatePrefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(234, null, "directory") . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $invoice->TranslatePrefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(237, null, "directory") . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\">" . $invoice->TranslatePrefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(240, null, "directory") . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(234, null, "directory") . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(237, null, "directory") . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</a>";
 		echo "<span>GRIR</span>";
 		echo "<span class=\"gap\"></span>";
 		echo "<button class=\"clr-green\" id=\"jQpostSubmit\">Submit GRIR</button>";
@@ -241,7 +241,7 @@ if ($doc_id)
 				<span>Inventory/Asset Account</span>
 				<input type="text" name="vinventoryasset" data-slo=":LIST" data-list="jQGIdestList" id="jQGIdest" />
 				<datalist id="jQGIdestList" style="display: none;">
-					' . $slo_datalist->financial_accounts_inbound() . '
+					' . $SmartListObject->financial_accounts_inbound() . '
 				</datalist>
 
 
@@ -387,7 +387,7 @@ if ($doc_id)
 			$("#jQpostSubmit").on('click', function() {
 				overlay.show();
 				$.ajax({
-					url: "<?php echo $pageinfo['directory']; ?>",
+					url: "<?php echo $fs()->dir; ?>",
 					type: "POST",
 					data: $("#jQpostFormDetails").serialize() + "&" + $("#jQpostFormMaterials").serialize(),
 				}).done(function(o, textStatus, request) {

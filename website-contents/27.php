@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
-	$r = $sql->query("SELECT usr_password FROM users WHERE usr_id={$USER->info->id};");
+	$r = $sql->query("SELECT usr_password FROM users WHERE usr_id={$app->user->info->id};");
 	if ($r) {
 		if ($row = $sql->fetch_assoc($r)) {
 			if ($row['usr_password'] == $_POST['oldpass']) {
@@ -10,7 +10,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 					if ($_POST['newpass'] != $_POST['conpass']) {
 						echo "{\"result\":false,\"message\":\"Password confirmation does not match\",\"focus\":\"conpass\"}";
 					} else {
-						if ($sql->query(sprintf("UPDATE users SET usr_password='%s' WHERE usr_id={$USER->info->id};", $_POST['newpass']))) {
+						if ($sql->query(sprintf("UPDATE users SET usr_password='%s' WHERE usr_id={$app->user->info->id};", $_POST['newpass']))) {
 							echo "{\"result\":true,\"message\":\"Password changed successfully\",\"focus\":\"oldpass\"}";
 						} else {
 							echo "{\"result\":false,\"message\":\"Unable to change password\",\"focus\":false}";
@@ -31,16 +31,16 @@ if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 
 
 $curinfo = false;
-$r = $sql->query("SELECT usr_regdate, usr_birthdate, usr_login_date FROM users WHERE usr_id={$USER->info->id}");
-if ($r && $row = $sql->fetch_assoc($r)) {
+$r = $app->db->query("SELECT usr_regdate, usr_birthdate, usr_login_date FROM users WHERE usr_id={$app->user->info->id}");
+if ($r && $row = $r->fetch_assoc()) {
 	$curinfo = $row;
 }
 
 require_once("admin/class/Template/class.template.build.php");
 
-use Template\TemplateBuild;
+use Template\Body;
 
-$_TEMPLATE 	= new TemplateBuild();
+$_TEMPLATE 	= new Body();
 $_TEMPLATE->SetWidth("800px");
 $_TEMPLATE->Title("My Account", null, null);
 
@@ -59,10 +59,10 @@ echo "<table class=\"bom-table\">
 		<tbody>
 			
 			<tr>
-				<th>Name</th><td><div class=\"btn-set\"><input type=\"text\" value=\"" . $USER->info->name . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
+				<th>Name</th><td><div class=\"btn-set\"><input type=\"text\" value=\"" . $app->user->info->name . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
 			</tr>
 			<tr>
-				<th style=\"min-width:150px;\">Username</th><td style=\"width:100%;\"><div class=\"btn-set\"><input type=\"text\" value=\"" . $USER->info->username . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
+				<th style=\"min-width:150px;\">Username</th><td style=\"width:100%;\"><div class=\"btn-set\"><input type=\"text\" value=\"" . $app->user->info->username . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
 			</tr>
 			
 			<tr>
@@ -77,7 +77,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 $_TEMPLATE->NewFrameTitle("<span class=\"flex\">Security management</span>", false, true);
 echo $_TEMPLATE->NewFrameBodyStart();
 ?>
-<form action="<?php echo $pageinfo['directory']; ?>" method="post" id="passForm">
+<form action="<?php echo $fs()->dir; ?>" method="post" id="passForm">
 	<input type="hidden" name="method" value="changepassword" />
 	<table class="bom-table">
 		<tbody>
@@ -127,7 +127,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 				ajax.abort();
 			}
 			ajax = $.ajax({
-				url: '<?php echo $pageinfo['directory']; ?>',
+				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST',
 				data: $("#passForm").serialize()
 			}).done(function(data) {

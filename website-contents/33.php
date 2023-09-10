@@ -7,7 +7,7 @@
 	<tbody>
 		<tr class="special alert"><td>No company selected</td></tr>
 		<tr>
-		<td class="btn-set" style="justify-content:center"><a href="<?php echo $pageinfo['directory'];?>/">Return to `<?php echo $pageinfo['title'];?>`</a></td>
+		<td class="btn-set" style="justify-content:center"><a href="<?php echo $fs()->dir;?>/">Return to `<?php echo $fs()->title;?>`</a></td>
 	</tr>
 	</tbody>
 </table>
@@ -16,7 +16,7 @@
 
 <?php }else{?>
 
-<form action="<?php echo $pageinfo['directory'];?>" method="post">
+<form action="<?php echo $fs()->dir;?>" method="post">
 <div style="width:100%;text-align:center;margin-top:20px">
 <div id="screenSector">
 <table class="bom-table">
@@ -73,7 +73,7 @@
 					echo "<td>$group_k</td><td class=\"sector-select-list\">";
 					foreach($group_v as $account_k=>$account_v){
 						echo "<div><div class=\"btn-set\" style=\"margin:3px 0px;\">";
-						echo "<span>".(is_null($account_v[2])?"-":$account_v[2])."</span><a href=\"{$pageinfo['directory']}/?--sys_sel-change=account_commit&i={$account_v[0]}\" style=\"\">{$account_v[1]}</a> ";
+						echo "<span>".(is_null($account_v[2])?"-":$account_v[2])."</span><a href=\"{$fs()->dir}/?--sys_sel-change=account_commit&i={$account_v[0]}\" style=\"\">{$account_v[1]}</a> ";
 						echo "</div></div>";
 					}
 					echo "</td></tr>";
@@ -91,7 +91,7 @@
 		}
 	?>
 	<tr>
-		<td class="btn-set" style="justify-content:center"><a href="<?php echo $pageinfo['directory'];?>/">Return to `<?php echo $pageinfo['title'];?>`</a></td>
+		<td class="btn-set" style="justify-content:center"><a href="<?php echo $fs()->dir;?>/">Return to `<?php echo $fs()->title;?>`</a></td>
 	</tr>
 	</tbody>
 </table>
@@ -103,7 +103,7 @@
 $(document).ready(function(e) {
 	$("#sectorslo").slo({
 		onselect:function(data){
-			$("#triggerselector").attr("href","<?php echo $pageinfo['directory'];?>/?--sys_sel-change=account_commit&i="+data.hidden);
+			$("#triggerselector").attr("href","<?php echo $fs()->dir;?>/?--sys_sel-change=account_commit&i="+data.hidden);
 			$("#triggerselector")[0].click();
 		}
 	}).focus();

@@ -1,7 +1,7 @@
 <?php
 if(isset($_GET['normal'])){
 	@unlink($_SERVER['FILE_SYSTEM_ROOT']."c1bae6f4c382383fae88337e743088cf");
-	header("Location: {$_SERVER['HTTP_SYSTEM_ROOT']}");
+	header("Location: {$app->http_root}");
 	exit;
 }
 ?><html>

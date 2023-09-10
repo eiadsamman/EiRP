@@ -601,7 +601,7 @@ candas = new Candas();
 						alert(xhr.responseText);
 					}
 				}
-				xhr.open("POST", "<?php echo $_SERVER['HTTP_SYSTEM_ROOT'].$pageinfo['directory'];?>", true);
+				xhr.open("POST", "<?php echo $app->http_root.$pageinfo['directory'];?>", true);
 				xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest");
 				xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 				

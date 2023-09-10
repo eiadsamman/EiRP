@@ -336,7 +336,7 @@ if(isset($_POST['method'],$_POST['serial']) && $_POST['method']=="stream"){
 		var funChangeSecMat=function(type, id, objs, obj){
 			$.ajax({
 				data:"method=change&type="+type+"&id="+id+"",
-				url:'<?php echo $pageinfo['directory'];?>',
+				url:'<?php echo $fs()->dir;?>',
 				type:'POST'
 			}).done(function(data){
 				if(data!="false"){
@@ -350,7 +350,7 @@ if(isset($_POST['method'],$_POST['serial']) && $_POST['method']=="stream"){
 		var funStreamInput = function(input, obj){
 			$.ajax({
 				data:"method=stream&serial="+input+"",
-				url:'<?php echo $pageinfo['directory'];?>',
+				url:'<?php echo $fs()->dir;?>',
 				type:'POST'
 			}).done(function(data){
 				var json=null;

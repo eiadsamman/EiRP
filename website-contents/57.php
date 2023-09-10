@@ -1,29 +1,14 @@
 <?php
-
-include_once("admin/class/attendance.php");
-include_once("admin/class/Template/class.template.build.php");
-
-use System\Pool;
-use System\Person\Attendance;
-use System\Person\PersonNotFoundException;
-use System\Person\PersonResignedException;
-use System\Person\NotSignedInException;
-use System\Person\AttendanceSectorException;
-use System\Person\AttendanceTimeLimitException;
-use System\Person\AttendanceDuplicateCheckin;
-use Template\TemplateBuild;
-
 if (isset($_POST['bulk'])) {
 	exit;
 }
 
-
 if (isset($_POST['serial'])) {
-	$att = new Attendance($sql);
-	$att->SetDefaultCheckInAccount($USER->company->id);
+	$att = new System\Individual\Attendance\Registration($app);
+	$att->SetDefaultCheckInAccount($app->user->company->id);
 	try {
 		$att->load((int)$_POST['serial']);
-		$ratt 	= $att->CheckIn($USER->info->id, null);
+		$ratt 	= $att->CheckIn(null);
 
 		if ($ratt) {
 			header("ATT_RESULT: OK");
@@ -34,25 +19,25 @@ if (isset($_POST['serial'])) {
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 			echo $att->info->name;
 		}
-	} catch (PersonNotFoundException $e) {
+	} catch (System\Individual\PersonNotFoundException $e) {
 		header("ATT_RESULT: NOTFOUND");
 		header("ATT_IMAGE_ID: 0");
-	} catch (PersonResignedException $e) {
+	} catch (System\Individual\PersonResignedException $e) {
 		header("ATT_RESULT: RESIGNED");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->name;
-	} catch (NotSignedInException $e) {
+	} catch (System\Individual\Attendance\ExceptionNotSignedIn $e) {
 		header("ATT_RESULT: NOTSIGEND");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->name;
-	} catch (AttendanceSectorException $e) {
+	} catch (System\Individual\Attendance\LocationInvalid $e) {
 		header("ATT_RESULT: SECTOR");
 		header("ATT_IMAGE_ID: 0");
-	} catch (AttendanceTimeLimitException $e) {
+	} catch (System\Individual\Attendance\ExceptionTimeLimit $e) {
 		header("ATT_RESULT: TIMELIMIT");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->name;
-	} catch (AttendanceDuplicateCheckin $e) {
+	} catch (System\Individual\Attendance\ExceptionDuplicateCheckin $e) {
 		header("ATT_RESULT: DUPLICATE");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->name;
@@ -62,8 +47,8 @@ if (isset($_POST['serial'])) {
 }
 
 
-$att = new Attendance($sql);
-$defaultaccount = $att->DefaultCheckInAccount($USER->company->id);
+$att = new System\Individual\Attendance\Registration($app);
+$defaultaccount = $att->DefaultCheckInAccount($app->user->company->id);
 if (!$defaultaccount) {
 	echo "<h3>Selected company isn't valid or no linked account for check-in operations</h3>";
 	if ($__helper) {
@@ -72,11 +57,11 @@ if (!$defaultaccount) {
 	exit;
 }
 
-$_TEMPLATE = new TemplateBuild("Test");
+$_TEMPLATE = new System\Template\Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
 $_TEMPLATE->SetWidth("800px");
-$_TEMPLATE->Title($pageinfo['title'], null, null);
+$_TEMPLATE->Title($fs()->title, null, null);
 
 
 echo $_TEMPLATE->CommandBarStart(); ?>
@@ -127,7 +112,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 				_jqInput.val("");
 
 				$.ajax({
-					url: '<?php echo $pageinfo['directory']; ?>',
+					url: '<?php echo $fs()->dir; ?>',
 					method: 'POST',
 					data: {
 						'serial': inputid

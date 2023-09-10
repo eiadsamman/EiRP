@@ -102,7 +102,7 @@ $(document).ready(function(e) {
 		'limit':15,
 		onselect:function(data){
 			var $ajax=$.ajax({
-				url:"<?php echo $pageinfo['directory'];?>",
+				url:"<?php echo $fs()->dir;?>",
 				type:"POST",
 				data:{'permission':data.hidden}
 			}).done(function(data){
@@ -124,7 +124,7 @@ $(document).ready(function(e) {
 		});
 		
 		var $ajax=$.ajax({
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST",
 			data:{'method':'update','read':param.read,'add':param.add,'edit':param.edit,'delete':param.delete,'xtrd':trd,'xper':prm}
 		}).done(function(data){

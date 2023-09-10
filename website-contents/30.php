@@ -1,66 +1,67 @@
 <?php
-$bulkeditor			= $tables->pagefile_info(154);
-$bulk__actions= new AllowedActions($USER->info->permissions,$bulkeditor['permissions']);
 
-$perpage=50;
-$arr_feild=array(
-	"gender"=>array("Gender","G000","usr_gender","int"),
-	"job"=>array("Job","E002A","lbr_type","int"),
-	"payment_method"=>array("Payment Method","SALARY_PAYMENT_METHOD","lbr_payment_method","int"),
-	"work_time"=>array("Working Time","WORKING_TIMES","lbr_workingtimes","int"),
-	"shift"=>array("Shift","E003","lbr_shift","int"),
-	"residence"=>array("Residence","E004","lbr_residential","int"),
-	"transportation"=>array("Transportation","TRANSPORTATION","lbr_transportation","int"),
-	"resigndate"=>array("Resign Date","DATE","lbr_resigndate","string"),
+$perpage = 50;
+$arr_feild = array(
+	"gender" => array("Gender", "G000", "usr_gender", "int"),
+	"job" => array("Job", "E002A", "lbr_type", "int"),
+	"payment_method" => array("Payment Method", "SALARY_PAYMENT_METHOD", "lbr_payment_method", "int"),
+	"work_time" => array("Working Time", "WORKING_TIMES", "lbr_workingtimes", "int"),
+	"shift" => array("Shift", "E003", "lbr_shift", "int"),
+	"residence" => array("Residence", "E004", "lbr_residential", "int"),
+	"transportation" => array("Transportation", "TRANSPORTATION", "lbr_transportation", "int"),
+	"resigndate" => array("Resign Date", "DATE", "lbr_resigndate", "string"),
 );
-if(isset($_POST['bulkeditorsubmit']) && $bulk__actions->edit){
-	$q="UPDATE users,labour,user_employeeselection SET ";
-	$cnt=0;
-	$smart="";
-	foreach($arr_feild as $k=>$v){
-		if(isset($_POST[$k])){
+if (isset($_POST['bulkeditorsubmit']) && $fs(154)->permission->edit) {
+	$q = "UPDATE users,labour,user_employeeselection SET ";
+	$cnt = 0;
+	$smart = "";
+	foreach ($arr_feild as $k => $v) {
+		if (isset($_POST[$k])) {
 			$cnt++;
-			if($v[3]=="int"){
-				$_POST[$k]=(int)$_POST[$k];
-				if($_POST[$k]==0){
-					$q.=$smart.$v[2]."= NULL ";
-				}else{
-					$q.=$smart.$v[2]."=".(int)$_POST[$k];
+			if ($v[3] == "int") {
+				$_POST[$k] = (int)$_POST[$k];
+				if ($_POST[$k] == 0) {
+					$q .= $smart . $v[2] . "= NULL ";
+				} else {
+					$q .= $smart . $v[2] . "=" . (int)$_POST[$k];
 				}
-			}elseif($v[3]=="string"){
-				$_POST[$k]=trim($_POST[$k]);
-				if($_POST[$k]=="" || $_POST[$k]=="0"){
-					$q.=$smart.$v[2]."= NULL ";
-				}else{
-					$q.=$smart.$v[2]."='".$sql->escape($_POST[$k])."' ";
+			} elseif ($v[3] == "string") {
+				$_POST[$k] = trim($_POST[$k]);
+				if ($_POST[$k] == "" || $_POST[$k] == "0") {
+					$q .= $smart . $v[2] . "= NULL ";
+				} else {
+					$q .= $smart . $v[2] . "='" . addslashes($_POST[$k]) . "' ";
 				}
 			}
-			$smart=",";
+			$smart = ",";
 		}
 	}
-	$q.=" WHERE usr_id=sel_usremp_emp_id AND lbr_id=sel_usremp_emp_id AND sel_usremp_usr_id={$USER->info->id};";
-	if($cnt>0){
-		if($sql->query($q)){
-			$sql->query("DELETE FROM user_employeeselection WHERE sel_usremp_usr_id={$USER->info->id};");
+	$q .= " WHERE usr_id=sel_usremp_emp_id AND lbr_id=sel_usremp_emp_id AND sel_usremp_usr_id={$app->user->info->id};";
+	if ($cnt > 0) {
+		if ($app->db->query($q)) {
+			$app->db->query("DELETE FROM user_employeeselection WHERE sel_usremp_usr_id={$app->user->info->id};");
 			echo "success";
-		}else{
+		} else {
 			echo "fail";
 		}
-	}else{
+	} else {
 		echo "empty";
 	}
 	exit;
 }
-if(isset($_POST['bulkeditorform'])){
-	if(!$bulk__actions->edit){echo "Permissions denided!<br /><br /><div class=\"btn-set\" style=\"justify-content:center\"><button type=\"button\" id=\"jQcancel\">Cancel</button></div>";exit;}
-	$selectioncount=0;
-	if($rsel=$sql->query("SELECT COUNT(sel_usremp_emp_id) AS selectioncount FROM user_employeeselection JOIN labour ON lbr_id = sel_usremp_emp_id  AND lbr_resigndate IS NULL WHERE sel_usremp_usr_id={$USER->info->id}")){
-		if($selectioncount=$sql->fetch_assoc($rsel)){
-			$selectioncount=$selectioncount['selectioncount'];
+if (isset($_POST['bulkeditorform'])) {
+	if (!$fs(154)->permission->edit) {
+		echo "Permissions denided!<br /><br /><div class=\"btn-set\" style=\"justify-content:center\"><button type=\"button\" id=\"jQcancel\">Cancel</button></div>";
+		exit;
+	}
+	$selectioncount = 0;
+	if ($rsel = $app->db->query("SELECT COUNT(sel_usremp_emp_id) AS selectioncount FROM user_employeeselection JOIN labour ON lbr_id = sel_usremp_emp_id  AND lbr_resigndate IS NULL WHERE sel_usremp_usr_id={$app->user->info->id}")) {
+		if ($selectioncount = $rsel->fetch_assoc()) {
+			$selectioncount = $selectioncount['selectioncount'];
 		}
 	}
 	echo "<table class=\"bom-table\"><thead><tr class=\"special\"><td colspan=\"2\">Bulk editor</td></tr></thead><tbody>";
-	foreach($arr_feild as $k=>$v){
+	foreach ($arr_feild as $k => $v) {
 		echo "<tr>
 			<td style=\"min-width:120px;\">{$v[0]}</td>
 			<td>
@@ -76,43 +77,43 @@ if(isset($_POST['bulkeditorform'])){
 	exit;
 }
 
-if(isset($_POST['employeecheck'])){
-	$id=(int)$_POST['id'];
-	$checked=(int)$_POST['checked'];
-	if($checked==0){
-		$r=$sql->query("DELETE FROM user_employeeselection WHERE sel_usremp_usr_id={$USER->info->id} AND sel_usremp_emp_id=$id;");
-	}else{
-		$r=$sql->query("INSERT IGNORE INTO user_employeeselection (sel_usremp_usr_id,sel_usremp_emp_id) VALUES ({$USER->info->id},$id);");
+if (isset($_POST['employeecheck'])) {
+	$id = (int)$_POST['id'];
+	$checked = (int)$_POST['checked'];
+	if ($checked == 0) {
+		$r = $app->db->query("DELETE FROM user_employeeselection WHERE sel_usremp_usr_id={$app->user->info->id} AND sel_usremp_emp_id=$id;");
+	} else {
+		$r = $app->db->query("INSERT IGNORE INTO user_employeeselection (sel_usremp_usr_id,sel_usremp_emp_id) VALUES ({$app->user->info->id},$id);");
 	}
-	
-	if($r){
-		$selectioncount=0;
-		if($rsel=$sql->query("SELECT COUNT(sel_usremp_emp_id) AS selectioncount FROM user_employeeselection WHERE sel_usremp_usr_id={$USER->info->id}")){
-			if($selectioncount=$sql->fetch_assoc($rsel)){
-				$selectioncount=$selectioncount['selectioncount'];
+
+	if ($r) {
+		$selectioncount = 0;
+		if ($rsel = $app->db->query("SELECT COUNT(sel_usremp_emp_id) AS selectioncount FROM user_employeeselection WHERE sel_usremp_usr_id={$app->user->info->id}")) {
+			if ($selectioncount = $rsel->fetch_assoc()) {
+				$selectioncount = $selectioncount['selectioncount'];
 			}
 		}
 		echo $selectioncount;
-	}else{
+	} else {
 		echo "false";
 	}
 	exit;
 }
-if(isset($_POST['clearselection'])){
-	
-	$r=$sql->query("DELETE FROM user_employeeselection WHERE sel_usremp_usr_id={$USER->info->id} ;");
+if (isset($_POST['clearselection'])) {
+
+	$r = $app->db->query("DELETE FROM user_employeeselection WHERE sel_usremp_usr_id={$app->user->info->id} ;");
 	exit;
 }
-if(isset($_POST['selectsearch'])){
-	$r=$sql->query("
+if (isset($_POST['selectsearch'])) {
+	$r = $app->db->query("
 		INSERT IGNORE INTO 
 			user_employeeselection (sel_usremp_usr_id,sel_usremp_emp_id) 
 		SELECT 
-			{$USER->info->id},lbr_id 
+			{$app->user->info->id},lbr_id 
 		FROM 
 			labour 
 				JOIN users ON usr_id=lbr_id
-				JOIN companies ON comp_id = lbr_company AND comp_id={$USER->company->id}
+				JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
 				LEFT JOIN 
 					(
 						SELECT
@@ -122,36 +123,36 @@ if(isset($_POST['selectsearch'])){
 					) AS st ON st.lty_id=lbr_type
 		WHERE 
 			lbr_resigndate IS NULL AND lbr_id!=1 
-			".(isset($_POST['user'][1]) && (int)$_POST['user'][1]!=0?" AND usr_id=".((int)$_POST['user'][1])."":"")."
-			".(isset($_POST['job'][1]) && (int)$_POST['job'][1]!=0?" AND lbr_type=".((int)$_POST['job'][1])."":"")."
-			".(isset($_POST['shift'][1]) && (int)$_POST['shift'][1]!=0?" AND lbr_shift=".((int)$_POST['shift'][1])."":"")."
-			".(isset($_POST['section'][1]) && (int)$_POST['section'][1]!=0?" AND lsc_id=".((int)$_POST['section'][1])."":"")."
-			".(isset($_POST['onlyselection'])?" AND sel_usremp_emp_id IS NOT NULL":"")."
-			AND lbr_company={$USER->company->id}
+			" . (isset($_POST['user'][1]) && (int)$_POST['user'][1] != 0 ? " AND usr_id=" . ((int)$_POST['user'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int)$_POST['job'][1] != 0 ? " AND lbr_type=" . ((int)$_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['shift'][1]) && (int)$_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int)$_POST['shift'][1]) . "" : "") . "
+			" . (isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? " AND lsc_id=" . ((int)$_POST['section'][1]) . "" : "") . "
+			" . (isset($_POST['onlyselection']) ? " AND sel_usremp_emp_id IS NOT NULL" : "") . "
+			AND lbr_company={$app->user->company->id}
 		;");
 	exit;
 }
-if(isset($_POST['selectall'])){
-	$r=$sql->query("
+if (isset($_POST['selectall'])) {
+	$r = $app->db->query("
 		INSERT IGNORE INTO 
 			user_employeeselection (sel_usremp_usr_id,sel_usremp_emp_id) 
 		SELECT 
-			{$USER->info->id},lbr_id 
+			{$app->user->info->id},lbr_id 
 		FROM 
-			labour JOIN companies ON comp_id = lbr_company AND comp_id={$USER->company->id}
+			labour JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
 		WHERE 
 			lbr_resigndate IS NULL AND lbr_id!=1 
 		;");
 	exit;
 }
-if(isset($_POST['cards']) && $_POST['cards']=='1'){
-	if($r=$sql->query("
+if (isset($_POST['cards']) && $_POST['cards'] == '1') {
+	if ($r = $app->db->query("
 		SELECT 
 			usr_id
 		FROM
 			labour 
 				JOIN users ON usr_id=lbr_id
-				JOIN companies ON comp_id = lbr_company AND comp_id={$USER->company->id}
+				JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
 				LEFT JOIN 
 					(
 						SELECT
@@ -164,50 +165,50 @@ if(isset($_POST['cards']) && $_POST['cards']=='1'){
 				LEFT JOIN labour_residentail ON ldn_id=lbr_residential
 		WHERE
 			( (lbr_role & b'001') > 0 )
-			".(isset($_POST['displaysuspended'])?" AND usr_id=usr_id ":" AND lbr_resigndate IS NULL")."
-			".(isset($_POST['user'][1]) && (int)$_POST['user'][1]!=0?" AND usr_id=".((int)$_POST['user'][1])."":"")."
-			".(isset($_POST['job'][1]) && (int)$_POST['job'][1]!=0?" AND lbr_type=".((int)$_POST['job'][1])."":"")."
-			".(isset($_POST['shift'][1]) && (int)$_POST['shift'][1]!=0?" AND lbr_shift=".((int)$_POST['shift'][1])."":"")."
-			".(isset($_POST['section'][1]) && (int)$_POST['section'][1]!=0?" AND lsc_id=".((int)$_POST['section'][1])."":"")."
-			AND lbr_company={$USER->company->id}
+			" . (isset($_POST['displaysuspended']) ? " AND usr_id=usr_id " : " AND lbr_resigndate IS NULL") . "
+			" . (isset($_POST['user'][1]) && (int)$_POST['user'][1] != 0 ? " AND usr_id=" . ((int)$_POST['user'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int)$_POST['job'][1] != 0 ? " AND lbr_type=" . ((int)$_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['shift'][1]) && (int)$_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int)$_POST['shift'][1]) . "" : "") . "
+			" . (isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? " AND lsc_id=" . ((int)$_POST['section'][1]) . "" : "") . "
+			AND lbr_company={$app->user->company->id}
 		ORDER BY
 			usr_id
-		")){
-		while($row=$sql->fetch_assoc($r)){
+		")) {
+		while ($row = $r->fetch_assoc()) {
 			echo "<input type=\"hidden\" name=\"employees[]\" value=\"{$row['usr_id']}\" />";
 		}
 	}
 	exit;
-}elseif(isset($_POST['user'])){
-	$offset=isset($_POST['offset'])?(int)$_POST['offset']:0;
-	$countrow=true;
-	$total=0;
-	$sort_query=false;
-	$sort_list=array(
-		"id"=>"usr_id",
-		"name"=>"usr_fullname",
-		"job"=>"job_name",
-		"register"=>"lbr_registerdate",
-		"rating"=>"rating",
-		"shift"=>"lbr_shift",
-		"salary_method"=>"lbr_mth_id",
-		"work_time"=>"lwt_id",
-		"residence"=>"ldn_id",
+} elseif (isset($_POST['user'])) {
+	$offset = isset($_POST['offset']) ? (int)$_POST['offset'] : 0;
+	$countrow = true;
+	$total = 0;
+	$sort_query = false;
+	$sort_list = array(
+		"id" => "usr_id",
+		"name" => "usr_fullname",
+		"job" => "job_name",
+		"register" => "lbr_registerdate",
+		"rating" => "rating",
+		"shift" => "lbr_shift",
+		"salary_method" => "lbr_mth_id",
+		"work_time" => "lwt_id",
+		"residence" => "ldn_id",
 	);
-	
-	if(isset($_POST['sort_field'],$_POST['sort_dir']) && isset($sort_list[$_POST['sort_field']])){
-		$sort_query=" ORDER BY {$sort_list[$_POST['sort_field']]} ".((int)$_POST['sort_dir']==1?"DESC":"ASC");
-	}else{
-		$sort_query=" ORDER BY lbr_perma DESC,usr_id ";
+
+	if (isset($_POST['sort_field'], $_POST['sort_dir']) && isset($sort_list[$_POST['sort_field']])) {
+		$sort_query = " ORDER BY {$sort_list[$_POST['sort_field']]} " . ((int)$_POST['sort_dir'] == 1 ? "DESC" : "ASC");
+	} else {
+		$sort_query = " ORDER BY lbr_perma DESC,usr_id ";
 	}
-	
-	if($r=$sql->query("
-		SELECT 
+
+	if ($r = $app->db->query(
+		"SELECT 
 			COUNT(usr_id) AS count
 		FROM
 			labour 
 				JOIN users ON usr_id=lbr_id
-				JOIN companies ON comp_id = lbr_company AND comp_id={$USER->company->id}
+				JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
 				LEFT JOIN 
 					(
 						SELECT
@@ -219,66 +220,66 @@ if(isset($_POST['cards']) && $_POST['cards']=='1'){
 				LEFT JOIN gender ON gnd_id=usr_gender
 		WHERE
 			( (lbr_role & b'001') > 0 )
-			".(isset($_POST['displaysuspended'])?" AND usr_id=usr_id ":" AND lbr_resigndate IS NULL ")."
-			".(isset($_POST['user'][1]) && (int)$_POST['user'][1]!=0?" AND usr_id=".((int)$_POST['user'][1])."":"")."
-			".(isset($_POST['job'][1]) && (int)$_POST['job'][1]!=0?" AND lbr_type=".((int)$_POST['job'][1])."":"")."
-			".(isset($_POST['shift'][1]) && (int)$_POST['shift'][1]!=0?" AND lbr_shift=".((int)$_POST['shift'][1])."":"")."
-			".(isset($_POST['section'][1]) && (int)$_POST['section'][1]!=0?" AND lsc_id=".((int)$_POST['section'][1])."":"")."
-			".(isset($_POST['workingtime'][1]) && (int)$_POST['workingtime'][1]!=0?" AND lbr_workingtimes=".((int)$_POST['workingtime'][1])."":"")."
-			".(isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1]!=0?" AND lbr_payment_method=".((int)$_POST['paymethod'][1])."":"")."
-			AND lbr_company={$USER->company->id}
-		")){
-		if($row=$sql->fetch_assoc($r)){
-			$total=$row['count'];
+			" . (isset($_POST['displaysuspended']) ? " AND usr_id=usr_id " : " AND lbr_resigndate IS NULL ") . "
+			" . (isset($_POST['user'][1]) && (int)$_POST['user'][1] != 0 ? " AND usr_id=" . ((int)$_POST['user'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int)$_POST['job'][1] != 0 ? " AND lbr_type=" . ((int)$_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['shift'][1]) && (int)$_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int)$_POST['shift'][1]) . "" : "") . "
+			" . (isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? " AND lsc_id=" . ((int)$_POST['section'][1]) . "" : "") . "
+			" . (isset($_POST['workingtime'][1]) && (int)$_POST['workingtime'][1] != 0 ? " AND lbr_workingtimes=" . ((int)$_POST['workingtime'][1]) . "" : "") . "
+			" . (isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1] != 0 ? " AND lbr_payment_method=" . ((int)$_POST['paymethod'][1]) . "" : "") . "
+			AND lbr_company={$app->user->company->id}
+		")) {
+		if ($row = $r->fetch_assoc()) {
+			$total = $row['count'];
 		}
 	}
 
-	if($offset+1>(ceil($total/$perpage))){
-		$offset=(ceil($total/$perpage));
+	if ($offset + 1 > (ceil($total / $perpage))) {
+		$offset = (ceil($total / $perpage));
 	}
-	$selectioncount=0;
-	if($rsel=$sql->query("SELECT COUNT(sel_usremp_emp_id) AS selectioncount FROM user_employeeselection JOIN labour ON lbr_id = sel_usremp_emp_id  AND lbr_resigndate IS NULL WHERE sel_usremp_usr_id={$USER->info->id}")){
-		if($selectioncount=$sql->fetch_assoc($rsel)){
-			$selectioncount=$selectioncount['selectioncount'];
+	$selectioncount = 0;
+	if ($rsel = $app->db->query("SELECT COUNT(sel_usremp_emp_id) AS selectioncount FROM user_employeeselection JOIN labour ON lbr_id = sel_usremp_emp_id  AND lbr_resigndate IS NULL WHERE sel_usremp_usr_id={$app->user->info->id}")) {
+		if ($selectioncount = $rsel->fetch_assoc()) {
+			$selectioncount = $selectioncount['selectioncount'];
 		}
 	}
-	
+
 	//Handle various search keys
-	$rawselect="";
-	if(isset($_POST['user'][1]) && (int)$_POST['user'][1]==0 || (!isset($_POST['user'][1]))){
-		$cols	=array("usr_firstname"=>"","usr_lastname"=>"","usr_id"=>"");
-		$q		=preg_replace('/[^\p{Arabic}\da-z_\- ]/ui'," ",trim($_POST['user'][0]));
-		$sq 		=' ';
-		$i		=0;
-		$sJS		="";
-		
-		$q		=trim($q);
-		$smart  	="";
-		if($q==""){
-			$sq.= "(";
-			foreach($cols as $k=>$v){
-				$sq.=$smart." $k rlike '.*' ";
-				$smart=" OR ";
+	$rawselect = "";
+	if (isset($_POST['user'][1]) && (int)$_POST['user'][1] == 0 || (!isset($_POST['user'][1]))) {
+		$cols	= array("usr_firstname" => "", "usr_lastname" => "", "usr_id" => "");
+		$q		= preg_replace('/[^\p{Arabic}\da-z_\- ]/ui', " ", trim($_POST['user'][0]));
+		$sq 		= ' ';
+		$i		= 0;
+		$sJS		= "";
+
+		$q		= trim($q);
+		$smart  	= "";
+		if ($q == "") {
+			$sq .= "(";
+			foreach ($cols as $k => $v) {
+				$sq .= $smart . " $k rlike '.*' ";
+				$smart = " OR ";
 			}
-			$sq.= " )";
-		}else{
-			$q=explode(" ",$q);
-			for($i=0;$i<sizeof($q);$i++){
-				$sq.="(";
-				$smart="";
-				foreach($cols as $k=>$v){
-					$sq.=$smart." $k RLIKE '.*".replaceARABIC($q[$i]).".*' ";
-					$smart=" OR ";
+			$sq .= " )";
+		} else {
+			$q = explode(" ", $q);
+			for ($i = 0; $i < sizeof($q); $i++) {
+				$sq .= "(";
+				$smart = "";
+				foreach ($cols as $k => $v) {
+					$sq .= $smart . " $k RLIKE '.*" . replaceARABIC($q[$i]) . ".*' ";
+					$smart = " OR ";
 				}
-				$sq.=")";
-				if($i!=sizeof($q)-1)
-					$sq.=' AND ';
+				$sq .= ")";
+				if ($i != sizeof($q) - 1)
+					$sq .= ' AND ';
 			}
 		}
-		$rawselect=" AND ".$sq;
+		$rawselect = " AND " . $sq;
 	}
 
-	if($r=$sql->query("
+	if ($r = $app->db->query("
 		SELECT 
 			usr_id,
 			UNIX_TIMESTAMP(lbr_registerdate) AS lbr_registerdate,
@@ -295,7 +296,7 @@ if(isset($_POST['cards']) && $_POST['cards']=='1'){
 		FROM
 			labour 
 				JOIN users AS _users ON usr_id=lbr_id
-				JOIN companies ON comp_id = lbr_company AND comp_id={$USER->company->id}
+				JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
 				LEFT JOIN 
 					(
 						SELECT
@@ -305,7 +306,7 @@ if(isset($_POST['cards']) && $_POST['cards']=='1'){
 					) AS st ON st.lty_id=lbr_type
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 				LEFT JOIN labour_rating ON lbrrtg_lbr_id=lbr_id AND lbrrtg_type=1
-				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$USER->info->id}
+				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$app->user->info->id}
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
 				LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
 				LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
@@ -313,28 +314,26 @@ if(isset($_POST['cards']) && $_POST['cards']=='1'){
 				
 		WHERE
 			( (lbr_role & b'001') > 0 )
-			".(isset($_POST['displaysuspended'])?" AND 1 ":" AND lbr_resigndate IS NULL ")."
-			".(isset($_POST['user'][1]) && (int)$_POST['user'][1]!=0?" AND usr_id=".((int)$_POST['user'][1])."":"")."
-			".(isset($_POST['job'][1]) && (int)$_POST['job'][1]!=0?" AND lbr_type=".((int)$_POST['job'][1])."":"")."
-			".(isset($_POST['workingtime'][1]) && (int)$_POST['workingtime'][1]!=0?" AND lbr_workingtimes=".((int)$_POST['workingtime'][1])."":"")."
-			".(isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1]!=0?" AND lbr_payment_method=".((int)$_POST['paymethod'][1])."":"")."
-			".(isset($_POST['shift'][1]) && (int)$_POST['shift'][1]!=0?" AND lbr_shift=".((int)$_POST['shift'][1])."":"")."
-			".(isset($_POST['section'][1]) && (int)$_POST['section'][1]!=0?" AND lsc_id=".((int)$_POST['section'][1])."":"")."
-			".(isset($_POST['onlyselection'])?" AND sel_usremp_emp_id IS NOT NULL":"")."
-			AND lbr_company={$USER->company->id}
+			" . (isset($_POST['displaysuspended']) ? " AND 1 " : " AND lbr_resigndate IS NULL ") . "
+			" . (isset($_POST['user'][1]) && (int)$_POST['user'][1] != 0 ? " AND usr_id=" . ((int)$_POST['user'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int)$_POST['job'][1] != 0 ? " AND lbr_type=" . ((int)$_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['workingtime'][1]) && (int)$_POST['workingtime'][1] != 0 ? " AND lbr_workingtimes=" . ((int)$_POST['workingtime'][1]) . "" : "") . "
+			" . (isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1] != 0 ? " AND lbr_payment_method=" . ((int)$_POST['paymethod'][1]) . "" : "") . "
+			" . (isset($_POST['shift'][1]) && (int)$_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int)$_POST['shift'][1]) . "" : "") . "
+			" . (isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? " AND lsc_id=" . ((int)$_POST['section'][1]) . "" : "") . "
+			" . (isset($_POST['onlyselection']) ? " AND sel_usremp_emp_id IS NOT NULL" : "") . "
+			AND lbr_company={$app->user->company->id}
 			$rawselect
 		GROUP BY
 			usr_id
 			$sort_query
 		LIMIT
-			".($offset*$perpage).",$perpage
-		")){
-		$pagefile_edit=$tables->pagefile_info(134,null,"directory");
-		$pagefile_display=$tables->pagefile_info(108,null,"directory");
-		while($row=$sql->fetch_assoc($r)){
-			if($countrow){
+			" . ($offset * $perpage) . ",$perpage
+		")) {
+		while ($row = $r->fetch_assoc()) {
+			if ($countrow) {
 				echo "<tr>";
-				echo "<th class=\"navigator\" style=\"color:#333;position:relative\" colspan=\"".(11+($c__actions->edit?1:0))."\"><span class=\"btn-set\">";
+				echo "<th class=\"navigator\" style=\"color:#333;position:relative\" colspan=\"" . (11 + ($fs()->permission->edit ? 1 : 0)) . "\"><span class=\"btn-set\">";
 				echo "<button id=\"jQselectaction\">Selected <div style=\"display:inline-block;\">$selectioncount</div><span></span></button>";
 				echo "<b id=\"jQactionmenu\" data-status=\"off\">";
 				echo "<div id=\"jQaction_selectall\"><span>&#xea54;</span>Select all</div>";
@@ -342,174 +341,184 @@ if(isset($_POST['cards']) && $_POST['cards']=='1'){
 				echo "<hr />";
 				echo "<div id=\"jQaction_selectsearch\"><span>&#xea5b;</span>Select search results</div>";
 				echo "<hr />";
-				echo $bulk__actions->edit?"<div id=\"jQaction_bulkeditor\"><span>&#xe997;</span>Edit</div>":"";
+				echo $fs(154)->permission->edit ? "<div id=\"jQaction_bulkeditor\"><span>&#xe997;</span>Edit</div>" : "";
 				echo "<hr />";
 				echo "<div id=\"jQaction_exportselection\"><span>&#xe961;</span>Export selection</div>";
 				echo "<div id=\"jQaction_exportall\"><span>&#xe961;</span>Export all</div>";
 				echo "</b>";
 				echo "<span>Total count of employees: <b>$total</b></span><span class=\"gap\"></span>";
-				echo "<button ".($offset==0?"disabled=\"disabled\"":"")." data-offset=\"".($offset-1)."\">Previous</button>";
-				echo "<input type=\"text\" value=\"Page ".($offset+1)."/".(ceil($total/$perpage))."\" style=\"width:130px;text-align:center\" readonly=\"readonly\" />";
-				echo "<button ".($offset+1==(ceil($total/$perpage))?"disabled=\"disabled\"":"")." data-offset=\"".($offset+1)."\">Next</button>";
+				echo "<button " . ($offset == 0 ? "disabled=\"disabled\"" : "") . " data-offset=\"" . ($offset - 1) . "\">Previous</button>";
+				echo "<input type=\"text\" value=\"Page " . ($offset + 1) . "/" . (ceil($total / $perpage)) . "\" style=\"width:130px;text-align:center\" readonly=\"readonly\" />";
+				echo "<button " . ($offset + 1 == (ceil($total / $perpage)) ? "disabled=\"disabled\"" : "") . " data-offset=\"" . ($offset + 1) . "\">Next</button>";
 				echo "</span></th></tr>";
-				$countrow=false;
+				$countrow = false;
 			}
-			
-			echo "<tr".(!is_null($row['lbr_resigndate'])?" class=\"css_suspended\"":"").">";
-			echo "<td width=\"10\" class=\"checkbox\"><label><input class=\"jQempcheck\" data-id=\"{$row['usr_id']}\" ".(is_null($row['sel_usremp_emp_id'])?"":"checked=\"checked\"")." type=\"checkbox\" /><span></span></label></td>";
+
+			echo "<tr" . (!is_null($row['lbr_resigndate']) ? " class=\"css_suspended\"" : "") . ">";
+			echo "<td width=\"10\" class=\"checkbox\"><label><input class=\"jQempcheck\" data-id=\"{$row['usr_id']}\" " . (is_null($row['sel_usremp_emp_id']) ? "" : "checked=\"checked\"") . " type=\"checkbox\" /><span></span></label></td>";
 			echo "<td>{$row['usr_id']}</td>";
-			echo "<td>".(!is_null($row['lbr_permanentdate'])?"<span class=\"permanent\"></span>":"")."".(!is_null($row['lbr_resigndate'])?"<span class=\"suspended\"></span>":"")."{$row['usr_fullname']}</td>";
+			echo "<td>" . (!is_null($row['lbr_permanentdate']) ? "<span class=\"permanent\"></span>" : "") . "" . (!is_null($row['lbr_resigndate']) ? "<span class=\"suspended\"></span>" : "") . "{$row['usr_fullname']}</td>";
 			//echo "<td>{$row['lbr_serial']}</td>";
 			echo "<td>{$row['job_name']}</td>";
 			echo "<td>{$row['lbr_mth_name']}</td>";
 			echo "<td>{$row['lwt_name']}</td>";
-			
+
 			echo "<td>{$row['lsf_name']}</td>";
-			echo "<td>".date("Y-m-d",$row['lbr_registerdate'])."</td>";
+			echo "<td>" . date("Y-m-d", $row['lbr_registerdate']) . "</td>";
 			//echo "<td>".number_format($row['rating'],2)."</td>";
 			echo "<td>{$row['trans_name']}</td>";
 			echo "<td>{$row['ldn_name']}</td>";
-			if($c__actions->edit){
-				echo "<td class=\"op-edit\"><a href=\"{$pagefile_edit}?method=update&id={$row['usr_id']}\"></a></td>";
+			if ($fs()->permission->edit) {
+				echo "<td class=\"op-edit\"><a href=\"{$fs(134)->dir}?method=update&id={$row['usr_id']}\"></a></td>";
 			}
-			echo "<td class=\"op-display\"><a href=\"$pagefile_display?id={$row['usr_id']}\"></a></td>";
+			echo "<td class=\"op-display\"><a href=\"{$fs(108)->dir}?id={$row['usr_id']}\"></a></td>";
 			echo "</tr>";
 		}
 	}
-	
-	
-	
+
+
+
 	exit;
 }
 ?>
 <style>
-.checkbox {
-	padding:0 !important;
-	-webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-#jQselectaction > span:before{
-	content:"\e619";
-	font-family:"icomoon";
-	position:relative;
-	left:6px;
-	top:1px;
-}
-#jQselectaction > div{
-	display:inline-block;
-}
+	.checkbox {
+		padding: 0 !important;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+
+	#jQselectaction>span:before {
+		content: "\e619";
+		font-family: "icomoon";
+		position: relative;
+		left: 6px;
+		top: 1px;
+	}
+
+	#jQselectaction>div {
+		display: inline-block;
+	}
 
 
-#jQactionmenu{
-	display:none;
-	font-weight:normal;
-	position:absolute;
-	z-index:9;
-	white-space:normal;
-	top:38px;
-	min-width:250px;
-	padding:0px;
-	height:auto;
-	left:11px;
-}
-#jQactionmenu > div{
-	padding:6px 10px;
-	white-space:nowrap;
-	position:relative;
-	border:solid 1px transparent;
-	color:#333;
-	cursor:default;
-}
+	#jQactionmenu {
+		display: none;
+		font-weight: normal;
+		position: absolute;
+		z-index: 9;
+		white-space: normal;
+		top: 38px;
+		min-width: 250px;
+		padding: 0px;
+		height: auto;
+		left: 11px;
+	}
 
-#jQactionmenu > div > span{
-	font-family:icomoon4;
-	display:inline-block;
-	padding-right:10px;
-	color:#888;
-}
+	#jQactionmenu>div {
+		padding: 6px 10px;
+		white-space: nowrap;
+		position: relative;
+		border: solid 1px transparent;
+		color: #333;
+		cursor: default;
+	}
 
-#jQactionmenu > div:hover{
-	text-shadow: 1px 1px 0 #fff;
-	background-color: rgba(82,168,236,.1);
-	border-color:	rgba(82,168,236,.75);
-	text-decoration:none;
-}
-#jQactionmenu > hr{
-	margin:0;
-}
-.checkbox > label{
-	display:inline-block;
-	width:30px;
-	height:32px;
-	position:relative;
-}
-.checkbox > label:before{
-	display:block;
-	position:absolute;
-	content:" ";
-}
-.checkbox > label > input{
-	visibility:hidden;
-}
+	#jQactionmenu>div>span {
+		font-family: icomoon4;
+		display: inline-block;
+		padding-right: 10px;
+		color: #888;
+	}
 
-.checkbox > label > input[type=checkbox]:hover ~ span:before{
-	border-color: #888;
-}
-.checkbox > label > input[type=checkbox] ~ span:before{
-	content:" ";
-	position:absolute;
-	display:block;
-	top:6px;
-	left:9px;
-	border:solid 1px #eee;
-	border-radius:3px;
-	padding: 3px 2px;
-	width:14px;
-	height: 12px;
-	background-color: #fff;
-}
-.checkbox > label > input[type=checkbox]:checked ~ span:before{
-	font-family:icomoon2;
-	content:"\f00c";
-	color:#06c;
-	font-size:14px;
-}
+	#jQactionmenu>div:hover {
+		text-shadow: 1px 1px 0 #fff;
+		background-color: rgba(82, 168, 236, .1);
+		border-color: rgba(82, 168, 236, .75);
+		text-decoration: none;
+	}
 
-.permanent:after{
-	font-family:icomoon;
-	content:"\e62e";
-	display:inline-block;
-	color:#fc0;
-	margin-right:5px;
-}
+	#jQactionmenu>hr {
+		margin: 0;
+	}
 
-.suspended:after{
-	font-family:icomoon2;
-	content:"\f00d";
-	display:inline-block;
-	color:#f00;
-	margin-right:5px;
-	float:left;
-}
+	.checkbox>label {
+		display: inline-block;
+		width: 30px;
+		height: 32px;
+		position: relative;
+	}
+
+	.checkbox>label:before {
+		display: block;
+		position: absolute;
+		content: " ";
+	}
+
+	.checkbox>label>input {
+		visibility: hidden;
+	}
+
+	.checkbox>label>input[type=checkbox]:hover~span:before {
+		border-color: #888;
+	}
+
+	.checkbox>label>input[type=checkbox]~span:before {
+		content: " ";
+		position: absolute;
+		display: block;
+		top: 6px;
+		left: 9px;
+		border: solid 1px #eee;
+		border-radius: 3px;
+		padding: 3px 2px;
+		width: 14px;
+		height: 12px;
+		background-color: #fff;
+	}
+
+	.checkbox>label>input[type=checkbox]:checked~span:before {
+		font-family: icomoon2;
+		content: "\f00c";
+		color: #06c;
+		font-size: 14px;
+	}
+
+	.permanent:after {
+		font-family: icomoon;
+		content: "\e62e";
+		display: inline-block;
+		color: #fc0;
+		margin-right: 5px;
+	}
+
+	.suspended:after {
+		font-family: icomoon2;
+		content: "\f00d";
+		display: inline-block;
+		color: #f00;
+		margin-right: 5px;
+	}
 
 
-.sa.down > span:before{
-	content:"\e615";
-	font-family:icomoon;
-}
-.sa.up > span:before{
-	content:"\e616";
-	font-family:icomoon;
-}
-.sa{
-	cursor:default
-}
+	.sa.down>span:before {
+		content: "\e615";
+		font-family: icomoon;
+	}
+
+	.sa.up>span:before {
+		content: "\e616";
+		font-family: icomoon;
+	}
+
+	.sa {
+		cursor: default
+	}
 </style>
-<form action="<?php echo $tables->pagefile_info(28,null,'directory');?>" target="_blank" method="post" id="jQprintform">
+<form action="<?= $fs(28)->dir ?>" target="_blank" method="post" id="jQprintform">
 	<input type="hidden" id="jQveriforminput" name="verified" value="0" />
 	<div id="jQprintformData"></div>
 </form>
@@ -518,301 +527,319 @@ if(isset($_POST['cards']) && $_POST['cards']=='1'){
 	<input type="hidden" name="cards" id="cards" value="0" />
 	<input type="hidden" name="sort_field" id="sort_field" value="" />
 	<input type="hidden" name="sort_dir" id="sort_dir" value="" />
-	<table class="bom-table"><tbody>
-		<tr>
-			<td>
-				<div class="btn-set" style="margin-bottom: 10px;">
-					<button type="button" id="jQdosearch">Search</button>
-					<label class="btn-checkbox"><input type="checkbox" name="onlyselection" id="onlyselection" /> <span>&nbsp;Show selection only&nbsp;</span></label>
-					<label class="btn-checkbox"><input type="checkbox" name="displaysuspended" id="jQdisplaySuspended" /> <span>&nbsp;Display Suspended&nbsp;</span></label>
-				</div>
-				<div class="btn-set">
-					<input class="jsFilterFeild flex" name="user" 		type="text" data-slo="B00S" 		style="min-width:160px;max-width:220px;"		id="user" 	placeholder="Employee name, serial or id" />
-					<input class="jsFilterFeild flex" name="section" 	type="text" data-slo="E001"			style="min-width:160px;max-width:220px;" 		id="section" 	placeholder="Section" />
-					<input class="jsFilterFeild flex" name="job" 		type="text" data-slo="E002A" 		style="min-width:160px;max-width:220px;" 		id="job" 		placeholder="Job" />
-					<input class="jsFilterFeild flex" name="shift" 		type="text" data-slo="E003"		 	style="min-width:100px;max-width:220px;" 		id="shift" 	placeholder="Shift" />	
-					<input class="jsFilterFeild flex" name="workingtime"type="text" data-slo="WORKING_TIMES" 	style="min-width:100px;max-width:220px;" 	id="workingtime" 	placeholder="Working Time" />	
-					<input class="jsFilterFeild flex" name="paymethod"	type="text" data-slo="SALARY_PAYMENT_METHOD" 	style="min-width:100px;max-width:220px;" 	id="paymethod" 	placeholder="Salary Payment Method" />	
-				</div>
-			</td>
-			<td>
-				<div class="btn-set noselect"></div>
-			</td>
-		</tr>
-	</tbody></table>
+	<table class="bom-table">
+		<tbody>
+			<tr>
+				<td>
+					<div class="btn-set" style="margin-bottom: 10px;">
+						<button type="button" id="jQdosearch">Search</button>
+						<label class="btn-checkbox"><input type="checkbox" name="onlyselection" id="onlyselection" /> <span>&nbsp;Show selection only&nbsp;</span></label>
+						<label class="btn-checkbox"><input type="checkbox" name="displaysuspended" id="jQdisplaySuspended" /> <span>&nbsp;Display Suspended&nbsp;</span></label>
+					</div>
+					<div class="btn-set">
+						<input class="jsFilterFeild flex" name="user" type="text" data-slo="B00S" style="min-width:160px;max-width:220px;" id="user" placeholder="Employee name, serial or id" />
+						<input class="jsFilterFeild flex" name="section" type="text" data-slo="E001" style="min-width:160px;max-width:220px;" id="section" placeholder="Section" />
+						<input class="jsFilterFeild flex" name="job" type="text" data-slo="E002A" style="min-width:160px;max-width:220px;" id="job" placeholder="Job" />
+						<input class="jsFilterFeild flex" name="shift" type="text" data-slo="E003" style="min-width:100px;max-width:220px;" id="shift" placeholder="Shift" />
+						<input class="jsFilterFeild flex" name="workingtime" type="text" data-slo="WORKING_TIMES" style="min-width:100px;max-width:220px;" id="workingtime" placeholder="Working Time" />
+						<input class="jsFilterFeild flex" name="paymethod" type="text" data-slo="SALARY_PAYMENT_METHOD" style="min-width:100px;max-width:220px;" id="paymethod" placeholder="Salary Payment Method" />
+					</div>
+				</td>
+				<td>
+					<div class="btn-set noselect"></div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </form>
 <br />
 <table class="bom-table hover">
-<thead>
-	<tr class="special">
-		<td data-feild="id"><span></span></td>
-		<td class="sa down" data-feild="id"><span>ID</span></td>
-		
-		<td class="sa" data-feild="name"><span>Name</span></td>
-		<!--<td><span>Serial</span></td>-->
-		<td class="sa" data-feild="job"><span>Job</span></td>
-		
-		<td class="sa" data-feild="salary_method"><span>Payment Method</span></td>
-		<td class="sa" data-feild="work_time"><span>Working Time</span></td>
-		
-		<td class="sa" data-feild="shift"><span>Shift</span></td>
-		<td class="sa" data-feild="register"><span>Registration Date</span></td>
-		<!--<td class="sa" data-feild="rating"><span>Rating</span></td>-->
-		<td class="sa" data-feild="transportation"><span>Transportation</span></td>
-		<td class="sa" data-feild="residence"><span>Residence</span></td>
-		
-		<?php echo ($c__actions->edit?"<td style=\"width:10px;\"></td>":"")?>
-		<td style="width:10px"></td>
-	</tr>
-</thead>
-<tbody id="jQoutput"></tbody>
+	<thead>
+		<tr class="special">
+			<td data-feild="id"><span></span></td>
+			<td class="sa down" data-feild="id"><span>ID</span></td>
+
+			<td class="sa" data-feild="name"><span>Name</span></td>
+			<!--<td><span>Serial</span></td>-->
+			<td class="sa" data-feild="job"><span>Job</span></td>
+
+			<td class="sa" data-feild="salary_method"><span>Payment Method</span></td>
+			<td class="sa" data-feild="work_time"><span>Working Time</span></td>
+
+			<td class="sa" data-feild="shift"><span>Shift</span></td>
+			<td class="sa" data-feild="register"><span>Registration Date</span></td>
+			<!--<td class="sa" data-feild="rating"><span>Rating</span></td>-->
+			<td class="sa" data-feild="transportation"><span>Transportation</span></td>
+			<td class="sa" data-feild="residence"><span>Residence</span></td>
+
+			<?php echo ($fs()->permission->edit  ? "<td style=\"width:10px;\"></td>" : "") ?>
+			<td style="width:10px"></td>
+		</tr>
+	</thead>
+	<tbody id="jQoutput"></tbody>
 </table>
 
 <script>
-$(document).ready(function(e) {
-	
-	$("#doprint").on('click',function(){
-		$("#cards").val("1");
-		var serialized=$("#searchform").serialize();
-		$("#cards").val("0");
-		$.ajax({
-			data:serialized,
-			url:'<?php echo $pageinfo['directory'];?>',
-			type:'POST'
-		}).done(function(data){
-			$("#jQprintformData").html(data);
-			$("#jQprintform").submit();
+	$(document).ready(function(e) {
+
+		$("#doprint").on('click', function() {
+			$("#cards").val("1");
+			var serialized = $("#searchform").serialize();
+			$("#cards").val("0");
+			$.ajax({
+				data: serialized,
+				url: '<?php echo $fs()->dir; ?>',
+				type: 'POST'
+			}).done(function(data) {
+				$("#jQprintformData").html(data);
+				$("#jQprintform").submit();
+			});
 		});
-	});
-	$("#jQvericheck").on('change',function(){
-		$("#jQveriforminput").val($("#jQvericheck").prop("checked")?"1":"0");
-	});
-	$("#jQoutput").on('click',"#jQaction_exportselection",function(){
-		$("#searchform").attr("target","_blank");
-		$("#searchform").attr("method","post");
-		$("#searchform").attr("action","<?php echo $tables->pagefile_info(77,null,"directory");?>/?onlyselection");
-		
-		var serialized=$("#searchform").serialize();
-		$("#searchform").submit();
-		
-		$("#searchform").attr("target","");
-		$("#searchform").attr("method","");
-		$("#searchform").attr("action","");
-	});
-	$("#jQoutput").on('click',"#jQaction_exportall",function(){
-		$("#searchform").attr("target","_blank");
-		$("#searchform").attr("method","post");
-		$("#searchform").attr("action","<?php echo $tables->pagefile_info(77,null,"directory");?>/");
-		
-		var serialized=$("#searchform").serialize();
-		$("#searchform").submit();
-		
-		$("#searchform").attr("target","");
-		$("#searchform").attr("method","");
-		$("#searchform").attr("action","");
-	});
-	
-	$("#jQoutput").on('click','#jQselectaction',function(){
-		var $menu=$("#jQactionmenu");
-		if($menu.attr('data-status')=='off'){
-			$menu.show();
-			$menu.attr('data-status','on');
-		}else{
+		$("#jQvericheck").on('change', function() {
+			$("#jQveriforminput").val($("#jQvericheck").prop("checked") ? "1" : "0");
+		});
+		$("#jQoutput").on('click', "#jQaction_exportselection", function() {
+			$("#searchform").attr("target", "_blank");
+			$("#searchform").attr("method", "post");
+			$("#searchform").attr("action", "<?= $fs(77)->dir ?>/?onlyselection");
+
+			var serialized = $("#searchform").serialize();
+			$("#searchform").submit();
+
+			$("#searchform").attr("target", "");
+			$("#searchform").attr("method", "");
+			$("#searchform").attr("action", "");
+		});
+		$("#jQoutput").on('click', "#jQaction_exportall", function() {
+			$("#searchform").attr("target", "_blank");
+			$("#searchform").attr("method", "post");
+			$("#searchform").attr("action", "<?= $fs(77)->dir ?>/");
+
+			var serialized = $("#searchform").serialize();
+			$("#searchform").submit();
+
+			$("#searchform").attr("target", "");
+			$("#searchform").attr("method", "");
+			$("#searchform").attr("action", "");
+		});
+
+		$("#jQoutput").on('click', '#jQselectaction', function() {
+			var $menu = $("#jQactionmenu");
+			if ($menu.attr('data-status') == 'off') {
+				$menu.show();
+				$menu.attr('data-status', 'on');
+			} else {
+				$menu.hide();
+				$menu.attr('data-status', 'off');
+			}
+		});
+
+		$("#jQoutput").on('click', '#jQaction_bulkeditor', function() {
+			var $menu = $("#jQactionmenu");
 			$menu.hide();
-			$menu.attr('data-status','off');
-		}
-	});
-	
-	$("#jQoutput").on('click','#jQaction_bulkeditor',function(){
-		var $menu=$("#jQactionmenu");
-		$menu.hide();$menu.attr('data-status','off');
-		overlay.show();
-		$.ajax({
-			data:{"bulkeditorform":""},
-			url:'<?php echo $pageinfo['directory'];?>',
-			type:'POST'
-		}).done(function(data){
-			popup.show(data);
-			overlay.hide();
-			
-			popup.self().find("#jQcancel").on('click',function(){
-				popup.hide();
-			});
-			popup.self().find(".jQalter_checkbox").on('change',function(){
-				var $checkbox=$(this);
-				$checkbox.closest("div").find("input[type=text]").prop("disabled",!$checkbox.prop("checked"));
-			});
-			
-			popup.self().find(".jQBulkSLOField").slo({
-				limit:10
-			}).disable();
-			
-			popup.self().find("#jQsubmit_bulk").on('click',function(){
-				let ajaxdata={};
-				let fields={};
-				
-				<?php foreach($arr_feild as $k=>$v){echo "fields['$k']={};";}?>
-				for(field in fields){
-					if($("#jQalter_"+field).prop("checked")){
-						ajaxdata[field]=$("#jQbulk_"+field+"_1").val();
+			$menu.attr('data-status', 'off');
+			overlay.show();
+			$.ajax({
+				data: {
+					"bulkeditorform": ""
+				},
+				url: '<?php echo $fs()->dir; ?>',
+				type: 'POST'
+			}).done(function(data) {
+				popup.show(data);
+				overlay.hide();
+
+				popup.self().find("#jQcancel").on('click', function() {
+					popup.hide();
+				});
+				popup.self().find(".jQalter_checkbox").on('change', function() {
+					var $checkbox = $(this);
+					$checkbox.closest("div").find("input[type=text]").prop("disabled", !$checkbox.prop("checked"));
+				});
+
+				popup.self().find(".jQBulkSLOField").slo({
+					limit: 10
+				}).disable();
+
+				popup.self().find("#jQsubmit_bulk").on('click', function() {
+					let ajaxdata = {};
+					let fields = {};
+
+					<?php foreach ($arr_feild as $k => $v) {
+						echo "fields['$k']={};";
+					} ?>
+					for (field in fields) {
+						if ($("#jQalter_" + field).prop("checked")) {
+							ajaxdata[field] = $("#jQbulk_" + field + "_1").val();
+						}
 					}
-				}
-				ajaxdata['bulkeditorsubmit']='';
-				overlay.show();
-				$.ajax({
-					data:ajaxdata,
-					url:'<?php echo $pageinfo['directory'];?>',
-					type:'POST'
-				}).done(function(bulkboutput){
-					overlay.hide();
-					if(bulkboutput=="empty"){
-						messagesys.success("Nothing to edit");
-					}else if(bulkboutput=="success"){
-						messagesys.success("Employees information edited successfully");
-						popup.hide();
-						ajaxcall();
-					}else if(bulkboutput=="fail"){
-						messagesys.failure("Edting employees information failed");
-					}else{
-						messagesys.failure("Unknown error");
-					}
+					ajaxdata['bulkeditorsubmit'] = '';
+					overlay.show();
+					$.ajax({
+						data: ajaxdata,
+						url: '<?php echo $fs()->dir; ?>',
+						type: 'POST'
+					}).done(function(bulkboutput) {
+						overlay.hide();
+						if (bulkboutput == "empty") {
+							messagesys.success("Nothing to edit");
+						} else if (bulkboutput == "success") {
+							messagesys.success("Employees information edited successfully");
+							popup.hide();
+							ajaxcall();
+						} else if (bulkboutput == "fail") {
+							messagesys.failure("Edting employees information failed");
+						} else {
+							messagesys.failure("Unknown error");
+						}
+					});
 				});
 			});
 		});
-	});
-	
-	
-	$("#jQdosearch").on('click',function(){
-		ajaxcall();
-	});
-	$("#jQoutput").on('click','#jQaction_clearall',function(){
-		var $menu=$("#jQactionmenu");
-		overlay.show();
-		$menu.hide();$menu.attr('data-status','off');
-		$.ajax({
-			data:{"clearselection":""},
-			url:'<?php echo $pageinfo['directory'];?>',
-			type:'POST'
-		}).done(function(data){
+
+
+		$("#jQdosearch").on('click', function() {
 			ajaxcall();
-			overlay.hide();
 		});
-	});
-	$("#jQoutput").on('click','#jQaction_selectall',function(){
-		var $menu=$("#jQactionmenu");
-		overlay.show();
-		$menu.hide();$menu.attr('data-status','off');
-		$.ajax({
-			data:{'selectall':'0'},
-			url:'<?php echo $pageinfo['directory'];?>',
-			type:'POST'
-		}).done(function(data){
+		$("#jQoutput").on('click', '#jQaction_clearall', function() {
+			var $menu = $("#jQactionmenu");
+			overlay.show();
+			$menu.hide();
+			$menu.attr('data-status', 'off');
+			$.ajax({
+				data: {
+					"clearselection": ""
+				},
+				url: '<?php echo $fs()->dir; ?>',
+				type: 'POST'
+			}).done(function(data) {
+				ajaxcall();
+				overlay.hide();
+			});
+		});
+		$("#jQoutput").on('click', '#jQaction_selectall', function() {
+			var $menu = $("#jQactionmenu");
+			overlay.show();
+			$menu.hide();
+			$menu.attr('data-status', 'off');
+			$.ajax({
+				data: {
+					'selectall': '0'
+				},
+				url: '<?php echo $fs()->dir; ?>',
+				type: 'POST'
+			}).done(function(data) {
+				ajaxcall();
+				overlay.hide();
+			});
+		});
+		$("#jQoutput").on('click', '#jQaction_selectsearch', function() {
+			var $menu = $("#jQactionmenu");
+			overlay.show();
+			$menu.hide();
+			$menu.attr('data-status', 'off');
+			$.ajax({
+				data: $("#searchform").serialize() + '&selectsearch=0',
+				url: '<?php echo $fs()->dir; ?>',
+				type: 'POST'
+			}).done(function(data) {
+				ajaxcall();
+				overlay.hide();
+			});
+		});
+
+
+		$("#onlyselection").on('change', function() {
 			ajaxcall();
-			overlay.hide();
 		});
-	});
-	$("#jQoutput").on('click','#jQaction_selectsearch',function(){
-		var $menu=$("#jQactionmenu");
-		overlay.show();
-		$menu.hide();$menu.attr('data-status','off');
-		$.ajax({
-			data:$("#searchform").serialize()+'&selectsearch=0',
-			url:'<?php echo $pageinfo['directory'];?>',
-			type:'POST'
-		}).done(function(data){
-			ajaxcall();
-			overlay.hide();
-		});
-	});
-	
-	
-	$("#onlyselection").on('change',function(){
-		ajaxcall();
-	});
-	
-	
-	var ajaxcall=function(){
-		$.ajax({
-			data:$("#searchform").serialize(),
-			url:'<?php echo $pageinfo['directory'];?>',
-			type:'POST'
-		}).done(function(data){
-			$data=$(data);
-			$("#jQoutput").html(data);
-		});
-	}
-	
-	
-	$("#jQoutput").on('change','.jQempcheck',function(){
-		var _this=$(this);
-		var _check=_this.prop('checked');
-		var _id=_this.attr("data-id");
-		$.ajax({
-			data:{"employeecheck":"","id":_id,"checked":(_check?"1":"0")},
-			url:'<?php echo $pageinfo['directory'];?>',
-			type:'POST'
-		}).done(function(output){
-			if(output=="false"){
-				
-			}else{
-				$("#jQselectaction").find("div").html(output);
-			}
-		});
-	});
-	
-	
-	$(".sa").on('click',function(){
-		$(".sa").removeClass("down").removeClass("up");
-		var _dir=0;
-		if($("#sort_field").val()==$(this).attr("data-feild")){
-			_dir=~~$("#sort_dir").val();
-			_dir=_dir==1?0:1;
-			$("#sort_dir").val(_dir);
-		}else{
-			$("#sort_dir").val(0);
-			_dir=0;
+
+
+		var ajaxcall = function() {
+			$.ajax({
+				data: $("#searchform").serialize(),
+				url: '<?php echo $fs()->dir; ?>',
+				type: 'POST'
+			}).done(function(data) {
+				$data = $(data);
+				$("#jQoutput").html(data);
+			});
 		}
-		$(this).addClass(_dir==0?"down":"up");
-		$("#sort_field").val($(this).attr("data-feild"));
-		ajaxcall();
-	});
-	
-	$("#jQoutput").on('click','button[data-offset]',function(){
-		var offset=$(this).attr('data-offset');
-		$("#offset").val(offset);
-		ajaxcall();
-	});
-	$("#jQoutput").on('click',".op-display > a",function(e){
-		e.preventDefault();
-		var $this=$(this);
-		popup.show("Loading");
-		
-		var $ajax=$.ajax({
-			type:"POST",
-			url:$this.attr("href")+"&ajax",
-			data:""
-		}).done(function(data){
-			popup.show(data);
+
+
+		$("#jQoutput").on('change', '.jQempcheck', function() {
+			var _this = $(this);
+			var _check = _this.prop('checked');
+			var _id = _this.attr("data-id");
+			$.ajax({
+				data: {
+					"employeecheck": "",
+					"id": _id,
+					"checked": (_check ? "1" : "0")
+				},
+				url: '<?php echo $fs()->dir; ?>',
+				type: 'POST'
+			}).done(function(output) {
+				if (output == "false") {
+
+				} else {
+					$("#jQselectaction").find("div").html(output);
+				}
+			});
 		});
-		return false;
-	});
-	var userinput=$(".jsFilterFeild").slo({
-		onselect:function(value){
-			$("#offset").val("0");
+
+
+		$(".sa").on('click', function() {
+			$(".sa").removeClass("down").removeClass("up");
+			var _dir = 0;
+			if ($("#sort_field").val() == $(this).attr("data-feild")) {
+				_dir = ~~$("#sort_dir").val();
+				_dir = _dir == 1 ? 0 : 1;
+				$("#sort_dir").val(_dir);
+			} else {
+				$("#sort_dir").val(0);
+				_dir = 0;
+			}
+			$(this).addClass(_dir == 0 ? "down" : "up");
+			$("#sort_field").val($(this).attr("data-feild"));
 			ajaxcall();
-		},
-		ondeselect:function(){
-			$("#offset").val("0");
+		});
+
+		$("#jQoutput").on('click', 'button[data-offset]', function() {
+			var offset = $(this).attr('data-offset');
+			$("#offset").val(offset);
 			ajaxcall();
-		},
-		limit:10
-	});
-	
-	
-	
-	$("#jQdisplaySuspended").on('change',function(){
+		});
+		$("#jQoutput").on('click', ".op-display > a", function(e) {
+			e.preventDefault();
+			var $this = $(this);
+			popup.show("Loading");
+
+			var $ajax = $.ajax({
+				type: "POST",
+				url: $this.attr("href") + "&ajax",
+				data: ""
+			}).done(function(data) {
+				popup.show(data);
+			});
+			return false;
+		});
+		var userinput = $(".jsFilterFeild").slo({
+			onselect: function(value) {
+				$("#offset").val("0");
+				ajaxcall();
+			},
+			ondeselect: function() {
+				$("#offset").val("0");
+				ajaxcall();
+			},
+			limit: 10
+		});
+
+
+
+		$("#jQdisplaySuspended").on('change', function() {
+			ajaxcall();
+		});
 		ajaxcall();
 	});
-	ajaxcall();
-});
 </script>

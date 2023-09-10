@@ -6,7 +6,7 @@ require_once("admin/class/accounting.php");
 use Finance\Accounting;
 use Finance\Invoice;
 
-$_SIDE = new Template\SidePanelBuild();
+$_SIDE = new Template\Side();
 
 function SidePanelContent($sql, $user, $pageUrl, $pageTitle, $newUrl, $newTitle){
 	$accounting=new Accounting();

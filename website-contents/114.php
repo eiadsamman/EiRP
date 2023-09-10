@@ -1,10 +1,10 @@
 <?php
-include_once("admin/class/slo_datalist.php");
+include_once("admin/class/SmartListObject.php");
 
-use System\Pool;
-use System\SLO_DataList;
+use System\App;
+use System\SmartListObject;
 
-$slo_datalist = new SLO_DataList();
+$SmartListObject = new SmartListObject();
 
 ?>
 <div class="btn-set">
@@ -14,10 +14,10 @@ $slo_datalist = new SLO_DataList();
 </div>
 
 <datalist id="zlist">
-	<?= $slo_datalist->hr_person(Pool::$_user->company->id); ?>
+	<?= $SmartListObject->hr_person(App::$_user->company->id); ?>
 </datalist>
 <?php
-echo "<pre>" . print_r(Pool::$_user, true) . "</pre>";
+echo "<pre>" . print_r(App::$_user, true) . "</pre>";
 ?>
 
 

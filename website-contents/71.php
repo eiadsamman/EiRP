@@ -74,15 +74,15 @@ canvas{
 }
 </style>
 
-<form action="<?php echo $pageinfo['directory'];?>" method="post">
+<form action="<?php echo $fs()->dir;?>" method="post">
 	<div class="btn-set" style="margin-bottom:5px;"><span style="min-width:160px;">Group by Months in</span><input 
 		id="year" value="<?php echo (isset($_POST['year'][0])?$_POST['year'][0]:"");?>" data-slo="YEAR" name="year" type="text" /><button>Filter</button></div>
 </form>
-<form action="<?php echo $pageinfo['directory'];?>" method="post">
+<form action="<?php echo $fs()->dir;?>" method="post">
 	<div class="btn-set" style="margin-bottom:5px;"><span style="min-width:160px;">Group by Days in</span><input 
 		id="month" value="<?php echo (isset($_POST['month'][0])?$_POST['month'][0]:"");?>" data-slo="MONTH" name="month" type="text" /><button>Filter</button></div>
 </form>
-<form action="<?php echo $pageinfo['directory'];?>" method="post">
+<form action="<?php echo $fs()->dir;?>" method="post">
 	<div class="btn-set" style="margin-bottom:5px;"><span style="min-width:160px;">Group by Hours in</span><input 
 		id="date" value="<?php echo (isset($_POST['hours'][0])?$_POST['hours'][0]:"");?>" data-slo="DATE" name="hours" type="text" /><button>Filter</button></div>
 </form>

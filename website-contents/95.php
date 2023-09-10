@@ -2,7 +2,7 @@
 include_once("admin/class/accounting.php");
 
 use Finance\Accounting;
-use System\SLO_DataList;
+use System\SmartListObject;
 
 
 $accounting = new Accounting();
@@ -242,11 +242,11 @@ if ($h__requested_with_ajax) {
 
 
 include_once("admin/class/Template/class.template.build.php");
-include_once("admin/class/slo_datalist.php");
-$slo_datalist = new SLO_DataList();
-use Template\TemplateBuild;
+include_once("admin/class/SmartListObject.php");
+$SmartListObject = new SmartListObject();
+use Template\Body;
 
-$_TEMPLATE = new TemplateBuild("");
+$_TEMPLATE = new Body("");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(true);
 
@@ -274,7 +274,7 @@ if (!$__workingaccount) {
 
 	<?php
 	$_TEMPLATE->SetWidth("768px");
-	$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs(99)->dir}\"></a>New " . $pageinfo['title'], null, $rowpo['doc_id']);
+	$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs(99)->dir}\"></a>New " . $fs()->title, null, $rowpo['doc_id']);
 
 	echo $_TEMPLATE->CommandBarStart();
 	echo "<div class=\"btn-set\" style=\"justify-content:flex-end\">";
@@ -316,7 +316,7 @@ if (!$__workingaccount) {
 				<td>
 					<div class="btn-set"><input tabindex="2" type="text" data-slo=":LIST" data-list="jQcreditorList" class="flex" id="jQcreditor" /></div>
 					<datalist id="jQcreditorList" style="display: none;">
-						<?= $slo_datalist->financial_accounts_inbound(); ?>
+						<?= $SmartListObject->financial_accounts_inbound(); ?>
 					</datalist>
 				</td>
 			</tr>
@@ -325,7 +325,7 @@ if (!$__workingaccount) {
 				<td>
 					<div class="btn-set"><input type="text" data-slo=":LIST" data-list="jQcategoryList" tabindex="3" class="flex" id="jQcategory" /></div>
 					<datalist id="jQcategoryList">
-						<?= $slo_datalist->financial_categories(); ?>
+						<?= $SmartListObject->financial_categories(); ?>
 					</datalist>
 				</td>
 			</tr>
@@ -337,7 +337,7 @@ if (!$__workingaccount) {
 						<input type="text" tabindex="-1" class="flex" data-slo="B00S" id="jQemployee" />
 					</div>
 					<datalist id="jQbeneficialList">
-						<?= $slo_datalist->financial_beneficiary(); ?>
+						<?= $SmartListObject->financial_beneficiary(); ?>
 					</datalist>
 				</td>
 			</tr>
@@ -542,7 +542,7 @@ if (!$__workingaccount) {
 
 				$ajax = $.ajax({
 					data: preparePOST,
-					url: "<?php echo $pageinfo['directory']; ?>",
+					url: "<?php echo $fs()->dir; ?>",
 					type: "POST"
 				}).done(function(data) {
 					var _data = null;

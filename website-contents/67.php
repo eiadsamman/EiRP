@@ -2,12 +2,12 @@
 include_once("admin/class/Template/class.template.build.php");
 
 
-use System\Pool;
+use System\App;
 use System\Person\Attendance;
-use Template\TemplateBuild;
+use Template\Body;
 
 
-$_TEMPLATE = new TemplateBuild("");
+$_TEMPLATE = new Body("");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(true);
 
@@ -31,7 +31,7 @@ if (isset($_POST['fetch'])) {
 
 	include_once "admin/class/attendance.php";
 	$_TEMPLATE->EmulateHeaders();
-	$attendance = new Attendance($sql);
+	$attendance = new Attendance($app);
 	$r = $attendance->ReportOngoing(["company" => $USER->company->id, "::order" => $ui_grouplist[$ui_grouplist_selection][3]]);
 
 	$total = 0;
@@ -84,7 +84,7 @@ if (isset($_POST['fetch'])) {
 			echo "<td>{$row['lbr_id']} </td>";
 			echo "<td class=\"emplyee-name\">{$row['usr_firstname']} {$row['usr_lastname']}</td>";
 			echo "<td>{$row['ltr_ctime_date']} {$row['ltr_ctime_time']}</td>";
-			echo "<td class=\"elapsed\"><span>Elapsed: </span>" . Pool::formatTime($row['diff'], false) . "</td>";
+			echo "<td class=\"elapsed\"><span>Elapsed: </span>" . App::formatTime($row['diff'], false) . "</td>";
 
 			echo $pb == 2 ? "" : "<td class=\"mediabond-ignore\">{$row['prt_name']}</td>";
 
@@ -292,7 +292,7 @@ if ($h__requested_with_ajax) {
 
 
 
-$_TEMPLATE->Title($pageinfo['title'], null, "<span id=\"s-output_count\"></span>");
+$_TEMPLATE->Title($fs()->title, null, "<span id=\"s-output_count\"></span>");
 
 
 echo $_TEMPLATE->CommandBarStart();
@@ -343,7 +343,7 @@ echo "</div>";
 			overlay.show();
 			var $ajax = $.ajax({
 				type: "POST",
-				url: "<?= $pageinfo['directory'] . "/?"; ?>" + navigator.uribuild(),
+				url: "<?= $fs()->dir . "/?"; ?>" + navigator.uribuild(),
 				data: {
 					"fetch": ""
 				}
@@ -379,13 +379,13 @@ echo "</div>";
 				$("table.local-mediabond-table").addClass("local-force");
 				$(this).attr("data-state", "1").text("List view");
 				navigator.historyState.view = "1";
-				history.pushState(navigator.historyState, "<?= $pageinfo['title']; ?>", "<?= $pageinfo['directory']; ?>" + "/?" + navigator.uribuild());
+				history.pushState(navigator.historyState, "<?= $fs()->title; ?>", "<?= $fs()->dir; ?>" + "/?" + navigator.uribuild());
 
 			} else {
 				$("table.local-mediabond-table").removeClass("local-force");
 				$(this).attr("data-state", "0").text("Card view");
 				navigator.historyState.view = "0";
-				history.pushState(navigator.historyState, "<?= $pageinfo['title']; ?>", "<?= $pageinfo['directory']; ?>" + "/?" + navigator.uribuild());
+				history.pushState(navigator.historyState, "<?= $fs()->title; ?>", "<?= $fs()->dir; ?>" + "/?" + navigator.uribuild());
 			}
 
 		});

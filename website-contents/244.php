@@ -104,8 +104,8 @@ if($h__requested_with_ajax && isset($_POST['vdocid'],$_POST['token'])){
 }
 
 
-use Template\TemplateBuild;
-$_TEMPLATE = new TemplateBuild();
+use Template\Body;
+$_TEMPLATE = new Body();
 if(is_null($accounting)){
 	include_once("admin/class/accounting.php");
 	$accounting=new Accounting();
@@ -142,8 +142,8 @@ if($doc_id){
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
 		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(237,null,"directory")."/\" class=\"bnt-back\"></a>";
-		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(240,null,"directory")."/?docid={$chain[0]}&token=".md5("sysdoc_".$chain[0].session_id())."\">".$invoice->TranslatePrefix(Invoice::map['MAT_REQ'],$doc_mr['po_serial'])."</a>";
-		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(234,null,"directory")."/?docid={$chain[1]}&token=".md5("sysdoc_".$chain[1].session_id())."\">".$invoice->TranslatePrefix(Invoice::map['PUR_QUT'],$doc_rfq['po_serial'])."</a>";
+		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(240,null,"directory")."/?docid={$chain[0]}&token=".md5("sysdoc_".$chain[0].session_id())."\">".$invoice->translate_prefix(Invoice::map['MAT_REQ'],$doc_mr['po_serial'])."</a>";
+		echo "<a style=\"color:#333;\" href=\"".$tables->pagefile_info(234,null,"directory")."/?docid={$chain[1]}&token=".md5("sysdoc_".$chain[1].session_id())."\">".$invoice->translate_prefix(Invoice::map['PUR_QUT'],$doc_rfq['po_serial'])."</a>";
 		echo "<span>Purchase Order</span>";
 		echo "<span class=\"gap\"></span>";
 		if(is_null($doc_mr['po_close_date'])){
@@ -354,7 +354,7 @@ if($doc_id){
 }
 ?>
 <script type="text/javascript">
-	Template.HistoryEntry("<?php echo $pageinfo['directory'];?>/?docid=<?=$doc_id;?>&token=<?php echo md5("sysdoc_".$doc_id.session_id());?>", "<?php echo $pageinfo['title'];?>");
+	Template.HistoryEntry("<?php echo $fs()->dir;?>/?docid=<?=$doc_id;?>&token=<?php echo md5("sysdoc_".$doc_id.session_id());?>", "<?php echo $fs()->title;?>");
 	
 	$(document).ready(function(){
 		var slocontact=$("#jQinputContact").slo();
@@ -383,7 +383,7 @@ if($doc_id){
 			overlay.show();
 			$.ajax({
 				type:'POST',
-				url:'<?php echo $pageinfo['directory'];?>',
+				url:'<?php echo $fs()->dir;?>',
 				data:$("#jQpostFormAdditional").serialize(),
 			}).done(function(o, textStatus, request){
 				let response=request.getResponseHeader('HTTP_X_RESPONSE');

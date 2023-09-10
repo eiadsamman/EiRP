@@ -270,9 +270,9 @@ if ($h__requested_with_ajax) {
 }
 include_once("admin/class/Template/class.template.build.php");
 
-use Template\TemplateBuild;
+use Template\Body;
 
-$_TEMPLATE = new TemplateBuild("Test");
+$_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
 
@@ -302,7 +302,7 @@ $_TEMPLATE->FrameTitlesStack(false);
 </style>
 
 <?php
-$_TEMPLATE->Title($pageinfo['title'], null, null);
+$_TEMPLATE->Title($fs()->title, null, null);
 
 echo $_TEMPLATE->CommandBarStart();
 echo "<div class=\"btn-set\">";
@@ -378,7 +378,7 @@ $_TEMPLATE->TailGap();
 
 <script type="text/javascript">
 	$(function() {
-		Template.HistoryEntry("<?php echo $pageinfo['directory']; ?>", "<?php echo $pageinfo['title']; ?>");
+		Template.HistoryEntry("<?php echo $fs()->dir; ?>", "<?php echo $fs()->title; ?>");
 
 		$("[name=po_title]").focus();
 
@@ -396,7 +396,7 @@ $_TEMPLATE->TailGap();
 
 		var DisplayBOM = function(mat, qty) {
 			$.ajax({
-				url: "<?php echo $pageinfo['directory']; ?>",
+				url: "<?php echo $fs()->dir; ?>",
 				type: "POST",
 				data: {
 					"method": "displaybom",
@@ -415,7 +415,7 @@ $_TEMPLATE->TailGap();
 
 		var fnFormSubmit = function() {
 			$.ajax({
-				url: "<?php echo $pageinfo['directory']; ?>",
+				url: "<?php echo $fs()->dir; ?>",
 				type: "POST",
 				data: $("#jQpopForm").serialize()
 			}).done(function(enchantress) {
@@ -432,7 +432,7 @@ $_TEMPLATE->TailGap();
 				return;
 			}
 			$.ajax({
-				url: "<?php echo $pageinfo['directory']; ?>",
+				url: "<?php echo $fs()->dir; ?>",
 				type: "POST",
 				data: {
 					"method": "checkitem",
@@ -501,7 +501,7 @@ $_TEMPLATE->TailGap();
 		$("#jQpostSubmit").on('click', function() {
 			overlay.show();
 			$.ajax({
-				url: "<?php echo $pageinfo['directory']; ?>",
+				url: "<?php echo $fs()->dir; ?>",
 				type: "POST",
 				data: $("#jQpostFormDetails").serialize() + "&" + $("#jQpostFormMaterials").serialize(),
 			}).done(function(o, textStatus, request) {

@@ -162,7 +162,7 @@ $(document).ready(function(e) {
 		messagesys.success("Loading...");
 		$ajaxload=$.ajax({
 			type:"POST",
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			data:{'fetch':value,'pos':_pos,'build':(build?'1':'0')}
 		}).done(function(data){
 			if(data==""){
@@ -182,7 +182,7 @@ $(document).ready(function(e) {
 		var id=$(this).attr('data-id');
 		var $this=$(this);
 		$.ajax({
-			url:'<?php echo $pageinfo['directory'];?>',
+			url:'<?php echo $fs()->dir;?>',
 			type:'POST',
 			data:{'suspend':'','id':id}
 		}).done(function(data){console.log(data);
@@ -211,7 +211,7 @@ $(document).ready(function(e) {
 		popup.show("Loading");
 		var $ajax=$.ajax({
 			type:"POST",
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			data:{'detailed-report':_regdate,'usr_id':$this.attr("data-usrid")}
 		}).done(function(data){
 			if(data==""){

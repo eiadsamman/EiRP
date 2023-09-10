@@ -1,6 +1,6 @@
 <?php
 if($_SERVER['REQUEST_METHOD']!="POST"){exit;}
-include_once "admin/class/system.php";
+include_once "admin/class/application.php";
 
 $output="";
 
@@ -103,7 +103,7 @@ if(isset($_POST['posubmit'])){
 			
 			foreach($daysList as $dayId=>$day){
 				if(isset($empData['days'][$day])){
-					$output.="\t".Pool::formatTime($empData['days'][$day]);
+					$output.="\t".App::formatTime($empData['days'][$day]);
 				}else{
 					$output.="\t0";
 				}

@@ -129,7 +129,7 @@ if($__defaultaccount===false){
 		var fetch=function(){
 			var month=$("#jQmonthSelection_1").val();
 			$.ajax({
-				url:'<?php echo $pageinfo['directory'];?>',
+				url:'<?php echo $fs()->dir;?>',
 				type:"POST",
 				data:{'salarymonth':month}
 			}).done(function(data){

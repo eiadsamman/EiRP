@@ -23,7 +23,7 @@ if(isset($_GET['id'])){
 						users LEFT JOIN permissions ON usr_privileges = per_id
 					) AS _up ON _up.usr_id=lbr_id
 				LEFT JOIN labour_shifts ON lbr_shift=lsf_id
-				LEFT JOIN uploads ON up_pagefile=".Pool::FILE['Person']['Photo']." AND up_rel=lbr_id
+				LEFT JOIN uploads ON up_pagefile=".App::FILE['Person']['Photo']." AND up_rel=lbr_id
 				LEFT JOIN (
 					SELECT
 						lty_id,lty_name,lsc_name

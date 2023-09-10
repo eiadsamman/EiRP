@@ -1,13 +1,10 @@
 <?php
 
-include_once("admin/class/person.php");
-include_once("admin/class/Template/class.template.build.php");
+use System\App;
+use System\Template\Body;
 
-use Template\TemplateBuild;
-use System\Pool;
-use System\SLO_DataList;
 
-$_TEMPLATE = new TemplateBuild("HIFile");
+$_TEMPLATE = new Body("");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
 $_TEMPLATE->SetWidth("800px");
@@ -15,12 +12,10 @@ $_TEMPLATE->SetWidth("800px");
 
 
 if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchrecord") {
-	$perm_personal = $tables->Permissions(227, $USER->info->permissions);
-	$perm_job = $tables->Permissions(228, $USER->info->permissions);
-	$perm_salary = $tables->Permissions(229, $USER->info->permissions);
+	
 	$employeeID = (int)$_POST['employeeID'];
 
-	if ($r = $sql->query("
+	if ($r = $app->db->query("
 		SELECT
 			usr_firstname,usr_lastname,
 			usr_id,usr_username,usr_phone_list,
@@ -50,26 +45,26 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
 		WHERE
 			lbr_id=$employeeID AND usr_id!=1;")) {
-		if ($row = $sql->fetch_assoc($r)) {
+		if ($row = $r->fetch_assoc()) {
 			header("HTTP_X_RESPONSE: SUCCESS");
 			header("HTTP_X_PID: " . $row['usr_id']);
 			$arr_socialids = array();
-			$q_socialid_uploads = $sql->query("SELECT up_id,up_name,up_size,DATE_FORMAT(up_date,'%d %M, %Y') as up_date,up_pagefile FROM uploads WHERE up_rel=$employeeID AND up_deleted=0");
-			while ($row_socialid_uploads = $sql->fetch_assoc($q_socialid_uploads)) {
+			$q_socialid_uploads = $app->db->query("SELECT up_id,up_name,up_size,DATE_FORMAT(up_date,'%d %M, %Y') as up_date,up_pagefile FROM uploads WHERE up_rel=$employeeID AND up_deleted=0");
+			while ($row_socialid_uploads = $q_socialid_uploads->fetch_assoc()) {
 				if (!isset($arr_socialids[$row_socialid_uploads['up_pagefile']])) {
 					$arr_socialids[$row_socialid_uploads['up_pagefile']] = array();
 				}
 				$arr_socialids[$row_socialid_uploads['up_pagefile']][$row_socialid_uploads['up_id']] = array($row_socialid_uploads['up_name'], $row_socialid_uploads['up_size'], $row_socialid_uploads['up_date'], $row_socialid_uploads['up_id']);
 			}
 			$socialidphotos = "";
-			if (isset($arr_socialids[Pool::FILE['Person']['ID']])) {
-				foreach ($arr_socialids[Pool::FILE['Person']['ID']] as $k_socialid => $v_socialid) {
+			if (isset($arr_socialids[App::FILE['Person']['ID']])) {
+				foreach ($arr_socialids[App::FILE['Person']['ID']] as $k_socialid => $v_socialid) {
 					$socialidphotos .= "<a href=\"download/?id={$k_socialid}\" class=\"jq_frame_image\" data-href=\"download/?id={$k_socialid}&pr=v\">view</a>";
 				}
 			}
 
 
-			if ($perm_personal->read) {
+			if ($fs(227)->permission->read) {
 				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Personal Information:</span>", false, false, 105);
 				echo $_TEMPLATE->NewFrameBodyStart();
 				echo '
@@ -78,10 +73,10 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 					<td style="width:33%;min-width:200px" align="center">';
 				$img = "user.jpg";
 				if (
-					isset($arr_socialids[Pool::FILE['Person']['Photo']]) && is_array($arr_socialids[Pool::FILE['Person']['Photo']])
-					&& sizeof($arr_socialids[Pool::FILE['Person']['Photo']]) > 0
+					isset($arr_socialids[App::FILE['Person']['Photo']]) && is_array($arr_socialids[App::FILE['Person']['Photo']])
+					&& sizeof($arr_socialids[App::FILE['Person']['Photo']]) > 0
 				) {
-					$imgid = reset($arr_socialids[Pool::FILE['Person']['Photo']])[3];
+					$imgid = reset($arr_socialids[App::FILE['Person']['Photo']])[3];
 					$img = "download/?id={$imgid}&pr=t";
 					unset($imgid);
 				}
@@ -123,7 +118,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				echo $_TEMPLATE->NewFrameBodyEnd();
 			}
 
-			if ($perm_job->read) {
+			if ($fs(228)->permission->read) {
 				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Job Information:</span>", false, false, 105);
 				echo $_TEMPLATE->NewFrameBodyStart();
 				echo '
@@ -149,7 +144,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			}
 
 
-			if ($perm_salary->read) {
+			if ($fs(229)->permission->read) {
 				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Salary Details:</span>", false, false, 105);
 				echo $_TEMPLATE->NewFrameBodyStart();
 				echo '<div class="template-gridLayout">
@@ -178,12 +173,11 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 	exit;
 }
 
-if ($h__requested_with_ajax) {
+if ($app->xhttp) {
 	exit;
 }
 
-include_once("admin/class/slo_datalist.php");
-$slo_datalist = new SLO_DataList();
+$SmartListObject = new System\SmartListObject($app);
 ?>
 
 <style type="text/css">
@@ -202,7 +196,7 @@ $slo_datalist = new SLO_DataList();
 <?php
 
 
-$_TEMPLATE->Title($pageinfo['title'], null, "<span id=\"jQdomPID\"></span>");
+$_TEMPLATE->Title($fs()->title, null, "<span id=\"jQdomPID\"></span>");
 
 echo $_TEMPLATE->CommandBarStart();
 echo "<div class=\"btn-set\">";
@@ -210,7 +204,7 @@ echo "<input id=\"employeIDFormSearch\" tabindex=\"1\" type=\"text\" data-slo=\"
 echo "<button type=\"button\" id=\"jQedit\" tabindex=\"2\" disabled>Edit information</button>";
 echo "<button type=\"button\" id=\"jQprintIDCard\" tabindex=\"3\" disabled>Print ID Card</button>";
 echo "</div>";
-echo "<datalist id=\"personList\">" . $slo_datalist->hr_person(Pool::$_user->company->id) . "</datalist>";
+echo "<datalist id=\"personList\">" . $SmartListObject->hr_person($app->user->company->id) . "</datalist>";
 echo $_TEMPLATE->CommandBarEnd();
 
 ?>
@@ -250,7 +244,7 @@ echo $_TEMPLATE->CommandBarEnd();
 					'method': 'view',
 					'id': value.hidden,
 					'name': value.value
-				}, "<?php echo $tables->pagefile_info(182, null, "title"); ?>", "<?php echo $tables->pagefile_info(182, null, "directory"); ?>/?id=" + value.hidden);
+				}, "<?= $fs(182)->title ?>", "<?= $fs(182)->dir ?>/?id=" + value.hidden);
 				fn_fetchfile();
 			},
 			ondeselect: function() {
@@ -259,7 +253,7 @@ echo $_TEMPLATE->CommandBarEnd();
 					'method': '',
 					'id': 0,
 					'name': ''
-				}, "<?php echo $tables->pagefile_info(182, null, "title"); ?>", "<?php echo $tables->pagefile_info(182, null, "directory"); ?>");
+				}, "<?= $fs(182)->title ?>", "<?= $fs(182)->dir ?>");
 			},
 			"limit": 10
 		});
@@ -277,7 +271,7 @@ echo $_TEMPLATE->CommandBarEnd();
 					'method': 'fetchrecord',
 					'employeeID': SLO_employeeID.hidden[0].val(),
 				},
-				url: "<?php echo $pageinfo['directory']; ?>",
+				url: "<?php echo $fs()->dir; ?>",
 				type: "POST"
 			}).done(function(o, textStatus, request) {
 				let response = request.getResponseHeader('HTTP_X_RESPONSE');
@@ -302,23 +296,23 @@ echo $_TEMPLATE->CommandBarEnd();
 		}
 		buttonEdit.on("click", function() {
 			if (queryResponse !== false) {
-				linkTrigger.prop("href", "<?= $tables->pagefile_info(134, null, "directory") . "/?method=update&id="; ?>" + queryResponse);
+				linkTrigger.prop("href", "<?= $fs(134)->dir . "/?method=update&id="; ?>" + queryResponse);
 				linkTrigger[0].click();
 			}
 		});
 		buttonPrintID.on("click", function() {
 			if (queryResponse !== false) {
-				linkTrigger.prop("href", "<?= $tables->pagefile_info(28, null, "directory") . "/?id="; ?>" + queryResponse);
+				linkTrigger.prop("href", "<?= $fs(28)->dir . "/?id="; ?>" + queryResponse);
 				linkTrigger[0].click();
 			}
 		});
 		<?php
 		if (isset($_GET['id'])) {
 			$_GET['id'] = (int)$_GET['id'];
-			$r = $sql->query("SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id={$_GET['id']};");
-			if ($r && $row = $sql->fetch_assoc($r)) {
+			$r = $app->db->query("SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id={$_GET['id']};");
+			if ($r && $row = $r->fetch_assoc()) {
 				echo 'SLO_employeeID.set("' . $_GET['id'] . '","' . stripcslashes(trim($row['user_name'])) . '");';
-				echo 'history.replaceState({\'method\':\'view\', \'id\': ' . (int)$_GET['id'] . ', \'name\': \'' . $row['user_name'] . '\'}, "' . $tables->pagefile_info(182, null, "title") . '", "' . $tables->pagefile_info(182, null, "directory") . '/?id=' . (int)$_GET['id'] . '");';
+				echo 'history.replaceState({\'method\':\'view\', \'id\': ' . (int)$_GET['id'] . ', \'name\': \'' . $row['user_name'] . '\'}, "' . $fs(182)->title. '", "' . $fs(182)->dir . '/?id=' . (int)$_GET['id'] . '");';
 				echo 'fn_fetchfile(false);';
 			}
 		}

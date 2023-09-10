@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header('Content-Disposition: attachment;filename="'.str_replace(" ","_",$pageinfo['title'])."_".date("YmdHis").'.xlsx"');
+header('Content-Disposition: attachment;filename="'.str_replace(" ","_",$fs()->title)."_".date("YmdHis").'.xlsx"');
 header('Cache-Control: max-age=0');
 header('Cache-Control: max-age=1');
 header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
@@ -8,12 +8,12 @@ header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
 header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
 header ('Pragma: public'); // HTTP/1.0
 
-require_once $_SERVER['FILE_SYSTEM_ROOT']."admin/class/phpexcel/PHPExcel.php";
+require_once $app->root."admin/class/phpexcel/PHPExcel.php";
 /** PHPExcel_Cell_AdvancedValueBinder */
-require_once $_SERVER['FILE_SYSTEM_ROOT']."admin/class/phpexcel/PHPExcel/Cell/AdvancedValueBinder.php";
+require_once $app->root."admin/class/phpexcel/PHPExcel/Cell/AdvancedValueBinder.php";
 
 /** PHPExcel_IOFactory */
-require_once $_SERVER['FILE_SYSTEM_ROOT']."admin/class/phpexcel/PHPExcel/IOFactory.php";
+require_once $app->root."admin/class/phpexcel/PHPExcel/IOFactory.php";
 // Set value binder
 PHPExcel_Cell::setValueBinder( new PHPExcel_Cell_AdvancedValueBinder() );
 
@@ -21,10 +21,10 @@ PHPExcel_Cell::setValueBinder( new PHPExcel_Cell_AdvancedValueBinder() );
 $objPHPExcel = new PHPExcel();
 $objPHPExcel->getProperties()->setCreator($USER->info->username)
 				->setLastModifiedBy($USER->info->username)
-				 ->setTitle($pageinfo['title'])
-				 ->setSubject($pageinfo['title'])
-				 ->setDescription($pageinfo['title'])
-				 ->setKeywords($pageinfo['title'])
+				 ->setTitle($fs()->title)
+				 ->setSubject($fs()->title)
+				 ->setDescription($fs()->title)
+				 ->setKeywords($fs()->title)
 				 ->setCategory("Report");
 $objPHPExcel->setActiveSheetIndex(0);
 
@@ -44,7 +44,7 @@ $objPHPExcel->getActiveSheet()->getPageSetup()->setRowsToRepeatAtTopByStartAndEn
 $objPHPExcel->getActiveSheet()->setShowGridlines(true);
 $objPHPExcel->getActiveSheet()->setRightToLeft(true);
 
-$objPHPExcel->getActiveSheet()->setTitle($pageinfo['title']);
+$objPHPExcel->getActiveSheet()->setTitle($fs()->title);
 
 $arrheader=array("ID","Name","Section","Job","Shift","Gender","Birthdate","Residence","Registration","Salary","Variable","Transportation");
 

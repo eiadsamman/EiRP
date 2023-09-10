@@ -1,13 +1,6 @@
 <?php
-include_once("admin/class/person.php");
 
-use System\Pool;
-
-
-$perm_personal = $tables->Permissions(227, $USER->info->permissions);
-$perm_job = $tables->Permissions(228, $USER->info->permissions);
-$perm_salary = $tables->Permissions(229, $USER->info->permissions);
-
+use System\App;
 
 $imageMimes = array(
 	"image/jpeg", "image/gif", "image/bmp", "image/png",
@@ -38,8 +31,8 @@ $arr_array_input = false;
 $arr_array_uploads = array();
 if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "update") {
 	$employeeID = (int)$_POST['id'];
-	$r_emp = $sql->query("
-		SELECT
+	$r = $app->db->query(
+		"SELECT
 			usr_firstname,usr_lastname,
 			usr_id,usr_username,usr_phone_list,
 			usr_attrib_i2,gnd_name,gnd_id,
@@ -70,16 +63,15 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "update") {
 				LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
 				LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
-				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . Pool::FILE['Person']['Photo'] . " AND up_deleted=0
+				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . $app::FILE['Person']['Photo'] . " AND up_deleted = 0
 				LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
 				LEFT JOIN companies ON comp_id = lbr_company
 		WHERE
 			lbr_id=$employeeID;
-		");
-	if ($r_emp) {
-		if ($row_emp = $sql->fetch_assoc($r_emp)) {
-			$arr_array_input = $row_emp;
-		}
+		"
+	);
+	if ($r && $row_emp = $r->fetch_assoc()) {
+		$arr_array_input = $row_emp;
 	}
 }
 
@@ -87,10 +79,11 @@ $q_socialid_uploads_query = "
 		SELECT up_id,up_name,up_size,up_date,up_pagefile,up_mime,up_rel 
 		FROM uploads 
 		WHERE 
-			(" . ($arr_array_input != false ? " up_rel={$arr_array_input['usr_id']} OR " : "") . " (up_rel=0 AND up_user={$USER->info->id}))
-			AND up_deleted=0 AND (up_pagefile=" . Pool::FILE['Person']['Photo'] . " OR up_pagefile=" . Pool::FILE['Person']['ID'] . ") ORDER BY up_rel DESC, up_date DESC;";
-$q_socialid_uploads = $sql->query($q_socialid_uploads_query);
-while ($row_socialid_uploads = $sql->fetch_assoc($q_socialid_uploads)) {
+			(" . ($arr_array_input != false ? " up_rel={$arr_array_input['usr_id']} OR " : "") . " (up_rel=0 AND up_user={$app->user->info->id}))
+			AND up_deleted=0 AND (up_pagefile=" . $app::FILE['Person']['Photo'] . " OR up_pagefile=" . $app::FILE['Person']['ID'] . ") ORDER BY up_rel DESC, up_date DESC;";
+
+$r = $app->db->query($q_socialid_uploads_query);
+while ($row_socialid_uploads = $r->fetch_assoc()) {
 	if (!isset($arr_array_uploads[$row_socialid_uploads['up_pagefile']])) {
 		$arr_array_uploads[$row_socialid_uploads['up_pagefile']] = array();
 	}
@@ -104,7 +97,7 @@ while ($row_socialid_uploads = $sql->fetch_assoc($q_socialid_uploads)) {
 	<input type="hidden" name="EmployeeFormID" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_id'] : "0"; ?>">
 
 	<?php
-	if (($arr_array_input != false && $perm_personal->edit) || ($arr_array_input == false && $perm_personal->add)) {
+	if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_input == false && $fs(227)->permission->add)) {
 	?>
 		<div>
 			<div class="btn-set" style="position: sticky;top:103px;z-index: 19;padding-top:15px;padding-bottom:0px;background-color:#fff"><span class="flex"><b>Personal Information</b></span><button type="submit" class="EmployeeFormSubmitButton"><?php echo $arr_array_input != false ? "Update" : "Add"; ?></button></div>
@@ -171,8 +164,8 @@ while ($row_socialid_uploads = $sql->fetch_assoc($q_socialid_uploads)) {
 									<span id="js_upload_list" class="js_upload_list">
 										<div id="UploadPersonalDOMHandler">
 											<?php
-											if (isset($arr_array_uploads[Pool::FILE['Person']['Photo']]) && is_array($arr_array_uploads[Pool::FILE['Person']['Photo']])) {
-												foreach ($arr_array_uploads[Pool::FILE['Person']['Photo']] as $fileIndex => $file) {
+											if (isset($arr_array_uploads[App::FILE['Person']['Photo']]) && is_array($arr_array_uploads[App::FILE['Person']['Photo']])) {
+												foreach ($arr_array_uploads[App::FILE['Person']['Photo']] as $fileIndex => $file) {
 													echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int)$file[4] == 0 ? false : true), "perosnal_image");
 												}
 											}
@@ -233,7 +226,7 @@ while ($row_socialid_uploads = $sql->fetch_assoc($q_socialid_uploads)) {
 
 
 	<?php
-	if (($arr_array_input != false && $perm_job->edit) || ($arr_array_input == false && $perm_job->add)) {
+	if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_input == false && $fs(228)->permission->add)) {
 	?>
 		<div style="margin-top:5px;margin-bottom:20px;">
 			<div class="btn-set" style="position: sticky;top:103px;z-index: 19;padding-top:15px;padding-bottom:0px;background-color:#fff"><span class="flex"><b>Job Information</b></span><button type="submit" class="EmployeeFormSubmitButton"><?php echo $arr_array_input != false ? "Update" : "Add"; ?></button></div>
@@ -329,7 +322,7 @@ while ($row_socialid_uploads = $sql->fetch_assoc($q_socialid_uploads)) {
 
 
 	<?php
-	if (($arr_array_input != false && $perm_salary->edit) || ($arr_array_input == false && $perm_salary->add)) {
+	if (($arr_array_input != false && $fs(229)->permission->edit) || ($arr_array_input == false && $fs(229)->permission->add)) {
 	?>
 		<div style="display:block;min-width:300px;max-width:800px;margin-top:5px;margin-bottom:20px;position: relative;">
 			<div id="FormInfoModifyOverLay" style="display:none;position: absolute;background-color: rgba(230,230,234,0.7);top:0px;left:0px;right:0px;bottom: 0px;z-index: 8;cursor: wait;"></div>

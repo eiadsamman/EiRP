@@ -328,7 +328,7 @@ $(document).ready(function(e) {
 		$("#css_hierLeft h1").removeClass("active");
 		$(this).closest("h1").addClass("active");
 		$.ajax({
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST",
 			data:{'new-child':'','parent':_parent}
 		}).done(function(data){
@@ -343,7 +343,7 @@ $(document).ready(function(e) {
 		var $h1=$(this).closest("h1").addClass("active");
 		
 		$.ajax({
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST",
 			data:{'display-child':'','id':_id}
 		}).done(function(data){
@@ -354,7 +354,7 @@ $(document).ready(function(e) {
 					var branch_id=me.attr("data-id");
 					var job_id=output.hidden;
 					$.ajax({
-						url:"<?php echo $pageinfo['directory'];?>",
+						url:"<?php echo $fs()->dir;?>",
 						type:"POST",
 						data:{'add-job':'','branch':branch_id,'job':job_id}
 					}).done(function(ajaxjob){
@@ -374,7 +374,7 @@ $(document).ready(function(e) {
 					var branch_id=me.attr("data-id");
 					var lbr_id=output.hidden;
 					$.ajax({
-						url:"<?php echo $pageinfo['directory'];?>",
+						url:"<?php echo $fs()->dir;?>",
 						type:"POST",
 						data:{'add-lbr':'','branch':branch_id,'lbr':lbr_id}
 					}).done(function(ajaxemp){
@@ -400,7 +400,7 @@ $(document).ready(function(e) {
 		var $this=$(this)
 		var $form=$(this).serialize();
 		$.ajax({
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST",
 			data:$form
 		}).done(function(data){
@@ -426,7 +426,7 @@ $(document).ready(function(e) {
 		var _id=$(this).attr("data-id"),
 			_newname=$("#jQupdateNameInput").val();
 		$.ajax({
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST",
 			data:{'update-branch-name':'','id':_id,'name':_newname}
 		}).done(function(data){
@@ -449,7 +449,7 @@ $(document).ready(function(e) {
 	$("#jQhierBody").on('click','button#jQdeleteBranch',function(){
 		var _id=$(this).attr("data-id");
 		$.ajax({
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST",
 			data:{'delete-branch':'','id':_id}
 		}).done(function(data){
@@ -473,7 +473,7 @@ $(document).ready(function(e) {
 		var lbr=$this.attr("data-lbr");
 		
 		$.ajax({
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST",
 			data:{'delete-employee-hir':'','branch':branch,'lbr':lbr}
 		}).done(function(data){
@@ -497,7 +497,7 @@ $(document).ready(function(e) {
 		var job=$this.attr("data-job");
 		
 		$.ajax({
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST",
 			data:{'delete-job-role':'','job':job,'branch':branch}
 		}).done(function(data){

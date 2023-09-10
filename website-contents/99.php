@@ -2,7 +2,7 @@
 include_once("admin/class/accounting.php");
 
 use Finance\Accounting;
-use System\SLO_DataList;
+use System\SmartListObject;
 
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
@@ -810,12 +810,12 @@ if ($h__requested_with_ajax) {
 
 
 include_once("admin/class/Template/class.template.build.php");
-include_once("admin/class/slo_datalist.php");
+include_once("admin/class/SmartListObject.php");
 
-use Template\TemplateBuild;
+use Template\Body;
 
-$slo_datalist = new SLO_DataList();
-$_TEMPLATE = new TemplateBuild("Test");
+$SmartListObject = new SmartListObject();
+$_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/false,/*Command Bar*/ false,/*Sticky Frame*/ false);
 $_TEMPLATE->FrameTitlesStack(false);
 
@@ -916,7 +916,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				<td>
 					<div class="btn-set normal list"><input type="text" data-input_object="true" name="benifical" data-slo=":LIST" data-list="beneficialList" /></div>
 					<datalist id="beneficialList">
-						<?= $slo_datalist->financial_beneficiary(); ?>
+						<?= $SmartListObject->financial_beneficiary(); ?>
 					</datalist>
 				</td>
 				<th>Employee</th>
@@ -1069,7 +1069,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 			var _per = $(this).attr("data-per");
 			var $ajax = $.ajax({
 				type: "POST",
-				url: "<?php echo $pageinfo['directory']; ?>",
+				url: "<?php echo $fs()->dir; ?>",
 				data: {
 					"method": "save_per_page_setting",
 					"value": _per
@@ -1118,7 +1118,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 					overlay.show();
 					$.ajax({
 						data: $save_form.serialize(),
-						url: '<?php echo $pageinfo['directory']; ?>',
+						url: '<?php echo $fs()->dir; ?>',
 						type: 'POST'
 					}).done(function(data) {
 						overlay.hide();
@@ -1167,7 +1167,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 							"method": "load_query",
 							"query_id": _id
 						},
-						url: '<?php echo $pageinfo['directory']; ?>',
+						url: '<?php echo $fs()->dir; ?>',
 						type: 'POST'
 					}).done(function(data) {
 						overlay.hide();
@@ -1227,7 +1227,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 							"method": "delete_query",
 							"query_id": _id
 						},
-						url: '<?php echo $pageinfo['directory']; ?>',
+						url: '<?php echo $fs()->dir; ?>',
 						type: 'POST'
 					}).done(function(data) {
 						overlay.hide();
@@ -1278,7 +1278,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 			let formSerialized = $form.serialize();
 			overlay.show();
 			$ajax = $.ajax({
-				url: "<?php echo $pageinfo['directory']; ?>",
+				url: "<?php echo $fs()->dir; ?>",
 				type: "POST",
 				data: formSerialized + "&method=filter",
 			}).done(function(data) {

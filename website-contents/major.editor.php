@@ -1,8 +1,4 @@
 <?php
-include_once "admin/class/log.php";
-include_once "admin/class/debug.php";
-
-
 
 /*
 Crit v2.1 210818
@@ -64,7 +60,7 @@ if (isset($database['perpage']) && (int)$database['perpage'] > 0) {
 }
 
 
-foreach ($database['fields'] as $fieldk => $fieldv) {
+foreach ((array)$database['fields'] as $fieldk => $fieldv) {
 	if ($fieldv[4] == "primary") {
 		if ($database['primary'] != null) {
 			die("Primary ID conflict");
@@ -85,7 +81,7 @@ foreach ($database['fields'] as $key => $value) {
 
 
 
-function single_call($sql, $database, $id)
+function single_call($app, $database, $id)
 {
 	$tempquery = "SELECT ";
 	$smart = "";
@@ -97,8 +93,8 @@ function single_call($sql, $database, $id)
 	}
 	$tempquery .= " FROM {$database['tableselect']} ";
 	$tempquery .= isset($database['where']) ? " WHERE " . $database['where'] . " AND {$database['primary']}=$id " : " WHERE {$database['primary']}=$id ";
-	if ($tempresult = $sql->query($tempquery)) {
-		if ($temprow = $sql->fetch_assoc($tempresult)) {
+	if ($r = $app->db->query($tempquery)) {
+		if ($temprow = $r->fetch_assoc()) {
 			return $temprow;
 		}
 	} else {
@@ -119,7 +115,8 @@ function sqlvalue($type, $value, $isset)
 	}
 }
 
-if ($c__actions->edit && $c__actions->add && isset($_POST['operator'])) {
+
+if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'])) {
 	if (isset($database['pre_submit_functions']) && is_array($database['pre_submit_functions'])) {
 		foreach ($database['pre_submit_functions'] as $func) {
 			call_user_func($func, $_POST, $sql, $USER);
@@ -204,23 +201,22 @@ if ($c__actions->edit && $c__actions->add && isset($_POST['operator'])) {
 	$q .= "\n;";
 
 
-	$r = $sql->query($q);
+	$r = $app->db->query($q);
 	$json_output = array("result" => null, "method" => null, "string" => null);
 	if ($r) {
-		$log = new Log();
-		$affected_id = $sql->insert_id();
+		$affected_id = $app->db->insert_id;
 
 
 		//Release previous attached files
 		foreach ($database['fields'] as $fieldk => $fieldv) {
 			if ($fieldv[4] == "file") {
-				$sql->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$affected_id AND up_pagefile={$fieldv[5]};");
+				$app->db->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$affected_id AND up_pagefile={$fieldv[5]};");
 			}
 		}
 
 		//Attached files
 		if (sizeof($attachments) > 0) {
-			$sql->query("UPDATE uploads SET up_rel=$affected_id, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$USER->info->id};");
+			$app->db->query("UPDATE uploads SET up_rel=$affected_id, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$USER->info->id};");
 		}
 
 		if (isset($database['post_submit_functions']) && is_array($database['post_submit_functions'])) {
@@ -230,41 +226,36 @@ if ($c__actions->edit && $c__actions->add && isset($_POST['operator'])) {
 		}
 		$json_output['result'] = true;
 		$json_output['method'] = $idvalue == 0 ? 0 : 1;
-
-		$log->add($USER->info->id, $idvalue == 0 ? 90 : 91, $sql->insert_id(), $pageinfo['id']);
 	} else {
 		$json_output['result'] = false;
 		$json_output['method'] = $idvalue == 0 ? 0 : 1;
-		$json_output['string'] = "SQL Query failed, error number " . $sql->errno();
+		$json_output['string'] = "SQL Query failed, error number " . $app->db->errno;
 	}
 	echo json_encode($json_output);
 	exit;
 }
 
 
-if ($c__actions->delete && isset($_POST['method']) && $_POST['method'] == 'delete' && (!isset($database['disable-delete']) || $database['disable-delete'] != true)) {
+if ($fs()->permission->delete && isset($_POST['method']) && $_POST['method'] == 'delete' && (!isset($database['disable-delete']) || $database['disable-delete'] != true)) {
 	$record_id = (int)$_POST['id'];
 	try {
-		include($_SERVER['FILE_SYSTEM_ROOT'] . 'admin/class/attachlib.php');
+		include($app->root . 'admin/class/attachlib.php');
 		$ulib = new AttachLib();
 		foreach ($database['fields'] as $fieldk => $fieldv) {
 			if ($fieldv[4] == "file") {
-				$attquery = $sql->query("SELECT up_id FROM uploads WHERE up_pagefile = {$fieldv[5]} AND up_rel = {$record_id}");
-				while ($attrow = $sql->fetch_assoc($attquery)) {
+				$r = $app->db->query("SELECT up_id FROM uploads WHERE up_pagefile = {$fieldv[5]} AND up_rel = {$record_id}");
+				while ($attrow = $r->fetch_assoc()) {
 					$ulib->delete($attrow['up_id']);
 				}
 			}
 		}
-	} catch (AttachDeleteException $e) {
 	} catch (Exception $e) {
 	}
 
 	$output = "0";
 	try {
-		if ($r = $sql->query("DELETE FROM {$database['table']} WHERE {$database['primary']} = {$record_id};")) {
-			if ($sql->affected_rows() > 0) {
-				$log = new Log();
-				$log->add($USER->info->id, 92, (int)$_POST['id'], $pageinfo['id']);
+		if ($r = $app->db->query("DELETE FROM {$database['table']} WHERE {$database['primary']} = {$record_id};")) {
+			if ($app->db->affected_rows > 0) {
 				$output = "1";
 			} else {
 				$output = "0";
@@ -278,7 +269,7 @@ if ($c__actions->delete && isset($_POST['method']) && $_POST['method'] == 'delet
 }
 
 
-if ($c__actions->edit && $c__actions->add && isset($_POST['ea_prepare'], $_POST['id']) && (!isset($database['readonly']) || !$database['readonly'])) {
+if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepare'], $_POST['id']) && (!isset($database['readonly']) || !$database['readonly'])) {
 	$_POST['id'] = (int)$_POST['id'];
 	$cleaned = $database['fields'];
 	foreach ($cleaned as $k => $v) {
@@ -290,7 +281,7 @@ if ($c__actions->edit && $c__actions->add && isset($_POST['ea_prepare'], $_POST[
 		$cleaned[$database['primary']] = (int)$_POST['id'];
 	} else {
 		$op_type = "edit";
-		if ($cleaned = single_call($sql, $database, (int)$_POST['id'])) {
+		if ($cleaned = single_call($app, $database, (int)$_POST['id'])) {
 		} else {
 			echo "Fetching record information failed";
 			exit;
@@ -300,7 +291,7 @@ if ($c__actions->edit && $c__actions->add && isset($_POST['ea_prepare'], $_POST[
 	echo "
 	<div>
 		<div>
-			<form action=\"{$pageinfo['directory']}/\" method=\"post\" id=\"jQform\"><input type=\"hidden\" name=\"operator\" />";
+			<form action=\"{$fs()->dir}/\" method=\"post\" id=\"jQform\"><input type=\"hidden\" name=\"operator\" />";
 
 
 	foreach ($database['fields'] as $fieldk => $fieldv) {
@@ -351,7 +342,7 @@ if ($c__actions->edit && $c__actions->add && isset($_POST['ea_prepare'], $_POST[
 		} elseif ($fieldv[4] == 'file') {
 			// accept=\"image/*\" Here
 
-			$_uploads_query = $sql->query("
+			$_uploads_query = $app->db->query("
 						SELECT up_id,up_name,up_size,up_date,up_pagefile,up_mime,up_rel 
 						FROM uploads 
 						WHERE 
@@ -369,7 +360,7 @@ if ($c__actions->edit && $c__actions->add && isset($_POST['ea_prepare'], $_POST[
 								<input type=\"file\" id=\"up_btn{$fieldk}\" class=\"js_uploader_btn\" multiple=\"multiple\" />
 								<span id=\"up_list{$fieldk}\" class=\"js_upload_list\">
 									<div id=\"up_handler{$fieldk}\">";
-			while ($_uploads_query && $_uploads_row = $sql->fetch_assoc($_uploads_query)) {
+			while ($_uploads_query && $_uploads_row = $_uploads_query->fetch_assoc()) {
 				echo UploadDOM(
 					$_uploads_row['up_id'],
 					(in_array($_uploads_row['up_mime'], $accepted_mimes) ? "image" : "document"),
@@ -418,7 +409,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 				if ($fieldv[4] == 'text' || $fieldv[4] == 'textarea') {
 					if ($fieldv[5] == "string" && trim($searchCriteria['search_' . $database['hash']['r'][$fieldk]]) != "") {
 						$sq = " AND (1 ";
-						$q = explode(" ", $sql->escape($searchCriteria['search_' . $database['hash']['r'][$fieldk]]));
+						$q = explode(" ", ($searchCriteria['search_' . $database['hash']['r'][$fieldk]]));
 						for ($i = 0; $i < sizeof($q); $i++) {
 							$sq .= "AND  $fieldk RLIKE '.*" . ($q[$i]) . ".*' ";
 						}
@@ -454,8 +445,8 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 	//Debug::Write($database['count'],__FILE__,__LINE__);
 
 
-	if ($r = $sql->query($database['count'])) {
-		if ($row = $sql->fetch_assoc($r)) {
+	if ($r = $app->db->query($database['count'])) {
+		if ($row = $r->fetch_assoc()) {
 			$totalRecords = $row['rowsCount'];
 			$pagecount = ceil($totalRecords / $pageper);
 		}
@@ -499,15 +490,15 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 	$database['query'] .= (isset($database['order']) && sizeof($database['order']) > 0 ? " ORDER BY " . implode(",", $database['order']) : "");
 	$database['query'] .= " LIMIT $pagenav,$pageper ";
 
-	if ($r = $sql->query($database['query'])) {
+	if ($r = $app->db->query($database['query'])) {
 
 		echo "<tr style=\"display:none;\"><td id=\"LegendParams\" data-pagecount=\"$pagecount\" data-pagecurrent=\"{$pagecurrent}\" data-total=\"$totalRecords\" data-searchoccurrence=\"$searchOccurrenece\"></td></tr>";
-		while ($row = $sql->fetch_assoc($r)) {
+		while ($row = $r->fetch_assoc()) {
 			echo "<tr data-id=\"{$row[$database['primary']]}\">";
-			if ($c__actions->delete && !(isset($database['disable-delete']) && $database['disable-delete'] == true) && (!isset($database['readonly']) || !$database['readonly'])) {
+			if ($fs()->permission->delete && !(isset($database['disable-delete']) && $database['disable-delete'] == true) && (!isset($database['readonly']) || !$database['readonly'])) {
 				echo "<td class=\"op-remove noselect\"><span></span></td>";
 			}
-			if ($c__actions->edit && (!isset($database['readonly']) || !$database['readonly'])) {
+			if ($fs()->permission->edit && (!isset($database['readonly']) || !$database['readonly'])) {
 				echo "<td class=\"op-edit noselect\"><span></span></td>";
 			}
 			foreach ($database['fields'] as $fieldk => $fieldv) {
@@ -530,7 +521,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 						if (isset($fieldv[12])) {
 							echo (is_null($row[$fieldk]) ? $fieldv[12] : htmlentities($row[$fieldk]));
 						} elseif ($fieldv[4] == "textarea") {
-							echo (htmlentities($row[$fieldk])); //nl2br
+							echo (htmlentities(is_null($row[$fieldk]) ? "" : $row[$fieldk])); //nl2br
 						} else {
 							echo htmlentities($row[$fieldk]);
 						}
@@ -546,7 +537,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			echo "</tr>";
 		}
 	} else {
-		echo "<tr><td>{$sql->error()}<br />{$database['query']}</td></tr>";
+		echo "<tr><td>{$app->db->error}<br />{$database['query']}</td></tr>";
 	}
 	exit;
 }
@@ -624,7 +615,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 <div style="padding:20px 0px 20px 0px;min-width:800px;background-color: #fff;position: sticky;top:42px;z-index: 20;">
 	<div class="btn-set flex" id="jQnavigator">
 		<?php
-		if (!isset($database['readonly']) && !$database['readonly']) {
+		if (!isset($database['readonly']) || (isset($database['readonly']) && !$database['readonly'])) {
 			echo '<button type="button" class="btn-add" id="jQbtnAdd"></button>';
 		}
 		?>
@@ -712,8 +703,8 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		<tr data-id="0">
 			<?php
 			$colspan = 0
-				+ ($c__actions->delete && !(isset($database['disable-delete']) && $database['disable-delete'])  ? 1 : 0)
-				+ ($c__actions->edit ? 1 : 0);
+				+ ($fs()->permission->delete && !(isset($database['disable-delete']) && $database['disable-delete'])  ? 1 : 0)
+				+ ($fs()->permission->edit ? 1 : 0);
 
 			if (!isset($database['readonly']) && !$database['readonly']) {
 				echo "<td colspan=\"$colspan\"></td>";
@@ -772,7 +763,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			history.pushState({
 				'nav': nav.current,
 				'search': btoa(nav.search)
-			}, "<?php echo $pageinfo['title']; ?>", "<?php echo $pageinfo['directory']; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
+			}, "<?php echo $fs()->title; ?>", "<?php echo $fs()->dir; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
 
 			searchWindowState = false;
 			$("#jQDivSearchWindow").css("display", (searchWindowState ? "block" : "none"));
@@ -785,7 +776,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			history.pushState({
 				'nav': nav.current,
 				'search': ''
-			}, "<?php echo $pageinfo['title']; ?>", "<?php echo $pageinfo['directory']; ?>/?nav=" + nav.current + "");
+			}, "<?php echo $fs()->title; ?>", "<?php echo $fs()->dir; ?>/?nav=" + nav.current + "");
 			searchWindowState = false;
 			$("#jQDivSearchWindow").css("display", (searchWindowState ? "block" : "none"));
 			Populate();
@@ -800,7 +791,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			overlay.show();
 			var $ajax = $.ajax({
 				type: 'POST',
-				url: '<?php echo $pageinfo['directory']; ?>',
+				url: '<?php echo $fs()->dir; ?>',
 				data: {
 					'method': 'populate',
 					'page': nav.current,
@@ -840,7 +831,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			history.pushState({
 				'nav': nav.current,
 				'search': btoa(nav.search)
-			}, "<?php echo $pageinfo['title']; ?>", "<?php echo $pageinfo['directory']; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
+			}, "<?php echo $fs()->title; ?>", "<?php echo $fs()->dir; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
 			Populate();
 		});
 		$("#jQnavFirst").on("click", function() {
@@ -848,7 +839,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			history.pushState({
 				'nav': nav.current,
 				'search': btoa(nav.search)
-			}, "<?php echo $pageinfo['title']; ?>", "<?php echo $pageinfo['directory']; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
+			}, "<?php echo $fs()->title; ?>", "<?php echo $fs()->dir; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
 			Populate();
 		});
 		$("#jQnavPrev").on("click", function() {
@@ -856,7 +847,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			history.pushState({
 				'nav': nav.current,
 				'search': btoa(nav.search)
-			}, "<?php echo $pageinfo['title']; ?>", "<?php echo $pageinfo['directory']; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
+			}, "<?php echo $fs()->title; ?>", "<?php echo $fs()->dir; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
 			Populate();
 		});
 
@@ -873,12 +864,12 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			Populate();
 		};
 
-		<?php if ($c__actions->edit || $c__actions->add) { ?>
+		<?php if ($fs()->permission->edit || $fs()->permission->add) { ?>
 			var FormDisplay = function($evoker, _id) {
 				overlay.show();
 				var $ajax = $.ajax({
 					type: 'POST',
-					url: '<?php echo $pageinfo['directory']; ?>',
+					url: '<?php echo $fs()->dir; ?>',
 					data: {
 						'id': _id,
 						'ea_prepare': ''
@@ -931,7 +922,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 						$form.find("input,button,textarea").prop("disabled", true);
 						var $ajax = $.ajax({
 							type: 'POST',
-							url: '<?php echo $pageinfo['directory']; ?>',
+							url: '<?php echo $fs()->dir; ?>',
 							data: _ser,
 						}).done(function(data) {
 							<?php if ($debug) { ?>popup.show(data);
@@ -985,7 +976,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			});
 		<?php } ?>
 
-		<?php if ($c__actions->delete) { ?>
+		<?php if ($fs()->permission->delete) { ?>
 			$("#jQmtable").on('click', ".op-remove", function() {
 				if (window.confirm("Are you sure you want to delete this record?") != true) {
 					return false;
@@ -995,7 +986,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 
 				var $ajax = $.ajax({
 					type: 'POST',
-					url: '<?php echo $pageinfo['directory']; ?>',
+					url: '<?php echo $fs()->dir; ?>',
 					data: {
 						'id': _id,
 						'method': 'delete'

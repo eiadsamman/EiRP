@@ -1,8 +1,8 @@
 <?php
 include_once "admin/class/log.php";
 include_once("admin/class/accounting.php");
-include_once("admin/class/slo_datalist.php");
-$slo_datalist = new SLO_DataList();
+include_once("admin/class/SmartListObject.php");
+$SmartListObject = new SmartListObject();
 $accounting = new Accounting();
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
@@ -257,7 +257,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 		$sql->commit();
 		$sql->autocommit(true);
 		$log = new Log();
-		$log->add($USER->info->id, 23, $arr_transaction['acm_id'], $pageinfo['id']);
+		$log->add($USER->info->id, 23, $arr_transaction['acm_id'], $fs()->id);
 		_JSON_output(true, "Statement updated successfully");
 	} else {
 		$sql->rollback();
@@ -266,8 +266,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 	exit;
 }
 
-include_once("admin/class/slo_datalist.php");
-$slo_datalist = new SLO_DataList();
+include_once("admin/class/SmartListObject.php");
+$SmartListObject = new SmartListObject();
 ?>
 <input type="hidden" id="jQtransactionID" value="<?php echo $arr_transaction['acm_id']; ?>" />
 <table class="bom-table" id="jQformTable" style="min-width: 1000px">
@@ -304,7 +304,7 @@ $slo_datalist = new SLO_DataList();
 					<input type="text" class="flex" tabindex="7" data-slo=":LIST" data-list="beneficialList" value="<?php echo $arr_transaction['acm_beneficial']; ?>" data-slodefaultid="0" id="jQbeneficial" />
 				</div>
 				<datalist id="beneficialList">
-					<?= $slo_datalist->financial_beneficiary(); ?>
+					<?= $SmartListObject->financial_beneficiary(); ?>
 				</datalist>
 
 			</td>
@@ -329,7 +329,7 @@ $slo_datalist = new SLO_DataList();
 				<div class="btn-set normal">
 					<input tabindex="4" type="text" data-slo=":LIST" data-list="jQdebitorList" class="flex" value="<?php echo $arr_transaction['transactions'][1]['prt_name']; ?>" data-slodefaultid="<?php echo $arr_transaction['transactions'][1]['atm_account_id']; ?>" id="jQdebitor" />
 					<datalist id="jQdebitorList" style="display: none;">
-						<?= $slo_datalist->financial_accounts_inbound(); ?>
+						<?= $SmartListObject->financial_accounts_inbound(); ?>
 					</datalist>
 				</div>
 
@@ -517,7 +517,7 @@ $slo_datalist = new SLO_DataList();
 
 			$ajax = $.ajax({
 				data: preparePOST,
-				url: "<?php echo $pageinfo['directory']; ?>/?id=<?php echo $arr_transaction['acm_id']; ?>",
+				url: "<?php echo $fs()->dir; ?>/?id=<?php echo $arr_transaction['acm_id']; ?>",
 				type: "POST"
 			}).done(function(data) {
 				var _data = null;

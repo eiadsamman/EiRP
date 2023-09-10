@@ -7,7 +7,7 @@ use Finance\Accounting;
 use Finance\Invoice;
 
 
-$_SIDE = new Template\SidePanelBuild();
+$_SIDE = new Template\Side();
 
 function SidePanelContent($sql, $user, $pageUrl, $pageTitle)
 {

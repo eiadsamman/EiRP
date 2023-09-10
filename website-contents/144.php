@@ -1,1 +1,1 @@
-<?php printViewer($pageinfo['id']);?>
+<?php printViewer($fs()->id);?>

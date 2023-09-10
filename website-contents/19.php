@@ -1,7 +1,7 @@
 <?php
 include_once("admin/class/Template/class.template.build.php");
-use Template\TemplateBuild;
-$_TEMPLATE = new TemplateBuild("Test");
+use Template\Body;
+$_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/ false,/*Command Bar*/ false ,/*Sticky Frame*/ false);
 $_TEMPLATE->FrameTitlesStack(false);
 $_TEMPLATE->Title("Welcome", null, null);
@@ -15,8 +15,8 @@ if($rlocal=$sql->query("
 	")){
 	while($rowlocal=$sql->fetch_assoc($rlocal)){
 		$reportpageid=$rowlocal['trd_id'];
-		if(file_exists($_SERVER['FILE_SYSTEM_ROOT']."website-contents/{$rowlocal['trd_id']}.php")){
-			include($_SERVER['FILE_SYSTEM_ROOT']."website-contents/{$rowlocal['trd_id']}.php");
+		if(file_exists($app->root."website-contents/{$rowlocal['trd_id']}.php")){
+			include($app->root."website-contents/{$rowlocal['trd_id']}.php");
 		}
 	}
 }

@@ -4,8 +4,8 @@ if($h__requested_with_ajax && isset($_POST['posubmit'])){
 }
 
 include_once("admin/class/Template/class.template.build.php");
-use Template\TemplateBuild;
-$_TEMPLATE = new TemplateBuild("Candas - SN Calculator");
+use Template\Body;
+$_TEMPLATE = new Body("Candas - SN Calculator");
 $_TEMPLATE->SetLayout(/*Sticky Title*/ false,/*Command Bar*/ false ,/*Sticky Frame*/ false);
 $_TEMPLATE->FrameTitlesStack(false);
 
@@ -62,7 +62,7 @@ MathJax = {
 		<tr>
 			<td style="min-width: 300px;width:100%" valign="top" class="tcell">
 				<?php
-					$_TEMPLATE->Title($pageinfo['title'], null, null);
+					$_TEMPLATE->Title($fs()->title, null, null);
 
 					echo $_TEMPLATE->CommandBarStart();
 					echo "<div class=\"btn-set\" style=\"flex-wrap:nowrap\">";
@@ -291,7 +291,7 @@ MathJax = {
 		let Update = function(){
 			overlay.show();
 			$.ajax({
-				url:"<?php echo $pageinfo['directory'];?>",
+				url:"<?php echo $fs()->dir;?>",
 				type:"POST",
 				data:$("#jQpostFormDetails").serialize() + "&" + $("#jQpostFormMaterials").serialize(),
 			}).done(function(o, textStatus, request){

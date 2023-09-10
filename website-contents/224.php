@@ -13,10 +13,10 @@
 </p>
 <h2>Procedures</h2>
 <h3>Company settings</h3>
-<p>System administrator should create and maintance companies running on this system following <a href="<?php echo $_SERVER['HTTP_SYSTEM_ROOT'].$tables->pagefile_info(147)['directory'];?>">Companies page</a></p>
+<p>System administrator should create and maintance companies running on this system following <a href="<?php echo $app->http_root.$tables->pagefile_info(147)['directory'];?>">Companies page</a></p>
 
 <h3>Linking required company to your account</h3>
-<p>System administrator should link companies to your account through <a href="<?php echo $_SERVER['HTTP_SYSTEM_ROOT'].$tables->pagefile_info(5)['directory'];?>">Users page</a></p>
+<p>System administrator should link companies to your account through <a href="<?php echo $app->http_root.$tables->pagefile_info(5)['directory'];?>">Users page</a></p>
 
 <h2>Troubleshooting</h2>
 <h3>The page is not loading:</h3>

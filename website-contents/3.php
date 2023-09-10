@@ -1,4 +1,5 @@
 <?php
+
 if (!isset($_POST['limit']) || !isset($_POST['role'])) {
 	exit;
 }
@@ -88,8 +89,8 @@ $q =
 		" . (isset($rl[$role]['order']) && is_array($rl[$role]['order']) ? " ORDER BY " . implode(",", $rl[$role]['order']) : "") . "
 	LIMIT 0, $limit";
 
-if ($r = $sql->query($q)) {
-	while ($row = $sql->fetch_assoc($r)) {
+if ($r = $app->db->query($q)) {
+	while ($row = $r->fetch_assoc()) {
 		$cute = "";
 		$return_id = "";
 		foreach ($rl[$role]['return_id'] as $msel => $msev) {
@@ -132,7 +133,7 @@ if ($r = $sql->query($q)) {
 			}
 		}
 		echo "</p>";
-		
+
 		echo "</div>";
 	}
 } else {

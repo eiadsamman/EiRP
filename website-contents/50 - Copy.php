@@ -438,7 +438,7 @@ $(document).ready(function(e) {
 		list_button:$("#js_upload_count"),
 		emptymessage:"[No files uploaded]",
 		upload_url:"<?php echo $tables->pagefile_info(186,null,"directory");?>",
-		relatedpagefile:<?php echo Pool::FILE['Person']['Photo'];?>,
+		relatedpagefile:<?php echo App::FILE['Person']['Photo'];?>,
 		multiple:false,
 		inputname:"perosnal_image",
 		onupload:function(output){
@@ -526,7 +526,7 @@ $(document).ready(function(e) {
 	$("#jQbtnSubmit").on('click',function(){
 		var $form=$("#jQform");
 		$.ajax({
-			url:'<?php echo $pageinfo['directory'];?>',
+			url:'<?php echo $fs()->dir;?>',
 			type:'POST',
 			data:$form.serialize()
 		}).done(function(data){
@@ -562,7 +562,7 @@ $(document).ready(function(e) {
 	
 	var get_salary_information=function(){
 		$.ajax({
-			url:"<?php echo "{$pageinfo['directory']}";?>",
+			url:"<?php echo "{$fs()->dir}";?>",
 			type:"POST",
 			data:{
 				'method':'get_salary_information',

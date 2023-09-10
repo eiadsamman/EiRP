@@ -66,7 +66,7 @@ if(isset($_POST['method'],$_POST['job-id']) && $_POST['method']=="update-job-sal
 		echo "false_job";
 		exit;
 	}
-	echo "<form action=\"{$pageinfo['directory']}/\" method=\"post\" id=\"jQform\">
+	echo "<form action=\"{$fs()->dir}/\" method=\"post\" id=\"jQform\">
 				<input type=\"hidden\" name=\"method\" value=\"commit-upateds\" />
 				<input type=\"hidden\" name=\"job_id\" value=\"{$job_info['id']}\" />";
 	echo "<table class=\"bom-table hover\" style=\"margin-bottom:15px;\">
@@ -184,7 +184,7 @@ if($q){
 			overlay.show();
 			var $ajax=$.ajax({
 				type:'POST',
-				url:'<?php echo $pageinfo['directory'];?>',
+				url:'<?php echo $fs()->dir;?>',
 				data:{'method':'update-job-salary','job-id':$id}
 			}).done(function(data){
 				overlay.hide();
@@ -202,7 +202,7 @@ if($q){
 					
 					var $ajax=$.ajax({
 						type:'POST',
-						url:'<?php echo $pageinfo['directory'];?>',
+						url:'<?php echo $fs()->dir;?>',
 						data:_ser,
 					}).done(function(data){
 						popup.hide();

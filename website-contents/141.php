@@ -44,7 +44,7 @@ $(document).ready(function(e) {
 		$this.prop("disabled",true);
 		
 		$.ajax({
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST",
 			data:{"change-cwk":_cwk_id,"status":~~_status}
 		}).done(function(data){

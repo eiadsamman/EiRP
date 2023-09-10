@@ -29,7 +29,7 @@ $rl["PAGEFILE"]=array(
 	"from"=>"pagefile 
 		JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1 
 		JOIN 
-			pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$USER->info->permissions}",
+			pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$app->user->info->permissions}",
 	"return_id"=>array("trd_directory"=>"trd_directory"),
 	"return_value"=>array("pfl_value"=>"pfl_value"),
 	"select"=>array("pfl_value"=>"pfl_value"),
@@ -48,7 +48,7 @@ $rl["B001"]=array(
 	"select"=>array("userinfo"=>"CONCAT(usr_id,\": \",usr_username)"),
 	"minselect"=>array("username_exteneded"=>"   CONCAT( \"[\", per_title , \"] \" , CONCAT_WS(' ', COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) )    "),
 	"search"=>array('usr_firstname'=>'usr_firstname','usr_lastname'=>'usr_lastname','usr_username'=>'usr_username','usr_id'=>'usr_id'),
-	"where"=>" (per_order < {$USER->info->level} or usr_id= {$USER->info->id} ) ",
+	"where"=>" (per_order < {$app->user->info->level} or usr_id= {$app->user->info->id} ) ",
 	"group"=>"",
 );
 
@@ -60,7 +60,7 @@ $rl["USERS"]=array(
 	"select"=>array("usr_username"=>"CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect"=>array(),
 	"search"=>array('usr_firstname'=>'usr_firstname','usr_lastname'=>'usr_lastname','usr_username'=>'usr_username','usr_id'=>'usr_id'),
-	"where"=>" ".($USER->info->id!=1?"  usr_id!=1 ":"")."",
+	"where"=>" ".($app->user->info->id!=1?"  usr_id!=1 ":"")."",
 	"group"=>" ",
 	"order"=>array("usr_id"),
 	"union"=>" UNION SELECT '[system]' AS usr_usrname ,0 AS usr_id ",
@@ -96,7 +96,7 @@ $rl["B00S"]=array(
 	"select"=>array("username"=>"CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect"=>array(),
 	"search"=>array('usr_firstname'=>'usr_firstname','usr_lastname'=>'usr_lastname','usr_id'=>'usr_id'),
-	"where"=>" (usr_attrib_i2=0 OR usr_attrib_i2=1) AND lbr_company=".(int)$USER->company->id,
+	"where"=>" (usr_attrib_i2=0 OR usr_attrib_i2=1) AND lbr_company=".(int)$app->user->company->id,
 	"group"=>"",
 );
 
@@ -133,7 +133,7 @@ $rl["PERM_LEVEL"]=array(
 	"select"=>array("per_title"=>"per_title"),
 	"minselect"=>array(),
 	"search"=>array('per_title'=>'per_title'),
-	"where"=>" per_order < {$USER->info->level} ",
+	"where"=>" per_order < {$app->user->info->level} ",
 	"group"=>"",
 	"order"=>array("per_id")
 );
@@ -447,7 +447,7 @@ $rl["USERPARTITION"]=array(
 	"select"=>array("prt_name"=>"prt_name"),
 	"minselect"=>array(),
 	"search"=>array("prt_name"=>"prt_name"),
-	"where"=>" upr_usr_id={$USER->info->id} ",
+	"where"=>" upr_usr_id={$app->user->info->id} ",
 	"group"=>"",
 	"order"=>array("prt_name")
 );
@@ -498,25 +498,25 @@ $rl["ACC"]=array(
 $rl["ACC_788"]=array(
 	"from"=>" `acc_accounts`  
 		JOIN currencies ON cur_id=prt_currency
-		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$USER->info->id} AND upr_prt_fetch=1
+		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_fetch=1
 		JOIN `acc_accounttype` ON prt_type=ptp_id
 		JOIN (
 			SELECT 
 				comp_id,comp_name 
 			FROM 
 				companies 
-					JOIN user_company ON comp_id=urc_usr_comp_id AND urc_usr_id={$USER->info->id}
-					JOIN user_settings ON usrset_usr_id={$USER->info->id} AND usrset_name='system_working_company' AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
+					JOIN user_company ON comp_id=urc_usr_comp_id AND urc_usr_id={$app->user->info->id}
+					JOIN user_settings ON usrset_usr_id={$app->user->info->id} AND usrset_name='system_working_company' AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
 			) AS _companies ON prt_company_id=_companies.comp_id
 			
-		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$USER->info->id} AND usrset_name='system_count_account_selection'
+		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_name='system_count_account_selection'
 		",
 	"return_id"=>array("prt_id"=>"prt_id"),
 	"return_value"=>array("name"=>" CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name ,\": \" , ptp_name, \": \", prt_name)"),
 	"select"=>array("name"=>" CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name ,\": \" , ptp_name, \": \", prt_name)"),
 	"minselect"=>array(),
 	"search"=>array("prt_name"=>"prt_name","cur_name"=>"cur_name","cur_shortname"=>"cur_shortname","ptp_name"=>"ptp_name","comp_name"=>"_companies.comp_name"),
-	"where"=>" ".(isset($_POST['exclude'])?" prt_id!= {$_POST['exclude']} ":"")." upr_usr_id={$USER->info->id} ",
+	"where"=>" ".(isset($_POST['exclude'])?" prt_id!= {$_POST['exclude']} ":"")." upr_usr_id={$app->user->info->id} ",
 	"group"=>"",
 	"order"=>array("(usrset_value + 0) DESC")
 );
@@ -525,17 +525,17 @@ $rl["ACC_788"]=array(
 $rl["ACC_OPERATION"]=array(
 	"from"=>" `acc_accounts`  
 		JOIN currencies ON cur_id=prt_currency
-		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$USER->info->id}
+		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id}
 		JOIN `acc_accounttype` ON prt_type=ptp_id
 		JOIN companies ON prt_company_id=comp_id
-		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$USER->info->id} AND usrset_name='system_count_account_operation'
+		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_name='system_count_account_operation'
 		",
 	"return_id"=>array("prt_id"=>"prt_id"),
 	"return_value"=>array("name"=>" CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
 	"select"=>array("name"=>" CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
 	"minselect"=>array(),
 	"search"=>array("prt_name"=>"prt_name","cur_name"=>"cur_name","cur_shortname"=>"cur_shortname","ptp_name"=>"ptp_name","comp_name"=>"comp_name"),
-	"where"=>" ".(isset($_POST['exclude'])?" prt_id!= {$_POST['exclude']} ":"")." upr_usr_id={$USER->info->id} ",
+	"where"=>" ".(isset($_POST['exclude'])?" prt_id!= {$_POST['exclude']} ":"")." upr_usr_id={$app->user->info->id} ",
 	"group"=>"",
 	"order"=>array("(usrset_value+0) DESC")
 );
@@ -543,17 +543,17 @@ $rl["ACC_OPERATION"]=array(
 $rl["ACC_VIEW"]=array(
 	"from"=>" `acc_accounts`  
 		JOIN currencies ON cur_id=prt_currency
-		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$USER->info->id} AND upr_prt_view=1
+		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1
 		JOIN `acc_accounttype` ON prt_type=ptp_id
 		JOIN companies ON prt_company_id=comp_id
-		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$USER->info->id} AND usrset_name='system_count_account_operation'
+		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_name='system_count_account_operation'
 		",
 	"return_id"=>array("prt_id"=>"prt_id"),
 	"return_value"=>array("name"=>" CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
 	"select"=>array("name"=>" CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
 	"minselect"=>array(),
 	"search"=>array("prt_name"=>"prt_name","cur_name"=>"cur_name","cur_shortname"=>"cur_shortname","ptp_name"=>"ptp_name","comp_name"=>"comp_name"),
-	"where"=>" ".(isset($_POST['exclude'])?" prt_id!= {$_POST['exclude']} ":"")." upr_usr_id={$USER->info->id} ",
+	"where"=>" ".(isset($_POST['exclude'])?" prt_id!= {$_POST['exclude']} ":"")." upr_usr_id={$app->user->info->id} ",
 	"group"=>"",
 	"order"=>array("(usrset_value+0) DESC")
 );
@@ -571,10 +571,10 @@ $rl["ACC_VIEW"]=array(
 $rl["ACC_OUTBOUND"]=array(
 	"from"=>" `acc_accounts`  
 		JOIN currencies ON cur_id=prt_currency
-		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$USER->info->id} AND upr_prt_outbound=1
+		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_outbound=1
 		JOIN `acc_accounttype` ON prt_type=ptp_id
 		JOIN companies ON prt_company_id=comp_id
-		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$USER->info->id} AND usrset_name='system_count_account_operation'
+		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_name='system_count_account_operation'
 		",
 	"return_id"=>array("prt_id"=>"prt_id"),
 	"return_value"=>array("name"=>" CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
@@ -583,7 +583,7 @@ $rl["ACC_OUTBOUND"]=array(
 	"search"=>array("prt_name"=>"prt_name","cur_name"=>"cur_name","cur_shortname"=>"cur_shortname","ptp_name"=>"ptp_name","comp_name"=>"comp_name"),
 	"where"=>" ".(isset($_POST['exclude'])?" prt_id!= {$_POST['exclude']} AND":"")."
 				".(isset($_POST['company'])?" comp_id= ".(int)$_POST['company']." AND ":"")." 
-				upr_usr_id={$USER->info->id} ",
+				upr_usr_id={$app->user->info->id} ",
 	"group"=>"",
 	"order"=>array("(usrset_value+0) DESC")
 );
@@ -731,7 +731,7 @@ $rl["MAT_TYPE"]=array(
 
 
 $rl["COMPANIES"]=array(
-	"from"=>"companies JOIN user_company ON urc_usr_comp_id = comp_id AND urc_usr_id = {$USER->info->id}",
+	"from"=>"companies JOIN user_company ON urc_usr_comp_id = comp_id AND urc_usr_id = {$app->user->info->id}",
 	"return_id"=>array("comp_id"=>"comp_id"),
 	"return_value"=>array("comp_name"=>"comp_name"),
 	"select"=>array("comp_name"=>"comp_name"),
@@ -928,8 +928,8 @@ $rl["COMPANY"]=array(
 
 $rl["COMPANY_USER"]=array(
 	"from"=>"companies 
-				JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id={$USER->info->id}
-				LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id={$USER->info->id} AND usrset_name='system_count_company_selection'",
+				JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id={$app->user->info->id}
+				LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id={$app->user->info->id} AND usrset_name='system_count_company_selection'",
 	"return_id"=>array("comp_id"=>"comp_id"),
 	"return_value"=>array("comp_name"=>"comp_name"),
 	"select"=>array("comp_name"=>"comp_name"),
@@ -970,7 +970,7 @@ $rl["COSTCENTER"]=array(
 
 $rl["COSTCENTER_USER"]=array(
 	"from"=>"inv_costcenter 
-				JOIN user_costcenter ON ccc_id=usrccc_ccc_id AND usrccc_usr_id={$USER->info->id}
+				JOIN user_costcenter ON ccc_id=usrccc_ccc_id AND usrccc_usr_id={$app->user->info->id}
 				",
 	"return_id"=>array("ccc_id"=>"ccc_id"),
 	"return_value"=>array("ccc_name"=>"ccc_name"),

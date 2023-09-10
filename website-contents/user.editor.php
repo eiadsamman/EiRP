@@ -1,15 +1,10 @@
 <?php
 
 $debug = false;
-include_once "admin/class/log.php";
-include_once("admin/class/person.php");
 
-use System\Pool;
-use System\SLO_DataList;
+use System\App;
+use System\SmartListObject;
 
-$perm_personal = $tables->Permissions(227, $USER->info->permissions);
-$perm_job = $tables->Permissions(228, $USER->info->permissions);
-$perm_salary = $tables->Permissions(229, $USER->info->permissions);
 
 function fnConvOnlyNumbers($input)
 {
@@ -33,18 +28,17 @@ function check_date($input)
 
 if (isset($_POST['method'], $_POST['sal_workingtime'], $_POST['sal_paymethod'], $_POST['sal_job']) && $_POST['method'] == "get_salary_information") {
 	if (!$c__actions->edit) {
-		header(HTTP403);
-		exit;
+		$app->responseStatus->BadRequest;
 	}
 	$_POST['sal_workingtime'] = (int)$_POST['sal_workingtime'];
 	$_POST['sal_paymethod'] = (int)$_POST['sal_paymethod'];
 	$_POST['sal_job'] = (int)$_POST['sal_job'];
 
 	$output = false;
-	$r = $sql->query("SELECT lbr_typ_sal_basic_salary,lbr_typ_sal_variable,lbr_typ_sal_allowance,lbr_typ_sal_transportation FROM labour_type_salary
+	$r = $app->db->query("SELECT lbr_typ_sal_basic_salary,lbr_typ_sal_variable,lbr_typ_sal_allowance,lbr_typ_sal_transportation FROM labour_type_salary
 						WHERE lbr_typ_sal_lty_id={$_POST['sal_job']} AND lbr_typ_sal_lwt_id={$_POST['sal_workingtime']} AND lbr_typ_sal_method={$_POST['sal_paymethod']}");
 	if ($r) {
-		if ($row = $sql->fetch_assoc($r)) {
+		if ($row = $r->fetch_assoc()) {
 			$output = array(
 				"basic" => number_format($row['lbr_typ_sal_basic_salary'], 2, ".", ""),
 				"variable" => number_format($row['lbr_typ_sal_variable'], 2, ".", ""),
@@ -64,9 +58,9 @@ $arr_array_input = false;
 
 if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token']) && $_POST['EmployeeFormMethod'] == "proccessHandler") {
 	$defaultPermissionID = 0;
-	$rminper = $sql->query("SELECT per_id FROM `permissions` WHERE `per_order` = ( SELECT MIN(`per_order`) FROM `permissions` );");
+	$rminper = $app->db->query("SELECT per_id FROM `permissions` WHERE `per_order` = ( SELECT MIN(`per_order`) FROM `permissions` );");
 	if ($rminper) {
-		if ($rminperRow = $sql->fetch_assoc($rminper)) {
+		if ($rminperRow = $rminper->fetch_assoc()) {
 			$defaultPermissionID = (int)$rminperRow['per_id'];
 		}
 	}
@@ -149,7 +143,7 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 	$roleoutput = bindec($roleoutput);
 
 	if ($arrparser['result']) {
-		$sql->autocommit(false);
+		$app->db->autocommit(false);
 		$q = sprintf(
 			"
 				INSERT INTO 
@@ -205,31 +199,31 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 			($employeeID === 0 ? "NULL" : $employeeID)
 		);
 
-		if ($sql->query($q)) {
-			$UserID = $sql->insert_id();
+		if ($app->db->query($q)) {
+			$UserID = $app->db->insert_id;
 
 
 			$UploadsIDs = "";
 			$UploadsFound = false;
 			$UploadsSep = "";
-			if ((isset($arroutput['source']['perosnal_image']) && is_array($arroutput['source']['perosnal_image']) && sizeof($arroutput['source']['perosnal_image']) > 0)) {
-				foreach ($arroutput['source']['perosnal_image'] as $UploadItem) {
+			if ((isset($arroutput['source']['perosnal_image']) && is_array($arroutput['source']['perosnal_image']) && sizeof((array)$arroutput['source']['perosnal_image']) > 0)) {
+				foreach ((array)$arroutput['source']['perosnal_image'] as $UploadItem) {
 					$UploadsFound = true;
 					$UploadsIDs .= $UploadsSep . (int)$UploadItem;
 					$UploadsSep = ",";
 				}
 			}
-			if ((isset($arroutput['source']['social_id_image']) && is_array($arroutput['source']['social_id_image']) && sizeof($arroutput['source']['social_id_image']) > 0)) {
-				foreach ($arroutput['source']['social_id_image'] as $UploadItem) {
+			if ((isset($arroutput['source']['social_id_image']) && is_array($arroutput['source']['social_id_image']) && sizeof((array)$arroutput['source']['social_id_image']) > 0)) {
+				foreach ((array)$arroutput['source']['social_id_image'] as $UploadItem) {
 					$UploadsFound = true;
 					$UploadsIDs .= $UploadsSep . (int)$UploadItem;
 					$UploadsSep = ",";
 				}
 			}
-			$releaseUploads = $sql->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$UserID AND (up_pagefile=" . Pool::FILE['Person']['Photo'] . " OR up_pagefile=" . Pool::FILE['Person']['ID'] . ");");
+			$releaseUploads = $app->db->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$UserID AND (up_pagefile=" . App::FILE['Person']['Photo'] . " OR up_pagefile=" . App::FILE['Person']['ID'] . ");");
 			if ($releaseUploads) {
 				if ($UploadsFound) {
-					if (!$sql->query("UPDATE uploads SET up_rel=$UserID WHERE up_id IN ({$UploadsIDs}) AND (up_pagefile=" . Pool::FILE['Person']['Photo'] . " OR up_pagefile=" . Pool::FILE['Person']['ID'] . ");")) {
+					if (!$app->db->query("UPDATE uploads SET up_rel=$UserID WHERE up_id IN ({$UploadsIDs}) AND (up_pagefile=" . App::FILE['Person']['Photo'] . " OR up_pagefile=" . App::FILE['Person']['ID'] . ");")) {
 						$arrparser['result'] = false;
 						$arrparser['source']["global"] = "Assinging uploads to the employee failed";
 					}
@@ -262,7 +256,7 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 									lbr_transportation,
 									lbr_resigndate,
 									lbr_company
-									" . ($perm_salary->edit ? ",lbr_fixedsalary,lbr_variable,lbr_allowance" : "") . "
+									" . ($fs(229)->permission->edit ? ",lbr_fixedsalary,lbr_variable,lbr_allowance" : "") . "
 									,lbr_role
 									) VALUES 
 								(
@@ -280,7 +274,7 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 									%10\$d,
 									%11\$s,
 									%12\$d
-									" . ($perm_salary->edit ? ",%13\$s,%14\$s,%15\$s" : "") . "
+									" . ($fs(229)->permission->edit ? ",%13\$s,%14\$s,%15\$s" : "") . "
 									,%16\$d
 								)
 						 ON DUPLICATE KEY UPDATE lbr_id=LAST_INSERT_ID(lbr_id),
@@ -297,7 +291,7 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 							lbr_transportation=%10\$d,
 							lbr_resigndate=%11\$s,
 							lbr_company=%12\$d
-							" . ($perm_salary->edit ? ",lbr_fixedsalary=%13\$s,lbr_variable=%14\$s,lbr_allowance=%15\$s" : "") . "
+							" . ($fs(229)->permission->edit ? ",lbr_fixedsalary=%13\$s,lbr_variable=%14\$s,lbr_allowance=%15\$s" : "") . "
 							,lbr_role=%16\$d
 							;",
 					/* 1: userid*/
@@ -334,7 +328,7 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 					$roleoutput
 
 				);
-				if (!$sql->query($q_labour_insert)) {
+				if (!$app->db->query($q_labour_insert)) {
 					$arrparser['result'] = false;
 					$arrparser['source']["global"] = "Updating employee information failed!";
 				}
@@ -346,9 +340,9 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 	}
 	if ($arrparser['result']) {
 		$arrparser['source']["global"] = "Employee information updated successfully!";
-		$sql->commit();
+		$app->db->commit();
 	} else {
-		$sql->rollback();
+		$app->db->rollback();
 	}
 	echo json_encode($arrparser);
 	exit;
@@ -356,23 +350,19 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 
 $UserFound = false;
 if (isset($_GET['method'], $_GET['id'])) {
-	$UserQuery = $sql->query("SELECT usr_id,usr_firstname, usr_lastname FROM users WHERE usr_id =" . ((int)$_GET['id']) . "");
+	$UserQuery = $app->db->query("SELECT usr_id,usr_firstname, usr_lastname FROM users WHERE usr_id =" . ((int)$_GET['id']) . "");
 	if ($UserQuery) {
-		if ($UserRow = $sql->fetch_assoc($UserQuery)) {
+		if ($UserRow = $UserQuery->fetch_assoc()) {
 			$UserFound = $UserRow;
 		}
 	}
 }
 
-if ($h__requested_with_ajax) {
+if ($app->xhttp) {
 	exit;
 }
 
-
-
-include_once("admin/class/slo_datalist.php");
-$slo_datalist = new SLO_DataList();
-
+$SmartListObject = new System\SmartListObject($app);
 
 ?>
 
@@ -381,7 +371,7 @@ $slo_datalist = new SLO_DataList();
 		<span>Employee Name \ ID</span><input type="text" id="employeIDFormSearch" data-slo=":LIST" data-list="personList" class="flex" value="<?php echo $UserFound ? $UserFound['usr_firstname'] . " " . $UserFound['usr_lastname'] : ""; ?>" <?php echo $UserFound ? "data-slodefaultid=\"" . $UserFound['usr_id'] . "\"" : ""; ?> placeholder="Select user..." />
 	</div>
 	<datalist id="personList">
-		<?= $slo_datalist->hr_person(Pool::$_user->company->id); ?>
+		<?= $SmartListObject->hr_person($app->user->company->id); ?>
 	</datalist>
 </div>
 
@@ -399,12 +389,12 @@ $slo_datalist = new SLO_DataList();
 		var Loader = function(method, id) {
 			$FormModifyOverLay.show();
 			$.ajax({
-				url: '<?php echo $tables->pagefile_info(219, null, "directory"); ?>',
+				url: '<?= $fs(219)->dir ?>',
 				type: 'POST',
 				data: {
 					'method': method,
 					'id': id,
-					'frole': <?php echo isset($fixedrole) ? $fixedrole : 0; ?>
+					'frole': <?= isset($fixedrole) ? $fixedrole : 0; ?>
 				}
 			}).done(function(data) {
 				SLO_employeeID.enable();
@@ -418,10 +408,10 @@ $slo_datalist = new SLO_DataList();
 
 		<?php
 		if ($UserFound) {
-			echo "history.replaceState({'method':'update', 'id': {$UserFound['usr_id']}, 'name': '{$UserFound['usr_firstname']} {$UserFound['usr_lastname']}'}, '" . $tables->pagefile_info(134, null, "title") . "', '" . $tables->pagefile_info(134, null, "directory") . "/?method=update&id={$UserFound['usr_id']}');";
+			echo "history.replaceState({'method':'update', 'id': {$UserFound['usr_id']}, 'name': '{$UserFound['usr_firstname']} {$UserFound['usr_lastname']}'}, '" . $fs(134)->title . "', '" .  $fs(134)->dir  . "/?method=update&id={$UserFound['usr_id']}');";
 			echo "Loader(\"update\", {$UserFound['usr_id']})";
 		} else {
-			echo "history.replaceState({'method':'', 'id': 0, 'name': ''}, '" . $tables->pagefile_info(50, null, "title") . "', '" . $tables->pagefile_info(50, null, "directory") . "');";
+			echo "history.replaceState({'method':'', 'id': 0, 'name': ''}, '" .  $fs(50)->title  . "', '" . $fs(50)->dir . "');";
 			echo "Loader(\"add\", 0)";
 		}
 		?>
@@ -436,7 +426,7 @@ $slo_datalist = new SLO_DataList();
 					'method': 'update',
 					'id': value.hidden,
 					'name': value.value
-				}, "<?php echo $tables->pagefile_info(134, null, "title"); ?>", "<?php echo $tables->pagefile_info(134, null, "directory"); ?>/?method=update&id=" + value.hidden);
+				}, "<?= $fs(134)->title ?>", "<?= $fs(134)->dir ?>/?method=update&id=" + value.hidden);
 				Loader("update", value.hidden);
 			},
 			ondeselect: function() {
@@ -447,7 +437,7 @@ $slo_datalist = new SLO_DataList();
 					'method': '',
 					'id': 0,
 					'name': ''
-				}, "<?php echo $tables->pagefile_info(50, null, "title"); ?>", "<?php echo $tables->pagefile_info(50, null, "directory"); ?>");
+				}, "<?= $fs(50)->dir ?>", "<?= $fs(50)->dir ?>");
 				Loader("add", 0);
 			},
 			"limit": 10,
@@ -465,7 +455,7 @@ $slo_datalist = new SLO_DataList();
 				Loader("add", 0);
 			}
 		};
-		<?php if ($perm_salary->edit) { ?>
+		<?php if ($fs(229)->permission->edit) { ?>
 			var salary_clear = function() {
 				$("input[name=salary_basic]").attr("data-basicvalue", "0.00");
 				$("input[name=salary_variable]").attr("data-basicvalue", "0.00");
@@ -483,7 +473,7 @@ $slo_datalist = new SLO_DataList();
 
 			var get_salary_information = function() {
 				$.ajax({
-					url: "<?php echo "{$pageinfo['directory']}"; ?>",
+					url: "<?php echo "{$fs()->dir}"; ?>",
 					type: "POST",
 					data: {
 						'method': 'get_salary_information',
@@ -528,8 +518,8 @@ $slo_datalist = new SLO_DataList();
 				dombutton: $("#js_upload_trigger"),
 				list_button: $("#js_upload_count"),
 				emptymessage: "[No files uploaded]",
-				upload_url: "<?php echo $tables->pagefile_info(186, null, "directory"); ?>",
-				relatedpagefile: <?php echo Pool::FILE['Person']['Photo']; ?>,
+				upload_url: "<?= $fs(186)->dir ?>",
+				relatedpagefile: <?php echo App::FILE['Person']['Photo']; ?>,
 				multiple: false,
 				inputname: "perosnal_image",
 				domhandler: $("#UploadPersonalDOMHandler"),
@@ -544,8 +534,8 @@ $slo_datalist = new SLO_DataList();
 				dombutton: $("#js_upload_trigger_1"),
 				list_button: $("#js_upload_count_1"),
 				emptymessage: "[No files uploaded]",
-				upload_url: "<?php echo $tables->pagefile_info(186, null, "directory"); ?>",
-				relatedpagefile: <?php echo Pool::FILE['Person']['ID']; ?>,
+				upload_url: "<?= $fs(134)->dir ?>",
+				relatedpagefile: <?php echo App::FILE['Person']['ID']; ?>,
 				multiple: true,
 				inputname: "social_id_image",
 				align: "right",
@@ -607,7 +597,7 @@ $slo_datalist = new SLO_DataList();
 					'limit': 10
 				});
 
-			<?php if ($perm_salary->edit) { ?>
+			<?php if ($fs(229)->permission->edit) { ?>
 				$(".derive_function").on('change', function() {
 					var $this = $(this);
 					var _result = $this.prop("checked");
@@ -627,7 +617,7 @@ $slo_datalist = new SLO_DataList();
 				$(".EmployeeFormSubmitButton").prop("disabled", true);
 				e.preventDefault();
 				$.ajax({
-					url: '<?php echo $pageinfo['directory']; ?>',
+					url: '<?php echo $fs()->dir; ?>',
 					type: 'POST',
 					data: $Form.serialize()
 				}).done(function(data) {
@@ -661,7 +651,7 @@ $slo_datalist = new SLO_DataList();
 							slortransportation.clear();
 							slonationality.clear();
 							slotype.clear();
-							<?php if ($perm_salary->edit) { ?>
+							<?php if ($fs(229)->permission->edit) { ?>
 								$("[name=sal_default_salary]").prop("checked", true);
 								$("[name=sal_default_variable]").prop("checked", true);
 								$("[name=sal_default_allowance]").prop("checked", true);

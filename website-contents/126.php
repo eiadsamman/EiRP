@@ -366,7 +366,7 @@ if(isset($_POST['submit-new-absence-request'])){
 			var $this=$(this),
 				id=$this.attr('data-id');
 			$.ajax({
-				url:"<?php echo $pageinfo['directory'];?>",
+				url:"<?php echo $fs()->dir;?>",
 				type:"POST",
 				data:{'delete-absenece-request':'','id':id}
 			}).done(function(output){
@@ -382,7 +382,7 @@ if(isset($_POST['submit-new-absence-request'])){
 		
 		var update_view=function(){
 			$.ajax({
-				url:"<?php echo $pageinfo['directory'];?>",
+				url:"<?php echo $fs()->dir;?>",
 				type:"POST",
 				data:{'list-absenece-report':'','lbr':selected_employee}
 			}).done(function(output){
@@ -419,7 +419,7 @@ if(isset($_POST['submit-new-absence-request'])){
 			if(type==0){messagesys.failure("Select absence type");$("#jQtype").focus(); return;}
 			$("#jQnewForm").find("input,button").prop("disabled",true);
 			$.ajax({
-				url:"<?php echo $pageinfo['directory'];?>",
+				url:"<?php echo $fs()->dir;?>",
 				type:"POST",
 				data:{'submit-new-absence-request':'','lbr':lbr,'date':date,'period':period,'comments':comments,'type':type}
 			}).done(function(output){
@@ -429,7 +429,7 @@ if(isset($_POST['submit-new-absence-request'])){
 				if(json.result){
 					
 					$.ajax({
-						url:"<?php echo $pageinfo['directory'];?>",
+						url:"<?php echo $fs()->dir;?>",
 						type:"POST",
 						data:{'list-absenece-report':'','lbr':lbr}
 					}).done(function(output){

@@ -189,7 +189,7 @@ $(document).ready(function(e) {
 		$this.attr("disabled","disabled");
 		$.ajax({
 			data:{'serial':$this.val()},
-			url:"<?php echo $pageinfo['directory'];?>",
+			url:"<?php echo $fs()->dir;?>",
 			type:"POST"
 		}).done(function(data){
 			$("#jQrate").html(data);
