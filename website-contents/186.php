@@ -1,7 +1,6 @@
 <?php
 set_time_limit(60 * 3);
 ini_set('memory_limit', '512M');
-include($app->root . 'admin/class/attachlib.php');
 $ulib = new System\IO\AttachLib($app);
 
 //Upload plugin requires (style/style.upload.css) & (jquery/uploader-1.0.js) files
@@ -97,8 +96,7 @@ if (isset($_POST, $_POST['upload_file']) && $_POST['upload_file'] == "true" && !
 					//Reduce image size
 					if (in_array($up_mime_type, $accepted_mimes)) {
 						if (in_array($up_mime_type, $resize_mimes)) {
-							include($app->root . 'admin/class/SimpleImage.php');
-							$image = new SimpleImage();
+							$image = new System\IO\SimpleImage();
 
 							if ($image->load($app->root . "uploads/" . $up_id) !== false) {
 								$image->FixOrientation();

@@ -174,6 +174,7 @@ $(document).ready(function (e) {
 			url: "acc/report/balupd",
 			type: "POST"
 		}).done(function (data) {
+			
 			try { var json = JSON.parse(data); } catch (err) { return; }
 			if (json.currency != undefined && json.currency != undefined && json.currency != false && json.value != false) {
 				jqroot_bal.show();

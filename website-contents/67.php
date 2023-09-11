@@ -1,13 +1,8 @@
 <?php
-include_once("admin/class/Template/class.template.build.php");
 
+use System\Individual\Attendance\Registration;
 
-use System\App;
-use System\Person\Attendance;
-use Template\Body;
-
-
-$_TEMPLATE = new Body("");
+$_TEMPLATE = new \System\Template\Body("");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(true);
 
@@ -29,17 +24,16 @@ $ui_view_selection = isset($_GET['view']) && key_exists($_GET['view'], $ui_view)
 
 if (isset($_POST['fetch'])) {
 
-	include_once "admin/class/attendance.php";
 	$_TEMPLATE->EmulateHeaders();
-	$attendance = new Attendance($app);
-	$r = $attendance->ReportOngoing(["company" => $USER->company->id, "::order" => $ui_grouplist[$ui_grouplist_selection][3]]);
+	$attendance = new Registration($app);
+	$r = $attendance->ReportOngoing(["company" => $app->user->company->id, "::order" => $ui_grouplist[$ui_grouplist_selection][3]]);
 
 	$total = 0;
 	$counter = 0;
 	$posgroup = array();
 	$pb = $ui_grouplist[$ui_grouplist_selection][4];
 	if ($r) {
-		while ($row = $sql->fetch_assoc($r)) {
+		while ($row = $r->fetch_assoc()) {
 			if ($ui_grouplist_selection == null || !array_key_exists($ui_grouplist_selection, $ui_grouplist)) {
 				$grp = 0;
 			} else {
@@ -84,7 +78,7 @@ if (isset($_POST['fetch'])) {
 			echo "<td>{$row['lbr_id']} </td>";
 			echo "<td class=\"emplyee-name\">{$row['usr_firstname']} {$row['usr_lastname']}</td>";
 			echo "<td>{$row['ltr_ctime_date']} {$row['ltr_ctime_time']}</td>";
-			echo "<td class=\"elapsed\"><span>Elapsed: </span>" . App::formatTime($row['diff'], false) . "</td>";
+			echo "<td class=\"elapsed\"><span>Elapsed: </span>" . $app->formatTime($row['diff'], false) . "</td>";
 
 			echo $pb == 2 ? "" : "<td class=\"mediabond-ignore\">{$row['prt_name']}</td>";
 
@@ -99,7 +93,7 @@ if (isset($_POST['fetch'])) {
 }
 
 
-if ($h__requested_with_ajax) {
+if ($app->xhttp) {
 	exit;
 }
 

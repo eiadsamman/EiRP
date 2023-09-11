@@ -14,7 +14,7 @@ $_TEMPLATE = new System\Template\Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
 
-function GetEmployeesList($app, $fs, $limit_selection, $_TEMPLATE)
+function GetEmployeesList(&$app, $fs, $limit_selection, $_TEMPLATE)
 {
 	$_TEMPLATE->EmulateHeaders();
 	$list = array();
@@ -89,7 +89,7 @@ function GetEmployeesList($app, $fs, $limit_selection, $_TEMPLATE)
 		}
 	}
 }
-function GetTotalEmployees($app): int
+function GetTotalEmployees(&$app): int
 {
 	if ($r = $app->db->query("
 			SELECT COUNT(usr_id) AS count 
@@ -104,7 +104,7 @@ function GetTotalEmployees($app): int
 	}
 	return 0;
 }
-function GetSelectedEmployees($app)
+function GetSelectedEmployees(&$app)
 {
 
 	$selectioncount = 0;

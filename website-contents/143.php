@@ -1,10 +1,10 @@
 <?php
-if($_SHIFT){
-	$holiday=false;
-	$weekend=false;
+if ($_SHIFT) {
+	$holiday = false;
+	$weekend = false;
 	//Check shift start if its on holiday day
-	$r=$sql->query("
-		SELECT
+	$r = $app->db->query(
+		"SELECT
 			holicow AS cal_date,cal_details
 		FROM
 			calendar main
@@ -16,7 +16,7 @@ if($_SHIFT){
 						adddate(
 							STR_TO_DATE(
 								CONCAT(
-									'".date("Y",$_SHIFT['start'])."','-',MONTH(cal_date),'-',DAY(cal_date)
+									'" . date("Y", $_SHIFT['start']) . "','-',MONTH(cal_date),'-',DAY(cal_date)
 								),
 								'%Y-%m-%d'
 							),t1*10 + t0
@@ -34,40 +34,42 @@ if($_SHIFT){
 					t1*10 + t0 < cal_period AND cal_op=1 AND cal_owner=0
 				) a ON a.cal_id=main.cal_id
 		WHERE
-			holicow = '".date("Y-m-d",$_SHIFT['start'])."'");
-	if($r && $row=$sql->fetch_assoc($r)){
-		$holiday=$row['cal_details'];
+			holicow = '" . date("Y-m-d", $_SHIFT['start']) . "'"
+	);
+	if ($r && $row = $r->fetch_assoc()) {
+		$holiday = $row['cal_details'];
 	}
-	
-	
-	$r=$sql->query("
-		SELECT 
+
+
+	$r = $app->db->query(
+		"SELECT 
 			cwk_pointer 
 		FROM 
 			calendar_weekends 
 		WHERE 
-			cwk_status=1 AND cwk_pointer=".date("w",$_SHIFT['start'])."
-	");
-	if($r && $sql->num_rows($r)){
-		$weekend=true;
+			cwk_status=1 AND cwk_pointer=" . date("w", $_SHIFT['start']) . "
+	"
+	);
+	if ($r && $r->num_rows > 0) {
+		$weekend = true;
 	}
-	
-	if($holiday){
+
+	if ($holiday) {
 		echo "<div class=\"btn-set\"><span>$holiday</span></div><br />";
 		exit;
 	}
-	if($weekend){
-		echo "<div class=\"btn-set\"><span>".date("Y-m-d")." Weekend</span></div>";
+	if ($weekend) {
+		echo "<div class=\"btn-set\"><span>" . date("Y-m-d") . " Weekend</span></div>";
 		exit;
 	}
-	
-	
-	$pagefile_display=$tables->pagefile_info(108,null,"directory");
+
+
+	$pagefile_display = $tables->pagefile_info(108, null, "directory");
 	echo "<table class=\"bom-table hover\"><thead>
 	<tr><td>ID</td><td>Employee Name</td><td>Execused</td><td>Last attendance</td></tr>
 	</thead><tbody>";
-	$r=$sql->query("
-	SELECT 
+	$r = $app->db->query(
+		"SELECT 
 		lbr_id ,lbr_shift,_t.ltr_ctime,UNIX_TIMESTAMP(_last.ltr_ctime) AS lastseen,absdays,abs_id,lbr_abs_start_date,lbr_abs_days,
 		CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) AS empname
 	FROM 
@@ -81,8 +83,8 @@ if($_SHIFT){
 				labour_track 
 			WHERE 
 				ltr_type=1 
-				AND ltr_ctime >= FROM_UNIXTIME(".($_SHIFT['start']-(30*60)).")
-				AND ltr_ctime <= FROM_UNIXTIME(".($_SHIFT['finish']+(30*60)).")
+				AND ltr_ctime >= FROM_UNIXTIME(" . ($_SHIFT['start'] - (30 * 60)) . ")
+				AND ltr_ctime <= FROM_UNIXTIME(" . ($_SHIFT['finish'] + (30 * 60)) . ")
 
 			GROUP BY
 				ltr_usr_id,ltr_ctime
@@ -122,7 +124,7 @@ if($_SHIFT){
 						t1*10 + t0 < lbr_abs_days
 					) a ON a.lbr_abs_id=main.lbr_abs_id
 			WHERE
-				absdays = '".date("Y-m-d",$_SHIFT['start'])."'
+				absdays = '" . date("Y-m-d", $_SHIFT['start']) . "'
 				
 		) AS _s ON _s.lbr_abs_lbr_id=lbr_id 
 		
@@ -134,55 +136,54 @@ if($_SHIFT){
 	HAVING ltr_ctime IS NULL
 	ORDER BY 
 		lastseen
-	;");
-	
-	echo $sql->error();
-	if($r){
-		echo "<div class=\"btn-set\"><span>Total absences</span><input type=\"text\" readonly=\"readonly\" value=\"". $sql->num_rows($r) ."\" style=\"width:100px;text-align:center;\" /></div><br />";
-		while($row=$sql->fetch_assoc($r)){
-			if(!is_null($row['lastseen'])){
-			$dStart = new DateTime(date("Y-m-d",$_SHIFT['start']));
+	;"
+	);
 
-			$dEnd  = new DateTime(date("Y-m-d",$row['lastseen']));
-			$dDiff = $dStart->diff($dEnd);
-		  
-			echo "<tr>
+	//echo $app->db->error;
+	if ($r) {
+		echo "<div class=\"btn-set\"><span>Total absences</span><input type=\"text\" readonly=\"readonly\" value=\"" . $r->num_rows . "\" style=\"width:100px;text-align:center;\" /></div><br />";
+		while ($row = $r->fetch_assoc()) {
+			if (!is_null($row['lastseen'])) {
+				$dStart = new DateTime(date("Y-m-d", $_SHIFT['start']));
+
+				$dEnd  = new DateTime(date("Y-m-d", $row['lastseen']));
+				$dDiff = $dStart->diff($dEnd);
+
+				echo "<tr>
 				<td>{$row['lbr_id']}</td>
 				<td class=\"popupInfo\"><a href=\"$pagefile_display?id={$row['lbr_id']}\">{$row['empname']}</a></td>
 				
-				<td>".(is_null($row['abs_id'])?"":"{$row['abs_id']}: {$row['lbr_abs_start_date']} - {$row['lbr_abs_days']} day(s)")."</td>
-				<td>".date("Y-m-d H:i",$row['lastseen'])." - {$dDiff->days} day(s)</td>
+				<td>" . (is_null($row['abs_id']) ? "" : "{$row['abs_id']}: {$row['lbr_abs_start_date']} - {$row['lbr_abs_days']} day(s)") . "</td>
+				<td>" . date("Y-m-d H:i", $row['lastseen']) . " - {$dDiff->days} day(s)</td>
 				</tr>";
 			}
 		}
 	}
 	echo "</tbody></table>";
-
-
-}else{
+} else {
 	echo "<div class=\"btn-set\"><span>Current time is out of shifts</span></div>";
 }
 
 
 ?>
 <script>
-$(document).ready(function(e) {
+	$(document).ready(function(e) {
 
-	$(".popupInfo > a").on('click',function(e){
-		e.preventDefault();
-		var $this=$(this);
-		popup.show("Loading");
-		
-		var $ajax=$.ajax({
-			type:"POST",
-			url:$this.attr("href")+"&ajax",
-			data:""
-		}).done(function(data){
-			popup.show(data);
-			$("#jQclosePopup").focus();
+		$(".popupInfo > a").on('click', function(e) {
+			e.preventDefault();
+			var $this = $(this);
+			popup.show("Loading");
+
+			var $ajax = $.ajax({
+				type: "POST",
+				url: $this.attr("href") + "&ajax",
+				data: ""
+			}).done(function(data) {
+				popup.show(data);
+				$("#jQclosePopup").focus();
+			});
+			return false;
 		});
-		return false;
+
 	});
-	
-});
 </script>

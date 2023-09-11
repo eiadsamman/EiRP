@@ -1,17 +1,16 @@
 <?php
-include_once("admin/class/accounting.php");
 
-use Finance\Accounting;
+use System\Finance\Accounting;
 use System\SmartListObject;
+use System\Template\Body;
 
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
-
 
 $ajax_debug					= false;
 $debug_level				= 3;
 $accounts_comparition_style	= " AND ";
-$accounting					= new Accounting();
-$__defaultaccount			= $accounting->account_information($USER->account->id);
+$accounting					= new Accounting($app);
+$__defaultaccount			= $accounting->account_information($app->user->account->id);
 $__systemdefaultcurrency	= $accounting->system_default_currency();
 $currency_list				= $accounting->get_currency_list();
 $default_perpage			= 25;
@@ -34,9 +33,9 @@ if ($ajax_debug) {
 Retreive user setting (per_page)
 */
 $per_page					= $default_perpage;
-$r_perpage = $sql->query("SELECT usrset_value FROM user_settings WHERE usrset_usr_id={$USER->info->id} AND usrset_name='account_custome_perpage';");
+$r_perpage = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_name='account_custome_perpage';");
 if ($r_perpage) {
-	if ($row_perpage = $sql->fetch_assoc($r_perpage)) {
+	if ($row_perpage = $r_perpage->fetch_assoc()) {
 		$per_page = (int)$row_perpage['usrset_value'];
 	}
 }
@@ -170,6 +169,7 @@ function insert_using_keys($arr, $keys, $value)
 */
 function get_lines($sentence, $lines = 3)
 {
+	$sentence = is_null($sentence) ? "" : $sentence;
 	preg_match("/(?:[^\r\n]+(?:[\r\n]+|$)){0,$lines}/", $sentence, $matches);
 	return array("original" => $sentence, "new" => rtrim($matches[0], "\r\n"), "identical" => $matches[0] != $sentence);
 }
@@ -195,7 +195,7 @@ function Group_list_limit_active($source, $array)
 	returns: NULL
 	
 */
-function id_maping($sql, $user, &$array, $array_exclusions, $map)
+function id_maping(&$app, &$array, $array_exclusions, $map)
 {
 	$output = array();
 	$serialized = "";
@@ -208,7 +208,7 @@ function id_maping($sql, $user, &$array, $array_exclusions, $map)
 				CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name) AS _name 
 			FROM 
 				`acc_accounts` 
-					JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id='{$user->info->id}' AND upr_prt_view=1
+					JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id='{$app->user->info->id}' AND upr_prt_view=1
 					JOIN currencies ON cur_id=prt_currency
 					JOIN `acc_accounttype` ON prt_type=ptp_id
 					JOIN companies ON prt_company_id=comp_id
@@ -229,8 +229,8 @@ function id_maping($sql, $user, &$array, $array_exclusions, $map)
 			$smart = ",";
 		}
 
-		$r = $sql->query("{$arr_map[$map]} $serialized) ORDER BY _name");
-		while ($row = $sql->fetch_assoc($r)) {
+		$r = $app->db->query("{$arr_map[$map]} $serialized) ORDER BY _name");
+		while ($row = $r->fetch_assoc()) {
 			$output[$row['_id']] = array("name" => $row['_name'], "excluded" => isset($array_exclusions_index[$row['_id']]) && $array_exclusions_index[$row['_id']] ? "1" : "0");
 		}
 	}
@@ -244,10 +244,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'save_per_page_setting') {
 	$value = (int)$_POST['value'];
 	$q = sprintf(
 		"INSERT INTO user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value) VALUES (%1\$d,'account_custome_perpage','UNIQUE',%2\$d) ON DUPLICATE KEY UPDATE usrset_value=%2\$d",
-		$USER->info->id,
+		$app->user->info->id,
 		$value
 	);
-	$r = $sql->query($q);
+	$r = $app->db->query($q);
 	echo $r ? "1" : "0";
 	exit;
 }
@@ -265,9 +265,9 @@ if (isset($_POST['method']) && $_POST['method'] == 'load_query') {
 		exit;
 	}
 
-	$r = $sql->query("SELECT usrset_value FROM user_settings WHERE usrset_name='account_custome_query_save' AND usrset_id={$_POST['query_id']} AND usrset_usr_id='{$USER->info->id}'");
+	$r = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_name='account_custome_query_save' AND usrset_id={$_POST['query_id']} AND usrset_usr_id='{$app->user->info->id}'");
 	if ($r) {
-		if ($row = $sql->fetch_assoc($r)) {
+		if ($row = $r->fetch_assoc()) {
 			$arr_output['result'] = true;
 			$output = unserialize(base64_decode($row['usrset_value']));
 
@@ -279,10 +279,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'load_query') {
 				}
 			}
 
-			id_maping($sql, $USER, $output['creditor_account'], isset($output['creditor_account_exclude']) ? $output['creditor_account_exclude'] : array(), "account");
-			id_maping($sql, $USER, $output['debitor_account'], isset($output['debitor_account_exclude']) ? $output['debitor_account_exclude'] : array(), "account");
-			id_maping($sql, $USER, $output['category_family'], isset($output['category_family_exclude']) ? $output['category_family_exclude'] : array(), "category_family");
-			id_maping($sql, $USER, $output['category'], isset($output['category_exclude']) ? $output['category_exclude'] : array(), "category");
+			id_maping($app, $output['creditor_account'], isset($output['creditor_account_exclude']) ? $output['creditor_account_exclude'] : array(), "account");
+			id_maping($app, $output['debitor_account'], isset($output['debitor_account_exclude']) ? $output['debitor_account_exclude'] : array(), "account");
+			id_maping($app, $output['category_family'], isset($output['category_family_exclude']) ? $output['category_family_exclude'] : array(), "category_family");
+			id_maping($app, $output['category'], isset($output['category_exclude']) ? $output['category_exclude'] : array(), "category");
 
 			unset($output['creditor_account_exclude'], $output['debitor_account_exclude'], $output['category_family_exclude'], $output['category_exclude'], $output['offset'], $output['method'], $output['group']);
 			$arr_output['message'] = $output;
@@ -307,8 +307,8 @@ if (isset($_POST['save_query'])) {
 	$prepare = $_POST['save_query'];
 
 	$_POST['save_name'] = str_replace(array("'", '"', "\\", "(", ")"), "-", $_POST['save_name']);
-	$r = $sql->query('INSERT INTO 
-		user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value,usrset_time) VALUES (' . $USER->info->id . ',\'account_custome_query_save\',\'' . $_POST["save_name"] . '\',\'' .
+	$r = $app->db->query('INSERT INTO 
+		user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value,usrset_time) VALUES (' . $app->user->info->id . ',\'account_custome_query_save\',\'' . $_POST["save_name"] . '\',\'' .
 		$prepare . '\',FROM_UNIXTIME(' . time() . ')) ON DUPLICATE KEY UPDATE
 		usrset_value=\'' . $prepare . '\',
 		usrset_time=FROM_UNIXTIME(\'' . time() . '\')
@@ -332,7 +332,7 @@ if (isset($_POST['method']) && $_POST['method'] == "delete_query") {
 	if (!isset($_POST['query_id'])) {
 		echo "0";
 	}
-	$r = $sql->query("DELETE FROM user_settings WHERE usrset_usr_id={$USER->info->id} AND usrset_name='account_custome_query_save' AND usrset_id=" . ((int)$_POST['query_id']) . "");
+	$r = $app->db->query("DELETE FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_name='account_custome_query_save' AND usrset_id=" . ((int)$_POST['query_id']) . "");
 	if ($r) {
 		echo "1";
 	} else {
@@ -343,8 +343,6 @@ if (isset($_POST['method']) && $_POST['method'] == "delete_query") {
 
 /*Filter query v2.16.1231.1300*/
 if (isset($_POST['method']) && $_POST['method'] == 'filter') {
-	$pagefile_edit = $tables->pagefile_info(101, null, "directory");
-	$pagefile_view = $tables->pagefile_info(104, null, "directory");
 	$executingtime = microtime(true);
 	include("99.prepare.php");
 	/*Prefetch filter (count, sum)*/
@@ -360,9 +358,9 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 						FROM
 							`acc_accounts` 
 								JOIN acc_temp ON prt_id=atm_account_id
-								JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} AND upr_prt_view=1
+								JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1
 								JOIN currencies ON cur_id = prt_currency
-								JOIN companies ON comp_id = prt_company_id AND comp_id = {$USER->company->id}
+								JOIN companies ON comp_id = prt_company_id AND comp_id = {$app->user->company->id}
 								
 								LEFT JOIN (
 									SELECT _from.curexg_from AS _rate_from,_to.curexg_from AS _rate_to,(_from.curexg_value / _to.curexg_value) AS _rate 
@@ -377,10 +375,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					) AS _accounts ON _accounts.atm_main=acm_id
 				
 				LEFT JOIN 
-					(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} AND upr_prt_view=1 WHERE atm_dir=0) 
+					(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1 WHERE atm_dir=0) 
 						AS _credit ON _credit.atm_main = acm_id 
 				LEFT JOIN 
-					(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} AND upr_prt_view=1 WHERE atm_dir=1) 
+					(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1 WHERE atm_dir=1) 
 						AS _debit ON _debit.atm_main = acm_id 
 						
 				LEFT JOIN
@@ -411,8 +409,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 		. ($arr_listfixed['month-reference'] != null ? " AND (YEAR(acm_month)=YEAR('{$arr_listfixed['month-reference']}') AND MONTH(acm_month)=MONTH('{$arr_listfixed['month-reference']}') ) " : "")
 		. ";";
 
-	if ($r = $sql->query($fetch_report)) {
-		while ($row = $sql->fetch_assoc($r)) {
+	if ($r = $app->db->query($fetch_report)) {
+		while ($row = $r->fetch_assoc()) {
 			$arr_overview['total'] = $row['zcount'];
 			$arr_overview['sum'] = $row['zsum'];
 		}
@@ -423,7 +421,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 	if ($ajax_debug && $debug_level == 0) {
 		//echo $fetch_report;
 		echo $fetch_report;
-		echo "X>>" . $sql->error();
+		echo "X>>" . $app->db->error;
 		print_r($arr_overview);
 		exit;
 	}
@@ -455,8 +453,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 								atm_main,atm_account_id 
 							FROM 
 								acc_temp 
-									JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} AND upr_prt_view=1
-									JOIN `acc_accounts` ON prt_id = atm_account_id AND prt_company_id = {$USER->company->id}
+									JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1
+									JOIN `acc_accounts` ON prt_id = atm_account_id AND prt_company_id = {$app->user->company->id}
 							WHERE 
 								atm_dir=0
 						) AS _credit ON _credit.atm_main = acm_id 
@@ -467,8 +465,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 								atm_main,atm_account_id 
 							FROM 
 								acc_temp 
-									JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} AND upr_prt_view=1
-									JOIN `acc_accounts` ON prt_id = atm_account_id AND prt_company_id = {$USER->company->id}
+									JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1
+									JOIN `acc_accounts` ON prt_id = atm_account_id AND prt_company_id = {$app->user->company->id}
 							WHERE atm_dir=1
 						) AS _debit ON _debit.atm_main = acm_id 
 					
@@ -503,14 +501,14 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 			;";
 
 		$ftime = microtime(true);
-		$r = $sql->query($query);
+		$r = $app->db->query($query);
 
 
 		if (!($ajax_debug)) {
 			echo "<div><div id=\"___ajax_sum\">{";
 			echo "\"total\":{$arr_overview['total']},";
-			echo "\"value\":\"" . number_format($arr_overview['sum'], 2, ".", ",") . "\",";
-			echo "\"raw_value\":\"" . $arr_overview['sum'] . "\",";
+			echo "\"value\":\"" . number_format($arr_overview['sum'] ?? 0, 2, ".", ",") . "\",";
+			echo "\"raw_value\":\"" . ($arr_overview['sum'] ?? 0) . "\",";
 			echo "\"excution_time\":\"" . (microtime(true) - $ftime) . "\",";
 			echo "\"offset\":" . $offset . ",";
 			echo "\"pages\":" . (ceil($arr_overview['total'] / $per_page)) . ",";
@@ -537,14 +535,14 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					<td>Beneficial</td>
 					<td width=\"50%\" colspan=\"2\">Statement</td>
 					
-					" . ($c__actions->edit ? "<td style=\"width:10px\"></td>" : "") . "
+					" . ($fs()->permission->edit ? "<td style=\"width:10px\"></td>" : "") . "
 					<td style=\"width:10px\"></td>
 					<td style=\"width:10px\"></td>
 				</tr>
 			</thead>
 			<tbody>";
 
-			while ($row = $sql->fetch_assoc($r)) {
+			while ($row = $r->fetch_assoc()) {
 				$array_output[$row['acm_id']] = array("info" => array(), "details" => array());
 				$array_output[$row['acm_id']]["info"]["id"] = $row['acm_id'];
 				$array_output[$row['acm_id']]["info"]["rejected"] = $row['acm_rejected'];
@@ -563,7 +561,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				$array_output[$row['acm_id']]["info"]["rel"] = $row['acm_rel'];
 
 
-				$sub_q = $sql->query("
+				$sub_q = $app->db->query("
 					SELECT 
 						atm_value,atm_main,prt_name,cur_shortname,atm_dir,
 						comp_name,ptp_name
@@ -576,7 +574,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					WHERE atm_main={$row['acm_id']};");
 
 				if ($sub_q) {
-					while ($row_q = $sql->fetch_assoc($sub_q)) {
+					while ($row_q = $sub_q->fetch_assoc()) {
 						if ($row_q['atm_dir'] == 0) {
 							//creditor
 							$array_output[$row['acm_id']]["details"]['creditor'] = array();
@@ -592,8 +590,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 							$array_output[$row['acm_id']]["details"]['debitor']['currency'] = $row_q['cur_shortname'];
 						}
 					}
+					$sub_q->free_result();
 				}
-				$sql->free_result($sub_q);
 			}
 
 			foreach ($array_output as $main) {
@@ -623,12 +621,12 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					echo "<td class=\"detailed_comments\">" . ($arr_comments["identical"] ? "<span>" . nl2br($main['info']['comments']) . "</span>" : "") . nl2br($arr_comments["new"] . ($arr_comments["identical"] ? "..." : "")) . "</td>";
 
 
-					$r_uploads = $sql->query("
+					$r_uploads = $app->db->query("
 							SELECT up_id,up_name,up_size,up_date,up_user,up_mime
-							FROM uploads JOIN pagefile_permissions ON pfp_trd_id=up_pagefile AND pfp_per_id = {$USER->info->permissions}
+							FROM uploads JOIN pagefile_permissions ON pfp_trd_id=up_pagefile AND pfp_per_id = {$app->user->info->permissions}
 							WHERE up_rel={$main['info']['id']} AND up_active=1 AND pfp_value>0 AND up_pagefile=" . TRANSACTION_ATTACHMENT_PAGEFILE . ";");
 					$upload_list = array();
-					while ($row_uploads = $sql->fetch_assoc($r_uploads)) {
+					while ($row_uploads = $r_uploads->fetch_assoc()) {
 						$upload_list[] = $row_uploads;
 					}
 
@@ -645,9 +643,9 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					}
 					echo "</td>";
 
-					echo $c__actions->edit ? "<td class=\"op-edit\"><a href=\"{$pagefile_edit}/?id={$main['info']['id']}\"></a></td>" : "";
+					echo $fs()->permission->edit ? "<td class=\"op-edit\"><a href=\"{$fs(101)->dir}/?id={$main['info']['id']}\"></a></td>" : "";
 					echo "<td class=\"op-print\" data-id=\"{$main['info']['id']}\"><span></span></td>"; //xxxx
-					echo "<td class=\"op-display\" ><a href=\"{$pagefile_view}/?id={$main['info']['id']}\"></a></td>";
+					echo "<td class=\"op-display\" ><a href=\"{$fs(104)->dir}/?id={$main['info']['id']}\"></a></td>";
 					echo "</tr>";
 				}
 			}
@@ -693,10 +691,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 									SELECT _from.curexg_from AS _rate_from,_to.curexg_from AS _rate_to,(_from.curexg_value / _to.curexg_value) AS _rate 
 										FROM currency_exchange AS _from INNER JOIN currency_exchange AS _to
 								) AS _rates ON _rates._rate_from = prt_currency AND _rates._rate_to = {$arr_listfixed['filtercurrency']}
-								JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} AND upr_prt_view=1
+								JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1
 								JOIN currencies ON cur_id = prt_currency
 								JOIN `acc_accounttype` ON prt_type=ptp_id
-								JOIN companies ON comp_id = prt_company_id AND comp_id = {$USER->company->id}
+								JOIN companies ON comp_id = prt_company_id AND comp_id = {$app->user->company->id}
 							WHERE
 								1 
 								" . ($arr_listobjects['creditor_account']['active'] ? " AND ( atm_value < 0 AND (" . $arr_listobjects['creditor_account']['fields']['atm_account_id'] . ") ) " : "") . "
@@ -704,10 +702,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 						) AS _accounts ON _accounts.atm_main=acm_id
 						
 					LEFT JOIN 
-						(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} AND upr_prt_view=1 WHERE atm_dir=0) 
+						(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1 WHERE atm_dir=0) 
 							AS _credit ON _credit.atm_main = acm_id 
 					LEFT JOIN 
-						(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} AND upr_prt_view=1 WHERE atm_dir=1) 
+						(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1 WHERE atm_dir=1) 
 							AS _debit ON _debit.atm_main = acm_id 
 					
 					LEFT JOIN
@@ -745,7 +743,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				$q_group
 			;";
 
-		$r = $sql->query($group_query);
+		$r = $app->db->query($group_query);
 
 		if (!($ajax_debug)) {
 			echo "<div><div id=\"___ajax_sum\">{";
@@ -771,7 +769,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 			$max_depth = sizeof($arr_group);
 
 			/*Build the output array (multi-dimensional) based on the group by array (single dimension)*/
-			while ($row = $sql->fetch_assoc($r)) {
+			while ($row = $r->fetch_assoc()) {
 				$arr_keys = array();
 				$arr_keysofnames = array();
 				foreach ($arr_group as $group_k => $group_v) {
@@ -785,7 +783,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				$arr_output = insert_using_keys($arr_output, array_merge($arr_keys, array("val")), $row['group_sum']);
 				$arr_output_raw = insert_using_keys($arr_output_raw, $arr_keys, $row['group_sum']);
 			}
-			$sql->free_result($r);
+			$r->free_result();
 			echo "<table class=\"bom-table group-list screenCols\"><thead><tr>";
 			foreach ($arr_group as $group_k => $group_v) {
 				echo "<td " . ($group_v['reference'] > 1 ? "colspan=\"" . sizeof($group_v['reference']) . "\"" : "") . ">" . $group_v['cols'] . "</td>";
@@ -804,17 +802,13 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 	echo "</div></div>";
 	exit;
 }
-if ($h__requested_with_ajax) {
+if ($app->xhttp) {
 	exit;
 }
 
 
-include_once("admin/class/Template/class.template.build.php");
-include_once("admin/class/SmartListObject.php");
 
-use Template\Body;
-
-$SmartListObject = new SmartListObject();
+$SmartListObject = new SmartListObject($app);
 $_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/false,/*Command Bar*/ false,/*Sticky Frame*/ false);
 $_TEMPLATE->FrameTitlesStack(false);
@@ -992,7 +986,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 			var acm_id = $(this).attr("data-acm_id");
 			var $ajax = $.ajax({
 				type: "POST",
-				url: "<?php echo $tables->pagefile_info(192, null, "directory"); ?>",
+				url: "<?= $fs(192)->dir ?>",
 				data: {
 					"statement_id": acm_id
 				}
@@ -1092,7 +1086,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 			overlay.show();
 			$.ajax({
 				data: seria + "&method=filter",
-				url: '<?php echo $tables->pagefile_info(164, null, "directory"); ?>',
+				url: '<?= $fs(164)->dir ?>',
 				type: 'POST'
 			}).done(function(data) {
 				overlay.hide();
@@ -1149,7 +1143,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				data: {
 					"method": "load"
 				},
-				url: '<?php echo $tables->pagefile_info(165, null, "directory"); ?>',
+				url: '<?= $fs(165)->dir ?>',
 				type: 'POST'
 			}).done(function(data) {
 				overlay.hide();
@@ -1431,7 +1425,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 		$("#jQoutput").on('click', ".op-print", function(e) {
 			const id = $(this).attr('data-id');
 			const objPrintFrame = window.frames['jQiframe'];
-			objPrintFrame.location = "<?php echo $tables->pagefile_info(142, null, "directory"); ?>/?id=" + id;
+			objPrintFrame.location = "<?= $fs(142)->dir ?>/?id=" + id;
 			document.getElementById("jQiframe").onload = function() {
 				objPrintFrame.focus();
 				objPrintFrame.print();
@@ -1452,7 +1446,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 		$("#jQexport").on('click', function() {
 			export_order = true;
 			$form.attr("method", "post");
-			$form.attr("action", "<?php echo $tables->pagefile_info(120, null, "directory"); ?>");
+			$form.attr("action", "<?= $fs(120)->dir ?>");
 			$form.attr("target", "iframe");
 			$form.submit();
 			export_order = false;

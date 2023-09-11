@@ -1,10 +1,6 @@
 <?php
-include_once("admin/class/Template/class.template.build.php");
 
-
-use Template\Body;
-
-$_TEMPLATE = new Body();
+$_TEMPLATE = new \System\Template\Body();
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
 $_TEMPLATE->SetWidth("600px");
@@ -13,7 +9,7 @@ if ($access_error == 403) {
 	$_TEMPLATE->Title("&nbsp;Forbidden!", null, "", "mark-error");
 	$_TEMPLATE->NewFrameBody("
 			<br />You don't have permission to access '<i>{$fs()->dir}</i>' on this server!<br /><br />
-			Contact system administrator, or <a href=\"{$tables->pagefile_info(20, null, 'directory')}/?refer={$fs()->dir}\">sign in</a> with an authorized account and try again
+			Contact system administrator, or <a href=\"{$fs(20)->dir}/?refer={$fs()->dir}\">sign in</a> with an authorized account and try again
 			");
 	die();
 } else {

@@ -9,7 +9,7 @@ if(is_null($transaction_id)){
 }
 
 $arr_transaction=null;
-if($r=$sql->query("
+if($r=$app->db->query("
 	SELECT 
 		acm_id,acm_usr_id,acm_editor_id,UNIX_TIMESTAMP(acm_ctime) AS acm_ctime,acm_type,acm_beneficial,acm_comments,acm_reference,
 		_category._catname,_category._catid,acctyp_name,
@@ -32,7 +32,7 @@ if($r=$sql->query("
 			LEFT JOIN currencies ON cur_id=acm_realcurrency
 	WHERE 
 		acm_id=$transaction_id;")){
-	if($row=$sql->fetch_assoc($r)){
+	if($row=$r->fetch_assoc()){
 		$arr_transaction=$row;
 	}
 }
@@ -42,7 +42,7 @@ if(is_null($arr_transaction)){
 }
 
 $arr_transaction['transactions']=array();
-if($r=$sql->query("
+if($r=$app->db->query("
 	SELECT 
 		atm_id,atm_account_id,atm_value,atm_dir,cur_name,cur_symbol,prt_name,cur_id
 	FROM
@@ -52,7 +52,7 @@ if($r=$sql->query("
 				currencies ON cur_id = prt_currency
 	WHERE
 		atm_main={$arr_transaction['acm_id']}")){
-	while($row=$sql->fetch_assoc($r)){
+	while($row=$r->fetch_assoc()){
 		$arr_transaction['transactions'][$row['atm_dir']]=$row;
 	}
 }

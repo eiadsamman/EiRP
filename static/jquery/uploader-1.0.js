@@ -96,22 +96,23 @@
 				},
 				success: function (output) {
 					var json = null;
+					/* console.log(output); */
 					try {
 						json = JSON.parse(output);
 					} catch (e) {
-						console.log(e);
+						/* console.log(e); */
 						$up_operation.html("<span style=\"color:#f04;\" title=\"Parsing output error\">Failed</span>");
 						updateCount();
 						return false;
 					}
 					if (json == null) {
-						console.log("Empty Response");
+						/* console.log("Empty Response"); */
 						$up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
 						updateCount();
 						return false;
 					}
 					if (json.result == 0) {
-						console.log("Server Response Error \n" + output);
+						/* console.log("Server Response Error \n" + output); */
 						$up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
 						updateCount();
 						return false;

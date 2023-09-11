@@ -1,10 +1,9 @@
 <?php
-include_once("admin/class/SmartListObject.php");
 
-use System\App;
 use System\SmartListObject;
 
-$SmartListObject = new SmartListObject();
+
+$SmartListObject = new SmartListObject($app);
 
 ?>
 <div class="btn-set">
@@ -14,10 +13,10 @@ $SmartListObject = new SmartListObject();
 </div>
 
 <datalist id="zlist">
-	<?= $SmartListObject->hr_person(App::$_user->company->id); ?>
+	<?= $SmartListObject->hr_person($app->user->company->id); ?>
 </datalist>
 <?php
-echo "<pre>" . print_r(App::$_user, true) . "</pre>";
+echo "<pre>" . print_r($app->user, true) . "</pre>";
 ?>
 
 

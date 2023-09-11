@@ -2,9 +2,9 @@
 echo "
 <div>
 	<div class=\"widgetWQT\">";
-		$dateTo = date("Y-m-d H:i:s", time());
-		
-		$r=("
+$dateTo = date("Y-m-d H:i:s", time());
+
+$r = $app->db->query("
 			SELECT
 				prt_name,COUNT(_ltr_usr_id) AS partcount
 			FROM 
@@ -26,18 +26,17 @@ echo "
 				) AS lastJoin ON lastJoin._ltr_ctime = ltr_ctime AND lastJoin._ltr_usr_id = ltr_usr_id
 				
 				JOIN 
-					labour ON lbr_company = {$USER->company->id} AND ltr_usr_id = lbr_id
+					labour ON lbr_company = {$app->user->company->id} AND ltr_usr_id = lbr_id
 			GROUP BY prt_name
 		
 		");
-		$r=$sql->query($r);
-		if($r){
-			while($row=$sql->fetch_assoc($r)){
-				echo $row['prt_name']."-".$row['partcount']." Employees";
-			}
-		}
 
-		echo "
+if ($r) {
+	while ($row = $r->fetch_assoc()) {
+		echo $row['prt_name'] . "-" . $row['partcount'] . " Employees";
+	}
+}
+
+echo "
 	</div>
 </div>";
-?>

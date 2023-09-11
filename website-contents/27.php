@@ -1,27 +1,23 @@
 <?php
 if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
-	$r = $sql->query("SELECT usr_password FROM users WHERE usr_id={$app->user->info->id};");
-	if ($r) {
-		if ($row = $sql->fetch_assoc($r)) {
-			if ($row['usr_password'] == $_POST['oldpass']) {
-				if (strlen($_POST['newpass']) < 6) {
-					echo "{\"result\":false,\"message\":\"New password length must be 6 or more\",\"focus\":\"newpass\"}";
+	$r = $app->db->query("SELECT usr_password FROM users WHERE usr_id={$app->user->info->id};");
+	if ($r && $row = $r->fetch_assoc()) {
+		if ($row['usr_password'] == $_POST['oldpass']) {
+			if (strlen($_POST['newpass']) < 6) {
+				echo "{\"result\":false,\"message\":\"New password length must be 6 or more\",\"focus\":\"newpass\"}";
+			} else {
+				if ($_POST['newpass'] != $_POST['conpass']) {
+					echo "{\"result\":false,\"message\":\"Password confirmation does not match\",\"focus\":\"conpass\"}";
 				} else {
-					if ($_POST['newpass'] != $_POST['conpass']) {
-						echo "{\"result\":false,\"message\":\"Password confirmation does not match\",\"focus\":\"conpass\"}";
+					if ($app->db->query(sprintf("UPDATE users SET usr_password='%s' WHERE usr_id={$app->user->info->id};", $_POST['newpass']))) {
+						echo "{\"result\":true,\"message\":\"Password changed successfully\",\"focus\":\"oldpass\"}";
 					} else {
-						if ($sql->query(sprintf("UPDATE users SET usr_password='%s' WHERE usr_id={$app->user->info->id};", $_POST['newpass']))) {
-							echo "{\"result\":true,\"message\":\"Password changed successfully\",\"focus\":\"oldpass\"}";
-						} else {
-							echo "{\"result\":false,\"message\":\"Unable to change password\",\"focus\":false}";
-						}
+						echo "{\"result\":false,\"message\":\"Unable to change password\",\"focus\":false}";
 					}
 				}
-			} else {
-				echo "{\"result\":false,\"message\":\"Invalid password\",\"focus\":\"oldpass\"}";
 			}
 		} else {
-			echo "{\"result\":false,\"message\":\"User not found\",\"focus\":false}";
+			echo "{\"result\":false,\"message\":\"Invalid password\",\"focus\":\"oldpass\"}";
 		}
 	} else {
 		echo "{\"result\":false,\"message\":\"User not found\",\"focus\":false}";
@@ -30,17 +26,15 @@ if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 }
 
 
+
 $curinfo = false;
 $r = $app->db->query("SELECT usr_regdate, usr_birthdate, usr_login_date FROM users WHERE usr_id={$app->user->info->id}");
 if ($r && $row = $r->fetch_assoc()) {
 	$curinfo = $row;
 }
 
-require_once("admin/class/Template/class.template.build.php");
 
-use Template\Body;
-
-$_TEMPLATE 	= new Body();
+$_TEMPLATE 	= new \System\Template\Body();
 $_TEMPLATE->SetWidth("800px");
 $_TEMPLATE->Title("My Account", null, null);
 

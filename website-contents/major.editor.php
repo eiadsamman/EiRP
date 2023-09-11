@@ -1,5 +1,7 @@
 <?php
 
+use System\IO\AttachLib;
+
 /*
 Crit v2.1 210818
 0:	string|null 				Alias
@@ -81,7 +83,7 @@ foreach ($database['fields'] as $key => $value) {
 
 
 
-function single_call($app, $database, $id)
+function single_call(&$app, $database, $id)
 {
 	$tempquery = "SELECT ";
 	$smart = "";
@@ -119,7 +121,7 @@ function sqlvalue($type, $value, $isset)
 if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'])) {
 	if (isset($database['pre_submit_functions']) && is_array($database['pre_submit_functions'])) {
 		foreach ($database['pre_submit_functions'] as $func) {
-			call_user_func($func, $_POST, $sql, $USER);
+			call_user_func($func, $_POST, $app->db, $USER);
 		}
 	}
 
@@ -221,7 +223,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 
 		if (isset($database['post_submit_functions']) && is_array($database['post_submit_functions'])) {
 			foreach ($database['post_submit_functions'] as $func) {
-				call_user_func($func, $_POST, $sql, $USER, $affected_id);
+				call_user_func($func, $_POST, $app->db, $USER, $affected_id);
 			}
 		}
 		$json_output['result'] = true;
@@ -240,7 +242,7 @@ if ($fs()->permission->delete && isset($_POST['method']) && $_POST['method'] == 
 	$record_id = (int)$_POST['id'];
 	try {
 		include($app->root . 'admin/class/attachlib.php');
-		$ulib = new AttachLib();
+		$ulib = new AttachLib($app);
 		foreach ($database['fields'] as $fieldk => $fieldv) {
 			if ($fieldv[4] == "file") {
 				$r = $app->db->query("SELECT up_id FROM uploads WHERE up_pagefile = {$fieldv[5]} AND up_rel = {$record_id}");
@@ -523,7 +525,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 						} elseif ($fieldv[4] == "textarea") {
 							echo (htmlentities(is_null($row[$fieldk]) ? "" : $row[$fieldk])); //nl2br
 						} else {
-							echo htmlentities($row[$fieldk]);
+							echo htmlentities(is_null($row[$fieldk]) ? "" : $row[$fieldk]);
 						}
 					}
 
@@ -896,7 +898,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 							list_button:$("#up_count' . $fieldk . '"),
 							emptymessage:"[No files uploaded]",
 							delete_method:"permanent",
-							upload_url:"' . $tables->pagefile_info(186, null, "directory") . '",
+							upload_url:"' . $fs(186)->dir  . '",
 							relatedpagefile:' . (int)$fieldv[5] . ',
 							multiple:true,
 							inputname:"attachments[' . $fieldk . ']",

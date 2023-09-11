@@ -105,7 +105,7 @@ $styleArrayOdd=array(
 	),
 );
 if(isset($_POST['user'])){
-	if($r=$sql->query("
+	if($r=$app->db->query("
 		SELECT 
 			usr_id,usr_birthdate,
 			UNIX_TIMESTAMP(lbr_registerdate) AS lbr_registerdate,
@@ -161,7 +161,7 @@ if(isset($_POST['user'])){
 			employeename")){
 		$sat=2;
 		$col=0;
-		while($row=$sql->fetch_assoc($r)){
+		while($row=$r->fetch_assoc( )){
 			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $sat, $row['usr_id']);
 			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $sat, $row['employeename']);
 			$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $sat, $row['lsc_name']);
@@ -198,6 +198,3 @@ unset($objPHPExcel);
 
 
 exit;
-
-
-?>

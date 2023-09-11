@@ -1,14 +1,11 @@
 <?php
 
-include_once "admin/class/attendance-list.php";
-include_once "admin/class/attendance.php";
-
-use System\App;
+use System\Individual\Attendance\Report;
 use System\SmartListObject;
 
-function getAttendanceReport(&$sql, $dateFrom, $dateTo, $employeeID)
+function getAttendanceReport(&$app, $dateFrom, $dateTo, $employeeID)
 {
-	$attendance = new AttendanceList();
+	$attendance = new Report($app);
 	$attendance->getAttendaceList($employeeID, $dateFrom, $dateTo, true, false);
 	$attendance->PrintTable();
 }
@@ -31,7 +28,7 @@ if (isset($_POST['method'], $_POST['dateTo'], $_POST['dateFrom'], $_POST['employ
 	$dateFrom = CustomCheckdate($_POST['dateFrom'], 0) ?? time();
 	$dateTo = CustomCheckdate($_POST['dateTo'], 1) ?? time();
 	if ($dateFrom <= $dateTo) {
-		getAttendanceReport($sql, $dateFrom, $dateTo, $employeeID);
+		getAttendanceReport($app, $dateFrom, $dateTo, $employeeID);
 	} else {
 		echo "<div class=\"btn-set\"><span>Attendace date range is not valid !</span></div>";
 	}
@@ -50,11 +47,11 @@ if (isset($_POST['method'], $_POST['employeeID'], $_POST['dateFrom'], $_POST['da
 		echo "<div class=\"btn-set\"><span>Date range is too large, maximum allowed range is 60 days</span></div>";
 		exit;
 	}
-	$r = $sql->query("SELECT usr_id,CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id=$employeeID;");
-	if ($r && $row = $sql->fetch_assoc($r)) {
+	$r = $app->db->query("SELECT usr_id,CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id=$employeeID;");
+	if ($r && $row = $r->fetch_assoc()) {
 		if ($dateFrom <= $dateTo) {
 			echo "<div id=\"jQattendaceReportOutput\">";
-			getAttendanceReport($sql, $dateFrom, $dateTo, $employeeID);
+			getAttendanceReport($app, (int)$dateFrom, (int)$dateTo, $employeeID);
 			echo "</div>";
 		} else {
 			echo "<div class=\"btn-set\"><span>Invalid date range, maximum allowed range is 60 days</span></div>";
@@ -65,10 +62,7 @@ if (isset($_POST['method'], $_POST['employeeID'], $_POST['dateFrom'], $_POST['da
 	}
 }
 
-include_once("admin/class/SmartListObject.php");
-$SmartListObject = new SmartListObject();
-
-
+$SmartListObject = new SmartListObject($app);
 ?>
 <style>
 	.screen60Image {
@@ -101,8 +95,8 @@ $SmartListObject = new SmartListObject();
 			<input id="employeIDFormSearch" type="text" data-slo=":LIST" data-list="emplist" class="flex" placeholder="Employee name, ID" />
 			<?php
 			$settings_month_start_day = false;
-			$r = $sql->query("SELECT set_val FROM system_settings WHERE set_name='sal_month_start_day';");
-			if ($r && $row = $sql->fetch_assoc($r)) {
+			$r = $app->db->query("SELECT set_val FROM system_settings WHERE set_name='sal_month_start_day';");
+			if ($r && $row = $r->fetch_assoc()) {
 				$settings_month_start_day = (int)$row['set_val'];
 			}
 			$_tmp = mktime(0, 0, 0, date("m"), $settings_month_start_day, date("Y"));
@@ -119,7 +113,7 @@ $SmartListObject = new SmartListObject();
 </div>
 
 <datalist id="emplist">
-	<?= $SmartListObject->hr_person(App::$_user->company->id) ?>
+	<?= $SmartListObject->hr_person($app->user->company->id) ?>
 </datalist>
 
 
@@ -188,7 +182,7 @@ $SmartListObject = new SmartListObject();
 				});
 			}
 		});
-		<?php if ($c__actions->edit) { ?>
+		<?php if ($fs()->permission->edit) { ?>
 
 			$("#jQoutput").on('clickx', '.css_attendanceBlocks > div', function() {
 				var idint = $(this).attr("data-clsid");
@@ -203,7 +197,7 @@ $SmartListObject = new SmartListObject();
 						'method': 'edit',
 						'id': idint
 					},
-					url: "<?php echo $tables->pagefile_info(78, null, "directory"); ?>",
+					url: "<?= $fs(78)->dir ?>",
 					type: "POST"
 				}).done(function(data) {
 					if (data != "") {
@@ -241,8 +235,8 @@ $SmartListObject = new SmartListObject();
 		<?php
 		if (isset($_GET['id'])) {
 			$_GET['id'] = (int)$_GET['id'];
-			$r = $sql->query("SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id={$_GET['id']};");
-			if ($r && $row = $sql->fetch_assoc($r)) {
+			$r = $app->db->query("SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id={$_GET['id']};");
+			if ($r && $row = $r->fetch_assoc()) {
 				echo 'SLO_employeeID.set("' . $_GET['id'] . '","' . stripcslashes(trim($row['user_name'])) . '");fn_timetable();';
 			}
 		}

@@ -3,7 +3,7 @@ $output = null;
 if (isset($_POST['data'])) {
 	$data = explode("\n", $_POST['data']);
 
-	$sql->query("DELETE FROM data;");
+	$app->db->query("DELETE FROM data;");
 	$q = "INSERT INTO data (bom_beipn,bom_sapno,bom_sapdesc,bom_unit,bom_mattype) VALUES ";
 	$smart = "";
 	foreach ($data as $rows) {
@@ -19,18 +19,18 @@ if (isset($_POST['data'])) {
 			$smart = ",";
 		}
 	}
-	$q = $sql->query($q);
+	$q = $app->db->query($q);
 	if ($q) {
 		$output = true;
 	} else {
 		$output = false;
 	}
 }
-$r = $sql->query("SELECT bom_beipn,bom_sapno,bom_sapdesc,bom_unit,bom_mattype FROM data");
+$r = $app->db->query("SELECT bom_beipn,bom_sapno,bom_sapdesc,bom_unit,bom_mattype FROM data");
 $data = "";
 $smart = "";
 $cute = "";
-while ($row = $sql->fetch_assoc($r)) {
+while ($row = $r->fetch_assoc()) {
 	$data .= $smart . "";
 	$cute = "";
 	foreach ($row as $col) {

@@ -1,15 +1,15 @@
 <?php
 include_once("admin/class/materials.php");
-$material=new Materials();
+$material = new Materials();
 
 
 
-$wo_id=false;
-$fillarr=array("info"=>array(),"list"=>array());
-if(isset($_POST['wo_id']) || isset($_GET['wo_id'])){
-	$wo_id = (  isset($_POST['wo_id'])  ?  (int)$_POST['wo_id']  :  (isset($_GET['wo_id']) ? (int)$_GET['wo_id'] : false ) );
-	
-	$r=$sql->query("SELECT 
+$wo_id = false;
+$fillarr = array("info" => array(), "list" => array());
+if (isset($_POST['wo_id']) || isset($_GET['wo_id'])) {
+	$wo_id = (isset($_POST['wo_id'])  ?  (int)$_POST['wo_id']  : (isset($_GET['wo_id']) ? (int)$_GET['wo_id'] : false));
+
+	$r = $app->db->query("SELECT 
 			wo_id,wo_title,wo_date,wo_due_date,wo_close_date,wo_remarks,
 			_c_prt._wo_site,
 			CONCAT_WS(' ',COALESCE(_a_usr.usr_firstname,''),IF(NULLIF(_a_usr.usr_lastname, '') IS NULL, NULL, _a_usr.usr_lastname)) AS wo_creator_name,
@@ -31,74 +31,77 @@ if(isset($_POST['wo_id']) || isset($_GET['wo_id'])){
 		WHERE
 			wo_id = $wo_id
 			");
-	
-	if($r){
-		if($row=$sql->fetch_assoc($r)){
-			$fillarr['info']=$row;
+
+	if ($r) {
+		if ($row = $r->fetch_assoc()) {
+			$fillarr['info'] = $row;
 			/*Gather material information*/
-			$fillarr['list']=$material->WOMaterials($row['wo_id']);
-		}else{
+			$fillarr['list'] = $material->WOMaterials($row['wo_id']);
+		} else {
 			exit;
 		}
-	}else{
+	} else {
 		exit;
 	}
-}else{
+} else {
 	exit;
 }
 
-$fillarr['info']['wo_due_date']=is_null($fillarr['info']['wo_due_date'])?"-":$fillarr['info']['wo_due_date'];
-$fillarr['info']['wo_close_date']=is_null($fillarr['info']['wo_close_date'])?"<i>[Still open]</i>":$fillarr['info']['wo_due_date'];
-$fillarr['info']['wo_creator_name']=is_null($fillarr['info']['wo_creator_id'])?"-":$fillarr['info']['wo_creator_id'].": ".$fillarr['info']['wo_creator_name'];
-$fillarr['info']['wo_manager_name']=is_null($fillarr['info']['wo_manager_id'])?"-":$fillarr['info']['wo_manager_id'].": ".$fillarr['info']['wo_manager_name'];
-$fillarr['info']['wo_remarks']=is_null($fillarr['info']['wo_remarks']) || trim($fillarr['info']['wo_remarks'])==""?"-":$fillarr['info']['wo_remarks'];
+$fillarr['info']['wo_due_date'] = is_null($fillarr['info']['wo_due_date']) ? "-" : $fillarr['info']['wo_due_date'];
+$fillarr['info']['wo_close_date'] = is_null($fillarr['info']['wo_close_date']) ? "<i>[Still open]</i>" : $fillarr['info']['wo_due_date'];
+$fillarr['info']['wo_creator_name'] = is_null($fillarr['info']['wo_creator_id']) ? "-" : $fillarr['info']['wo_creator_id'] . ": " . $fillarr['info']['wo_creator_name'];
+$fillarr['info']['wo_manager_name'] = is_null($fillarr['info']['wo_manager_id']) ? "-" : $fillarr['info']['wo_manager_id'] . ": " . $fillarr['info']['wo_manager_name'];
+$fillarr['info']['wo_remarks'] = is_null($fillarr['info']['wo_remarks']) || trim($fillarr['info']['wo_remarks']) == "" ? "-" : $fillarr['info']['wo_remarks'];
 
 ?>
 <table class="bom-table">
 	<tbody>
-		<tr class="special"><td colspan="2">Work Order Status</td></tr>
+		<tr class="special">
+			<td colspan="2">Work Order Status</td>
+		</tr>
 		<tr>
 			<th>ID</th>
-			<td width="100%"><?php echo $fillarr['info']['wi_id'];?></td>
+			<td width="100%"><?php echo $fillarr['info']['wi_id']; ?></td>
 		</tr>
 		<tr>
 			<th>Creation Date</th>
-			<td><?php echo $fillarr['info']['wo_date'];?></td>
+			<td><?php echo $fillarr['info']['wo_date']; ?></td>
 		</tr>
 		<tr>
 			<th>Due Date</th>
-			<td><?php echo $fillarr['info']['wo_due_date'];?></td>
+			<td><?php echo $fillarr['info']['wo_due_date']; ?></td>
 		</tr>
 		<tr>
 			<th>Creator</th>
-			<td><?php echo $fillarr['info']['wo_creator_name'];?></td>
+			<td><?php echo $fillarr['info']['wo_creator_name']; ?></td>
 		</tr>
 		<tr>
 			<th>Production Plant</th>
-			<td><?php echo $fillarr['info']['_wo_site'];?></td>
+			<td><?php echo $fillarr['info']['_wo_site']; ?></td>
 		</tr>
 		<tr>
 			<th>Manager</th>
-			<td><?php echo $fillarr['info']['wo_manager_name'];?></td>
+			<td><?php echo $fillarr['info']['wo_manager_name']; ?></td>
 		</tr>
-		
+
 		<tr>
 			<th>Closeing Date</th>
-			<td><?php echo $fillarr['info']['wo_close_date'];?></td>
+			<td><?php echo $fillarr['info']['wo_close_date']; ?></td>
 		</tr>
-		
+
 		<tr>
 			<th>Remarks</th>
-			<td><?php echo $fillarr['info']['wo_remarks'];?></td>
+			<td><?php echo $fillarr['info']['wo_remarks']; ?></td>
 		</tr>
-		
+
 	</tbody>
 </table>
 <style type="text/css">
-	.CSSTablePO > tbody > tr > td:nth-child(1n+2){
+	.CSSTablePO>tbody>tr>td:nth-child(1n+2) {
 		text-align: right;
 	}
-	.CSSTablePO > tbody > tr > td:nth-child(1n+7){
+
+	.CSSTablePO>tbody>tr>td:nth-child(1n+7) {
 		text-align: left;
 	}
 </style>
@@ -123,23 +126,23 @@ $fillarr['info']['wo_remarks']=is_null($fillarr['info']['wo_remarks']) || trim($
 	</thead>
 	<tbody>
 		<?php
-			$cnt=0;
-			foreach ($fillarr['list'] as $si_k => $si_v) {
-				$cnt++;
-				echo "<tr>";
-				echo "<td>$cnt</td>";
-				echo "<td>".number_format($si_v['wol_qty'],$si_v['unt_decim'],".",",")."</td>";
-				echo "<td>0</td>";
-				echo "<td>0</td>";
-				echo "<td>0</td>";
-				echo "<td>0</td>";
-				echo "<td>{$si_v['unt_name']}</td>";
-				echo "<td>{$si_v['mat_long_id']}</td>";
-				echo "<td>{$si_v['mat_pn']}</td>";
-				echo "<td>{$si_v['mat_description']}</td>";
-				echo "<td>{$si_v['mattyp_name']}</td>";
-				echo "</tr>";
-			}
+		$cnt = 0;
+		foreach ($fillarr['list'] as $si_k => $si_v) {
+			$cnt++;
+			echo "<tr>";
+			echo "<td>$cnt</td>";
+			echo "<td>" . number_format($si_v['wol_qty'], $si_v['unt_decim'], ".", ",") . "</td>";
+			echo "<td>0</td>";
+			echo "<td>0</td>";
+			echo "<td>0</td>";
+			echo "<td>0</td>";
+			echo "<td>{$si_v['unt_name']}</td>";
+			echo "<td>{$si_v['mat_long_id']}</td>";
+			echo "<td>{$si_v['mat_pn']}</td>";
+			echo "<td>{$si_v['mat_description']}</td>";
+			echo "<td>{$si_v['mattyp_name']}</td>";
+			echo "</tr>";
+		}
 		?>
 	</tbody>
 </table>

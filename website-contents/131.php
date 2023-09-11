@@ -1,9 +1,9 @@
 <?php
-include_once "admin/class/log.php";
-include_once "admin/class/application.php";
 
 use System\App;
+use System\Individual\Attendance\Registration;
 use System\Person\Attendance;
+use System\Template\Body;
 
 
 $settings = array();
@@ -66,7 +66,7 @@ if (isset($_POST['posubmit'])) {
 	header("HTTP_X_RESPONSE: SUCCESS");
 
 	$parameters = array(
-		"company" => App::$_user->company->id,
+		"company" => $app->user->company->id,
 		"paymethod" => isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1] != 0 ? (int)$_POST['paymethod'][1] : null,
 		"section" => isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? (int)$_POST['section'][1] : null,
 		"job" => isset($_POST['section'][1]) && (int)$_POST['job'][1] != 0 ? (int)$_POST['job'][1] : null,
@@ -77,15 +77,14 @@ if (isset($_POST['posubmit'])) {
 		//"residence"=>null,
 		//"transportation"=>null,
 		"onlyselection" => $onlyselection,
-		"onlyselection_usr_id" => App::$_user->info->id,
+		"onlyselection_usr_id" => $app->user->info->id,
 		"displaysuspended" => $displaysuspended,
 		"limit_date" => date("Y-m-d")
 	);
 
 
 
-	include_once "admin/class/attendance.php";
-	$attendance = new Attendance();
+	$attendance = new Registration($app);
 	$r = $attendance->ReportSummary(date("Y-m-d H:i:s", $dateFrom), date("Y-m-d H:i:s", $dateTo), null, $parameters);
 
 
@@ -93,7 +92,7 @@ if (isset($_POST['posubmit'])) {
 	if ($r) {
 		$cnt = 1;
 
-		while ($row = $sql->fetch_assoc($r)) {
+		while ($row = $r->fetch_assoc()) {
 			if (!isset($arrDisplay[$row['personID']])) {
 				$arrDisplay[$row['personID']] = array();
 				$arrDisplay[$row['personID']]['info'] = array();
@@ -138,7 +137,7 @@ if (isset($_POST['posubmit'])) {
 			echo "<tr>";
 			echo "<td>{$data['info']['id']}</td>";
 			echo "<td>{$data['info']['name']}</td>";
-			echo "<td align=\"right\" style=\"background-image:linear-gradient(0deg,rgba(0,0,0,0) 15%, #fff 15%),linear-gradient(90deg, $colorgradient {$percentage_l}%, #ffffff {$percentage_l}%);\">" . App::formatTime($data['info']['totalAttendedTime']) . "</td>";
+			echo "<td align=\"right\" style=\"background-image:linear-gradient(0deg,rgba(0,0,0,0) 15%, #fff 15%),linear-gradient(90deg, $colorgradient {$percentage_l}%, #ffffff {$percentage_l}%);\">" . $app->formatTime($data['info']['totalAttendedTime']) . "</td>";
 			echo "</tr>";
 		}
 		echo "
@@ -170,7 +169,7 @@ if (isset($_POST['posubmit'])) {
 			echo "<th align=\"center\">{$data['info']['timeGroup']}</th>";
 			foreach ($daysList as $dayId => $day) {
 				if (isset($data['days'][$day])) {
-					echo "<td align=\"center\">" . App::formatTime($data['days'][$day]) . "</td>";
+					echo "<td align=\"center\">" . $app->formatTime($data['days'][$day]) . "</td>";
 				} else {
 					echo "<td align=\"center\">-</td>";
 				}
@@ -207,7 +206,7 @@ if (isset($_POST['posubmit'])) {
 
 		foreach ($daysList as $dayId => $day) {
 			if (isset($empData['days'][$day])) {
-				$exportString .= "\t" . App::formatTime($empData['days'][$day]);
+				$exportString .= "\t" . $app->formatTime($empData['days'][$day]);
 			} else {
 				$exportString .= "\t0";
 			}
@@ -220,7 +219,7 @@ if (isset($_POST['posubmit'])) {
 }
 
 
-if ($h__requested_with_ajax) {
+if ($app->xhttp) {
 	exit;
 }
 ?>
@@ -312,9 +311,7 @@ if ($h__requested_with_ajax) {
 </style>
 
 <?php
-include_once("admin/class/Template/class.template.build.php");
 
-use Template\Body;
 
 $_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
@@ -338,7 +335,7 @@ echo $_TEMPLATE->NewFrameBodyStart();
 <iframe style="display: none;" name="iframe" id="iframe"></iframe>
 
 
-<form action="<?php echo $tables->pagefile_info(133, null, 'directory'); ?>" method="post" target="_blank" id="searchform">
+<form action="<?= $fs(133)->dir ?>" method="post" target="_blank" id="searchform">
 	<input type="hidden" name="posubmit">
 	<input type="hidden" id="export_param" name="export" value="">
 	<div class="template-gridLayout role-input">
@@ -407,9 +404,9 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 		$("#input-job-title").slo();
 		$("#input-date-start").slo();
 		$("#input-date-end").slo();
-		
-		
-		
+
+
+
 		var $form = $("#searchform");
 
 		$("#jQreport").on("click", function() {
@@ -417,7 +414,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 		});
 		var fetch = function() {
 			$form.attr("method", "post");
-			$form.attr("action", "<?php echo $tables->pagefile_info(131, null, "directory"); ?>");
+			$form.attr("action", "<?= $fs(131)->dir ?>");
 			$form.attr("target", "_blank");
 			overlay.show();
 			$ajaxload = $.ajax({
@@ -444,7 +441,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 		$("#jQexport").on('click', function() {
 			overlay.show();
 			$form.attr("method", "post");
-			$form.attr("action", "<?php echo $tables->pagefile_info(133, null, "directory"); ?>");
+			$form.attr("action", "<?= $fs(133)->dir ?>");
 			$form.attr("target", "iframe");
 			$form.submit();
 

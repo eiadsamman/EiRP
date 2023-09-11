@@ -75,8 +75,8 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "update") {
 	}
 }
 
-$q_socialid_uploads_query = "
-		SELECT up_id,up_name,up_size,up_date,up_pagefile,up_mime,up_rel 
+$q_socialid_uploads_query =
+	"SELECT up_id,up_name,up_size,up_date,up_pagefile,up_mime,up_rel 
 		FROM uploads 
 		WHERE 
 			(" . ($arr_array_input != false ? " up_rel={$arr_array_input['usr_id']} OR " : "") . " (up_rel=0 AND up_user={$app->user->info->id}))

@@ -1,9 +1,10 @@
 <?php
-include_once "admin/class/log.php";
-include_once("admin/class/accounting.php");
-include_once("admin/class/SmartListObject.php");
-$SmartListObject = new SmartListObject();
-$accounting = new Accounting();
+
+use System\Finance\Accounting;
+use System\SmartListObject;
+
+$SmartListObject = new SmartListObject($app);
+$accounting = new Accounting($app);
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
 /*

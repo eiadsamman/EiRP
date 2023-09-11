@@ -19,11 +19,8 @@ if ($h__requested_with_ajax && isset($_POST['remove'])) {
 }
 
 
-require_once("admin/class/Template/class.template.build.php");
 
-use Template\Body;
-
-$_TEMPLATE 	= new Body();
+$_TEMPLATE 	= new \System\Template\Body();
 $_TEMPLATE->SetWidth("800px");
 $_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs(27)->dir}\"></a>Bookmarks", null, null);
 

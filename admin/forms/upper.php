@@ -12,8 +12,7 @@ if (isset($fs()->parameters) && preg_match("/help([0-9]+)/", $fs()->parameters, 
 	$__helper = $fs((int) $match[1]);
 }
 if (isset($fs()->parameters) && preg_match("/side-panel([0-9]+)/", $fs()->parameters, $match)) {
-	$__side_panel = $tables->pagefile_info((int) $match[1]);
-	$__side_panel__perm = new AllowedActions($app->user->info->permissions, $__side_panel['permissions']);
+	$__side_panel = $fs((int) $match[1]);
 }
 
 
@@ -53,10 +52,12 @@ $SmartListObject = new SmartListObject($app);
 	<link media="screen,print" rel="stylesheet" href="static/style/style.ios-checkbox.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.template.css" />
 	<?php
-	$load = explode(":", $fs()->cdns['css']);
-	foreach ($load as $file) {
-		if (trim($file) != "")
-			echo "	<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}\" />\n";
+	if (array_key_exists('css', $fs()->cdns)) {
+		$load = explode(":", $fs()->cdns['css']);
+		foreach ($load as $file) {
+			if (trim($file) != "")
+				echo "	<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}\" />\n";
+		}
 	}
 	?>
 	<script type="text/javascript" src="static/jquery/jquery.min.js"></script>
@@ -68,14 +69,16 @@ $SmartListObject = new SmartListObject($app);
 	<script type="text/javascript" src="static/jquery/popup-1.0.js"></script>
 	<script type="text/javascript" src="static/jquery/msgoverlay1.0.js"></script>
 	<script type="text/javascript" src="static/jquery/serialize.js"></script>
-	<?php if ($__side_panel && $__side_panel__perm->deny == false) {
+	<?php if ($__side_panel && $__side_panel->permission->deny == false) {
 		echo '<script type="text/javascript" src="static/javascript/template.sidepanel.js"></script>';
 	} ?>
 	<?php
-	$load = explode(":",  $fs()->cdns['js']);
-	foreach ($load as $file) {
-		if (trim($file) != "")
-			echo "	<script type=\"text/javascript\" src=\"static/{$file}\"></script>\n";
+	if (array_key_exists('js', $fs()->cdns)) {
+		$load = explode(":",  $fs()->cdns['js']);
+		foreach ($load as $file) {
+			if (trim($file) != "")
+				echo "	<script type=\"text/javascript\" src=\"static/{$file}\"></script>\n";
+		}
 	}
 	?>
 
@@ -299,18 +302,21 @@ $SmartListObject = new SmartListObject($app);
 		<div>
 			<div>
 				<div>
-					<?php if ($__side_panel && $__side_panel__perm->deny == false && is_file("website-contents/" . $__side_panel['id'] . ".php")) { ?>
+					<?php if ($__side_panel && !$__side_panel->permission->deny  && is_file("website-contents/" . $__side_panel->id . ".php")) { ?>
 						<span style="position: absolute;right:0px;top:45px;width:310px">
 							<span style="position: fixed;display: block;z-index: 999;font-size: 0.7em;padding-left: 4px;color:#ccc">
-								<?= $__side_panel['id']; ?>
+								<?= $__side_panel->id; ?>
 							</span>
-							<span id="template-sidePanel" data-template_url="<?php echo $tables->pagefile_info($__side_panel['id'], null, "directory"); ?>">
+							<span id="template-sidePanel" data-template_url="<?= $__side_panel->dir ?>">
 								<div>
-									<?php include_once("website-contents/" . $__side_panel['id'] . ".php"); ?>
+									<?php include_once("website-contents/" . $__side_panel->id . ".php"); ?>
 								</div>
 							</span>
 						</span>
 					<?php } ?>
-					<div <?php echo ($__side_panel && $__side_panel__perm->deny == false) ?
-								"class=\"template-enableSidePanel\"" : ""; ?> style="padding:15px;padding-top:
-						<?php echo (strpos($fs()->parameters, "no-padding") !== false) ? "40px;" : "59px;"; ?>;" id="body-content">
+					<div <?php
+							$no_padding = !is_null($fs()->parameters) && strpos($fs()->parameters, "no-padding") !== false ? "40px" : "59px";
+							echo ($__side_panel && $__side_panel->permission->deny == false) ?
+								"class=\"template-enableSidePanel\"" : ""; ?> style="padding:15px;
+						padding-top:<?= $no_padding ?>;
+						" id="body-content">

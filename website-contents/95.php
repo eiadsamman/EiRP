@@ -1,14 +1,12 @@
 <?php
-include_once("admin/class/accounting.php");
 
-use Finance\Accounting;
 use System\SmartListObject;
 
 
-$accounting = new Accounting();
+$accounting = new System\Finance\Accounting($app);
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
-$__workingaccount = $accounting->account_information($USER->account->id);
+$__workingaccount = $accounting->account_information($app->user->account->id);
 if ($__workingaccount)
 	$__workingcurrency = $accounting->account_default_currency($__workingaccount['id']);
 
@@ -29,12 +27,12 @@ function _JSON_output($result, $message, $focus = null, $extra = null)
 
 if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	if (!$__workingaccount) {
-		_JSON_output(false, $USER->account->name . " is not a valid account");
+		_JSON_output(false, $app->user->account->name . " is not a valid account");
 	} elseif ($__workingcurrency === false) {
 		_JSON_output(false, "No currency provided for selected account");
 	}
-	if (!$USER->account->role->outbound) {
-		_JSON_output(false, "Outbound rules are not allowed on `{$USER->account->name}`");
+	if (!$app->user->account->role->outbound) {
+		_JSON_output(false, "Outbound rules are not allowed on `{$app->user->account->name}`");
 	}
 
 
@@ -49,12 +47,12 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 
 
 
-	if ($r = $sql->query("
+	if ($r = $app->db->query("
 		SELECT prt_id 
 		FROM `acc_accounts` 
-			JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$USER->info->id} AND upr_prt_inbound=1
+			JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_inbound=1
 		WHERE prt_id=" . ((int)$creditor) . ";")) {
-		if ($sql->num_rows($r) == 0) {
+		if ($r->num_rows == 0) {
 			_JSON_output(false, "Select a valid debitor account with inbound rules", "jQcreditor");
 		}
 	}
@@ -63,8 +61,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	if ($creditor == $__workingaccount['id']) {
 		_JSON_output(false, "Debitor account can't be as same as Creditor account", "jQcreditor");
 	}
-	if ($r = $sql->query("SELECT acccat_id FROM acc_categories WHERE acccat_id=$category;")) {
-		if ($sql->num_rows($r) == 0) {
+	if ($r = $app->db->query("SELECT acccat_id FROM acc_categories WHERE acccat_id=$category;")) {
+		if ($r->num_rows == 0) {
 			_JSON_output(false, "Select the statement category", "jQcategory");
 		}
 	}
@@ -136,12 +134,12 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 
 	/*
 		$balance=null;
-		if($r=$sql->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$sql->fetch_assoc($r)){$balance=$row['zsum'];}}
+		if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
 		if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
 	*/
 
 	$result = true;
-	$sql->autocommit(false);
+	$app->db->autocommit(false);
 
 	$qacc_main = sprintf(
 		"INSERT INTO acc_main (
@@ -159,7 +157,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		acm_realcurrency_crd,
 		acm_realcurrency_dbt,
 		acm_month,
-		acm_rel
+		acm_rel,
+		acm_party
 		) VALUES (
 		%1\$s,
 		%2\$d,
@@ -174,10 +173,11 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		%12\$f,
 		%13\$f,
 		%14\$s,
-		%16\$s
+		%16\$s,
+		%17\$d
 		);",
 		$employee ? (int)$employee : "NULL",
-		$USER->info->id,
+		$app->user->info->id,
 		"NULL",
 		"'" . date("Y-m-d", $date) . "'",
 		2,
@@ -191,70 +191,69 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		$exchangerate_dbt,
 		($month ? "FROM_UNIXTIME(" . $month . ")" : "NULL"),
 		"FROM_UNIXTIME(" . time() . ")",
-		$rel
+		$rel,
+		$app->user->company->id
 	);
-	$result &= $sql->query($qacc_main);
+	$result &= $app->db->query($qacc_main);
 
 	if (!$result) {
-		$sql->rollback();
+		$app->db->rollback();
 		_JSON_output(false, "Database error, errref: " . __LINE__);
 	}
 
 
-	$mainid = (int)$sql->insert_id();
+	$mainid = (int)$app->db->insert_id;
 
 	//INSERT creditor statement
 	$qacc_release = sprintf("INSERT INTO acc_temp (atm_account_id,atm_value,atm_dir,atm_main) VALUES (%1\$d,%2\$f,%3\$d,%4\$d);", $__workingaccount['id'], -1 * $value_from, 0, $mainid);
-	$result &= $sql->query($qacc_release);
+	$result &= $app->db->query($qacc_release);
 
 	//INSERT debitor statement
 	$qacc_insert = sprintf("INSERT INTO acc_temp (atm_account_id,atm_value,atm_dir,atm_main) VALUES (%1\$d,%2\$f,%3\$d,%4\$d);", $creditor, $value_to, 1, $mainid);
-	$result &= $sql->query($qacc_insert);
+	$result &= $app->db->query($qacc_insert);
 
 	//Attach uploaded files to the transaction
 	if (sizeof($attachments) > 0) {
-		$qacc_attach = "UPDATE uploads SET up_rel=$mainid, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$USER->info->id};";
-		$result &= $sql->query($qacc_attach);
+		$qacc_attach = "UPDATE uploads SET up_rel=$mainid, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$app->user->info->id};";
+		$result &= $app->db->query($qacc_attach);
 	}
 
 	if ($result) {
-		$sql->commit();
+		$app->db->commit();
 		$balance = 0;
-		$sql->query("INSERT INTO user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value,usrset_time) 
-				VALUES ({$USER->info->id},'system_count_account_operation','$creditor','1',NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
+		$app->db->query("INSERT INTO user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value,usrset_time) 
+				VALUES ({$app->user->info->id},'system_count_account_operation','$creditor','1',NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
 
-		if ($r = $sql->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE atm_account_id={$__workingaccount['id']} AND acm_rejected=0;")) {
-			if ($row = $sql->fetch_assoc($r)) {
+		if ($r = $app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE atm_account_id={$__workingaccount['id']} AND acm_rejected=0;")) {
+			if ($row = $r->fetch_assoc()) {
 				$balance = $row['zsum'];
 			}
 		}
 		_JSON_output(true, "Statement submited successfully", null, array("newbalance" => number_format((float)$balance, 2, ".", ","), "id" => $mainid, "value" => number_format((float)$value, 2, ".", "")));
 	} else {
-		$sql->rollback();
+		$app->db->rollback();
 		_JSON_output(false, "Statement insertion failed");
 	}
 	exit;
 }
-if ($h__requested_with_ajax) {
+if ($app->xhttp) {
 	exit;
 }
 /*AJAX-END*/
 
 
-include_once("admin/class/Template/class.template.build.php");
-include_once("admin/class/SmartListObject.php");
-$SmartListObject = new SmartListObject();
-use Template\Body;
+$SmartListObject = new SmartListObject($app);
 
-$_TEMPLATE = new Body("");
+
+$_TEMPLATE = new \System\Template\Body("");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(true);
 
 if (!$__workingaccount) {
-	echo "<div class=\"btn-set\"><button>{$USER->account->name}</button><span>Is not a valid account</span></div>";
+	echo "<div class=\"btn-set\"><button>{$app->user->account->name}</button><span>Is not a valid account</span></div>";
 } elseif ($__workingcurrency === false) {
 	echo "<div class=\"btn-set\"><span class=\"bnt-error\">&nbsp;No currency provided for selected account</span></div>";
-} elseif (!$USER->account->role->outbound) {
+} elseif (!$app->user->account->role->outbound) {
 	$_TEMPLATE->Title("&nbsp;Invalid outbound account!", null, "", null);
 	$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Selected account is not valid for outbound operations:</span>");
 	$_TEMPLATE->NewFrameBody('<ul>
@@ -264,8 +263,8 @@ if (!$__workingaccount) {
 		</ul>
 		<b>Actions</b>
 		<ul>
-			<li>Goto <a href="' . $tables->pagefile_info(99, null, "directory") . '">Ledger report</a></li>
-			<li>Goto <a href="' . $tables->pagefile_info(91, null, "directory") . '">New Receipt</a></li>
+			<li>Goto <a href="{$fs(99)->dir}">Ledger report</a></li>
+			<li>Goto <a href="{$fs(91)->dir}">New Receipt</a></li>
 		</ul>
 		');
 } else {
@@ -274,7 +273,7 @@ if (!$__workingaccount) {
 
 	<?php
 	$_TEMPLATE->SetWidth("768px");
-	$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs(99)->dir}\"></a>New " . $fs()->title, null, $rowpo['doc_id']);
+	$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs(99)->dir}\"></a>New " . $fs()->title, null, "");
 
 	echo $_TEMPLATE->CommandBarStart();
 	echo "<div class=\"btn-set\" style=\"justify-content:flex-end\">";
@@ -333,7 +332,7 @@ if (!$__workingaccount) {
 				<th>Beneficial</th>
 				<td>
 					<div class="btn-set">
-						<input type="text" class="flex" tabindex="4"  data-slo=":LIST" data-list="jQbeneficialList" id="jQbeneficial" />
+						<input type="text" class="flex" tabindex="4" data-slo=":LIST" data-list="jQbeneficialList" id="jQbeneficial" />
 						<input type="text" tabindex="-1" class="flex" data-slo="B00S" id="jQemployee" />
 					</div>
 					<datalist id="jQbeneficialList">
@@ -407,7 +406,7 @@ if (!$__workingaccount) {
 				list_button: $("#js_upload_count"),
 				emptymessage: "[No files uploaded]",
 				delete_method: 'permanent',
-				upload_url: "<?php echo $tables->pagefile_info(186, null, "directory"); ?>",
+				upload_url: "<?= $fs(186)->dir ?>",
 				relatedpagefile: <?php echo TRANSACTION_ATTACHMENT_PAGEFILE; ?>,
 				multiple: true,
 				inputname: "attachments"
@@ -415,9 +414,9 @@ if (!$__workingaccount) {
 			<?php
 			$empty = true;
 			$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
-			$r_release = $sql->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$USER->info->id} AND up_pagefile=" . TRANSACTION_ATTACHMENT_PAGEFILE . " AND up_rel=0 AND up_deleted=0;");
+			$r_release = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . TRANSACTION_ATTACHMENT_PAGEFILE . " AND up_rel=0 AND up_deleted=0;");
 			if ($r_release) {
-				while ($row_release = $sql->fetch_assoc($r_release)) {
+				while ($row_release = $r_release->fetch_assoc()) {
 					$empty = false;
 					echo "Upload.AddListItem({$row_release['up_id']},'{$row_release['up_name']}',false,false,'" . (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document") . "');";
 				}
@@ -488,7 +487,7 @@ if (!$__workingaccount) {
 					$creditorSLO.focus().select();
 					return false;
 				}
-				if ($creditor.val() == <?php echo $USER->account->id; ?>) {
+				if ($creditor.val() == <?php echo $app->user->account->id; ?>) {
 					messagesys.failure("Debitor account must not be same as Creditor account");
 					$creditorSLO.focus().select();
 					return false;
@@ -580,7 +579,7 @@ if (!$__workingaccount) {
 						BALANCE_UPDATE();
 						inputStatus(false);
 						$("#jQbeneficial").prop("readonly", false).prop("disabled", false);
-						//$("#jQiframe").attr("src","<?php echo $tables->pagefile_info(142, null, "directory"); ?>/?id="+_data.id);
+						//$("#jQiframe").attr("src","<?= $fs(142)->dir ?>/?id="+_data.id);
 						$value.val("").focus().select();
 						Upload.clean();
 						BALANCE_UPDATE();

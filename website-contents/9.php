@@ -2,7 +2,7 @@
 //cobjecttype
 
 
-$sql->query("ALTER TABLE `cobjecttype` CHANGE `cot_init` `cot_init` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;");
+$app->db->query("ALTER TABLE `cobjecttype` CHANGE `cot_init` `cot_init` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;");
 
 $database=array(
 'table'=>'cobjecttype',

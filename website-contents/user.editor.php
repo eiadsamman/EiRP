@@ -28,7 +28,7 @@ function check_date($input)
 
 if (isset($_POST['method'], $_POST['sal_workingtime'], $_POST['sal_paymethod'], $_POST['sal_job']) && $_POST['method'] == "get_salary_information") {
 	if (!$c__actions->edit) {
-		$app->responseStatus->BadRequest;
+		$app->responseStatus->BadRequest->response();
 	}
 	$_POST['sal_workingtime'] = (int)$_POST['sal_workingtime'];
 	$_POST['sal_paymethod'] = (int)$_POST['sal_paymethod'];

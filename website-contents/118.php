@@ -1,17 +1,7 @@
 <?php
-use System\Individual\Attendance\Registration;
-include_once("admin/class/attendance.php");
-include_once("admin/class/Template/class.template.build.php");
 
-use System\App;
-use System\Person\Attendance;
-use System\Person\PersonNotFoundException;
-use System\Person\PersonResignedException;
-use System\Person\ExceptionNotSignedIn;
-use System\Person\LocationInvalid;
-use System\Person\ExceptionTimeLimit;
-use System\Person\AttendanceExceptionDuplicateCheckin;
-use Template\Body;
+use System\Individual\Attendance\Registration;
+use System\Template\Body;
 
 $att = new Registration($app);
 $loc = $att->DefaultCheckInternalAccounts($app->user->company->id);
@@ -22,15 +12,15 @@ if (isset($_POST['serial'])) {
 	$att = new Registration($app);
 	try {
 		$att->load((int)$_POST['serial']);
-		$ratt 	= $att->CheckIn( (int)$_POST['partition']);
+		$ratt 	= $att->CheckIn((int)$_POST['partition']);
 
 		if ($ratt) {
 			header("ATT_RESULT: OK");
-			header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
+			header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 			echo $att->info->name;
 		} else {
 			header("ATT_RESULT: FAIL");
-			header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
+			header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 			echo $att->info->name;
 		}
 	} catch (\System\Individual\PersonNotFoundException $e) {
@@ -38,18 +28,18 @@ if (isset($_POST['serial'])) {
 		header("ATT_IMAGE_ID: 0");
 	} catch (\System\Individual\PersonResignedException $e) {
 		header("ATT_RESULT: RESIGNED");
-		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
+		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 		echo $att->info->name;
 	} catch (\System\Individual\Attendance\ExceptionNotSignedIn $e) {
 		header("ATT_RESULT: NOTSIGEND");
-		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
+		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 		echo $att->info->name;
 	} catch (\System\Individual\Attendance\LocationInvalid $e) {
 		header("ATT_RESULT: SECTOR");
 		header("ATT_IMAGE_ID: 0");
 	} catch (\System\Individual\Attendance\ExceptionTimeLimit $e) {
 		header("ATT_RESULT: TIMELIMIT");
-		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
+		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 		echo $att->info->name;
 	}
 
@@ -62,7 +52,8 @@ if (isset($_POST['populate'])) {
 	$r = $att->ReportOngoingBySector(["company" => $app->user->company->id, "sector" => $sector]);
 	if ($r) {
 		while ($row = $r->fetch_assoc()) {
-			$photo = $row['up_id'] != null ? "download/?id={$row['up_id']}&pr=t" : "";
+
+			$photo = $row['up_id'] != null ? "download/?id={$row['up_id']}&pr=t" : "static/images/user-r.jpg";
 			Body::AttendanceTicketPlot(null, $photo, $row['lbr_id'], $row['usr_firstname']);
 		}
 	}
@@ -81,9 +72,9 @@ $_TEMPLATE->Title($fs()->title, null, null);
 <?php echo $_TEMPLATE->CommandBarStart(); ?>
 
 <div style="display: flex;margin-bottom: 10px;">
-	<?php if ($USER->account) { ?>
-		<div data-id="<?php echo ($USER->account->id); ?>" class="horzFixed JQLocSelection" style="min-width:150px;width:150px;max-width:150px;height:40px;margin: 4px 10px 4px 0px;">
-			<div><?php echo ($USER->account->name); ?></div>
+	<?php if ($app->user->account) { ?>
+		<div data-id="<?php echo ($app->user->account->id); ?>" class="horzFixed JQLocSelection" style="min-width:150px;width:150px;max-width:150px;height:40px;margin: 4px 10px 4px 0px;">
+			<div><?php echo ($app->user->account->name); ?></div>
 		</div>
 	<?php } ?>
 	<div class="horzScroll" id="JQSelectSection" style="padding:4px">
@@ -94,7 +85,7 @@ $_TEMPLATE->Title($fs()->title, null, null);
 		?>
 	</div>
 </div>
-<table border="0" cellpadding="0" cellspacing="0" width="100%" class="bom-table">
+<table class="bom-table">
 	<tbody>
 		<tr>
 			<td width="100%" colspan="2">
