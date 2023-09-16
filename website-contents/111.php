@@ -1,6 +1,6 @@
 <?php
 
-use System\FileSystem\File;
+use System\FileSystem\Page;
 
 if (isset($_POST['glyph'])) {
 	if ($app->db->query("UPDATE pagefile SET trd_attrib4=" . ($_POST['glyph'] == "" ? "NULL" : "'{$_POST['glyph']}'") . " WHERE trd_id=" . ((int)$_POST['id']) . "")) {

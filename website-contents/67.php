@@ -74,7 +74,7 @@ if (isset($_POST['fetch'])) {
 
 			echo $pb == 1 ? "" : "<td class=\"mediabond-ignore\">{$row['lsc_name']}: {$row['lty_name']}</td>";
 
-			echo "<td class=\"employee-photo\"><div style=\"background-image:url('" . (is_null($row['up_id']) ? "user.jpg" : $tables->pagefile_info(187, null, "directory") . "?id={$row['up_id']}&pr=t") . "');\"></div></td>";
+			echo "<td class=\"employee-photo\"><div style=\"background-image:url('" . (is_null($row['up_id']) ? "user.jpg" : $fs(187)->dir . "?id={$row['up_id']}&pr=t") . "');\"></div></td>";
 			echo "<td>{$row['lbr_id']} </td>";
 			echo "<td class=\"emplyee-name\">{$row['usr_firstname']} {$row['usr_lastname']}</td>";
 			echo "<td>{$row['ltr_ctime_date']} {$row['ltr_ctime_time']}</td>";

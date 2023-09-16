@@ -47,7 +47,7 @@ function GetEmployeesList(&$app, $fs, $limit_selection, $_TEMPLATE)
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$app->user->info->id}
 				LEFT JOIN gender ON gnd_id=usr_gender
-				LEFT JOIN uploads ON (up_pagefile=" . $app::FILE['Person']['Photo'] . " ) AND up_rel=lbr_id AND up_deleted=0
+				LEFT JOIN uploads ON (up_pagefile=" . $app->scope->individual->portrait . " ) AND up_rel=lbr_id AND up_deleted=0
 				JOIN companies ON comp_id=lbr_company AND lbr_company={$app->user->company->id}
 		WHERE
 			( (lbr_role & b'001') > 0 ) AND lbr_resigndate IS NULL " . ($limit_selection ? " AND sel_usremp_emp_id IS NOT NULL " : "") . " 
@@ -151,7 +151,7 @@ echo $_TEMPLATE->CommandBarStart(); ?>
 			<div id="jQaction_clearall"><span>&#xea56;</span>Clear selection</div>
 		</div>
 	</b>
-	<button id="jQselectaction" class="menu menu1_handler" type="button">Selected <div id="jQselected_employees"><?php echo GetSelectedEmployees($app); ?></div><span></span></button>
+	<button id="jQselectaction" class="menu1_handler" type="button">Selected <span id="jQselected_employees"><?php echo GetSelectedEmployees($app); ?></span><span></span></button>
 	<b id="jQgroup_menu" class="menu_screen menu2">
 		<div data-status="off">
 			<div data-group="no_group" data-group_name="No Group">No Group</div>
@@ -164,7 +164,7 @@ echo $_TEMPLATE->CommandBarStart(); ?>
 			<hr />
 		</div>
 	</b>
-	<button id="jQgroup_action" class="menu menu2_handler" type="button">Group By `<div id="jQgroup_actiontitle">Job Section</div>`<span></span></button>
+	<button id="jQgroup_action" class="menu2_handler" type="button"><div id="jQgroup_actiontitle">Job Section</div><span></span></button>
 	<label class="btn-checkbox"><input type="checkbox" id="jQfilter_selection" /> <span>&nbsp;Show selection only&nbsp;</span></label>
 	<span class="gap"></span>
 	<span style="min-width:130px;text-align:right">Employees: <b id="jQtotal_employees"><?php echo GetTotalEmployees($app); ?></b></span>

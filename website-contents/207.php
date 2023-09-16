@@ -26,12 +26,12 @@
 						<td>
 							<div class="btn-set">
 								<?php
-								$r = $app->db->query("SELECT comp_id,comp_name FROM companies JOIN user_company ON urc_usr_comp_id = comp_id AND urc_usr_id = {$USER->info->id}");
+								$r = $app->db->query("SELECT comp_id,comp_name FROM companies JOIN user_company ON urc_usr_comp_id = comp_id AND urc_usr_id = {$app->user->info->id}");
 								if ($q) {
 									while ($row = $r->fetch_assoc()) {
 										printf("<a href=\"%s/?--sys_sel-change=company_commit&i=%d\" style=\"height: 60px;width: 150px;\">
-								<span style=\"display: table-cell;vertical-align: middle;height: 43px;white-space: normal;color:#333;text-align:center;width:130px;\">%s</span>
-							</a>", $fs()->dir, (int)$row['comp_id'], $row['comp_name']);
+										<span style=\"display: table-cell;vertical-align: middle;height: 43px;white-space: normal;color:#333;text-align:center;width:130px;\">%s</span>
+										</a>", $fs()->dir, (int)$row['comp_id'], $row['comp_name']);
 									}
 								}
 								?>

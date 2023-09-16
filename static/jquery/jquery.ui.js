@@ -197,19 +197,6 @@ $(document).ready(function (e) {
 	/*setInterval(function(){BALANCE_UPDATE();},5000);*/
 
 
-	$(document).on("click", ".template-frameTitle", function (e) {
-		if (e.target.nodeName == "SPAN") {
-			let domBody = $("#" + $(this).attr("data-templatebody"));
-			if (domBody.css('display') == "none") {
-				domBody.show();
-			} else {
-				domBody.hide();
-			}
-		}
-	});
-
-
-
 });
 var formatter = new Intl.NumberFormat('en-US', {
 });

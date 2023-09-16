@@ -1,0 +1,73 @@
+<?php
+
+$uproooooooooooooooot = $app->root . "uploads\\";
+
+if (isset($_POST['fileidtodeletenow'])) {
+
+	unlink($uproooooooooooooooot . $_POST['fileidtodeletenow']);
+	exit;
+}
+
+use System\Attachment\File;
+use System\Attachment\Scope;
+
+$file = new File($app);
+
+
+$list = $file->all();
+
+foreach ($list as $properties) {
+	echo "<a target=\"_black\" href=\"{$fs(187)->dir}/?id={$properties->id}\"><img src=\"{$fs(187)->dir}/?id={$properties->id}&pr=t\" style=\"width:200px;height:200px;margin:5px;\" ></a>";
+
+	$dick = $uproooooooooooooooot . $properties->id;
+	if (file_exists($dick . "_t") && file_exists($dick . "_v")) {
+
+	} else {
+		//$app->db->query("DELETE FROM uploads WHERE up_id = {$properties->id}");
+	}
+
+	if (file_exists($dick . "_t"))
+		unlink($dick . "_t");
+	if (file_exists($dick . "_v"))
+		unlink($dick . "_v");
+	if (file_exists($dick))
+		unlink($dick);
+	$app->db->query("DELETE FROM uploads WHERE up_id = {$properties->id}");
+}
+
+
+
+
+$files = scandir($uproooooooooooooooot);
+
+$cnt = 0;
+foreach ($files as $f) {
+
+	if (substr($f, -2) != "_v" && substr($f, -2) != "_t" && $f !="." && $f !="..") {
+			echo "<img class=\"zaimage\" data-ffffff=\"{$f}\" src=\"{$fs(187)->dir}/?FUCK={$f}\" style=\"width:400px;height:400px;margin:5px;\" >";
+		$cnt++;
+	}
+}
+
+?>
+
+<script>
+	$(document).ready(function (e) {
+
+		$(".zaimage").on('click', function () {
+			let id = ($(this).attr("data-ffffff"));
+			let that = $(this);
+			$ajax = $.ajax({
+				data: { "fileidtodeletenow": id },
+				url: "<?php echo $fs()->dir; ?>",
+				type: "POST"
+			}).done(function (data) {
+				var _data = null;
+				that.remove();
+			});
+
+
+		});
+	});
+
+</script>

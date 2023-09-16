@@ -5,21 +5,22 @@ use System\Template\Body;
 
 
 $_TEMPLATE = new Body("");
-$_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
+$_TEMPLATE->SetLayout( /*Sticky Title*/true, /*Command Bar*/true, /*Sticky Frame*/true);
 $_TEMPLATE->FrameTitlesStack(false);
 $_TEMPLATE->SetWidth("800px");
 
 
 
 if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchrecord") {
-	
-	$employeeID = (int)$_POST['employeeID'];
 
-	if ($r = $app->db->query("
+	$employeeID = (int) $_POST['employeeID'];
+
+	if (
+		$r = $app->db->query("
 		SELECT
 			usr_firstname,usr_lastname,
 			usr_id,usr_username,usr_phone_list,
-			usr_attrib_i2,gnd_name,
+			gnd_name,
 			lsf_id,lsf_name,
 			lty_id,lty_name,lsc_name,
 			ldn_id,ldn_name,
@@ -44,7 +45,8 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
 				LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
 		WHERE
-			lbr_id=$employeeID AND usr_id!=1;")) {
+			lbr_id=$employeeID AND usr_id!=1;")
+	) {
 		if ($row = $r->fetch_assoc()) {
 			header("HTTP_X_RESPONSE: SUCCESS");
 			header("HTTP_X_PID: " . $row['usr_id']);
@@ -57,8 +59,8 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				$arr_socialids[$row_socialid_uploads['up_pagefile']][$row_socialid_uploads['up_id']] = array($row_socialid_uploads['up_name'], $row_socialid_uploads['up_size'], $row_socialid_uploads['up_date'], $row_socialid_uploads['up_id']);
 			}
 			$socialidphotos = "";
-			if (isset($arr_socialids[App::FILE['Person']['ID']])) {
-				foreach ($arr_socialids[App::FILE['Person']['ID']] as $k_socialid => $v_socialid) {
+			if (isset($arr_socialids[$app->scope->individual->social_id])) {
+				foreach ($arr_socialids[$app->scope->individual->social_id] as $k_socialid => $v_socialid) {
 					$socialidphotos .= "<a href=\"download/?id={$k_socialid}\" class=\"jq_frame_image\" data-href=\"download/?id={$k_socialid}&pr=v\">view</a>";
 				}
 			}
@@ -73,10 +75,10 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 					<td style="width:33%;min-width:200px" align="center">';
 				$img = "user.jpg";
 				if (
-					isset($arr_socialids[App::FILE['Person']['Photo']]) && is_array($arr_socialids[App::FILE['Person']['Photo']])
-					&& sizeof($arr_socialids[App::FILE['Person']['Photo']]) > 0
+					isset($arr_socialids[$app->scope->individual->portrait]) && is_array($arr_socialids[$app->scope->individual->portrait])
+					&& sizeof($arr_socialids[$app->scope->individual->portrait]) > 0
 				) {
-					$imgid = reset($arr_socialids[App::FILE['Person']['Photo']])[3];
+					$imgid = reset($arr_socialids[$app->scope->individual->portrait])[3];
 					$img = "download/?id={$imgid}&pr=t";
 					unset($imgid);
 				}
@@ -148,9 +150,9 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Salary Details:</span>", false, false, 105);
 				echo $_TEMPLATE->NewFrameBodyStart();
 				echo '<div class="template-gridLayout">
-					<div><span>Salary</span><div>' . (is_null($row['lbr_fixedsalary']) ? number_format((float)$row['lbr_typ_sal_basic_salary'], 2, ".", ",") : number_format((float)$row['lbr_fixedsalary'], 2, ".", ",")) . '</div></div>
-					<div><span>Variable</span><div>' . (is_null($row['lbr_variable']) ? number_format((float)$row['lbr_typ_sal_variable'], 2, ".", ",") : number_format((float)$row['lbr_variable'], 2, ".", ",")) . '</div></div>
-					<div><span>Allowance</span><div>' . (is_null($row['lbr_allowance']) ? number_format((float)$row['lbr_typ_sal_allowance'], 2, ".", ",") : number_format((float)$row['lbr_allowance'], 2, ".", ",")) . '</div></div>
+					<div><span>Salary</span><div>' . (is_null($row['lbr_fixedsalary']) ? number_format((float) $row['lbr_typ_sal_basic_salary'], 2, ".", ",") : number_format((float) $row['lbr_fixedsalary'], 2, ".", ",")) . '</div></div>
+					<div><span>Variable</span><div>' . (is_null($row['lbr_variable']) ? number_format((float) $row['lbr_typ_sal_variable'], 2, ".", ",") : number_format((float) $row['lbr_variable'], 2, ".", ",")) . '</div></div>
+					<div><span>Allowance</span><div>' . (is_null($row['lbr_allowance']) ? number_format((float) $row['lbr_typ_sal_allowance'], 2, ".", ",") : number_format((float) $row['lbr_allowance'], 2, ".", ",")) . '</div></div>
 				</div>';
 				echo $_TEMPLATE->NewFrameBodyEnd();
 			}
@@ -204,7 +206,7 @@ echo "<input id=\"employeIDFormSearch\" tabindex=\"1\" type=\"text\" data-slo=\"
 echo "<button type=\"button\" id=\"jQedit\" tabindex=\"2\" disabled>Edit information</button>";
 echo "<button type=\"button\" id=\"jQprintIDCard\" tabindex=\"3\" disabled>Print ID Card</button>";
 echo "</div>";
-echo "<datalist id=\"personList\">" . $SmartListObject->hr_person($app->user->company->id) . "</datalist>";
+echo "<datalist id=\"personList\">" . $SmartListObject->system_individual($app->user->company->id) . "</datalist>";
 echo $_TEMPLATE->CommandBarEnd();
 
 ?>
@@ -215,7 +217,7 @@ echo $_TEMPLATE->CommandBarEnd();
 
 
 <script>
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 		let counter = 0;
 		const linkTrigger = $("#jQtriggerlink"),
 			buttonEdit = $("#jQedit"),
@@ -224,13 +226,13 @@ echo $_TEMPLATE->CommandBarEnd();
 			spanIDTitle = $("#jQdomPID");
 		let queryResponse = false;
 
-		$("#jQoutput").on("click", ".jq_frame_image", function(e) {
+		$("#jQoutput").on("click", ".jq_frame_image", function (e) {
 			e.preventDefault();
 			var viewsrc = $(this).attr("data-href");
 			popup.show("<img style=\"max-width:100%;width:100%;margin-bottom:15px;\" src=\"" + viewsrc + "\" />");
 		});
 
-		let clear = function() {
+		let clear = function () {
 			divOutput.html("");
 			buttonPrintID.prop("disabled", true);
 			buttonEdit.prop("disabled", true);
@@ -239,7 +241,7 @@ echo $_TEMPLATE->CommandBarEnd();
 			queryResponse = false;
 		}
 		var SLO_employeeID = $("#employeIDFormSearch").slo({
-			onselect: function(value) {
+			onselect: function (value) {
 				history.pushState({
 					'method': 'view',
 					'id': value.hidden,
@@ -247,7 +249,7 @@ echo $_TEMPLATE->CommandBarEnd();
 				}, "<?= $fs(182)->title ?>", "<?= $fs(182)->dir ?>/?id=" + value.hidden);
 				fn_fetchfile();
 			},
-			ondeselect: function() {
+			ondeselect: function () {
 				clear();
 				history.pushState({
 					'method': '',
@@ -258,13 +260,13 @@ echo $_TEMPLATE->CommandBarEnd();
 			"limit": 10
 		});
 
-		$(".jq_frame_image").on("click", function(e) {
+		$(".jq_frame_image").on("click", function (e) {
 			e.preventDefault();
 			var path = $(this).attr("data-href");
 			popup.show("<img src=\"" + path + "\" />");
 			return false;
 		});
-		var fn_fetchfile = function(_pushState = true) {
+		var fn_fetchfile = function (_pushState = true) {
 			overlay.show();
 			$.ajax({
 				data: {
@@ -273,7 +275,7 @@ echo $_TEMPLATE->CommandBarEnd();
 				},
 				url: "<?php echo $fs()->dir; ?>",
 				type: "POST"
-			}).done(function(o, textStatus, request) {
+			}).done(function (o, textStatus, request) {
 				let response = request.getResponseHeader('HTTP_X_RESPONSE');
 				let responsepid = request.getResponseHeader('HTTP_X_PID');
 
@@ -288,19 +290,19 @@ echo $_TEMPLATE->CommandBarEnd();
 						spanIDTitle.html(responsepid);
 					}
 				}
-			}).fail(function(a, b, c) {
+			}).fail(function (a, b, c) {
 				messagessys.failure(b + " - " + c);
-			}).always(function() {
+			}).always(function () {
 				overlay.hide();
 			});
 		}
-		buttonEdit.on("click", function() {
+		buttonEdit.on("click", function () {
 			if (queryResponse !== false) {
 				linkTrigger.prop("href", "<?= $fs(134)->dir . "/?method=update&id="; ?>" + queryResponse);
 				linkTrigger[0].click();
 			}
 		});
-		buttonPrintID.on("click", function() {
+		buttonPrintID.on("click", function () {
 			if (queryResponse !== false) {
 				linkTrigger.prop("href", "<?= $fs(28)->dir . "/?id="; ?>" + queryResponse);
 				linkTrigger[0].click();
@@ -308,11 +310,11 @@ echo $_TEMPLATE->CommandBarEnd();
 		});
 		<?php
 		if (isset($_GET['id'])) {
-			$_GET['id'] = (int)$_GET['id'];
+			$_GET['id'] = (int) $_GET['id'];
 			$r = $app->db->query("SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id={$_GET['id']};");
 			if ($r && $row = $r->fetch_assoc()) {
 				echo 'SLO_employeeID.set("' . $_GET['id'] . '","' . stripcslashes(trim($row['user_name'])) . '");';
-				echo 'history.replaceState({\'method\':\'view\', \'id\': ' . (int)$_GET['id'] . ', \'name\': \'' . $row['user_name'] . '\'}, "' . $fs(182)->title. '", "' . $fs(182)->dir . '/?id=' . (int)$_GET['id'] . '");';
+				echo 'history.replaceState({\'method\':\'view\', \'id\': ' . (int) $_GET['id'] . ', \'name\': \'' . $row['user_name'] . '\'}, "' . $fs(182)->title . '", "' . $fs(182)->dir . '/?id=' . (int) $_GET['id'] . '");';
 				echo 'fn_fetchfile(false);';
 			}
 		}
@@ -327,7 +329,7 @@ echo $_TEMPLATE->CommandBarEnd();
 			}
 		};
 
-		SLO_employeeID.focus();
+	SLO_employeeID.focus();
 
 	});
 </script>

@@ -21,7 +21,7 @@
 </thead>	
 <tbody>
 <?php 
-	$r=$sql->query("
+	$r=$app->db->query("
 		SELECT 
 			_main.po_id,
 			_main.po_title,
@@ -42,23 +42,23 @@
 		");
 	
 	if($r){
-		while($row=$sql->fetch_assoc($r)){
+		while($row=$r->fetch_assoc()){
 			echo "<tr>";
-			echo "<td>".$invoice->translate_prefix(1,$row['po_id'])."</td>";
+			echo "<td>".$app->translate_prefix(1,$row['po_id'])."</td>";
 			echo "<td>{$row['po_date']}</td>";
 			echo "<td>{$row['comp_name']}</td>";
 			echo "<td>{$row['po_title']}</td>";
 			echo "<td>{$row['po_due_date']}</td>";
 			echo "<td>".(is_null($row['po_close_date'])?"Open":"Closed")."</td>";
 			echo "<td>{$row['_qcount']}</td>";
-			echo "<td><a href=\"".$tables->pagefile_info(233,null,"directory")."/?docid={$row['po_id']}&token=".md5("sysdoc_".$row['po_id'].session_id())."\">Place quotation</a></td>";
+			echo "<td><a href=\"".$fs(233)->dir."/?docid={$row['po_id']}&token=".md5("sysdoc_".$row['po_id'].session_id())."\">Place quotation</a></td>";
 			echo "</tr>";
 			if($row['_qcount']>0){
 				echo "<tr>";
 				echo "<td colspan=\"8\" style=\"border-top:double 3px #ccc;\">";
 				echo "<table class=\"bom-table\"><tbody>";
 				
-				$rlist=$sql->query("
+				$rlist=$app->db->query("
 					SELECT 
 						po_type,po_id,DATE_FORMAT(po_date,'%Y-%m-%d') AS po_date,po_total,po_vat_rate,po_additional_amount,po_discount,po_cur_id,cur_shortname,comp_name,
 						CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) AS doc_usr_name,
@@ -82,7 +82,7 @@
 				
 				if($rlist){
 					$fao=true;
-					while($rowlist = $sql->fetch_assoc($rlist)){
+					while($rowlist = $rlist->fetch_assoc()){
 						if($fao){
 							$fao=false;
 							echo "<tr><td>ID</td><td>Date</td><td>Posted By</td><td>Vendor</td><td>Doc Amount</td><td>Local Cur Amount</td><td>VAT</td></tr>";
@@ -90,7 +90,7 @@
 							echo "";
 						}
 						echo "<tr>";
-						echo "<td><a href=\"".$tables->pagefile_info(234,null,"directory")."/?docid={$rowlist['po_id']}&token=".(md5("sysdoc_".$rowlist['po_id'].session_id()))."\">".$invoice->translate_prefix(2,$rowlist['po_id'])."</a></td>";
+						echo "<td><a href=\"".$fs(234)->dir."/?docid={$rowlist['po_id']}&token=".(md5("sysdoc_".$rowlist['po_id'].session_id()))."\">".$app->translate_prefix(2,$rowlist['po_id'])."</a></td>";
 						echo "<td>{$rowlist['po_date']}</td>";
 						echo "<td>{$rowlist['doc_usr_name']}</td>";
 						echo "<td>{$rowlist['comp_name']}</td>";

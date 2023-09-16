@@ -12,7 +12,7 @@
 </thead>	
 <tbody>
 <?php 
-	$r=$sql->query("
+	$r=$app->db->query("
 		SELECT 
 			po_id,
 			CONCAT(prx_value,LPAD(po_id,prx_placeholder,'0')) AS doc_id,
@@ -28,9 +28,9 @@
 		WHERE
 			po_type=1 AND po_close_date IS NULL
 		");
-	echo $sql->error();
+	//echo $app->db->error;
 	if($r){
-		while($row=$sql->fetch_assoc($r)){
+		while($row=$r->fetch_assoc()){
 			echo "<tr>";
 			echo "<td>{$row['doc_id']}</td>";
 			echo "<td>-</td>";

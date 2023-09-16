@@ -13,7 +13,7 @@ $database = array(
 	),
 	'order' => array('cur_name'),
 	'pre_submit_functions' => array(
-		"check_default_currency" => function ($input, &$app, $user) {
+		"check_default_currency" => function ($input, &$app) {
 			if (isset($input[md5("MEdH265" . 'cur_default')])) {
 				$app->db->query("UPDATE currencies SET cur_default=0");
 			}

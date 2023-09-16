@@ -121,7 +121,7 @@ function sqlvalue($type, $value, $isset)
 if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'])) {
 	if (isset($database['pre_submit_functions']) && is_array($database['pre_submit_functions'])) {
 		foreach ($database['pre_submit_functions'] as $func) {
-			call_user_func($func, $_POST, $app->db, $USER);
+			call_user_func($func, $_POST, $app);
 		}
 	}
 
@@ -218,12 +218,12 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 
 		//Attached files
 		if (sizeof($attachments) > 0) {
-			$app->db->query("UPDATE uploads SET up_rel=$affected_id, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$USER->info->id};");
+			$app->db->query("UPDATE uploads SET up_rel=$affected_id, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$app->user->info->id};");
 		}
 
 		if (isset($database['post_submit_functions']) && is_array($database['post_submit_functions'])) {
 			foreach ($database['post_submit_functions'] as $func) {
-				call_user_func($func, $_POST, $app->db, $USER, $affected_id);
+				call_user_func($func, $_POST, $app, $affected_id);
 			}
 		}
 		$json_output['result'] = true;
@@ -708,7 +708,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 				+ ($fs()->permission->delete && !(isset($database['disable-delete']) && $database['disable-delete'])  ? 1 : 0)
 				+ ($fs()->permission->edit ? 1 : 0);
 
-			if (!isset($database['readonly']) && !$database['readonly']) {
+			if (!isset($database['readonly']) || (isset($database['readonly']) && !$database['readonly'])) {
 				echo "<td colspan=\"$colspan\"></td>";
 			}
 			foreach ($database['fields'] as $fieldv) {

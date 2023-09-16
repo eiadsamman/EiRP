@@ -1,16 +1,16 @@
 <?php
 if(isset($_POST['suspend'])){
 	$id=(int)$_POST['id'];
-	$sql->autocommit(false);
+	$app->db->autocommit(false);
 	$r=true;
 	
-	$r&=$sql->query("UPDATE labour SET lbr_resigndate=NOW() WHERE lbr_id={$id}");
+	$r&=$app->db->query("UPDATE labour SET lbr_resigndate=NOW() WHERE lbr_id={$id}");
 	
 	if($r){
-		$sql->commit();
+		$app->db->commit();
 		echo "1";
 	}else{
-		$sql->rollback();
+		$app->db->rollback();
 		echo "0";
 	}
 	exit;
@@ -30,7 +30,7 @@ if(isset($_POST['fetch']) && isset($_POST['pos'])){
 	}
 	if(!$month){die("");}
 	
-	$pagefile_display=$tables->pagefile_info(108,null,"directory");
+	$pagefile_display=$fs(108)->dir;
 	
 	$arrMonthDetails=array(
 		"total"=>0,
@@ -68,7 +68,7 @@ if(isset($_POST['fetch']) && isset($_POST['pos'])){
 		echo "</thead><tbody>";
 	}
 
-	if($r=$sql->query("
+	if($r=$app->db->query("
 		SELECT 
 			lbr_id,CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) AS empname
 		FROM 
@@ -77,7 +77,7 @@ if(isset($_POST['fetch']) && isset($_POST['pos'])){
 			lbr_resigndate IS NULL
 		LIMIT ".($perpage*$_POST['pos']).",$perpage
 		")){
-		while($row=$sql->fetch_assoc($r)){
+		while($row=$r->fetch_assoc()){
 			echo "<tr>";
 			echo "<td>".$row['lbr_id']."</td><td></td><td>".$row['empname']."</td>";
 			
@@ -85,7 +85,7 @@ if(isset($_POST['fetch']) && isset($_POST['pos'])){
 			foreach($arrdays as $k=>$v){
 				$arrdays[$k][0]=false;
 			}
-			$ratt=$sql->query("
+			$ratt=$app->db->query("
 					SELECT 
 						UNIX_TIMESTAMP(ltr_ctime) AS ltr_ctime
 					FROM
@@ -97,7 +97,7 @@ if(isset($_POST['fetch']) && isset($_POST['pos'])){
 						ltr_ctime<='".date("Y-m-t 24:00:00",$month)."'");
 			
 			if($ratt){
-				while($rowatt=$sql->fetch_assoc($ratt)){
+				while($rowatt=$ratt->fetch_assoc()){
 					$tempd=date("j",$rowatt['ltr_ctime']);
 					if(isset($arrdays[$tempd][0]) && $arrdays[$tempd][0]==false){
 						$arrdays[$tempd][0]=date("H:i",$rowatt['ltr_ctime']);

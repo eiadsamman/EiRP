@@ -20,8 +20,7 @@
 .bom-table>tfoot>tr>td,
 .bom-table>tbody>tr>th,
 .bom-table>tfoot>tr>th {
-	padding: 12px 8px;
-	min-height: 30px;
+	padding: 10px 8px;
 	white-space: nowrap;
 	color: #333;
 }
@@ -32,7 +31,7 @@
 }
 
 .bom-table>tbody>tr>th {
-	padding: 12px 8px;
+	padding: 10px 8px;
 	color: #3C77C3;
 	border-top: solid 1px #f3f3f3;
 	border-bottom: none;
@@ -53,7 +52,7 @@
 	border: solid 1px #f3f3f3;
 	border-left: none;
 	border-right: none;
-	padding: 12px 8px;
+	padding: 10px 8px;
 	color: #3C77C3;
 	white-space: nowrap;
 	cursor: default;

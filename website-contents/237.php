@@ -1,19 +1,15 @@
 <?php
-//purchase/po/view
-require_once("admin/class/invoice.php");
-require_once("admin/class/accounting.php");
-require_once("admin/class/Template/class.template.build.php");
 
-use Template\Body;
-use Finance\Accounting;
-use Finance\Invoice;
-use Finance\DocumentException;
-use Finance\DocumentMaterialListException;
+use System\Finance\Accounting;
+use System\Finance\DocumentException;
+use System\Finance\DocumentMaterialListException;
+use System\Finance\Invoice;
+use System\Template\Body;
+//purchase/po/view
 
 $_TEMPLATE 	= new Body();
-
-$invoice 	= new Invoice();
-$accounting = new Accounting();
+$invoice 	= new Invoice($app);
+$accounting = new Accounting($app);
 
 $doc_id		= $invoice->DocumentURI();
 if ($doc_id) {
@@ -41,15 +37,15 @@ if ($doc_id) {
 
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(237, null, "directory") . "/\" class=\"bnt-back\"></a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(240, null, "directory") . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(234, null, "directory") . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
-		echo "<span>" . $invoice->translate_prefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</span>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(237)->dir . "/\" class=\"bnt-back\"></a>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(234)->dir . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
+		echo "<span>" . $app->translate_prefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</span>";
 		echo "<span class=\"gap\"></span>";
-		echo "<a href=\"" . $tables->pagefile_info(250, null, "directory") . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-blue\">Proccess Payment</a>";
-		echo "<a href=\"" . $tables->pagefile_info(253, null, "directory") . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-blue\">Release Invoice</a>";
+		echo "<a href=\"" . $fs(250)->dir . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-green\">Proccess Payment</a>";
+		echo "<a href=\"" . $fs(253)->dir . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-green\">Release Invoice</a>";
 		echo "<span style=\"background-color:#fff;border-top:0;border-bottom:0\"></span>";
-		echo "<a href=\"" . $tables->pagefile_info(250, null, "directory") . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-green\">Receive Materials</a>";
+		echo "<a href=\"" . $fs(250)->dir . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-green\">Receive Materials</a>";
 		echo "</div>";
 		echo $_TEMPLATE->CommandBarEnd();
 
@@ -111,10 +107,10 @@ if ($doc_id) {
 			echo '<td align="right">Unit Price</td><td align="right">Inline</td>';
 		echo '</tr></thead>
 			<tbody id="jQmaterialList" style="border:solid 1px #E6E6EB;">';
-		$sqlquery_materialList = $invoice->DocGetMaterialList($doc_id);
-		if ($sqlquery_materialList) {
+		$query_materialList = $invoice->DocGetMaterialList($doc_id);
+		if ($query_materialList) {
 			$bomlegend = null;
-			while ($row = $sql->fetch_assoc($sqlquery_materialList)) {
+			while ($row = $query_materialList->fetch_assoc()) {
 				if ($bomlegend != $row['pols_bom_part']) {
 					$bomlegend = $row['pols_bom_part'];
 					echo "<tr>";
@@ -159,7 +155,7 @@ if ($doc_id) {
 
 	echo $_TEMPLATE->CommandBarStart();
 	echo "<div class=\"btn-set\">";
-	echo "<a href=\"" . $tables->pagefile_info(230, null, "directory") . "\" style=\"color:#333\">New material request</a>";
+	echo "<a href=\"" . $fs(230)->dir . "\" style=\"color:#333\">New material request</a>";
 	echo "<span class=\"gap\"></span>";
 	echo "</div>";
 	echo $_TEMPLATE->CommandBarEnd();
@@ -174,7 +170,7 @@ if ($doc_id) {
 
 	$rowsploted = 0;
 	$po_type = Invoice::map['PUR_ORD'];
-	$r = $sql->query("
+	$r = $app->db->query("
 		SELECT 
 			_main.po_id,_main.po_rel,
 			CONCAT(_sp10.prx_value,LPAD(po_serial,_sp10.prx_placeholder,'0')) AS doc_id,
@@ -192,19 +188,19 @@ if ($doc_id) {
 				JOIN system_prefix AS _sp10 ON _sp10.prx_id=$po_type
 				LEFT JOIN inv_records ON pols_po_id = _main.po_id
 				JOIN inv_costcenter ON ccc_id = po_costcenter
-				JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id={$USER->info->id}
+				JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id={$app->user->info->id}
 		WHERE
-			_main.po_type = $po_type AND po_comp_id = {$USER->company->id}
+			_main.po_type = $po_type AND po_comp_id = {$app->user->company->id}
 		GROUP BY
 			_main.po_id
 		ORDER BY _main.po_date DESC
 		");
 	if ($r) {
-		while ($row = $sql->fetch_assoc($r)) {
+		while ($row = $r->fetch_assoc()) {
 			$rowsploted++;
 			echo "<tr>";
 			echo "<td>{$row['ccc_name']}</td>";
-			echo "<td><a href=\"" . $tables->pagefile_info(237, null, "directory") . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">{$row['doc_id']}</a></td>";
+			echo "<td><a href=\"" . $fs(237)->dir . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">{$row['doc_id']}</a></td>";
 			echo "<td>{$row['po_title']}</td>";
 			echo "<td>{$row['po_date']}</td>";
 			// echo "<td>{$row['doc_usr_name']}</td>";
@@ -221,6 +217,6 @@ if ($doc_id) {
 	echo $_TEMPLATE->NewFrameBodyEnd();
 
 	echo "<script type=\"text/javascript\">
-				Template.HistoryEntry(\"" . $tables->pagefile_info(237, null, "directory") . "\", \"" . $tables->pagefile_info(237, null, "title") . "\");
+				Template.HistoryEntry(\"" . $fs(237)->dir . "\", \"" . $fs(237)->title . "\");
 			</script>";
 }

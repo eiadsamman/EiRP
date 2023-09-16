@@ -1,4 +1,7 @@
 <?php
+
+use System\Finance\Accounting;
+
 if ($_SERVER['REQUEST_METHOD'] != "POST") {
 	exit;
 }
@@ -16,8 +19,7 @@ if (!$debug) {
 	header('Pragma: public');
 }
 
-include_once("admin/class/accounting.php");
-$accounting = new Accounting();
+$accounting = new Accounting($app);
 $__defaultaccount = $accounting->operation_default_account("salary_report");
 $__defaultcurrency = $accounting->account_default_currency($__defaultaccount['id']);
 if ($__defaultaccount === false) {
@@ -27,101 +29,6 @@ if ($__defaultaccount === false) {
 }
 
 
-
-require_once $app->root . "admin/class/phpexcel/PHPExcel.php";
-/** PHPExcel_Cell_AdvancedValueBinder */
-require_once $app->root . "admin/class/phpexcel/PHPExcel/Cell/AdvancedValueBinder.php";
-
-/** PHPExcel_IOFactory */
-require_once $app->root . "admin/class/phpexcel/PHPExcel/IOFactory.php";
-// Set value binder
-PHPExcel_Cell::setValueBinder(new PHPExcel_Cell_AdvancedValueBinder());
-
-
-$objPHPExcel = new PHPExcel();
-$objPHPExcel->getProperties()->setCreator($USER->info->username)
-	->setLastModifiedBy($USER->info->username)
-	->setTitle($fs()->title)
-	->setSubject($fs()->title)
-	->setDescription($fs()->title)
-	->setKeywords($fs()->title)
-	->setCategory("Report");
-$objPHPExcel->setActiveSheetIndex(0);
-
-$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddHeader('&C&H&BNebras Co. | &KFF0000 Treat this document as confidential');
-$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddFooter('&L&B' . $objPHPExcel->getProperties()->getTitle() . '&C&D' . '&RPage &P of &N');
-$objPHPExcel->getActiveSheet()->getPageSetup()->setFitToWidth(1);
-$objPHPExcel->getActiveSheet()->getPageSetup()->setFitToHeight(0);
-$objPHPExcel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT);
-$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
-$objPHPExcel->getActiveSheet()->getPageMargins()->setTop(0.6);
-$objPHPExcel->getActiveSheet()->getPageMargins()->setRight(0.25);
-$objPHPExcel->getActiveSheet()->getPageMargins()->setLeft(0.25);
-$objPHPExcel->getActiveSheet()->getPageMargins()->setBottom(0.5);
-
-$objPHPExcel->getActiveSheet()->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 1);
-
-$objPHPExcel->getActiveSheet()->setShowGridlines(false);
-$objPHPExcel->getActiveSheet()->setRightToLeft(false);
-
-$objPHPExcel->getActiveSheet()->setTitle($fs()->title);
-
-$arrheader = array("ID", "Employee Name", "Payout value", "Payout records");
-
-function num2alpha($n)
-{
-	for ($r = ""; $n >= 0; $n = intval($n / 26) - 1)
-		$r = chr($n % 26 + 0x41) . $r;
-	return $r;
-}
-
-$col = 0;
-foreach ($arrheader as $v) {
-	$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, 1, $v);
-	$objPHPExcel->getActiveSheet()->getColumnDimension(num2alpha($col))->setAutoSize(true);
-	$col++;
-}
-
-$styleArrayHeader = array(
-	'borders' => array(
-		'outline' => array( //allborders
-			'style' => PHPExcel_Style_Border::BORDER_THIN,
-			'color' => array('argb' => 'FF666666'),
-		),
-	),
-	'alignment' => array(
-		'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-	),
-	'font' => array(
-		'bold' => true,
-	),
-
-);
-$objPHPExcel->getActiveSheet()->getStyle('A1:' . num2alpha($col - 1) . '1')->applyFromArray($styleArrayHeader);
-
-
-$styleArrayEven = array(
-	'fill' => array(
-		'type' => PHPExcel_Style_Fill::FILL_SOLID,
-		'startcolor' => array(
-			'argb' => 'FFF5F5F5',
-		)
-	),
-	'borders' => array(
-		'outline' => array(
-			'style' => PHPExcel_Style_Border::BORDER_THIN,
-			'color' => array('argb' => 'FFCCCCCC'),
-		),
-	),
-);
-$styleArrayOdd = array(
-	'borders' => array(
-		'outline' => array(
-			'style' => PHPExcel_Style_Border::BORDER_THIN,
-			'color' => array('argb' => 'FFCCCCCC'),
-		),
-	),
-);
 
 
 $month = null;
@@ -169,10 +76,7 @@ if ($r = $app->db->query("SELECT
 	$sat = 2;
 	$col = 0;
 	while ($row = $r->fetch_assoc()) {
-		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(0, $sat, $row['usrid']);
-		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(1, $sat, $row['usrname']);
-		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(2, $sat, number_format($row['atm_value'], 2, ".", ""));
-		$objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow(3, $sat, $row['acm_count']);
+
 
 		$sat++;
 	}
@@ -188,10 +92,6 @@ $objPHPExcel->getActiveSheet()->setAutoFilter(
 );
 
 
-$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-if (!$debug)
-	$objWriter->save('php://output');
-$objPHPExcel->disconnectWorksheets();
-unset($objPHPExcel);
+
 
 exit;

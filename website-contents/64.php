@@ -3,11 +3,11 @@ function inner(&$app, $id, $selectedPermission)
 {
 	static $cnt = 1;
 	if ($r = $app->db->query("SELECT 
-						trd_id,trd_directory,pfl_value,pfp_value
+						trd_id, trd_directory, pfl_value, pfp_value
 					FROM 
 						pagefile 
 							JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1
-							LEFT JOIN pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id=$selectedPermission
+							LEFT JOIN pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id = $selectedPermission
 					WHERE 
 						trd_parent = $id
 					ORDER BY 
@@ -18,48 +18,53 @@ function inner(&$app, $id, $selectedPermission)
 
 			while ($row = $r->fetch_assoc()) {
 				echo "<tr id=\"{$row['trd_id']}\"><td>{$row['trd_id']}</td>";
+				$permission = new System\FileSystem\Permission($row['pfp_value']);
+				
+				
+				echo "<td><div class=\"btn-set small operations\" data-trd_id=\"{$row['trd_id']}\" data-trd_per=\"$selectedPermission\">";
+				echo "<label class=\"btn-checkbox\">										<input name=\"read\" 	type=\"checkbox\" 	" . ($permission->read == true ? " checked=\"checked\"" : "") . " /><span></span></label>";
+				echo "<label class=\"btn-checkbox rel " . ($permission->read == true ? "" : " disabled") . "\"><input name=\"add\" 	type=\"checkbox\" 	" . ($permission->add == true && $permission->read == true ? " checked=\"checked\"" : "") . "/><span></span></label>";
+				echo "<label class=\"btn-checkbox rel " . ($permission->read == true ? "" : " disabled") . "\"><input name=\"edit\" 	type=\"checkbox\" 	" . ($permission->edit == true && $permission->read == true ? " checked=\"checked\"" : "") . "/><span></span></label>";
+				echo "<label class=\"btn-checkbox rel " . ($permission->read == true ? "" : " disabled") . "\"><input name=\"delete\" 	type=\"checkbox\" 	" . ($permission->delete == true && $permission->read == true ? " checked=\"checked\"" : "") . "/><span></span></label>";
+				echo "</div>";
+				echo "</td>";
 				if ($row['pfl_value'] != "-") {
 					echo "<td><div style=\"margin-left:" . (($cnt) * 20) . "px;\"><a href=\"{$row['trd_directory']}\" target=\"_blank\">" . $row['pfl_value'] . "</a></div></td>";
 				} else {
 					echo "<td><div style=\"margin-left:" . (($cnt) * 20) . "px;\">[Seperator]</div></td>";
 				}
-				$c__actions	= new AllowedActions((int)$selectedPermission, array($selectedPermission => $row['pfp_value']));
-				echo "<td><div class=\"btn-set operations\" data-trd_id=\"{$row['trd_id']}\" data-trd_per=\"$selectedPermission\">";
-				echo "<label class=\"btn-checkbox\">										<input name=\"read\" 	type=\"checkbox\" 	" . ($c__actions->read == true ? " checked=\"checked\"" : "") . " /><span>&nbsp;Read&nbsp;</span></label>";
-				echo "<label class=\"btn-checkbox rel " . ($c__actions->read == true ? "" : " disabled") . "\"><input name=\"add\" 	type=\"checkbox\" 	" . ($c__actions->add == true && $c__actions->read == true ? " checked=\"checked\"" : "") . "/><span>&nbsp;Add&nbsp;</span></label>";
-				echo "<label class=\"btn-checkbox rel " . ($c__actions->read == true ? "" : " disabled") . "\"><input name=\"edit\" 	type=\"checkbox\" 	" . ($c__actions->edit == true && $c__actions->read == true ? " checked=\"checked\"" : "") . "/><span>&nbsp;Edit&nbsp;</span></label>";
-				echo "<label class=\"btn-checkbox rel " . ($c__actions->read == true ? "" : " disabled") . "\"><input name=\"delete\" 	type=\"checkbox\" 	" . ($c__actions->delete == true && $c__actions->read == true ? " checked=\"checked\"" : "") . "/><span>&nbsp;Delete&nbsp;</span></label>";
-				echo "</div>";
-				echo "</td>";
 				echo "</tr>";
-				inner($pp, $row['trd_id'], $selectedPermission);
+				inner($app, $row['trd_id'], $selectedPermission);
 			}
 			$cnt--;
 		}
 	}
 }
 if (isset($_POST['permission'])) {
-	if ($r = $app->db->query("
-		SELECT 
-			trd_directory,trd_id,pfl_value,pfp_value
+	$_POST['permission'] = (int)$_POST['permission'];
+	if ($r = $app->db->query(
+		"SELECT 
+			trd_directory, trd_id, pfl_value, pfp_value
 		FROM 
 			pagefile 
 				JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1 
-				LEFT JOIN pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$_POST['permission']}
+				LEFT JOIN pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id = {$_POST['permission']}
 		WHERE 
 			trd_parent=0
 		ORDER BY 
-			trd_zorder;")) {
+			trd_zorder;"
+	)) {
 		while ($row = $r->fetch_assoc()) {
+			$permission = new System\FileSystem\Permission($row['pfp_value']);
 			echo  "<tr id=\"{$row['trd_id']}\"><td>{$row['trd_id']}</td>";
-			echo  "<td><a href=\"{$row['trd_directory']}\" target=\"_blank\">" . $row['pfl_value'] . "</a></td>";
-			$c__actions			= new AllowedActions((int)$_POST['permission'], array($_POST['permission'] => $row['pfp_value']));
-			echo  "<td><div class=\"btn-set operations\" data-trd_id=\"{$row['trd_id']}\" data-trd_per=\"{$_POST['permission']}\">";
-			echo  "<label class=\"btn-checkbox\">										<input name=\"read\" type=\"checkbox\" " . ($c__actions->read == true ? " checked=\"checked\"" : "") . " /><span>&nbsp;Read&nbsp;</span></label>";
-			echo  "<label class=\"btn-checkbox rel " . ($c__actions->read == true ? "" : " disabled") . "\"><input name=\"add\" type=\"checkbox\" " . ($c__actions->add == true && $c__actions->read == true ? " checked=\"checked\"" : "") . "/><span>&nbsp;Add&nbsp;</span></label>";
-			echo  "<label class=\"btn-checkbox rel " . ($c__actions->read == true ? "" : " disabled") . "\"><input name=\"edit\" type=\"checkbox\" " . ($c__actions->edit == true && $c__actions->read == true ? " checked=\"checked\"" : "") . "/><span>&nbsp;Edit&nbsp;</span></label>";
-			echo  "<label class=\"btn-checkbox rel " . ($c__actions->read == true ? "" : " disabled") . "\"><input name=\"delete\" type=\"checkbox\" " . ($c__actions->delete == true && $c__actions->read == true ? " checked=\"checked\"" : "") . "/><span>&nbsp;Delete&nbsp;</span></label>";
+			
+			echo  "<td><div class=\"btn-set small operations\" data-trd_id=\"{$row['trd_id']}\" data-trd_per=\"{$_POST['permission']}\">";
+			echo  "<label class=\"btn-checkbox\">										<input name=\"read\" type=\"checkbox\" " . ($permission->read == true ? " checked=\"checked\"" : "") . " /><span></span></label>";
+			echo  "<label class=\"btn-checkbox rel " . ($permission->read == true ? "" : " disabled") . "\"><input name=\"add\" type=\"checkbox\" " . ($permission->add == true && $permission->read == true ? " checked=\"checked\"" : "") . "/><span></span></label>";
+			echo  "<label class=\"btn-checkbox rel " . ($permission->read == true ? "" : " disabled") . "\"><input name=\"edit\" type=\"checkbox\" " . ($permission->edit == true && $permission->read == true ? " checked=\"checked\"" : "") . "/><span></span></label>";
+			echo  "<label class=\"btn-checkbox rel " . ($permission->read == true ? "" : " disabled") . "\"><input name=\"delete\" type=\"checkbox\" " . ($permission->delete == true && $permission->read == true ? " checked=\"checked\"" : "") . "/><span></span></label>";
 			echo  "</div>";
+			echo  "<td><a href=\"{$row['trd_directory']}\" target=\"_blank\">" . $row['pfl_value'] . "</a></td>";
 			echo  "</td>";
 			echo  "</tr>";
 			inner($app, $row['trd_id'], (int)$_POST['permission']);
@@ -86,7 +91,6 @@ if (isset($_POST['method'], $_POST['xtrd'], $_POST['xper']) && $_POST['method'] 
 		echo "Unable to udpate pagefile permissons";
 		exit;
 	}
-
 }
 ?>
 <div class="btn-set">
@@ -96,8 +100,8 @@ if (isset($_POST['method'], $_POST['xtrd'], $_POST['xper']) && $_POST['method'] 
 	<thead>
 		<tr>
 			<td>#</td>
-			<td width="100%">Page name</td>
 			<td></td>
+			<td width="100%">Page name</td>
 		</tr>
 	</thead>
 	<tbody id="jQoutput"></tbody>

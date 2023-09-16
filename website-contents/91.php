@@ -1,6 +1,7 @@
 <?php
 
 use System\SmartListObject;
+use System\Template\Gremium\Gremium;
 
 $accounting = new \System\Finance\Accounting($app);
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
@@ -37,20 +38,22 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 
 	$creditor = $_POST['creditor'];
 	$category = $_POST['category'];
-	$value = (float)trim(str_replace(",", "", $_POST['value']));
+	$value = (float) trim(str_replace(",", "", $_POST['value']));
 	$comments = isset($_POST['comments']) && trim($_POST['comments']) != "" ? addslashes($_POST['comments']) : null;
 	$benificial = isset($_POST['benificial']) && trim($_POST['benificial']) != "" ? addslashes($_POST['benificial']) : null;
 	$reference = isset($_POST['reference']) && trim($_POST['reference']) != "" ? addslashes($_POST['reference']) : null;
-	$employee = isset($_POST['employee']) && (int)($_POST['employee']) != 0 ? (int)($_POST['employee']) : false;
-	$rel = isset($_POST['rel']) && (int)$_POST['rel'] != 0 ? (int)$_POST['rel'] : "NULL";
+	$employee = isset($_POST['employee']) && (int) ($_POST['employee']) != 0 ? (int) ($_POST['employee']) : false;
+	$rel = isset($_POST['rel']) && (int) $_POST['rel'] != 0 ? (int) $_POST['rel'] : "NULL";
 
 
 
-	if ($r = $app->db->query("
+	if (
+		$r = $app->db->query("
 		SELECT prt_id 
 		FROM `acc_accounts` 
 			JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_outbound=1
-		WHERE prt_id=" . ((int)$creditor) . ";")) {
+		WHERE prt_id=" . ((int) $creditor) . ";")
+	) {
 		if ($r->num_rows == 0) {
 			_JSON_output(false, "Select a valid creditor account with outbound rules", "jQcreditor");
 		}
@@ -68,7 +71,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	if (trim($benificial) == "") {
 		_JSON_output(false, "Benificial name is required", "jQbeneficial");
 	}
-	if ((float)$value <= 0) {
+	if ((float) $value <= 0) {
 		_JSON_output(false, "Enter a valid float value", "jQvalue");
 	}
 
@@ -77,7 +80,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	if ($creditor_currency === false) {
 		_JSON_output(false, "No currency provided for the creditor account");
 	}
-	if ((int)$_POST['currency'] == 0) {
+	if ((int) $_POST['currency'] == 0) {
 		_JSON_output(false, "Enter a valid currency", "jQcurrenyident");
 	}
 
@@ -105,7 +108,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	$attachments = array();
 	if (isset($_POST['attachments']) && is_array($_POST['attachments'])) {
 		foreach ($_POST['attachments'] as $VAtt) {
-			$attachments[] = (int)$VAtt;
+			$attachments[] = (int) $VAtt;
 		}
 	}
 
@@ -119,23 +122,23 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		if ($exchangerate === false) {
 			_JSON_output(false, "Unable to exchange currencies with debitor account");
 		}
-		$value_to =			$exchangerate * $value_to;
-		$exchangerate_crd =	$exchangerate;
+		$value_to = $exchangerate * $value_to;
+		$exchangerate_crd = $exchangerate;
 	}
 	if ($_POST['currency'] != $__workingcurrency['id']) {
 		$exchangerate = $accounting->currency_exchange($_POST['currency'], $__workingcurrency['id']);
 		if ($exchangerate === false) {
 			_JSON_output(false, "Unable to exchange currencies with debitor account");
 		}
-		$value_from =		$exchangerate * $value_from;
-		$exchangerate_dbt =	$exchangerate;
+		$value_from = $exchangerate * $value_from;
+		$exchangerate_dbt = $exchangerate;
 	}
 
 	/*
-		$balance=null;
-		if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
-		if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
-	*/
+					$balance=null;
+					if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
+					if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
+				*/
 
 	$result = true;
 	$app->db->autocommit(false);
@@ -175,17 +178,17 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		%16\$s,
 		%17\$d
 		);",
-		$employee ? (int)$employee : "NULL",
+		$employee ? (int) $employee : "NULL",
 		$app->user->info->id,
 		"NULL",
 		"'" . date("Y-m-d", $date) . "'",
 		1,
 		$benificial,
-		(int)$category,
+		(int) $category,
 		($comments != null ? "'" . $comments . "'" : "NULL"),
 		($reference != null ? "'" . $reference . "'" : "NULL"),
 		$value,
-		(int)$_POST['currency'],
+		(int) $_POST['currency'],
 		$exchangerate_crd,
 		$exchangerate_dbt,
 		($month ? "FROM_UNIXTIME(" . $month . ")" : "NULL"),
@@ -201,7 +204,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	}
 
 
-	$mainid = (int)$app->db->insert_id;
+	$mainid = (int) $app->db->insert_id;
 
 	//INSERT creditor statement
 	$qacc_release = sprintf("INSERT INTO acc_temp (atm_account_id,atm_value,atm_dir,atm_main) VALUES (%1\$d,%2\$f,%3\$d,%4\$d);", $creditor, -1 * $value_from, 0, $mainid);
@@ -228,7 +231,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 				$balance = $row['zsum'];
 			}
 		}
-		_JSON_output(true, "Statement submited successfully", null, array("newbalance" => number_format((float)$balance, 2, ".", ","), "id" => $mainid, "value" => number_format((float)$value, 2, ".", "")));
+		_JSON_output(true, "Statement submited successfully", null, array("newbalance" => number_format((float) $balance, 2, ".", ","), "id" => $mainid, "value" => number_format((float) $value, 2, ".", "")));
 	} else {
 		$app->db->rollback();
 		_JSON_output(false, "Statement insertion failed");
@@ -244,18 +247,21 @@ if ($app->xhttp) {
 
 $SmartListObject = new SmartListObject($app);
 
-$_TEMPLATE = new \System\Template\Body("Test");
-$_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
-$_TEMPLATE->FrameTitlesStack(true);
+
+
+
 
 if (!$__workingaccount) {
 	echo "<div class=\"btn-set\"><button>{$app->user->account->name}</button><span>Is not a valid account</span></div>";
 } elseif ($__workingcurrency === false) {
 	echo "<div class=\"btn-set\"><span class=\"bnt-error\">&nbsp;No currency provided for selected account</span></div>";
 } elseif (!$app->user->account->role->inbound) {
-	$_TEMPLATE->Title("&nbsp;Invalid outbound account!", null, "", null);
-	$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Selected account is not valid for inbound operations:</span>");
-	$_TEMPLATE->NewFrameBody('<ul>
+
+	$gremium = new Gremium();
+	$gremium->header(true, $gremium->exclamation, null, "<h1>Invalid outbound account!</h1>");
+	$gremium->section();
+	$gremium->sectionHeader("<span class=\"flex\">Selected account is not valid for inbound operations:</span>");
+	$gremium->sectionArticle('
 		<li>Inbound accounts are only valid for payment operations, chose a valid account and try again</li>
 		<li>Contact system adminstration for further assistance</li>
 		<li>Permission denied or not enough privileges to proceed with this document</li>
@@ -265,33 +271,32 @@ if (!$__workingaccount) {
 			<li>Goto <a href="' . $fs(99)->dir . '">Ledger report</a></li>
 			<li>Goto <a href="' . $fs(95)->dir . '">New Payment</a></li>
 		</ul>
-		');
+	');
+	$gremium->section();
+	unset($gremium);
+	exit;
+
 } else {
-?>
+	?>
 	<iframe style="display:none;" src="" id="jQiframe"></iframe>
-
 	<?php
-	$_TEMPLATE->SetWidth("768px");
-	$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs(99)->dir}\"></a>New " . $fs()->title, null, "");
 
-	echo $_TEMPLATE->CommandBarStart();
-	echo "<div class=\"btn-set\" style=\"justify-content:flex-end\">";
-	echo "<span class=\"gap\">";
-	echo "</span><button class=\"clr-green\" id=\"jQsubmit\" tabindex=\"9\">Submit Receipt</button>";
-	echo "</div>";
-	echo $_TEMPLATE->CommandBarEnd();
+	$gremium = new Gremium(true);
+	$gremium->header(true, null, $fs(99)->dir, "<h1>{$fs()->title}</h1><div style=\"flex:1\"></div><div class=\"btn-set\" style=\"padding-top:10px\"><button class=\"clr-green\" id=\"jQsubmit\" tabindex=\"9\">Submit Receipt</button></div>");
 
-	$_TEMPLATE->NewFrameTitle("<span class=\"flex mediabond-hide\">New Receipt Statement</span>");
-	echo $_TEMPLATE->NewFrameBodyStart();
+	$gremium->section();
+	$gremium->sectionArticle();
+
 	?>
 	<table class="bom-table mediabond-table" id="jQformTable">
 		<tbody>
 			<tr>
 				<th>Creditor</th>
 				<td>
-					<div class="btn-set"><input tabindex="1" type="text" data-slo=":LIST" data-list="jQcreditorList" class="flex" id="jQcreditor" /></div>
+					<div class="btn-set"><input tabindex="1" type="text" data-slo=":LIST" data-list="jQcreditorList"
+							class="flex" id="jQcreditor" /></div>
 					<datalist id="jQcreditorList" style="display: none;">
-						<?= $SmartListObject->financial_accounts_outbound(); ?>
+						<?= $SmartListObject->user_accounts_outbound(); ?>
 					</datalist>
 
 				</td>
@@ -300,9 +305,11 @@ if (!$__workingaccount) {
 				<th>Date</th>
 				<td>
 					<div class="btn-set">
-						<input type="text" class="flex" data-slo=":DATE" value="<?php echo date("Y-m-d"); ?>" data-rangeend="<?php echo date("Y-m-d"); ?>" tabindex="1" id="jQdate" />
+						<input type="text" class="flex" data-slo=":DATE" value="<?php echo date("Y-m-d"); ?>"
+							data-rangeend="<?php echo date("Y-m-d"); ?>" tabindex="1" id="jQdate" />
 						<!-- <span>Month reference</span> -->
-						<input id="jQmonth" tabindex="-1" value="" data-slo="MONTH" type="text" style="width:100px;display:none" />
+						<input id="jQmonth" tabindex="-1" value="" data-slo="MONTH" type="text"
+							style="width:100px;display:none" />
 					</div>
 				</td>
 			</tr>
@@ -320,7 +327,8 @@ if (!$__workingaccount) {
 			<tr>
 				<th>Category</th>
 				<td>
-					<div class="btn-set"><input type="text" data-slo=":LIST" data-list="jQcategoryList" tabindex="3" class="flex" id="jQcategory" /></div>
+					<div class="btn-set"><input type="text" data-slo=":LIST" data-list="jQcategoryList" tabindex="3"
+							class="flex" id="jQcategory" /></div>
 					<datalist id="jQcategoryList">
 						<?= $SmartListObject->financial_categories(); ?>
 					</datalist>
@@ -330,7 +338,8 @@ if (!$__workingaccount) {
 				<th>Beneficial</th>
 				<td>
 					<div class="btn-set">
-						<input type="text" class="flex" tabindex="4" data-slo=":LIST" data-list="jQbeneficialList" id="jQbeneficial" />
+						<input type="text" class="flex" tabindex="4" data-slo=":LIST" data-list="jQbeneficialList"
+							id="jQbeneficial" />
 						<input type="text" tabindex="-1" data-slo="B00S" id="jQemployee" />
 					</div>
 					<datalist id="jQbeneficialList">
@@ -341,7 +350,10 @@ if (!$__workingaccount) {
 			<tr>
 				<th>Value</th>
 				<td>
-					<div class="btn-set"><input type="number" tabindex="5" class="flex" id="jQvalue" pattern="\d*" min="0" inputmode="decimal" /><input value="<?php echo $__workingcurrency['shortname']; ?>" tabindex="-1" data-slodefaultid="<?php echo $__workingcurrency['id']; ?>" type="text" data-slo="CURRENCY_SYMBOL" id="jQcurrenyident" style="width:100px;" /></div>
+					<div class="btn-set"><input type="number" tabindex="5" class="flex" id="jQvalue" pattern="\d*" min="0"
+							inputmode="decimal" /><input value="<?php echo $__workingcurrency['shortname']; ?>"
+							tabindex="-1" data-slodefaultid="<?php echo $__workingcurrency['id']; ?>" type="text"
+							data-slo="CURRENCY_SYMBOL" id="jQcurrenyident" style="width:100px;" /></div>
 					<!-- <div id="dom-div-valueformat" style="padding:10px 11px;color:#888">0.00</div> -->
 				</td>
 			</tr>
@@ -350,7 +362,8 @@ if (!$__workingaccount) {
 				<td>
 					<div class="btn-set" style="justify-content:left">
 						<button id="js_upload_trigger" class="js_upload_trigger">Upload</button>
-						<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
+						<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple"
+							accept="image/*" />
 						<span id="js_upload_list" class="js_upload_list"></span>
 						<button id="js_upload_count" class="js_upload_count"><span>0 / 0</span> files</button>
 						<!--<label class="btn-checkbox"><input type="checkbox" id="jQprodmode"><span>Prouductive mode</span></label>-->
@@ -360,20 +373,23 @@ if (!$__workingaccount) {
 			<tr>
 				<th>Reference</th>
 				<td>
-					<div class="btn-set"><input type="text" data-slo="ACC_REFERENCE" tabindex="6" id="jQreference" class="flex" /><input type="text" id="jQrel" style="max-width:100px;min-width:100px;" tabindex="-1" placeholder="Related ID" /></div>
+					<div class="btn-set"><input type="text" data-slo="ACC_REFERENCE" tabindex="6" id="jQreference"
+							class="flex" /><input type="text" id="jQrel" style="max-width:100px;min-width:100px;"
+							tabindex="-1" placeholder="Related ID" /></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Comments</th>
-				<td><textarea type="text" tabindex="8" style="width:100%;" class="textarea" id="jQcomments" rows="7"></textarea></td>
+				<td><div class="btn-set"><textarea type="text" tabindex="8" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" id="jQcomments"
+						rows="7"></textarea></div></td>
 			</tr>
 		</tbody>
 	</table>
 
 	<?php
-	echo $_TEMPLATE->NewFrameBodyEnd();
-	$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Session Receipts</span><span id=\"jQtotalEntries\">0</span><input tabindex=\"-1\" type=\"text\" style=\"text-align: right;\" readonly=\"readonly\" id=\"jQtotalTotal\" value=\"0\" />");
-	echo $_TEMPLATE->NewFrameBodyStart();
+	$gremium->sectionArticle();
+	$gremium->sectionHeader("<span class=\"flex\">Session Receipts</span><span id=\"jQtotalEntries\">0</span><input tabindex=\"-1\" type=\"text\" style=\"text-align: right;\" readonly=\"readonly\" id=\"jQtotalTotal\" value=\"0\" />");
+	$gremium->sectionArticle();
 	?>
 	<table class="bom-table hover">
 		<thead>
@@ -389,7 +405,8 @@ if (!$__workingaccount) {
 	</table>
 
 	<?php
-	echo $_TEMPLATE->NewFrameBodyEnd();
+	$gremium->sectionArticle();
+	unset($gremium);
 	?>
 
 
@@ -397,7 +414,7 @@ if (!$__workingaccount) {
 		var $ajax = null;
 		var trancount = 0;
 		var trantotal = 0;
-		$(document).ready(function(e) {
+		$(document).ready(function (e) {
 			Upload = $.Upload({
 				objectHandler: $("#js_upload_list"),
 				domselector: $("#js_uploader_btn"),
@@ -425,41 +442,41 @@ if (!$__workingaccount) {
 
 
 			const $jQcreditor = $("#jQcreditor").slo({
-					'limit': 10,
-					onselect: function() {}
-				}),
+				'limit': 10,
+				onselect: function () { }
+			}),
 				$jQcurrency = $("#jQcurrenyident").slo(),
 				$jQbeneficial = $("#jQbeneficial").slo({
 					'limit': 7,
-					onselect: function() {}
+					onselect: function () { }
 				}),
 				$jQdate = $("#jQdate").slo(),
 				$form = $("#jQformTable"),
 				$jQmonth = $("#jQmonth").slo(),
 				$jQreference = $("#jQreference").slo(),
 				$jQemployee = $("#jQemployee").slo({
-					'onselect': function(data) {
+					'onselect': function (data) {
 						$jQbeneficial.set(data.hidden, data.value);
 						$("#jQbeneficial").prop("readonly", true).prop("disabled", true);
 					},
-					'ondeselect': function() {
+					'ondeselect': function () {
 						$("#jQbeneficial").prop("readonly", false).prop("disabled", false);
 						$jQbeneficial.clear();
 					}
 				}),
 				$jQcategory = $("#jQcategory").slo({
-					'onselect': function(data) {}
+					'onselect': function (data) { }
 				}),
 				$jQrel = $("#jQrel"),
 				domDivValueformat = document.getElementById("dom-div-valueformat");
 
 
-			$("#jQvalue").on("input keydown keyup mousedown mouseup select contextmenu drop", function() {
+			$("#jQvalue").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
 				OnlyFloat(this, null, 0);
 				/* let val = (Number(this.value.replace(/[^\d\.]/g, "")).numberFormat(4, ".", ","))
 				domDivValueformat.innerHTML = $jQcurrency.get()[0].value + " " + (val.toString()) */
 			});
-			var addStatement = function() {
+			var addStatement = function () {
 				var $creditor = $("#jQcreditor_1"),
 					$category = $("#jQcategory_1"),
 					$currency = $("#jQcurrenyident_1"),
@@ -478,7 +495,7 @@ if (!$__workingaccount) {
 					$submitbtn = $("#jQsubmit"),
 					$reference = $("#jQreference");
 
-				var inputStatus = function(status) {
+				var inputStatus = function (status) {
 					$submitbtn.prop("disabled", status);
 					$creditorSLO.prop("disabled", status);
 					$categorySLO.prop("disabled", status);
@@ -552,7 +569,7 @@ if (!$__workingaccount) {
 					data: preparePOST,
 					url: "<?php echo $fs()->dir; ?>",
 					type: "POST"
-				}).done(function(data) {
+				}).done(function (data) {
 					var _data = null;
 					try {
 						_data = JSON.parse(data);
@@ -599,13 +616,13 @@ if (!$__workingaccount) {
 							$("#" + _data.focus).focus().select();
 						return false;
 					}
-				}).fail(function(a, b, c) {
+				}).fail(function (a, b, c) {
 					messagesys.failure(b + " - " + c);
-				}).always(function() {
+				}).always(function () {
 					inputStatus(false);
 				});
 			}
-			$("#jQsubmit").on('click', function() {
+			$("#jQsubmit").on('click', function () {
 				addStatement();
 			});
 			$jQcreditor.focus();

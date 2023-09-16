@@ -46,15 +46,11 @@
 	--ribbonColor: rgba(240, 240, 245, 1);
 	--softBgColor: #f9f9fb;
 	--linkColor: #3C77C3;
+	--root--menubar-height: 50px;
+
 }
 
 html,
-body {
-	padding: 0;
-	height: 100%;
-	margin: 0;
-}
-
 body {
 	font-size: var(--fontSize);
 	line-height: 1em;
@@ -63,6 +59,8 @@ body {
 	font-weight: normal;
 	text-align: center;
 	display: table;
+	padding: 0;
+	margin: 0;
 	width: 100%;
 	height: 100%;
 	-webkit-text-size-adjust: 100%;
@@ -196,7 +194,6 @@ body>div {
 	width: 100%;
 	height: 100%;
 	background-color: var(--bgColor);
-	border: solid 1px transparent;
 }
 
 body>div>div {
@@ -209,7 +206,6 @@ body>div>div>div {
 	text-align: center;
 	height: 100%;
 	width: 100%;
-	border: solid 1px transparent;
 }
 
 body>div>div>div>div {
@@ -221,7 +217,7 @@ body>div>div>div>div {
 	background-color: #fff;
 	margin: 0px;
 	position: relative;
-	border: solid 0px transparent;
+	padding-top: var(--root--menubar-height);
 }
 
 #body-content.blur,
@@ -239,7 +235,7 @@ body>div>div>div>div {
 /* #endregion */
 
 
-/* #region Header*/
+
 /* #region - Ribbon*/
 span.header-ribbon {
 	position: fixed;
@@ -275,6 +271,26 @@ span.header-ribbon>div {
 	font-family: "icomoon";
 }
 
+#header-menu-useraccount-button {
+	position: relative;
+}
+
+#header-menu-useraccount-button>cite {
+	position: absolute;
+	font-size: 0.8em;
+	font-style: normal;
+	display: block;
+	top: 5px;
+	right: 5px;
+	background-color: red;
+	color: #fff;
+	border-radius: 100% 100%;
+	padding-top: 4px;
+	width: 20px;
+	height: 16px;
+	text-align: center;
+}
+
 /* #endregion */
 
 /* #region - Menus*/
@@ -289,7 +305,7 @@ span.header-menu {
 	backdrop-filter: blur(4px);
 	visibility: hidden;
 	opacity: 0;
-	transition: visibility 0.1s, opacity 0.1s linear, top 0.1s;
+	/* transition: visibility 0.1s, opacity 0.1s linear, top 0.1s; */
 	font-size: 1em;
 }
 
@@ -297,12 +313,12 @@ span.header-menu.show {
 	top: 48px;
 	visibility: visible;
 	opacity: 1;
-	transition: visibility 0.05s, opacity 0.05s linear, top 0.05s;
+	/* transition: visibility 0.05s, opacity 0.05s linear, top 0.05s; */
 }
 
 span.header-menu.hide {
 	visibility: hidden;
-	transition: .5s;
+	/* transition: .5s; */
 }
 
 span.header-menu>div {
@@ -482,12 +498,15 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 
 /* #region - Buttons*/
 .btnheader-set {
-	display: -webkit-box;
+	/* display: -webkit-box;
 	display: -moz-box;
 	display: -ms-flexbox;
-	display: -webkit-flex;
+	display: -webkit-flex; */
 	display: flex;
 	flex-wrap: nowrap;
+	height: var(--root--menubar-height);
+	-webkit-align-items: center;
+	align-items: center;
 }
 
 .btnheader-set.center {
@@ -496,21 +515,24 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 
 .btnheader-set>a,
 .btnheader-set>span {
+	display: inline;
+	height: auto;
 	color: inherit;
 	padding: 18px;
+	height: var(--root--menubar-height);
+	padding-top: var(--root--menubar-height /2);
+
 	outline: none;
-	background-color: transparent;
-	vertical-align: top;
-	position: relative;
 	border: none;
 	cursor: pointer;
+	background-color: transparent;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	transition: 0.2s;
+	transition: 0s;
 }
 
 .btnheader-set>input:hover,
@@ -519,7 +541,7 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 .btnheader-set>label:hover {
 	background-color: rgba(0, 0, 0, 0.2);
 	text-decoration: none;
-	transition: 0.2s;
+	transition: 0s;
 }
 
 .btnheader-set>label.active,
@@ -527,7 +549,7 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 .btnheader-set>button.active {
 	background-color: rgba(0, 0, 0, 0.6);
 	color: #fff;
-	transition: 0.2s;
+	transition: 0s;
 }
 
 .btnheader-set>span {
@@ -880,6 +902,8 @@ span.vs-remove {
 	#header-menu-logout {
 		padding: 18px;
 	}
+
+
 
 	.mediabond-hide {
 		display: none !important;

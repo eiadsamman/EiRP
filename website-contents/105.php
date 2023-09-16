@@ -1,22 +1,18 @@
 <?php
-/*
- * usr_attrib_i2	system user
- * usr_attrib_i3	has personal photo
- * 
-**/
+
 if(isset($_POST['method']) && $_POST['method']=="addrate"){
-	if($r=$sql->query("INSERT INTO labour_rating 
+	if($r=$app->db->query("INSERT INTO labour_rating 
 		(lbrrtg_lbr_id,lbrrtg_editor_id,lbrrtg_type,lbrrtg_value,lbrrtg_prt_id) VALUES 
-		(".((int)$_POST['emp']).",{$USER->info->id},1,".((int)$_POST['dir']=="1"?"1":"-1").",{$USER->account->id});"))
+		(".((int)$_POST['emp']).",{$app->user->info->id},1,".((int)$_POST['dir']=="1"?"1":"-1").",{$app->user->account->id});"))
 	{
 		//Get employee rating
 		$rating=0;
-		if($r2=$sql->query("
+		if($r2=$app->db->query("
 			SELECT (4*((1* COALESCE(SUM(lbrrtg_value),0) / (COALESCE(COUNT(lbrrtg_value),0) + 1)+1)/2)+1) AS rating
 			FROM	labour_rating
 			WHERE lbrrtg_lbr_id=".((int)$_POST['emp'])." AND lbrrtg_type=1
 		")){
-			if($row2=$sql->fetch_assoc($r2)){
+			if($row2=$r2->fetch_assoc()){
 				$rating=$row2['rating'];
 			}
 		}
@@ -28,20 +24,20 @@ if(isset($_POST['method']) && $_POST['method']=="addrate"){
 }
 if(isset($_POST['serial'])){
 	$serial=addslashes($_POST['serial']);
-	if($r=$sql->query("
+	if($r=$app->db->query("
 		SELECT
 			usr_id AS empid,
 			CONCAT_WS(' ',COALESCE(_up.usr_firstname,''),IF(NULLIF(_up.usr_lastname, '') IS NULL, NULL, _up.usr_lastname)) AS empname,
-			usr_attrib_i3,lbr_serial,usr_images_list,lbr_resigndate,
+			lbr_serial,usr_images_list,lbr_resigndate,
 			(4*((1* COALESCE(SUM(lbrrtg_value),0) / (COALESCE(COUNT(lbrrtg_value),0) + 1)+1)/2)+1) AS rating
 		FROM
 			labour 
 				JOIN 
-				(SELECT usr_images_list,usr_id,usr_firstname,usr_lastname,usr_attrib_i3 FROM users) AS _up ON _up.usr_id=lbr_id
+				(SELECT usr_images_list,usr_id,usr_firstname,usr_lastname FROM users) AS _up ON _up.usr_id=lbr_id
 				LEFT JOIN labour_rating ON lbrrtg_lbr_id=lbr_id AND lbrrtg_type=1
 		WHERE 
-			(lbr_serial='{$_POST['serial']}' OR lbr_id=".((int)$_POST['serial'])." ) ".($USER->info->id!=1?" AND usr_id!=1 ":"").";")){
-		if($row=$sql->fetch_assoc($r)){
+			(lbr_serial='{$_POST['serial']}' OR lbr_id=".((int)$_POST['serial'])." ) ".($app->user->info->id!=1?" AND usr_id!=1 ":"").";")){
+		if($row=$r->fetch_assoc()){
 			if(!is_null($row['empid'])){
 				$rating=$row['rating'];
 				echo "<tr><th id=\"css_empname\" colspan=\"2\">{$row['empname']}</th></tr>

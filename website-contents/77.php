@@ -19,8 +19,8 @@ PHPExcel_Cell::setValueBinder( new PHPExcel_Cell_AdvancedValueBinder() );
 
 
 $objPHPExcel = new PHPExcel();
-$objPHPExcel->getProperties()->setCreator($USER->info->username)
-				->setLastModifiedBy($USER->info->username)
+$objPHPExcel->getProperties()->setCreator($app->user->info->username)
+				->setLastModifiedBy($app->user->info->username)
 				 ->setTitle($fs()->title)
 				 ->setSubject($fs()->title)
 				 ->setDescription($fs()->title)
@@ -117,7 +117,7 @@ if(isset($_POST['user'])){
 			lty_id,lty_name,
 			lsf_id,lsf_name,
 			gnd_id,gnd_name,
-			ldn_id,ldn_name,usr_attrib_i2,
+			ldn_id,ldn_name,
 			UNIX_TIMESTAMP(lbr_resigndate) AS lbr_resigndate,
 			st.lsc_name,
 			
@@ -148,7 +148,7 @@ if(isset($_POST['user'])){
 				LEFT JOIN workingtimes AS wt_lbr ON wt_lbr.lwt_id=lbr_fixedtime
 				LEFT JOIN workingtimes AS wt_lty ON wt_lty.lwt_id=lty_time
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
-				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$USER->info->id}
+				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$app->user->info->id}
 		WHERE
 			usr_id!=1 AND lbr_resigndate IS NULL 
 			".(isset($_GET['onlyselection'])?" AND sel_usremp_emp_id IS NOT NULL ":"")."

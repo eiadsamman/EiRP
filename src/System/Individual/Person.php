@@ -20,8 +20,9 @@ class Person
 	public  function bookmark_list(): array
 	{
 		$output = [];
-		$result = $this->app->db->query(
-			"SELECT 
+		try {
+			$result = $this->app->db->query(
+				"SELECT 
 					trd_directory, pfl_value, trd_id, trd_attrib4, trd_attrib5, bookmark_id
 				FROM 
 					pagefile 
@@ -40,13 +41,15 @@ class Person
 				WHERE 
 					trd_enable = 1 
 				ORDER BY
-					(usrset_value+0) DESC,pfl_value
-					;"
-		);
-		if ($result) {
-			while ($row = $result->fetch_assoc()) {
-				$output[] = $row;
+					(usrset_value+0) DESC,pfl_value;"
+			);
+			if ($result) {
+				while ($row = $result->fetch_assoc()) {
+					$output[] = $row;
+				}
 			}
+		} catch (\mysqli_sql_exception $e) {
+			$this->app->errorHandler->logError($e);
 		}
 		return $output;
 	}
@@ -54,44 +57,43 @@ class Person
 	public  function bookmark_status(int $pagefile_id): bool
 	{
 		$result = $this->app->db->query("SELECT usrset_id AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . $this->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
-		if ($result && $row = $result->num_rows > 0) {
+		if ($result && $result->num_rows > 0) {
 			return true;
 		}
 		return false;
 	}
 	public  function bookmark_remove(int $pagefile_id): bool
 	{
-		$result = $this->app->db->query("DELETE FROM user_settings WHERE usrset_usr_id= " . $this->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
-		if ($result && $row = $this->app->db->affected_rows > 0) {
-			return true;
+		try {
+			$result = $this->app->db->query("DELETE FROM user_settings WHERE usrset_usr_id= " . $this->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
+			if ($result && $row = $this->app->db->affected_rows > 0) {
+				return true;
+			}
+		} catch (\mysqli_sql_exception $e) {
+			$this->app->errorHandler->logError($e);
 		}
 		return false;
 	}
 
 	public  function bookmark_add(int $pagefile_id): bool|null
 	{
-		#return pagefile 
+		try {
+			$result = $this->app->db->query("SELECT usrset_id AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . $this->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
+			if ($result && $result->num_rows > 0) {
+				return null;
+			}
 
-		$result = $this->app->db->query("SELECT usrset_id AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . $this->info->id . " AND usrset_name=\"system_user_bookmark\" AND usrset_usr_defind_name=$pagefile_id;");
-		if ($result && $row = $result->num_rows > 0) {
-			return null;
-		}
-
-		$stmt = $this->app->db->prepare(
-			"INSERT INTO user_settings (usrset_usr_id, usrset_name, usrset_usr_defind_name) 
-				VALUES (" . $this->info->id . ", \"system_user_bookmark\" , ?);"
-		);
-		if ($stmt) {
-			$stmt->bind_param("i", $pagefile_id);
-			try {
+			$stmt = $this->app->db->prepare("INSERT INTO user_settings (usrset_usr_id, usrset_name, usrset_usr_defind_name) VALUES (" . $this->info->id . ", \"system_user_bookmark\" , ?);");
+			if ($stmt) {
+				$stmt->bind_param("i", $pagefile_id);
 				if ($stmt->execute()) {
 					$stmt->close();
 					return true;
 				}
-			} catch (\mysqli_sql_exception $e) {
-				return false;
+				$stmt->close();
 			}
-			$stmt->close();
+		} catch (\mysqli_sql_exception $e) {
+			$this->app->errorHandler->logError($e);
 		}
 		return false;
 	}
@@ -111,7 +113,7 @@ class Person
 				labour 
 					JOIN users ON usr_id=lbr_id
 					LEFT JOIN permissions ON per_id = usr_privileges
-					LEFT JOIN uploads on lbr_id=up_rel AND up_deleted=0 AND (up_pagefile=" . $this->app::FILE['Person']['Photo'] . ")
+					LEFT JOIN uploads on lbr_id=up_rel AND up_deleted=0 AND (up_pagefile=" . $this->app->scope->individual->portrait . ")
 			WHERE
 				lbr_id='" . (int)$person_id . "';"
 		);

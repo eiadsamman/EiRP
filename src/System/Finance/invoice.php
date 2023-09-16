@@ -2,22 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Finance;
-
-include_once("admin/class/Template/class.template.build.php");
-
+namespace System\Finance;
 
 use Exception;
 use mysqli_result;
-use System\App;
-use Template\Body;
 
-interface InvoiceSystem
-{
-	public function __toString(): string;
-	public function GetMaterialRequestDoc(int $doc_id): array|bool;
-	public function DocGetMaterialList(int $doc_id): mysqli_result|bool;
-}
+
 class DocumentException extends Exception
 {
 	public function errorPlot()
@@ -63,12 +53,13 @@ class DocumentToken extends Exception
 
 
 
-class Invoice extends App
+class Invoice
 {
 	private const permissionlist_pageid = 246;
 	private $permission_list = array();
 	public $listview_rows = 0;
 	public static $decimal_precision = 5;
+	protected \System\App $app;
 	public const map = array(
 		"MAT_REQ"	=> 1,
 		"PUR_QUT"	=> 2,
@@ -77,8 +68,9 @@ class Invoice extends App
 		"PUR_INV"	=> 5
 	);
 
-	public function __construct()
+	public function __construct(&$app)
 	{
+		$this->app = $app;
 	}
 
 
@@ -105,18 +97,18 @@ class Invoice extends App
 			WHERE 
 				po_type = $docType AND po_comp_id=$company AND po_costcenter=$costcenter;";
 
-		$r = App::$sql->query($query);
-		if ($r && $row = App::$sql->fetch_assoc($r)) {
+		$r = $this->app->db->query($query);
+		if ($r && $row = $r->fetch_assoc()) {
 			return (int)$row['doc_serial'];
 		} else {
-			return false;
+			return 0;
 		}
 	}
 
 	private function BuildPermissionList()
 	{
 		/*$_u_persmission = App::$user['permissions'];
-		$qper = App::$sql->query("
+		$r = $this->app->db->query("
 			SELECT 
 				trd_id,pfp_value,pfp_per_id
 			FROM 
@@ -124,7 +116,7 @@ class Invoice extends App
 					JOIN pagefile ON trd_id = pfp_trd_id
 			WHERE
 				trd_parent = 246 AND pfp_per_id = $_u_persmission;");
-		while($row = App::$sql->fetch_assoc( $qper)){
+		while($row = $r->fetch_assoc( )){
 			$this->permission_list[$row['trd_id']]=new AllowedActions($_u_persmission, array($row['pfp_per_id']=>$row['pfp_value']));
 		}*/
 	}
@@ -139,12 +131,9 @@ class Invoice extends App
 
 
 
-
-
-
 	public function DocumentURI(): int|bool
 	{
-		return (int)$_GET['docid'];
+
 		try {
 			if (!isset($_GET['docid']) || (int)$_GET['docid'] == 0) {
 				throw new DocumentId("No document ID provided", 30001);
@@ -164,7 +153,7 @@ class Invoice extends App
 
 	public function GetDocChildren(int $doc_id)
 	{
-		$rpo = App::$sql->query($this->DocProccess($doc_id, 0, true));
+		$rpo = $this->app->db->query($this->DocProccess($doc_id, 0, true));
 		if ($rpo) {
 			return $rpo;
 		} else {
@@ -179,8 +168,8 @@ class Invoice extends App
 		$current = $doc_id;
 		$safety = 0;
 		while ($current !== false) {
-			$mysqli_result = App::$sql->query("SELECT po_rel FROM inv_main WHERE po_id = $current;");
-			if ($mysqli_result and $mysqli_record = App::$sql->fetch_assoc($mysqli_result) and !is_null($mysqli_record['po_rel'])) {
+			$mysqli_result = $this->app->db->query("SELECT po_rel FROM inv_main WHERE po_id = $current;");
+			if ($mysqli_result and $mysqli_record = $mysqli_result->fetch_assoc() and !is_null($mysqli_record['po_rel'])) {
 				$current = $mysqli_record['po_rel'];
 				$chain[] = $mysqli_record['po_rel'];
 			} else {
@@ -199,7 +188,7 @@ class Invoice extends App
 
 	public function GetDocValue(int $doc_id): float|bool
 	{
-		$rpo = App::$sql->query("
+		$r = $this->app->db->query("
 			SELECT
 				SUM(pols_price * pols_issued_qty) AS doc_value 
 			FROM
@@ -208,11 +197,11 @@ class Invoice extends App
 			WHERE
 				po_id=$doc_id 
 			");
-		if ($rpo && $rowpo = App::$sql->fetch_assoc($rpo)) {
-			if (is_null($rowpo['doc_value'])) {
+		if ($r && $row = $r->fetch_assoc()) {
+			if (is_null($row['doc_value'])) {
 				return false;
 			} else {
-				return $rowpo['doc_value'];
+				return $row['doc_value'];
 			}
 		} else {
 			return false;
@@ -237,11 +226,11 @@ class Invoice extends App
 
 	private function GetGeneralDoc(int $doc_id, int $doc_type, bool $children = false): array|bool
 	{
-		$rpo = static::$sql->query($this->DocProccess($doc_id, $doc_type, $children));
-		if ($rpo && $rowpo = static::$sql->fetch_assoc($rpo)) {
-			$rowpo['doc_value'] = $this->GetDocValue($doc_id);
-			$rowpo['po_remarks'] = stripcslashes(nl2br($rowpo['po_remarks']));
-			return $rowpo;
+		$r = $this->app->db->query($this->DocProccess($doc_id, $doc_type, $children));
+		if ($r && $row = $r->fetch_assoc()) {
+			$row['doc_value'] = $this->GetDocValue($doc_id);
+			$row['po_remarks'] = stripcslashes(nl2br($row['po_remarks']));
+			return $row;
 		} else {
 			throw new DocumentException("Requested document not found", 31001);
 		}
@@ -251,8 +240,8 @@ class Invoice extends App
 
 	private function DocProccess(int $doc_id, int $type, bool $children = false): string
 	{
-		$output = "
-			SELECT 
+		$output =
+			"SELECT 
 				po_id, po_title, po_att_id, po_remarks,po_comp_id,po_cur_id,po_type,
 				po_total,po_vat_rate,po_additional_amount,po_discount,cur_shortname,
 				po_serial,po_att_id,
@@ -279,7 +268,7 @@ class Invoice extends App
 					JOIN companies AS _dest_comp ON po_comp_id = _dest_comp.comp_id
 					JOIN inv_records ON po_id = pols_po_id
 					JOIN inv_costcenter ON ccc_id = po_costcenter
-					JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id=" . static::$_user->info->id . "
+					JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id=" . $this->app->user->info->id . "
 					
 					JOIN users AS usr_issue_join ON usr_issue_join.usr_id = po_usr_id
 					LEFT JOIN users AS usr_att_join ON usr_att_join.usr_id = po_att_id
@@ -287,19 +276,19 @@ class Invoice extends App
 			WHERE ";
 
 		if ($children) {
-			$output .= "po_rel=$doc_id";
+			$output .= "po_rel = $doc_id ";
 		} else {
-			$output .= "po_id=$doc_id AND po_type=$type ";
+			$output .= "po_id = $doc_id AND po_type = $type ";
 		}
 
-		$output .= " GROUP BY po_id";
+		$output .= " GROUP BY po_id ";
 		return $output;
 	}
 
 	public function DocGetMaterialList(int $doc_id): mysqli_result|bool
 	{
-		$r = App::$sql->query("
-			SELECT 
+		$r = $this->app->db->query(
+			"SELECT 
 				pols_id,pols_bom_part,pols_issued_qty,pols_price,pols_discount,
 				_mat_materials.mat_long_id,_mat_materials.mat_name,_mat_materials.cat_alias,_mat_materials.mattyp_name,_mat_materials.unt_name,_mat_materials.unt_decim,
 				CONCAT(_part_of.mat_long_id,'<br />',_part_of.cat_alias,', ',_part_of.mat_name) AS _mat_bom
@@ -338,7 +327,8 @@ class Invoice extends App
 				pols_po_id=$doc_id AND pols_issued_qty>0
 			ORDER BY
 				pols_bom_part,pols_id
-			");
+			"
+		);
 		if ($r) {
 			return $r;
 		} else {

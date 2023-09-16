@@ -1,8 +1,7 @@
 <?php
 if (isset($reportpageid)) {
-	$reportpage = $tables->pagefile_info($reportpageid);
 	$arroutput = array();
-	$reportid = $reportpage['id'];
+	$reportid = $fs((int)$reportpageid)->id;
 	$reportwidth = "100%";
 	$total = 0;
 	$arrout = array();

@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace System;
 
+use System\Attachment\Scope;
+use System\Exceptions\HR\InactiveAccountException;
+use System\Exceptions\HR\InvalidLoginException;
+
 
 /* 
-\$sql->fetch_assoc\((.*?)\)
-$1->fetch_assoc()
- */ //$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);
+\$sXql->fetch_assoc\((.*?)\)
+$1->fXetch_assoc()
+ *///$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);
 class App
 {
 	public \mysqli $db;
@@ -18,27 +22,23 @@ class App
 	public $prefixList = array();
 
 	public string $subdomain;
-	public  $base_permission = 0;
+	public $base_permission = 0;
 	public ResponseStatus $responseStatus;
 	public bool $xhttp = false;
+	public \System\Log\ErrorHandler $errorHandler;
 	public const PERMA_ID = array(
 		"index" => 19,
 		"login" => 20,
 		"slo" => 3,
+		"download" => 187,
 	);
 	public string $root;
 	public string $http_root;
 
 	public Settings $settings;
-	public const FILE = array(
-		"Person" => array(
-			"Photo" => 189,
-			"ID" => 190
-		), "Company" => array(
-			"Logo" => 242
 
-		)
-	);
+	public Scope $scope;
+
 	protected array $permissions_array = array();
 
 	function __construct(string $root, string $settings_file, ?bool $chache = true)
@@ -52,7 +52,8 @@ class App
 
 		/* Invalid request */
 		if (!isset($_SERVER['QUERY_STRING'], $_GET['___REQUESTURI'])) {
-			$this->responseStatus->NotFound->response();;
+			$this->responseStatus->NotFound->response();
+			;
 		}
 
 		/* Get System settings */
@@ -61,6 +62,7 @@ class App
 			$this->responseStatus->InternalServerError->response();
 		}
 
+		$this->errorHandler = new \System\Log\ErrorHandler($this->settings->site['errorlog'], $this->root . "admin/error.log");
 		/* Set http root */
 		$this->http_root = (isset($this->settings->site['forcehttps']) && $this->settings->site['forcehttps'] === true ? "https" : "http") . "://{$_SERVER['SERVER_NAME']}/" . (isset($this->settings->site['subdomain']) && trim($this->settings->site['subdomain']) != "" ? $this->settings->site['subdomain'] . "/" : "");
 
@@ -75,11 +77,14 @@ class App
 
 		$this->permissions_array = array();
 
+
 		/* Handle cache */
 		header('Content-Type: text/html; charset=utf-8', true);
 		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + ($chache ? 604800 : 0)) . ' GMT');
 		header("Cache-Control: " . ($chache ? "public" : "no-cache, no-store, must-revalidate"));
 		header("Pragma: " . ($chache ? "public" : "no-cache"));
+
+		$this->scope = new Scope();
 	}
 	public function process_request(string $request, string $default): string
 	{
@@ -113,7 +118,7 @@ class App
 		if ($stmt->execute() && $rec = $stmt->get_result()) {
 			if ($rec->num_rows > 0 && $row = $rec->fetch_assoc()) {
 				$this->currency = new Finance\Currency();
-				$this->currency->id = (int)$row['cur_id'];
+				$this->currency->id = (int) $row['cur_id'];
 				$this->currency->name = $row['cur_name'];
 				$this->currency->shortname = $row['cur_shortname'];
 				$this->currency->symbol = $row['cur_symbol'];
@@ -152,11 +157,12 @@ class App
 	{
 		try {
 			date_default_timezone_set($timezone);
+
 		} catch (\Exception $e) {
 			$this->responseStatus->InternalServerError->response();
 		}
 	}
-	public  function get_base_permission(): bool
+	public function get_base_permission(): bool
 	{
 		$lowsetlevel = $this->db->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
 		if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
@@ -170,13 +176,13 @@ class App
 		}
 		return false;
 	}
-	public  function build_prefix_list(): bool
+	public function build_prefix_list(): bool
 	{
 		$this->prefixList = array();
 		$r = $this->db->query("SELECT prx_id, prx_value, prx_placeholder FROM system_prefix;");
 		if ($r) {
 			while ($row = $r->fetch_assoc()) {
-				$this->prefixList[$row['prx_id']] = array($row['prx_value'], (int)$row['prx_placeholder']);
+				$this->prefixList[$row['prx_id']] = array($row['prx_value'], (int) $row['prx_placeholder']);
 			}
 		}
 		return true;
@@ -185,39 +191,39 @@ class App
 	public function translate_prefix(int $type, int $number): string
 	{
 		if (!is_array($this->prefixList) || sizeof($this->prefixList) == 0) {
-			return (string)$number;
+			return (string) $number;
 		}
-		$type = (int)$type;
+		$type = (int) $type;
 		if (isset($this->prefixList[$type])) {
-			return $this->prefixList[$type][0] . str_pad((string)$number, $this->prefixList[$type][1], "0", STR_PAD_LEFT);
+			return $this->prefixList[$type][0] . str_pad((string) $number, $this->prefixList[$type][1], "0", STR_PAD_LEFT);
 		}
-		return (string)$number;
+		return (string) $number;
 	}
 	public function padding_prefix(int $type, int $number): string
 	{
 		if (!is_array($this->prefixList) || sizeof($this->prefixList) == 0) {
-			return (string)$number;
+			return (string) $number;
 		}
-		$type = (int)$type;
+		$type = (int) $type;
 		if (isset($this->prefixList[$type])) {
-			return str_pad((string)$number, $this->prefixList[$type][1], "0", STR_PAD_LEFT);
+			return str_pad((string) $number, $this->prefixList[$type][1], "0", STR_PAD_LEFT);
 		}
-		return (string)$number;
+		return (string) $number;
 	}
 
 
-	public  function formatTime(int $time, ?bool $include_seconds = true): string
+	public function formatTime(int $time, ?bool $include_seconds = true): string
 	{
 		$neg = $time < 0;
 		$time = abs($time);
 		$output = ($neg ? "(" : "") .
 			sprintf('%02d', floor($time / 60 / 60)) .
 			":" .
-			sprintf('%02d', floor((int)($time / 60) % 60)) .
+			sprintf('%02d', floor((int) ($time / 60) % 60)) .
 			($neg ? ")" : "");
 
 		if ($include_seconds)
-			$output .= ":" . str_pad((string)floor((int)($time) % 60), 2, "0", STR_PAD_LEFT);
+			$output .= ":" . str_pad((string) floor((int) ($time) % 60), 2, "0", STR_PAD_LEFT);
 		return $output;
 	}
 
@@ -260,9 +266,9 @@ class App
 						header("Location: " . $this->http_root);
 					}
 				}
-			} catch (Individual\InvalidLoginDetailsException $e) {
+			} catch (InvalidLoginException $e) {
 				return 2;
-			} catch (Individual\InactiveAccountException $e) {
+			} catch (InactiveAccountException $e) {
 				return 3;
 			}
 		}

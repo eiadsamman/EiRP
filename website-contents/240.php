@@ -1,20 +1,17 @@
 <?php
+
+use System\Finance\Accounting;
+use System\Finance\DocumentException;
+use System\Finance\DocumentMaterialListException;
+use System\Finance\Invoice;
+use System\Template\Body;
+
 //purchase/rm/new
-require_once("admin/class/invoice.php");
-require_once("admin/class/Template/class.template.build.php");
-require_once("admin/class/accounting.php");
 
-
-use Finance\Accounting;
-use Finance\Invoice;
-use Finance\DocumentException;
-use Finance\DocumentMaterialListException;
-
-
-$accounting = new Accounting();
+$accounting = new Accounting($app);
 $_syscur = $accounting->system_default_currency();
-$_TEMPLATE = new Template\Body();
-$invoice = new Invoice();
+$_TEMPLATE = new Body();
+$invoice = new Invoice($app);
 
 
 $doc_id = $invoice->DocumentURI();
@@ -24,18 +21,18 @@ if ($doc_id) {
 		$doc_mr = $invoice->GetMaterialRequestDoc($doc_id);
 
 
-		$_TEMPLATE->Title("Material Request Record", null, $invoice->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']));
+		$_TEMPLATE->Title("Material Request Record", null, $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']));
 
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(240, null, "directory") . "/\" class=\"bnt-back\"></a>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/\" class=\"bnt-back\"></a>";
 
-		echo "<span>" . $invoice->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . "</span>";
+		echo "<span>" . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . "</span>";
 
 		echo "<span class=\"gap\"></span>";
 		if (is_null($doc_mr['po_close_date'])) {
 			echo "<button>Cancel Request</button>";
-			echo "<a class=\"clr-green\" href=\"" . $tables->pagefile_info(233, null, "directory") . "/?docid={$doc_mr['po_id']}&token=" . md5("sysdoc_" . $doc_id . session_id()) . "\">New Quotation</a>";
+			echo "<a class=\"clr-green\" href=\"" . $fs(233)->dir . "/?docid={$doc_mr['po_id']}&token=" . md5("sysdoc_" . $doc_id . session_id()) . "\">New Quotation</a>";
 		} else {
 			echo "<span>Request Closed</span>";
 		}
@@ -48,7 +45,7 @@ if ($doc_id) {
 		$_TEMPLATE->NewFrameBody('
 			<div class="template-gridLayout">
 				<div><span>Cost Center</span><div>' . $doc_mr['ccc_name'] . '</div></div>
-				<div><span>Number</span><div>' . $invoice->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . '</div></div>
+				<div><span>Number</span><div>' . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . '</div></div>
 				<div><span>Title</span><div>' . $doc_mr['po_title'] . '</div></div>
 			</div>
 			<div class="template-gridLayout">
@@ -59,7 +56,7 @@ if ($doc_id) {
 			<div class="template-gridLayout">
 				<div>
 					<span>Placed By</span>
-					<div>' . $invoice->translate_prefix(11, $doc_mr['po_att_id']) . ' - ' . $doc_mr['po_att_name'] . '</div>
+					<div>' . $app->translate_prefix(11, $doc_mr['po_att_id']) . ' - ' . $doc_mr['po_att_name'] . '</div>
 				</div>
 			</div>
 			<div class="template-gridLayout">
@@ -75,7 +72,7 @@ if ($doc_id) {
 			<tbody id="jQmaterialList" style="border:solid 1px #E6E6EB;">';
 		if ($mysqli_result) {
 			$bomlegend = null;
-			while ($row = $sql->fetch_assoc($mysqli_result)) {
+			while ($row = $mysqli_result->fetch_assoc()) {
 				if ($bomlegend != $row['pols_bom_part']) {
 					$bomlegend = $row['pols_bom_part'];
 					echo "<tr>";
@@ -105,7 +102,7 @@ if ($doc_id) {
 		$rowsploted = 0;
 		$pq_type = Invoice::map['PUR_QUT'];
 		$rm_type = Invoice::map['MAT_REQ'];
-		$r = $sql->query("
+		$r = $app->db->query("
 				SELECT 
 					po_id,po_rel,po_serial,
 					DATE_FORMAT(po_date,'%Y-%m-%d %H:%i') AS po_date,
@@ -121,12 +118,12 @@ if ($doc_id) {
 				ORDER BY po_date DESC
 				");
 		if ($r) {
-			while ($row = $sql->fetch_assoc($r)) {
+			while ($row = $r->fetch_assoc()) {
 				$rowsploted++;
 				echo "<tr>";
 
-				echo "<td><a href=\"" . $tables->pagefile_info(234, null, "directory") . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">";
-				echo $invoice->translate_prefix($pq_type, $row['po_serial']);
+				echo "<td><a href=\"" . $fs(234)->dir . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">";
+				echo $app->translate_prefix($pq_type, $row['po_serial']);
 				echo "</a></td>";
 
 				echo "<td>{$row['doc_usr_name']}</td>";
@@ -162,7 +159,7 @@ if ($doc_id) {
 
 	echo $_TEMPLATE->CommandBarStart();
 	echo "<div class=\"btn-set\">";
-	echo "<a href=\"" . $tables->pagefile_info(230, null, "directory") . "\" style=\"color:#333\">New Request</a>";
+	echo "<a href=\"" . $fs(230)->dir . "\" style=\"color:#333\">New Request</a>";
 	echo "<span class=\"gap\"></span>";
 	echo "</div>";
 	echo $_TEMPLATE->CommandBarEnd();
@@ -179,7 +176,7 @@ if ($doc_id) {
 
 	$rm_type = Invoice::map['MAT_REQ'];
 
-	$r = $sql->query("
+	$r = $app->db->query("
 		SELECT 
 			_main.po_id,
 			CONCAT(prx_value,LPAD(po_serial,prx_placeholder,'0')) AS doc_id,
@@ -199,19 +196,19 @@ if ($doc_id) {
 				LEFT JOIN inv_records ON pols_po_id = _main.po_id
 				LEFT JOIN (SELECT po_rel, COUNT(po_id) AS _subcount FROM inv_main WHERE po_type = 2 GROUP BY po_rel) AS _sub ON _sub.po_rel = _main.po_id
 				JOIN inv_costcenter ON ccc_id = po_costcenter
-				JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id={$USER->info->id}
+				JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id={$app->user->info->id}
 		WHERE
-			_main.po_type = $rm_type AND _main.po_comp_id={$USER->company->id}
+			_main.po_type = $rm_type AND _main.po_comp_id={$app->user->company->id}
 		GROUP BY
 			_main.po_id
 		ORDER BY _main.po_date DESC
 		");
 	if ($r) {
-		while ($row = $sql->fetch_assoc($r)) {
+		while ($row = $r->fetch_assoc()) {
 			$rowsploted++;
 			echo "<tr>";
 			echo "<td>{$row['ccc_name']}</td>";
-			echo "<td><a href=\"" . $tables->pagefile_info(240, null, "directory") . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">{$row['doc_id']}</a></td>";
+			echo "<td><a href=\"" . $fs(240)->dir . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">{$row['doc_id']}</a></td>";
 			echo "<td>{$row['po_title']}</td>";
 			echo "<td>{$row['po_date']}</td>";
 			// echo "<td>{$row['doc_usr_name']}</td>";
@@ -229,6 +226,6 @@ if ($doc_id) {
 	echo $_TEMPLATE->NewFrameBodyEnd();
 
 	echo "<script type=\"text/javascript\">
-				Template.HistoryEntry(\"" . $tables->pagefile_info(240, null, "directory") . "\", \"" . $tables->pagefile_info(240, null, "title") . "\");
+				Template.HistoryEntry(\"" . $fs(240)->dir . "\", \"" . $fs(240)->title . "\");
 			</script>";
 }

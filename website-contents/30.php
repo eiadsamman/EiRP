@@ -287,7 +287,6 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 			CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) AS usr_fullname,
 			CONCAT_WS(', ',lsc_name,lty_name) AS job_name,
 			lsf_name,
-			usr_attrib_i2,
 			(4*((1* COALESCE(SUM(lbrrtg_value),0) / (COALESCE(COUNT(lbrrtg_value),0) + 1)+1)/2)+1) AS rating,
 			IF(lbr_permanentdate IS NULL,0,1) AS lbr_perma,
 			sel_usremp_emp_id,

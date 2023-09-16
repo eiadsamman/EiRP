@@ -35,7 +35,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "update") {
 		"SELECT
 			usr_firstname,usr_lastname,
 			usr_id,usr_username,usr_phone_list,
-			usr_attrib_i2,gnd_name,gnd_id,
+			gnd_name,gnd_id,
 			lsf_id,lsf_name,
 			lty_id,lty_name,lsc_name,
 			ldn_id,ldn_name,
@@ -63,7 +63,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "update") {
 				LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
 				LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
-				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . $app::FILE['Person']['Photo'] . " AND up_deleted = 0
+				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . $app->scope->individual->portrait . " AND up_deleted = 0
 				LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
 				LEFT JOIN companies ON comp_id = lbr_company
 		WHERE
@@ -80,7 +80,7 @@ $q_socialid_uploads_query =
 		FROM uploads 
 		WHERE 
 			(" . ($arr_array_input != false ? " up_rel={$arr_array_input['usr_id']} OR " : "") . " (up_rel=0 AND up_user={$app->user->info->id}))
-			AND up_deleted=0 AND (up_pagefile=" . $app::FILE['Person']['Photo'] . " OR up_pagefile=" . $app::FILE['Person']['ID'] . ") ORDER BY up_rel DESC, up_date DESC;";
+			AND up_deleted=0 AND (up_pagefile=" . $app->scope->individual->portrait . " OR up_pagefile=" . $app->scope->individual->social_id . ") ORDER BY up_rel DESC, up_date DESC;";
 
 $r = $app->db->query($q_socialid_uploads_query);
 while ($row_socialid_uploads = $r->fetch_assoc()) {
@@ -164,8 +164,8 @@ while ($row_socialid_uploads = $r->fetch_assoc()) {
 									<span id="js_upload_list" class="js_upload_list">
 										<div id="UploadPersonalDOMHandler">
 											<?php
-											if (isset($arr_array_uploads[App::FILE['Person']['Photo']]) && is_array($arr_array_uploads[App::FILE['Person']['Photo']])) {
-												foreach ($arr_array_uploads[App::FILE['Person']['Photo']] as $fileIndex => $file) {
+											if (isset($arr_array_uploads[$app->scope->individual->portrait]) && is_array($arr_array_uploads[$app->scope->individual->portrait])) {
+												foreach ($arr_array_uploads[$app->scope->individual->portrait] as $fileIndex => $file) {
 													echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int)$file[4] == 0 ? false : true), "perosnal_image");
 												}
 											}
@@ -217,13 +217,6 @@ while ($row_socialid_uploads = $r->fetch_assoc()) {
 	<?php
 	}
 	?>
-
-
-
-
-
-
-
 
 	<?php
 	if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_input == false && $fs(228)->permission->add)) {
@@ -313,15 +306,8 @@ while ($row_socialid_uploads = $r->fetch_assoc()) {
 		</div>
 	<?php
 	}
-	?>
 
 
-
-
-
-
-
-	<?php
 	if (($arr_array_input != false && $fs(229)->permission->edit) || ($arr_array_input == false && $fs(229)->permission->add)) {
 	?>
 		<div style="display:block;min-width:300px;max-width:800px;margin-top:5px;margin-bottom:20px;position: relative;">
@@ -334,9 +320,9 @@ while ($row_socialid_uploads = $r->fetch_assoc()) {
 							<th style="max-width: 100px;width:100px;min-width:100px">Salary</th>
 							<td>
 								<div class="btn-set">
-									<input name="salary_basic" <?php echo (is_array($arr_array_input) && is_null($arr_array_input['lbr_fixedsalary']) ? "disabled=\"disabled\"" : ""); ?> value="<?php echo (is_array($arr_array_input) && is_null($arr_array_input['lbr_fixedsalary']) ? number_format((float)$arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : number_format((float)$arr_array_input['lbr_fixedsalary'], 2, ".", "")) ?>" data-basicvalue="<?php echo is_array($arr_array_input) ? number_format((float)$arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : ""; ?>" class="flex" />
+									<input name="salary_basic" <?= ($arr_array_input && is_null($arr_array_input['lbr_fixedsalary']) ? "disabled=\"disabled\"" : ""); ?> value="<?php echo ($arr_array_input ? (is_null($arr_array_input['lbr_fixedsalary']) ?number_format((float)$arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") :number_format((float)$arr_array_input['lbr_fixedsalary'], 2, ".", "")) : "") ?>" data-basicvalue="<?= $arr_array_input ? number_format((float)$arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : ""; ?>" class="flex" />
 									<label class="btn-checkbox">
-										<input type="checkbox" class="derive_function" data-rel="salary_basic" name="sal_default_salary" <?php echo (is_null($arr_array_input['lbr_fixedsalary']) ? "checked=\"checked\"" : ""); ?> />
+										<input type="checkbox" class="derive_function" data-rel="salary_basic" name="sal_default_salary" <?= $arr_array_input && (is_null($arr_array_input['lbr_fixedsalary']) ? "checked=\"checked\"" : ""); ?> />
 										<span>Default</span>
 									</label>
 								</div>
@@ -347,9 +333,9 @@ while ($row_socialid_uploads = $r->fetch_assoc()) {
 							<th>Variable</th>
 							<td>
 								<div class="btn-set">
-									<input name="salary_variable" <?php echo (is_array($arr_array_input) && is_null($arr_array_input['lbr_variable']) ? "disabled=\"disabled\"" : ""); ?> value="<?php echo (is_array($arr_array_input) && is_null($arr_array_input['lbr_variable']) ? number_format((float)$arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : number_format((float)$arr_array_input['lbr_variable'], 2, ".", "")) ?>" data-basicvalue="<?php echo is_array($arr_array_input) ? number_format((float)$arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : ""; ?>" class="flex" />
+									<input name="salary_variable" <?= ($arr_array_input && is_null($arr_array_input['lbr_variable']) ? "disabled=\"disabled\"" : ""); ?> value="<?=($arr_array_input ? (is_null($arr_array_input['lbr_variable']) ?number_format((float)$arr_array_input['lbr_typ_sal_variable'], 2, ".", "") :number_format((float)$arr_array_input['lbr_variable'], 2, ".", "")) : "") ?>" data-basicvalue="<?= $arr_array_input ? number_format((float)$arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : "";?>" class="flex" />
 									<label class="btn-checkbox">
-										<input type="checkbox" class="derive_function" data-rel="salary_variable" name="sal_default_variable" <?php echo (is_null($arr_array_input['lbr_variable']) ? "checked=\"checked\"" : ""); ?> />
+										<input type="checkbox" class="derive_function" data-rel="salary_variable" name="sal_default_variable" <?= ($arr_array_input && is_null($arr_array_input['lbr_variable']) ? "checked=\"checked\"" : ""); ?> />
 										<span>Default</span>
 									</label>
 								</div>
@@ -360,9 +346,9 @@ while ($row_socialid_uploads = $r->fetch_assoc()) {
 							<th>Allowance</th>
 							<td>
 								<div class="btn-set">
-									<input name="salary_allowance" <?php echo (is_array($arr_array_input) && is_null($arr_array_input['lbr_allowance']) ? "disabled=\"disabled\"" : ""); ?> value="<?php echo (is_array($arr_array_input) && is_null($arr_array_input['lbr_allowance']) ? number_format((float)$arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : number_format((float)$arr_array_input['lbr_allowance'], 2, ".", "")) ?>" data-basicvalue="<?php echo is_array($arr_array_input) ? number_format((float)$arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : ""; ?>" class="flex" />
+									<input name="salary_allowance" <?= ($arr_array_input && is_null($arr_array_input['lbr_allowance']) ? "disabled=\"disabled\"" : ""); ?> value="<?= ($arr_array_input ? (is_null($arr_array_input['lbr_allowance']) ? number_format((float)$arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : number_format((float)$arr_array_input['lbr_allowance'], 2, ".", "")) : "") ?>" data-basicvalue="<?= $arr_array_input ? number_format((float)$arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : ""; ?>" class="flex" />
 									<label class="btn-checkbox">
-										<input type="checkbox" class="derive_function" data-rel="salary_allowance" name="sal_default_allowance" <?php echo (is_null($arr_array_input['lbr_allowance']) ? "checked=\"checked\"" : ""); ?> />
+										<input type="checkbox" class="derive_function" data-rel="salary_allowance" name="sal_default_allowance" <?= ($arr_array_input && is_null($arr_array_input['lbr_allowance']) ? "checked=\"checked\"" : ""); ?> />
 										<span>Default</span>
 									</label>
 								</div>
@@ -376,5 +362,4 @@ while ($row_socialid_uploads = $r->fetch_assoc()) {
 	<?php
 	}
 	?>
-
 </form>

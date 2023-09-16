@@ -1,7 +1,6 @@
 <?php
 if (isset($_POST['method']) && $_POST['method'] == "updatepermissions") {
 	if ($r = $app->db->query("UPDATE users SET 
-			usr_attrib_i2=" . ((int)$_POST['permission'] == 1 ? "0" : "1") . ",
 			usr_privileges=" . ((int)$_POST['permission']) . " WHERE usr_id=" . ((int)$_POST['usr_id']) . ";")) {
 		echo "1";
 	} else {
@@ -27,7 +26,7 @@ if (isset($_POST['method']) && $_POST['method'] == "updatepermissions") {
 					JOIN labour ON lbr_id=usr_id
 					JOIN permissions ON per_id = usr_privileges
 			WHERE
-				usr_attrib_i2 = 1 AND usr_id != 1 AND lbr_resigndate IS NULL AND usr_privileges != {$app->base_permission} AND usr_activate = 1
+				usr_id != 1 AND lbr_resigndate IS NULL AND usr_privileges != {$app->base_permission} AND usr_activate = 1
 			ORDER BY
 				per_title
 			;"

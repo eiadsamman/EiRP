@@ -157,7 +157,6 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 					usr_gender,
 					usr_phone_list,
 					usr_activate,
-					usr_attrib_i2,
 					usr_birthdate,
 					usr_privileges
 					) VALUES 
@@ -168,7 +167,6 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 					%4\$s,
 					%5\$d,
 					%6\$s,
-					0,
 					0,
 					%7\$s,
 					$defaultPermissionID
@@ -220,10 +218,10 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 					$UploadsSep = ",";
 				}
 			}
-			$releaseUploads = $app->db->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$UserID AND (up_pagefile=" . App::FILE['Person']['Photo'] . " OR up_pagefile=" . App::FILE['Person']['ID'] . ");");
+			$releaseUploads = $app->db->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$UserID AND (up_pagefile=" . $app->scope->individual->portrait . " OR up_pagefile=" . $app->scope->individual->social_id . ");");
 			if ($releaseUploads) {
 				if ($UploadsFound) {
-					if (!$app->db->query("UPDATE uploads SET up_rel=$UserID WHERE up_id IN ({$UploadsIDs}) AND (up_pagefile=" . App::FILE['Person']['Photo'] . " OR up_pagefile=" . App::FILE['Person']['ID'] . ");")) {
+					if (!$app->db->query("UPDATE uploads SET up_rel=$UserID WHERE up_id IN ({$UploadsIDs}) AND (up_pagefile=" . $app->scope->individual->portrait . " OR up_pagefile=" . $app->scope->individual->social_id . ");")) {
 						$arrparser['result'] = false;
 						$arrparser['source']["global"] = "Assinging uploads to the employee failed";
 					}
@@ -371,7 +369,7 @@ $SmartListObject = new System\SmartListObject($app);
 		<span>Employee Name \ ID</span><input type="text" id="employeIDFormSearch" data-slo=":LIST" data-list="personList" class="flex" value="<?php echo $UserFound ? $UserFound['usr_firstname'] . " " . $UserFound['usr_lastname'] : ""; ?>" <?php echo $UserFound ? "data-slodefaultid=\"" . $UserFound['usr_id'] . "\"" : ""; ?> placeholder="Select user..." />
 	</div>
 	<datalist id="personList">
-		<?= $SmartListObject->hr_person($app->user->company->id); ?>
+		<?= $SmartListObject->system_individual($app->user->company->id); ?>
 	</datalist>
 </div>
 
@@ -519,7 +517,7 @@ $SmartListObject = new System\SmartListObject($app);
 				list_button: $("#js_upload_count"),
 				emptymessage: "[No files uploaded]",
 				upload_url: "<?= $fs(186)->dir ?>",
-				relatedpagefile: <?php echo App::FILE['Person']['Photo']; ?>,
+				relatedpagefile: <?php echo $app->scope->individual->portrait; ?>,
 				multiple: false,
 				inputname: "perosnal_image",
 				domhandler: $("#UploadPersonalDOMHandler"),
@@ -535,7 +533,7 @@ $SmartListObject = new System\SmartListObject($app);
 				list_button: $("#js_upload_count_1"),
 				emptymessage: "[No files uploaded]",
 				upload_url: "<?= $fs(134)->dir ?>",
-				relatedpagefile: <?php echo App::FILE['Person']['ID']; ?>,
+				relatedpagefile: <?php echo $app->scope->individual->social_id; ?>,
 				multiple: true,
 				inputname: "social_id_image",
 				align: "right",

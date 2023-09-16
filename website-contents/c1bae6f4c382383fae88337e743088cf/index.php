@@ -66,43 +66,43 @@ $arr_tables=array(
 if(is_array($_POST) && sizeof($_POST)>0){
 	foreach($_POST as $k=>$v){
 		if(isset($arr_tables[$k][2]) && $arr_tables[$k][2]=="truncate"){
-			$sql->autocommit(false);
+			$app->db->autocommit(false);
 			$r=true;
-			$r&=$sql->query("TRUNCATE `{$arr_tables[$k][1]}`");
+			$r&=$app->db->query("TRUNCATE `{$arr_tables[$k][1]}`");
 			if($r){
 				if(isset($arr_tables[$k][3])){
 					$auto_inc=(int)$arr_tables[$k][3];
 					if($auto_inc>0){
-						$r&=$sql->query("ALTER TABLE `{$arr_tables[$k][1]}` AUTO_INCREMENT=$auto_inc;");
+						$r&=$app->db->query("ALTER TABLE `{$arr_tables[$k][1]}` AUTO_INCREMENT=$auto_inc;");
 					}
 				}
 				if(isset($arr_tables[$k][4]) && is_array($arr_tables[$k][4])){
 					foreach($arr_tables[$k][4] as $kq=>$addquery){
-						$r&=$sql->query($addquery);
+						$r&=$app->db->query($addquery);
 					}
 				}
 			}
 			if(!$r){
 				$arr_results[$k]=false;
-				$sql->rollback();
+				$app->db->rollback();
 			}else{
 				$arr_results[$k]=true;
-				$sql->commit();
+				$app->db->commit();
 			}
 		}elseif(isset($arr_tables[$k][2]) && $arr_tables[$k][2]=="update"){
-			$sql->autocommit(false);
+			$app->db->autocommit(false);
 			$r=true;
 			if(isset($arr_tables[$k][3]) && is_array($arr_tables[$k][3])){
 				foreach($arr_tables[$k][3] as $kq=>$addquery){
-					$r&=$sql->query($addquery);
+					$r&=$app->db->query($addquery);
 				}
 			}
 			if(!$r){
 				$arr_results[$k]=false;
-				$sql->rollback();
+				$app->db->rollback();
 			}else{
 				$arr_results[$k]=true;
-				$sql->commit();
+				$app->db->commit();
 			}
 		}
 	}

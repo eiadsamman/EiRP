@@ -16,12 +16,12 @@ class Config
 	protected $stickyLayoutCommandBar = true;
 	protected $stickyLayoutFrame = true;
 	protected $sidePanel = false;
-	protected $titleHeight = 65;
+	protected $titleHeight = 60;
 	protected $commandBarHeight = 40;
 	protected $width = null;
 
-	public $topBasePoint = 42;
-	public $topCommandBar = 107;
+	public $topBasePoint = 0;
+	public $topCommandBar = 119;
 	public $topJumpPeriod = 40;
 
 	public function __construct($template_name = "", $side_panel = false)

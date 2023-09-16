@@ -44,7 +44,7 @@ $printverified = isset($_POST['verified']) && $_POST['verified'] == '1' ? true :
 		left: 0px;
 		width: 100%;
 		height: 35px;
-		background-image: url("<?= $app->http_root; ?>download/?id=<?= $USER->company->logo; ?>&pr=t");
+		background-image: url("<?= $app->http_root; ?>download/?id=<?= $app->user->company->logo; ?>&pr=t");
 		background-position: 10% 50%;
 		background-size: auto 100%;
 		background-repeat: no-repeat;
@@ -128,11 +128,11 @@ $printverified = isset($_POST['verified']) && $_POST['verified'] == '1' ? true :
 		usr_id,
 		usr_id,usr_firstname,usr_lastname,
 		_labour_type.lty_id,_labour_type.lty_name,_labour_type.lsc_name,_labour_type.lsc_color,
-		lsf_id,lsf_name,usr_attrib_i3,usr_images_list, up_id
+		lsf_id,lsf_name,usr_images_list, up_id
 	FROM
 		labour 
 			JOIN users ON usr_id=lbr_id
-			LEFT JOIN uploads ON (up_pagefile=" . $app::FILE['Person']['Photo'] . " ) AND up_rel=lbr_id AND up_deleted=0
+			LEFT JOIN uploads ON (up_pagefile=" . $app->scope->individual->portrait . " ) AND up_rel=lbr_id AND up_deleted=0
 			LEFT JOIN 
 				(SELECT lty_id,lty_name,lsc_name,lsc_color FROM labour_type JOIN labour_section ON lty_section=lsc_id) AS _labour_type ON _labour_type.lty_id=lbr_type
 			LEFT JOIN labour_shifts ON lsf_id=lbr_shift
@@ -142,7 +142,7 @@ $printverified = isset($_POST['verified']) && $_POST['verified'] == '1' ? true :
 		while ($row = $r->fetch_assoc()) {
 			$personalPhoto = "";
 			if (!is_null($row['up_id']) && (int)$row['up_id'] != 0) {
-				$personalPhoto = " style=\"background-image:url('{$app->http_root}" . $tables->pagefile_info(187, null, "directory") . "?id={$row['up_id']}&pr=v')\"";
+				$personalPhoto = " style=\"background-image:url('{$app->http_root}" . $fs(187)->dir . "?id={$row['up_id']}&pr=v')\"";
 			} else {
 				$personalPhoto = " style=\"background-image:url('{$app->http_root}/user.jpg')\"";
 			}

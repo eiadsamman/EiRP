@@ -1,6 +1,6 @@
 <?php
 
-use System\FileSystem\File;
+use System\FileSystem\Page;
 
 include("admin/class/json.php");
 if ($fs()->permission->delete && isset($_POST['delete-absenece-request'])) {

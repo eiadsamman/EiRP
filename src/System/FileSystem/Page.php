@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace System\FileSystem;
 
 
-class File
+class Page
 {
 	private array $files = array();
 	protected \System\App $app;
@@ -42,14 +42,7 @@ class File
 				$data->loader = (int)$row['trd_loader'];
 				//$data->parameters = (string)$row['trd_param'];
 
-				$temp = str_pad(decbin((int)$row['pfp_value']), 4, "0", STR_PAD_LEFT);
-				$data->permission = new Permission;
-				$data->permission->deny = $row['pfp_value'] == 0 ? true : false;
-				$data->permission->read = ((int)$temp[0] == 1 ? true : false);
-				$data->permission->add = ((int)$temp[1] == 1 ? true : false);
-				$data->permission->edit = ((int)$temp[2] == 1 ? true : false);
-				$data->permission->delete = ((int)$temp[3] == 1 ? true : false);
-
+				$data->permission = new Permission((int)$row['pfp_value']);
 				$this->files[$row['trd_id']] = $data;
 			}
 		}

@@ -1,4 +1,24 @@
-<?php if (!$USER->company) { ?>
+<?php
+
+
+$_TEMPLATE 	= new \System\Template\Body();
+$_TEMPLATE->SetWidth("800px");
+$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs()->dir}/\"></a>My Accounts", null, null);
+
+
+echo $_TEMPLATE->CommandBarStart();
+echo "<div class=\"btn-set\">";
+echo "<span>Search</span>";
+echo "<input id=\"sectorslo\" type=\"text\" style=\"width:100%\" class=\"flex\" name=\"sectorslo\" data-slo=\"ACC_788\" />";
+echo "</div>";
+echo $_TEMPLATE->CommandBarEnd();
+
+
+
+echo $_TEMPLATE->NewFrameBodyStart();
+
+?>
+<?php if (!$app->user->company) { ?>
 
 	<div style="width:100%;text-align:center;margin-top:20px">
 		<div id="screenSector">
@@ -37,7 +57,7 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td align="left" style="text-align:left" valign="top">
+							<td style="text-align:left" valign="top">
 								<?php
 								$accountfound = false;
 								$ptp = array();
@@ -46,7 +66,7 @@
 					prt_id,prt_name,ptp_name,cur_shortname,_fusro.comp_name
 				FROM 
 					`acc_accounts` 
-						JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id={$USER->info->id} AND upr_prt_fetch=1
+						JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_fetch=1
 						JOIN `acc_accounttype` ON ptp_id=prt_type
 						JOIN currencies ON cur_id = prt_currency
 						JOIN (
@@ -54,8 +74,8 @@
 								comp_name,comp_id
 							FROM
 								companies
-									JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id={$USER->info->id}
-									JOIN user_settings ON usrset_usr_id={$USER->info->id} AND usrset_name='system_working_company' AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
+									JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id={$app->user->info->id}
+									JOIN user_settings ON usrset_usr_id={$app->user->info->id} AND usrset_name='system_working_company' AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
 						) AS _fusro ON _fusro.comp_id=prt_company_id
 						
 				ORDER BY
@@ -76,7 +96,7 @@
 				<tbody>
 					<tr>
 						<td></td>
-						<td colspan=\"2\"><input id=\"sectorslo\" type=\"text\" style=\"width:100%\" name=\"sectorslo\" data-slo=\"ACC_788\" /></td>
+						<td colspan=\"2\"></td>
 					</tr>";
 								$firstrow = null;
 								foreach ($ptp as $company_k => $company_v) {
@@ -116,18 +136,19 @@
 			</div>
 		</div>
 	</form>
-
-	<a href="" id="triggerselector"></a>
-	<script>
-		$(document).ready(function(e) {
-			$("#sectorslo").slo({
-				onselect: function(data) {
-					$("#triggerselector").attr("href", "<?php echo $fs()->dir; ?>/?--sys_sel-change=account_commit&i=" + data.hidden);
-					$("#triggerselector")[0].click();
-				}
-			}).focus();
-		});
-	</script>
-
-
 <?php } ?>
+
+
+
+<?= $_TEMPLATE->NewFrameBodyEnd(); ?>
+<a href="" id="triggerselector"></a>
+<script>
+	$(document).ready(function(e) {
+		$("#sectorslo").slo({
+			onselect: function(data) {
+				$("#triggerselector").attr("href", "<?php echo $fs()->dir; ?>/?--sys_sel-change=account_commit&i=" + data.hidden);
+				$("#triggerselector")[0].click();
+			}
+		}).focus();
+	});
+</script>

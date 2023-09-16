@@ -6,7 +6,7 @@ if (isset($_GET['id'])) {
 		SELECT
 			_up.usr_id,_up.usr_username,_up.usr_firstname,usr_birthdate,
 			_up.usr_lastname,_up.usr_phone_list,_up.per_title,
-			_up.usr_attrib_i2,
+			
 			gnd_id,gnd_name,
 			up_id,
 			lbr_registerdate,
@@ -18,12 +18,12 @@ if (isset($_GET['id'])) {
 			labour
 				JOIN (
 					SELECT 
-						usr_images_list,usr_id,usr_username,usr_firstname,usr_lastname,usr_phone_list,per_title,usr_attrib_i2,usr_attrib_i3,usr_gender,usr_birthdate
+						usr_images_list,usr_id,usr_username,usr_firstname,usr_lastname,usr_phone_list,per_title,usr_gender,usr_birthdate
 					FROM
 						users LEFT JOIN permissions ON usr_privileges = per_id
 					) AS _up ON _up.usr_id=lbr_id
 				LEFT JOIN labour_shifts ON lbr_shift=lsf_id
-				LEFT JOIN uploads ON up_pagefile=" . $app::FILE['Person']['Photo'] . " AND up_rel=lbr_id
+				LEFT JOIN uploads ON up_pagefile=" . $app->scope->individual->portrait . " AND up_rel=lbr_id
 				LEFT JOIN (
 					SELECT
 						lty_id,lty_name,lsc_name
@@ -46,7 +46,7 @@ if (isset($_GET['id'])) {
 				echo "<div style=\"width:320px;height:240px;max-width:320px;max-height:240px;\">No photo provided</div>";
 			} else {
 
-				echo "<img src=\"" . $tables->pagefile_info(187, null, "directory") . "?id={$row['up_id']}&pr=t\" style=\"width:100%\" />";
+				echo "<img src=\"" . $fs(187)->dir . "?id={$row['up_id']}&pr=t\" style=\"width:100%\" />";
 			}
 			echo "</th></tr>";
 			echo "<tr><th>Serial</th><td width=\"100%\"><span><span style=\"display:inline-block\"></span></span></td></tr>";

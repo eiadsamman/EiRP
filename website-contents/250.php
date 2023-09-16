@@ -1,20 +1,14 @@
 <?php
 //warehouse/grir/new/
-require_once("admin/class/invoice.php");
-require_once("admin/class/accounting.php");
-require_once("admin/class/Template/class.template.build.php");
 
-
+use System\Finance\Accounting;
+use System\Finance\DocumentException;
+use System\Finance\DocumentMaterialListException;
+use System\Finance\Invoice;
 use System\SmartListObject;
-use Template\Body;
-use Finance\Accounting;
-use Finance\Invoice;
-use Finance\DocumentException;
-use Finance\DocumentMaterialListException;
 
-
-$invoice 	= new Invoice();
-$accounting = new Accounting();
+$invoice 	= new Invoice($app);
+$accounting = new Accounting($app);
 
 
 if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
@@ -30,8 +24,8 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 	}
 
 
-	$rpo = $sql->query("SELECT po_id,po_title,po_shipto_acc_id,po_billto_acc_id,po_comp_id,po_cur_id,po_costcenter,po_vat_rate,po_benf_comp_id FROM inv_main WHERE po_id=$post_doc_id AND po_type=" . Invoice::map['PUR_ORD'] . " AND po_close_date IS NULL");
-	if ($rpo && $rowpo = $sql->fetch_assoc($rpo)) {
+	$rpo = $app->db->query("SELECT po_id,po_title,po_shipto_acc_id,po_billto_acc_id,po_comp_id,po_cur_id,po_costcenter,po_vat_rate,po_benf_comp_id FROM inv_main WHERE po_id=$post_doc_id AND po_type=" . Invoice::map['PUR_ORD'] . " AND po_close_date IS NULL");
+	if ($rpo && $rowpo = $rpo->fetch_assoc()) {
 		$prev_doc = $rowpo;
 	} else {
 		header("HTTP_X_RESPONSE: INERR");
@@ -51,7 +45,7 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 	}
 
 
-	$_POST['po_remarks'] = $sql->escape($_POST['po_remarks']);
+	$_POST['po_remarks'] = addslashes($_POST['po_remarks']);
 
 	$prev_doc['subtotal'] = 0;
 
@@ -60,7 +54,7 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 	$doc_serial = $invoice->GetNextSerial(Invoice::map['GRIR'], $prev_doc['po_comp_id'], $prev_doc['po_costcenter']);
 
 
-	$r = $sql->query("
+	$r = $app->db->query("
 		SELECT 
 			pols_id,pols_item_id,pols_issued_qty,pols_price,pols_bom_part,pols_discount
 		FROM
@@ -72,7 +66,7 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 		");
 
 	if ($r) {
-		while ($row = $sql->fetch_assoc($r)) {
+		while ($row = $r->fetch_assoc()) {
 			$prev_pols[] = $row;
 		}
 	}
@@ -90,7 +84,7 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 	}
 
 
-	$sql->autocommit(false);
+	$app->db->autocommit(false);
 	$rwo = ("
 			INSERT INTO inv_main (	po_serial,po_type,po_shipto_acc_id,po_billto_acc_id,po_usr_id,
 									po_date,po_due_date,po_close_date,
@@ -103,7 +97,7 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 				" . Invoice::map['GRIR'] . ",
 				NULL,
 				{$prev_doc['po_billto_acc_id']},
-				{$USER->info->id},
+				{$app->user->info->id},
 				NOW(),
 				NULL,
 				NULL,
@@ -123,10 +117,10 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 		");
 
 
-	$rwo = $sql->query($rwo);
+	$rwo = $app->db->query($rwo);
 	if ($rwo) {
 
-		$submited_doc = $sql->insert_id();
+		$submited_doc = $app->db->insert_id;
 		$rwol = true;
 
 		//Outbound/Inbound
@@ -137,22 +131,22 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 			$rwolq .= "({$prev_pols[$k]['pols_id']},$submited_doc,{$prev_pols[$k]['pols_item_id']}," . (+1 * $prev_pols[$k]['pols_subqty']) . ",0,{$prev_pols[$k]['pols_price']},{$prev_pols[$k]['pols_bom_part']},{$_POST['vinventoryasset'][1]})";
 			$smart = ",";
 		}
-		$rwol &= $sql->query($rwolq);
+		$rwol &= $app->db->query($rwolq);
 
 		if ($rwol) {
-			$sql->commit();
+			$app->db->commit();
 			header("HTTP_X_RESPONSE: SUCCESS");
 			echo "/?docid={$submited_doc}&token=" . md5("sysdoc_" . $submited_doc . session_id());
 			exit;
 		} else {
-			echo $sql->error();
-			$sql->rollback();
+			//echo $app->db->error;
+			$app->db->rollback();
 			header("HTTP_X_RESPONSE: DBERR");
 			echo "Submitting quotation failed, database error";
 			exit;
 		}
 	} else {
-		$sql->rollback();
+		$app->db->rollback();
 		header("HTTP_X_RESPONSE: DBERR");
 		echo "Submitting quotation failed, database error";
 		exit;
@@ -160,16 +154,15 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 	exit;
 }
 
-include_once("admin/class/SmartListObject.php");
-$SmartListObject = new SmartListObject();
-$_TEMPLATE 	= new Body();
+$SmartListObject = new SmartListObject($app);
+$_TEMPLATE 	= new \System\Template\Body();
 $doc_id		= $invoice->DocumentURI();
 if ($doc_id)
 	try {
 		$chain	= $invoice->Chain($doc_id);
 
 		if (sizeof($chain) < 3 || $chain[2] != $doc_id) {
-			throw new DocumentException("Requested document not found", 31001);
+			throw new \System\Finance\DocumentMaterialListException("Requested document not found", 31001);
 		}
 		$doc_rm = $invoice->GetMaterialRequestDoc($chain[0]);
 		$doc_rfq = $invoice->GetPurchaseQuotationDoc($chain[1]);
@@ -188,10 +181,10 @@ if ($doc_id)
 
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(251, null, "directory") . "/\" class=\"bnt-back\"></a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(240, null, "directory") . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(234, null, "directory") . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
-		echo "<a style=\"color:#333;\" href=\"" . $tables->pagefile_info(237, null, "directory") . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\">" . $invoice->translate_prefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(251)->dir . "/\" class=\"bnt-back\"></a>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(234)->dir . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(237)->dir . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</a>";
 		echo "<span>GRIR</span>";
 		echo "<span class=\"gap\"></span>";
 		echo "<button class=\"clr-green\" id=\"jQpostSubmit\">Submit GRIR</button>";
@@ -241,7 +234,7 @@ if ($doc_id)
 				<span>Inventory/Asset Account</span>
 				<input type="text" name="vinventoryasset" data-slo=":LIST" data-list="jQGIdestList" id="jQGIdest" />
 				<datalist id="jQGIdestList" style="display: none;">
-					' . $SmartListObject->financial_accounts_inbound() . '
+					' . $SmartListObject->user_accounts_inbound() . '
 				</datalist>
 
 
@@ -277,8 +270,8 @@ if ($doc_id)
 		</thead>
 		<tbody id="jQmaterialList" style="border:solid 1px #E6E6EB;">';
 
-		$sqlquery_materialList = $sql->query("
-			SELECT 
+		$r = $app->db->query(
+			"SELECT 
 				pols_id,pols_bom_part,pols_issued_qty,pols_price,pols_discount,
 				_mat_materials.mat_long_id,_mat_materials.mat_name,_mat_materials.cat_alias,_mat_materials.mattyp_name,_mat_materials.unt_name,_mat_materials.unt_decim,
 				CONCAT(_part_of.mat_long_id,'<br />',_part_of.cat_alias,', ',_part_of.mat_name) AS _mat_bom,
@@ -331,12 +324,13 @@ if ($doc_id)
 				pols_id
 			ORDER BY
 				pols_bom_part,pols_id
-			");
+			"
+		);
 
 
-		if ($sqlquery_materialList) {
+		if ($r) {
 			$bomlegend = null;
-			while ($row = $sql->fetch_assoc($sqlquery_materialList)) {
+			while ($row = $r->fetch_assoc()) {
 				if ($bomlegend != $row['pols_bom_part']) {
 					$bomlegend = $row['pols_bom_part'];
 					echo "<tr>";
@@ -371,7 +365,7 @@ if ($doc_id)
 				'limit': 10,
 				onselect: function() {}
 			}).setparam({
-				"company": <?php echo (int)$USER->company->id; ?>
+				"company": <?= $app->user->company->id; ?>
 			});
 			var $jQGIsource = $("#jQGIsource").slo({
 				'limit': 10,
@@ -396,7 +390,7 @@ if ($doc_id)
 						messagesys.failure(o);
 					} else if (response == "SUCCESS") {
 						messagesys.success("GR/IR posted successfully");
-						Template.PageRedirect("<?php echo $tables->pagefile_info(251, null, "directory"); ?>" + o, "<?php echo "{$c__settings['site']['title']} - " . $tables->pagefile_info(251, null, "title"); ?>", true);
+						Template.PageRedirect("<?php echo $fs(251)->dir; ?>" + o, "<?php echo "{$c__settings['site']['title']} - " . $fs(251)->title; ?>", true);
 						Template.ReloadSidePanel();
 					} else if (response == "DBERR") {
 						messagesys.failure(o);
@@ -422,7 +416,7 @@ if ($doc_id)
 		<li>Database query failed, contact system administrator</li>
 		<li>Permission denied or not enough privileges to proceed with this document</li>
 		</ul>
-		<br />Return to <a href="' . $tables->pagefile_info(237, null, "directory") . '">Purchase Orders</a>
+		<br />Return to <a href="' . $fs(237)->dir . '">Purchase Orders</a>
 			
 		');
 	} catch (DocumentMaterialListException $e) {

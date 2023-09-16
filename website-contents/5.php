@@ -60,7 +60,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 				usr_password=" . ($passwordskip ? "`usr_password`" : "'{$_POST['_password']}'") . ",
 				usr_privileges=" . ($new_premissions ? $new_premissions->id : "usr_privileges") . ",
 				usr_activate=" . (isset($_POST['active']) ? "1" : "0") . ",
-				usr_attrib_i2=" . ($new_premissions && $new_premissions->id == 1 ? "0" : "1") . "
+				
 			WHERE usr_id='{$modify_user->info->id}';")) {
 			echo "10";
 			exit;

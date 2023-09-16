@@ -1,22 +1,18 @@
 <?php
-require_once("admin/class/invoice.php");
-include_once("admin/class/Template/class.template.build.php");
-require_once("admin/class/accounting.php");
 
-use Finance\Accounting;
-use Finance\Invoice;
+use \System\Finance\Invoice;
+use System\Template\Side;
 
+$_SIDE = new Side();
 
-$_SIDE = new Template\Side();
-
-function SidePanelContent($sql, $user, $pageUrl, $pageTitle)
+function SidePanelContent(&$app, $pageUrl, $pageTitle)
 {
-	$accounting = new Accounting();
+	$accounting = new \System\Finance\Accounting($app);
 	$_syscur = $accounting->system_default_currency();
 
 	echo "<div><span>Purchase Orders</span></div>";
 
-	$r = $sql->query("
+	$r = $app->db->query("
 				SELECT 
 					po_id,po_title,po_total,po_vat_rate,po_additional_amount,po_discount,cur_shortname,
 					comp_name,
@@ -44,7 +40,7 @@ function SidePanelContent($sql, $user, $pageUrl, $pageTitle)
 				");
 	if ($r) {
 		$arroutput = array();
-		while ($row = $sql->fetch_assoc($r)) {
+		while ($row = $r->fetch_assoc()) {
 			if (!isset($arroutput[$row['groupDate']])) {
 				$arroutput[$row['groupDate']] = array();
 			}
@@ -83,10 +79,9 @@ function SidePanelContent($sql, $user, $pageUrl, $pageTitle)
 
 if ($h__requested_with_ajax || isset($_POST['TemplateCallback'])) {
 	SidePanelContent(
-		$sql,
-		$USER,
-		$tables->pagefile_info(237, null, "directory"),
-		$c__settings['site']['title'] . " - " . $tables->pagefile_info(237, null, "title")
+		$app,
+		$fs(237)->dir,
+		$c__settings['site']['title'] . " - " . $fs(237)->title
 	);
 	exit;
 }
@@ -102,10 +97,9 @@ if ($h__requested_with_ajax || isset($_POST['TemplateCallback'])) {
 <?php
 echo $_SIDE->BodyStart();
 SidePanelContent(
-	$sql,
-	$USER,
-	$tables->pagefile_info(237, null, "directory"),
-	$c__settings['site']['title'] . " - " . $tables->pagefile_info(237, null, "title")
+	$app,
+	$fs(237)->dir,
+	$c__settings['site']['title'] . " - " . $fs(237)->title
 );
 echo $_SIDE->BodyEnd()
 ?>

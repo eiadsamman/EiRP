@@ -76,7 +76,7 @@ $rl["B002"]=array(
 	"select"=>array("usr_firstname"=>"usr_firstname","usr_lastname"=>"usr_lastname","usr_username"=>"usr_username"),
 	"minselect"=>array(),
 	"search"=>array('usr_firstname'=>'usr_firstname','usr_lastname'=>'usr_lastname','usr_username'=>'usr_username'),
-	"where"=>" usr_attrib_i2=1 AND lbr_resigndate IS NULL ",
+	"where"=>"  lbr_resigndate IS NULL ",
 	"group"=>"",
 );
 $rl["B003"]=array(
@@ -86,7 +86,7 @@ $rl["B003"]=array(
 	"select"=>array("username"=>"CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect"=>array(),
 	"search"=>array('usr_firstname'=>'usr_firstname','usr_lastname'=>'usr_lastname','usr_id'=>'usr_id'),
-	"where"=>" usr_attrib_i2=0 AND lbr_resigndate IS NULL ",
+	"where"=>"  lbr_resigndate IS NULL ",
 	"group"=>"",
 );
 $rl["B00S"]=array(
@@ -96,7 +96,7 @@ $rl["B00S"]=array(
 	"select"=>array("username"=>"CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect"=>array(),
 	"search"=>array('usr_firstname'=>'usr_firstname','usr_lastname'=>'usr_lastname','usr_id'=>'usr_id'),
-	"where"=>" (usr_attrib_i2=0 OR usr_attrib_i2=1) AND lbr_company=".(int)$app->user->company->id,
+	"where"=>" lbr_company=".(int)$app->user->company->id,
 	"group"=>"",
 );
 

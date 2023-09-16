@@ -50,46 +50,45 @@
 	position: relative;
 }
 
-.cssSLO_wrap>input[type=text],.cssSLO_wrap>input[type=date] {
+.cssSLO_wrap>input[type=text],
+.cssSLO_wrap>input[type=date] {
 	position: relative;
 	padding: 3px 23px 3px 8px;
 	outline: none;
 	padding: 3px 6px;
-	border: solid 1px #ccc;
+	border: solid 1px var(--elemntBorderColor);
 	width: 100%;
 	color: #444;
 	padding-right: 23px;
 	font-size: 1em;
-	-webkit-appearance: none;
 	border-radius: 0;
 }
 
 .cssSLO_wrap>input[type=text].listvisible,
-.cssSLO_wrap>input[type=date].listvisible
- {
+.cssSLO_wrap>input[type=date].listvisible {
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
 }
 
-.cssSLO_wrap>input[type=text].listvisibletop ,
+.cssSLO_wrap>input[type=text].listvisibletop,
 .cssSLO_wrap>input[type=date].listvisibletop {
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
 }
 
-.cssSLO_wrap>input[type=text]:not(:disabled):hover ,
+.cssSLO_wrap>input[type=text]:not(:disabled):hover,
 .cssSLO_wrap>input[type=date]:not(:disabled):hover {
 	border-color: #999;
 }
 
-.cssSLO_wrap>input[type=text]:disabled ,
+.cssSLO_wrap>input[type=text]:disabled,
 .cssSLO_wrap>input[type=date]:disabled {
 	background-color: #eee;
 	color: #555;
 	text-shadow: 1px 1px 0px #fff;
 }
 
-.cssSLO_wrap>input[type=text]:not(:disabled):focus ,
+.cssSLO_wrap>input[type=text]:not(:disabled):focus,
 .cssSLO_wrap>input[type=date]:not(:disabled):focus {
 	border-color: rgba(82, 168, 236, .75);
 	box-shadow: 0 0 4px rgba(82, 168, 236, .5);

@@ -69,25 +69,25 @@
 	z-index: 20;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .template-enableSidePanel {
 	margin-right: 330px;
 	z-index: 20;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #template-sidePanel {
 	position: fixed;
 	top: 42px;
@@ -121,8 +121,6 @@
 	padding: 25px 20px;
 	border-bottom: solid 1px var(--template-frame_elementBorderColor);
 }
-
-
 
 
 #template-sidePanelContent {
@@ -172,9 +170,6 @@
 	background-color: rgba(0, 0, 0, 0.4);
 	transition: opacity 0.05s linear 0s;
 }
-
-
-
 
 
 
@@ -338,31 +333,7 @@
 	margin-top: 15px;
 }
 
-a.backward {
-	position: relative;
-	display: inline-block;
-	width: 40px;
-	height: 1px;
-	margin-right: 10px;
-}
 
-a.backward::before {
-	position: absolute;
-	top: -28px;
-	display: inline-block;
-	font-family: "icomoon";
-	text-align: center;
-	color: #333;
-	content: "\e618";
-	padding: 15px 10px 15px 14px;
-	-webkit-transition: padding 0.15s ease;
-	transition: padding 0.15s ease;
-}
-
-a.backward:hover::before {
-	color: #06c;
-	padding: 15px 17px 15px 7px
-}
 
 @media only screen and (max-width: 768px) {
 	.template-enableSidePanel {

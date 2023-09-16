@@ -13,11 +13,11 @@
 
 if(isset($_POST['method']) && $_POST['method']=='save'){
 	$matid = (int)$_POST['matid'];
-	$sql->autocommit(false);
+	$app->db->autocommit(false);
 	
 	
 	//Delete old build
-	$sql->query("DELETE FROM mat_bom WHERE mat_bom_mat_id={$matid};");
+	$app->db->query("DELETE FROM mat_bom WHERE mat_bom_mat_id={$matid};");
 	
 	//Build a new bom list
 	if( sizeof($_POST['bom_material']) > 0){
@@ -31,9 +31,9 @@ if(isset($_POST['method']) && $_POST['method']=='save'){
 			}
 		}
 	}
-	if($sql->query($q)){
+	if($app->db->query($q)){
 		//Check integrity
-		$rintegrity = $sql->query("
+		$rintegrity = $app->db->query("
 			WITH RECURSIVE cte (mat_bom_mat_id, mat_bom_part_id, level) AS (
 
 				SELECT     mat_bom_mat_id, mat_bom_part_id, 1 level
@@ -53,32 +53,32 @@ if(isset($_POST['method']) && $_POST['method']=='save'){
 		
 		
 		if($rintegrity){
-			if($sql->num_rows($rintegrity) > 0){
+			if($rintegrity->num_rows > 0){
 				header("HTTP_X_RESPONSE: INTEGRITYERROR");
-				$sql->rollback();
+				$app->db->rollback();
 			}else{
 				//Everythings are ok, unset the (-) sign
-				$rfixminus=$sql->query("UPDATE mat_bom SET mat_bom_mat_id = $matid WHERE mat_bom_mat_id = -$matid;");
+				$rfixminus=$app->db->query("UPDATE mat_bom SET mat_bom_mat_id = $matid WHERE mat_bom_mat_id = -$matid;");
 				if($rfixminus){
 					header("HTTP_X_RESPONSE: SUCCESS");
-					$sql->commit();
+					$app->db->commit();
 				}else{
 					header("HTTP_X_RESPONSE: ERR");
-					echo $sql->error();
-					$sql->rollback();
+					//echo $app->db->error;
+					$app->db->rollback();
 				}
 			}
 			
 		}else{
 			header("HTTP_X_RESPONSE: ERR");
-			echo $sql->error();
-			$sql->rollback();
+			//echo $app->db->error;
+			$app->db->rollback();
 		}
 		
 	}else{
 		header("HTTP_X_RESPONSE: ERR");
-		echo $sql->error();
-		$sql->rollback();
+		//echo $app->db->error;
+		$app->db->rollback();
 	}
 	
 	exit;
@@ -86,7 +86,7 @@ if(isset($_POST['method']) && $_POST['method']=='save'){
 
 if(isset($_POST['method']) && $_POST['method']=='getunit'){
 	$id = $_POST['id'];
-	$r=$sql->query("
+	$r=$app->db->query("
 		SELECT 
 			unt_name, unt_decim
 		FROM
@@ -95,7 +95,7 @@ if(isset($_POST['method']) && $_POST['method']=='getunit'){
 		WHERE
 			mat_id = $id
 		");
-	if($r && $row=$sql->fetch_assoc($r)){
+	if($r && $row=$r->fetch_assoc()){
 		header("HTTP_X_RESPONSE: SUCCESS");
 		echo $row['unt_name'];
 	}else{
@@ -110,7 +110,7 @@ if(isset($_POST['method'],$_POST['id']) && $_POST['method']=="show"){
 	$bomid=(int)$_POST['id'];
 	
 	
-	$r=$sql->query("
+	$r=$app->db->query("
 		
 		SELECT 
 			mat_id, mat_long_id, mattyp_description ,cat_alias, mat_name, mat_date
@@ -130,7 +130,7 @@ if(isset($_POST['method'],$_POST['id']) && $_POST['method']=="show"){
 	
 	echo "<div>";
 	if($r){
-		if($row=$sql->fetch_assoc($r)){
+		if($row=$r->fetch_assoc()){
 			echo '
 			<div>
 				<div class="template-gridLayout">
@@ -160,7 +160,7 @@ if(isset($_POST['method'],$_POST['id']) && $_POST['method']=="show"){
 		</thead>
 		<tbody>";
 	
-		$r=$sql->query("
+		$r=$app->db->query("
 			SELECT 
 				mat_bom_id,mat_id,mat_long_id,cat_alias,mat_name,unt_name,unt_decim,mat_bom_quantity
 			FROM
@@ -187,7 +187,7 @@ if(isset($_POST['method'],$_POST['id']) && $_POST['method']=="show"){
 			");
 	
 		if($r){
-			while($row=$sql->fetch_assoc($r)){
+			while($row=$r->fetch_assoc()){
 				echo "			
 					<tr class=\"level\">
 						<td>
@@ -243,9 +243,7 @@ if(isset($_POST['method'],$_POST['id']) && $_POST['method']=="show"){
 
 <?php
 
-require_once("admin/class/Template/class.template.build.php");
-use Template\Body;
-$_TEMPLATE 	= new Body();
+$_TEMPLATE 	= new \System\Template\Body();
 $_TEMPLATE->SetWidth("800px");
 $_TEMPLATE->Title("BOM Manager", null, null);
 

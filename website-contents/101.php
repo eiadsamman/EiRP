@@ -5,7 +5,6 @@ use System\SmartListObject;
 
 $SmartListObject = new SmartListObject($app);
 $accounting = new Accounting($app);
-define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
 /*
 *Functino result@true:false, message@str, focus@str, extra@array
@@ -41,7 +40,7 @@ if (is_null($transaction_id)) {
 
 //Check statement if valid for editing and user has permissions to do so
 $arr_transaction = null;
-if ($r = $sql->query("
+if ($r = $app->db->query("
 	SELECT 
 		acm_id,acm_usr_id,acm_editor_id,UNIX_TIMESTAMP(acm_ctime) AS acm_ctime,acm_type,acm_beneficial,acm_comments,acm_reference,
 		_category._catname,_category._catid,acctyp_name,
@@ -64,7 +63,7 @@ if ($r = $sql->query("
 			LEFT JOIN currencies ON cur_id=acm_realcurrency
 	WHERE 
 		acm_id=$transaction_id;")) {
-	if ($row = $sql->fetch_assoc($r)) {
+	if ($row = $r->fetch_assoc()) {
 		$arr_transaction = $row;
 	}
 }
@@ -75,7 +74,7 @@ if (is_null($arr_transaction)) {
 
 //Get Inbound/Outbound records
 $arr_transaction['transactions'] = array();
-if ($r = $sql->query("
+if ($r = $app->db->query("
 	SELECT 
 		atm_id,atm_account_id,atm_value,atm_dir,cur_name,cur_symbol,CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name) AS prt_name,cur_id
 	FROM
@@ -87,7 +86,7 @@ if ($r = $sql->query("
 			JOIN companies ON prt_company_id=comp_id
 	WHERE
 		atm_main={$arr_transaction['acm_id']}")) {
-	while ($row = $sql->fetch_assoc($r)) {
+	while ($row = $r->fetch_assoc()) {
 		$arr_transaction['transactions'][$row['atm_dir']] = $row;
 	}
 }
@@ -107,21 +106,21 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 
 	$_POST['status'] = isset($_POST['status']) && (int)$_POST['status'] == 1 ? true : false;
 
-	if ($r = $sql->query("SELECT prt_id FROM `acc_accounts` WHERE prt_id=" . ((int)$_POST['creditor']) . ";")) {
-		if ($sql->num_rows($r) == 0) {
+	if ($r = $app->db->query("SELECT prt_id FROM `acc_accounts` WHERE prt_id=" . ((int)$_POST['creditor']) . ";")) {
+		if ($r->num_rows == 0) {
 			_JSON_output(false, "Select creditor account", "jQcreditor");
 		}
 	}
-	if ($r = $sql->query("SELECT prt_id FROM `acc_accounts` WHERE prt_id=" . ((int)$_POST['debitor']) . ";")) {
-		if ($sql->num_rows($r) == 0) {
+	if ($r = $app->db->query("SELECT prt_id FROM `acc_accounts` WHERE prt_id=" . ((int)$_POST['debitor']) . ";")) {
+		if ($r->num_rows == 0) {
 			_JSON_output(false, "Select creditor account", "jQdebitor");
 		}
 	}
 	if ($_POST['creditor'] == $_POST['debitor']) {
 		_JSON_output(false, "Debitor account must not be same as Creditor's", "jQcreditor");
 	}
-	if ($r = $sql->query("SELECT acccat_id FROM acc_categories WHERE acccat_id=" . ((int)$_POST['category']) . ";")) {
-		if ($sql->num_rows($r) == 0) {
+	if ($r = $app->db->query("SELECT acccat_id FROM acc_categories WHERE acccat_id=" . ((int)$_POST['category']) . ";")) {
+		if ($r->num_rows == 0) {
 			_JSON_output(false, "Select the transaction category", "jQcategory");
 		}
 	}
@@ -189,7 +188,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 
 	$result = true;
 	//Disable SQL auto commit
-	$sql->autocommit(false);
+	$app->db->autocommit(false);
 
 	//Update the main transaction record
 	$qacc_main = sprintf(
@@ -211,9 +210,9 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 
 
 	);
-	$result &= $sql->query($qacc_main);
+	$result &= $app->db->query($qacc_main);
 	if (!$result) {
-		$sql->rollback();
+		$app->db->rollback();
 		_JSON_output(false, "Failed to update statement, statement did not updated");
 	}
 
@@ -225,23 +224,23 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 		-1 * $value_from,
 		$arr_transaction['transactions'][0]['atm_id']
 	);
-	$result &= $sql->query($qacc_release);
+	$result &= $app->db->query($qacc_release);
 	if (!$result) {
-		$sql->rollback();
+		$app->db->rollback();
 		_JSON_output(false, "Failed to update statement, statement did not updated");
 	}
 
 
 	//Attach uploaded files to the transaction
-	$qacc_attach = "UPDATE uploads SET up_rel=0, up_active = 0 WHERE up_rel = {$arr_transaction['acm_id']} AND up_user = {$USER->info->id};";
-	$result &= $sql->query($qacc_attach);
+	$qacc_attach = "UPDATE uploads SET up_rel=0, up_active = 0 WHERE up_rel = {$arr_transaction['acm_id']} AND up_user = {$app->user->info->id};";
+	$result &= $app->db->query($qacc_attach);
 	if ($result && sizeof($attachments) > 0) {
-		$qacc_attach = "UPDATE uploads SET up_rel={$arr_transaction['acm_id']}, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$USER->info->id};";
-		$result &= $sql->query($qacc_attach);
+		$qacc_attach = "UPDATE uploads SET up_rel={$arr_transaction['acm_id']}, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$app->user->info->id};";
+		$result &= $app->db->query($qacc_attach);
 	}
 
 	if (!$result) {
-		$sql->rollback();
+		$app->db->rollback();
 		_JSON_output(false, "Updating attachments failed");
 	}
 
@@ -253,15 +252,15 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 		$value_to,
 		$arr_transaction['transactions'][1]['atm_id']
 	);
-	$result &= $sql->query($qacc_insert);
+	$result &= $app->db->query($qacc_insert);
 	if ($result) {
-		$sql->commit();
-		$sql->autocommit(true);
+		$app->db->commit();
+		$app->db->autocommit(true);
 		$log = new Log();
-		$log->add($USER->info->id, 23, $arr_transaction['acm_id'], $fs()->id);
+		$log->add($app->user->info->id, 23, $arr_transaction['acm_id'], $fs()->id);
 		_JSON_output(true, "Statement updated successfully");
 	} else {
-		$sql->rollback();
+		$app->db->rollback();
 		_JSON_output(false, "Failed to update statement, statement did not updated");
 	}
 	exit;
@@ -330,7 +329,7 @@ $SmartListObject = new SmartListObject();
 				<div class="btn-set normal">
 					<input tabindex="4" type="text" data-slo=":LIST" data-list="jQdebitorList" class="flex" value="<?php echo $arr_transaction['transactions'][1]['prt_name']; ?>" data-slodefaultid="<?php echo $arr_transaction['transactions'][1]['atm_account_id']; ?>" id="jQdebitor" />
 					<datalist id="jQdebitorList" style="display: none;">
-						<?= $SmartListObject->financial_accounts_inbound(); ?>
+						<?= $SmartListObject->user_accounts_inbound(); ?>
 					</datalist>
 				</div>
 
@@ -388,30 +387,30 @@ $SmartListObject = new SmartListObject();
 			list_button: $("#js_upload_count"),
 			emptymessage: "[No files uploaded]",
 			delete_method: 'permanent',
-			upload_url: "<?php echo $tables->pagefile_info(186, null, "directory"); ?>",
-			relatedpagefile: <?php echo TRANSACTION_ATTACHMENT_PAGEFILE; ?>,
+			upload_url: "<?php echo $fs(186)->dir; ?>",
+			relatedpagefile: <?php echo $app->scope->finance->transation_evidence; ?>,
 			multiple: true,
 			inputname: "attachments"
 		});
 		<?php
-		$r_uploads = $sql->query("
+		$r_uploads = $app->db->query("
 				SELECT 
 					up_id,up_name,up_size 
 				FROM 
 					uploads 
-						JOIN pagefile_permissions ON pfp_trd_id=up_pagefile AND pfp_per_id = {$USER->info->permissions}
+						JOIN pagefile_permissions ON pfp_trd_id=up_pagefile AND pfp_per_id = {$app->user->info->permissions}
 				WHERE 
-					up_rel={$arr_transaction['acm_id']} AND up_active=1 AND pfp_value>0 AND up_pagefile=" . TRANSACTION_ATTACHMENT_PAGEFILE . "");
+					up_rel={$arr_transaction['acm_id']} AND up_active=1 AND pfp_value>0 AND up_pagefile=" . $app->scope->finance->transation_evidence . "");
 		if ($r_uploads) {
-			while ($row_uploads = $sql->fetch_assoc($r_uploads)) {
+			while ($row_uploads = $r_uploads->fetch_assoc()) {
 				echo "Upload.AddListItem({$row_uploads['up_id']},'{$row_uploads['up_name']}',false,true);";
 			}
 		}
 
 
-		$r_uploads = $sql->query("SELECT up_id,up_name,up_size FROM uploads WHERE up_user={$USER->info->id} AND up_pagefile=" . TRANSACTION_ATTACHMENT_PAGEFILE . " AND up_rel=0 AND up_deleted=0;");
+		$r_uploads = $app->db->query("SELECT up_id,up_name,up_size FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . $app->scope->finance->transation_evidence . " AND up_rel=0 AND up_deleted=0;");
 		if ($r_uploads) {
-			while ($row_uploads = $sql->fetch_assoc($r_uploads)) {
+			while ($row_uploads = $r_uploads->fetch_assoc()) {
 				echo "Upload.AddListItem({$row_uploads['up_id']},'{$row_uploads['up_name']}',false,false);";
 			}
 		}

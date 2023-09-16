@@ -13,7 +13,7 @@ $SmartListObject = new SmartListObject($app);
 </div>
 
 <datalist id="zlist">
-	<?= $SmartListObject->hr_person($app->user->company->id); ?>
+	<?= $SmartListObject->system_individual($app->user->company->id); ?>
 </datalist>
 <?php
 echo "<pre>" . print_r($app->user, true) . "</pre>";

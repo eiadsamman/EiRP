@@ -1,12 +1,11 @@
 <?php
-include_once("admin/class/accounting.php");
-$accounting = new Accounting();
+
+use System\Finance\Accounting;
+
+$accounting = new Accounting($app);
 $__defaultaccount = $accounting->operation_default_account("salary_report");
 $__defaultcurrency = $accounting->account_default_currency($__defaultaccount['id']);
 
-
-$export_pagefile = $tables->pagefile_info(121, null);
-$c__actions			= new AllowedActions($USER->info->permissions, $export_pagefile['permissions']);
 
 
 if (isset($_POST['salarymonth'])) {
@@ -24,7 +23,7 @@ if (isset($_POST['salarymonth'])) {
 	if ($month == null) {
 		exit;
 	}
-	$page60 = $tables->pagefile_info(60, null, "directory");
+	$page60 = $fs(60)->dir;
 	$total = $count = 0;
 	echo "<div><table><tbody id=\"___ajax_tbody\">";
 	if ($r = $app->db->query("
@@ -94,7 +93,7 @@ if ($__defaultaccount === false) {
 			<span>{$__defaultcurrency['symbol']}</span>
 			<span>Records</span>
 			<input type=\"text\" style=\"width:80px;text-align:right\" id=\"jQcount\" readonly=\"readonly\" value=\"0\" />
-			" . ($c__actions->read ? "<span class=\"gap\"></span><button id=\"jQexportButton\">Export</button>" : "") . "
+			" . ($fs(121)->permission->read ? "<span class=\"gap\"></span><button id=\"jQexportButton\">Export</button>" : "") . "
 		</div>";
 ?>
 	<form action="<?php echo $export_pagefile['directory']; ?>" method="post" target="_blank" id="jQexportFrom" style="display:none;">
@@ -104,7 +103,7 @@ if ($__defaultaccount === false) {
 		<thead>
 			<tr>
 				<td colspan="2">Employee</td>
-				<td align="right" style="min-width:150px;">Salary</td>
+				<td  style="min-width:150px;">Salary</td>
 				<td width="100%">Records</td>
 
 			</tr>

@@ -1,11 +1,9 @@
 <?php
-require_once("admin/class/invoice.php");
-include_once("admin/class/materials.php");
 
-use Finance\Invoice;
-
+use \System\Finance\Invoice
 
 $material = new Materials();
+use System\Template\Body;
 
 if ($h__requested_with_ajax && isset($_POST['posubmit'])) {
 	$invoice = new Invoice();
@@ -38,7 +36,7 @@ if ($h__requested_with_ajax && isset($_POST['posubmit'])) {
 	}
 
 
-	$doc_serial = $invoice->GetNextSerial(Invoice::map['MAT_REQ'], $USER->company->id, $_POST['po_costcenter'][1]);
+	$doc_serial = $invoice->GetNextSerial(Invoice::map['MAT_REQ'], $app->user->company->id, $_POST['po_costcenter'][1]);
 	if (!$doc_serial) {
 		header("HTTP_X_RESPONSE: INERR");
 		echo "Operation failed, retrieving document ID failed";
@@ -47,12 +45,12 @@ if ($h__requested_with_ajax && isset($_POST['posubmit'])) {
 
 
 	$_POST['po_att_id'] = (int)$_POST['po_att_id'];
-	$_POST['po_remarks'] = $sql->escape($_POST['po_remarks']);
+	$_POST['po_remarks'] = addslashes($_POST['po_remarks']);
 
 
-	$sql->autocommit(false);
+	$app->db->autocommit(false);
 
-	$rwo = $sql->query("
+	$rwo = $app->db->query("
 			INSERT INTO inv_main (
 				po_serial,
 				po_type,
@@ -73,22 +71,22 @@ if ($h__requested_with_ajax && isset($_POST['posubmit'])) {
 				$doc_serial,
 				" . Invoice::map['MAT_REQ'] . ",
 				NULL,
-				{$USER->account->id},
-				{$USER->info->id},
+				{$app->user->account->id},
+				{$app->user->info->id},
 				NOW(),
 				NULL,
 				NULL,
 				\"{$_POST['po_title']}\",
 				\"{$_POST['po_remarks']}\",
-				{$USER->company->id},
+				{$app->user->company->id},
 				{$_POST['po_costcenter'][1]},
-				{$USER->company->id},
+				{$app->user->company->id},
 				{$_POST['po_att_id']}
 			);
 		");
 
 	if ($rwo) {
-		$submited_doc = $sql->insert_id();
+		$submited_doc = $app->db->insert_id;
 
 		$rwolq = "INSERT INTO inv_records (pols_po_id,pols_item_id,pols_issued_qty,pols_delivered_qty,pols_price,pols_bom_part) VALUES ";
 		$smart = "";
@@ -103,20 +101,20 @@ if ($h__requested_with_ajax && isset($_POST['posubmit'])) {
 				$smart = ",";
 			}
 		}
-		$rwol = $sql->query($rwolq);
+		$rwol = $app->db->query($rwolq);
 		if ($rwol) {
-			$sql->commit();
+			$app->db->commit();
 			header("HTTP_X_RESPONSE: SUCCESS");
 			echo "/?docid={$submited_doc}&token=" . md5("sysdoc_" . $submited_doc . session_id());
 			exit;
 		} else {
-			$sql->rollback();
+			$app->db->rollback();
 			header("HTTP_X_RESPONSE: DBERR");
 			echo "Material requesting failed, database error";
 			exit;
 		}
 	} else {
-		$sql->rollback();
+		$app->db->rollback();
 		header("HTTP_X_RESPONSE: DBERR");
 		echo "Material requesting failed, database error";
 		exit;
@@ -227,7 +225,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 		"result" => 0,
 	);
 
-	$r = $sql->query("
+	$r = $app->db->query("
 		SELECT
 			mat_id,
 			mat_name,
@@ -245,7 +243,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 			mat_id=$id;
 		");
 	if ($r) {
-		if ($row = $sql->fetch_assoc($r)) {
+		if ($row = $r->fetch_assoc()) {
 			if ($row['childrenCount'] == 0) {
 				$output['result'] = 2;
 				$output['item_id'] = $row['mat_id'];
@@ -268,15 +266,11 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 if ($h__requested_with_ajax) {
 	exit;
 }
-include_once("admin/class/Template/class.template.build.php");
 
-use Template\Body;
 
 $_TEMPLATE = new Body("Test");
 $_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
 $_TEMPLATE->FrameTitlesStack(false);
-
-
 
 ?>
 <style type="text/css">
@@ -307,7 +301,7 @@ $_TEMPLATE->Title($fs()->title, null, null);
 echo $_TEMPLATE->CommandBarStart();
 echo "<div class=\"btn-set\">";
 
-echo "<a href=\"" . $tables->pagefile_info(240, null, "directory") . "\" style=\"color:#333\">Material Requests</a>";
+echo "<a href=\"" . $fs(240)->dir . "\" style=\"color:#333\">Material Requests</a>";
 echo "<span class=\"gap\"></span>";
 echo "<button id=\"jQpostSubmit\" class=\"clr-green\" type=\"button\">Submit Request</button>";
 echo "</div>";
@@ -320,7 +314,7 @@ echo $_TEMPLATE->NewFrameBodyStart();
 <form id="jQpostFormDetails">
 	<input type="hidden" name="posubmit">
 	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Company</span><input value="<?php echo $USER->company->name; ?>" type="text" readonly="readonly" /></div>
+		<div class="btn-set vertical"><span>Company</span><input value="<?php echo $app->user->company->name; ?>" type="text" readonly="readonly" /></div>
 		<div class="btn-set vertical"><span>Cost Center</span><input name="po_costcenter" data-slo="COSTCENTER_USER" id="jQcostcenter" type="text" /></div>
 		<div></div>
 	</div>
@@ -510,7 +504,7 @@ $_TEMPLATE->TailGap();
 					messagesys.failure(o);
 				} else if (response == "SUCCESS") {
 					messagesys.success("Material Request posted successfully");
-					Template.PageRedirect("<?php echo $tables->pagefile_info(240, null, "directory"); ?>" + o, "<?php echo "{$c__settings['site']['title']} - " . $tables->pagefile_info(240, null, "title"); ?>", true);
+					Template.PageRedirect("<?php echo $fs(240)->dir; ?>" + o, "<?php echo "{$c__settings['site']['title']} - " . $fs(240)->title; ?>", true);
 					Template.ReloadSidePanel();
 				} else if (response == "DBERR") {
 					messagesys.failure(o);

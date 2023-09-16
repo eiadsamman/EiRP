@@ -7,7 +7,7 @@ $ulib = new System\IO\AttachLib($app);
 
 /***Delete not used previous session uploads***/
 
-/* $r = $app->db->query("SELECT up_id FROM uploads WHERE up_user={$USER->info->id} AND up_rel=0 AND up_deleted=0 AND up_sessid != '" . session_id() . "';");
+/* $r = $app->db->query("SELECT up_id FROM uploads WHERE up_user={$app->user->info->id} AND up_rel=0 AND up_deleted=0 AND up_sessid != '" . session_id() . "';");
 if ($r) {
 	while ($row_release = $r->fetch_assoc()) {
 		try {
@@ -176,7 +176,7 @@ $(document).ready(function(e) {
 		dombutton:$("#js_upload_trigger"),
 		list_button:$("#js_upload_count"),
 		emptymessage:"[No files uploaded]",
-		upload_url:"<?php echo $tables->pagefile_info(186,null,"directory");?>",
+		upload_url:"<?php echo $fs(186)->dir;?>",
 		relatedpagefile:666
 		}
 	);

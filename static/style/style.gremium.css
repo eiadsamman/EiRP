@@ -1,0 +1,248 @@
+.gremium {
+	--testColor: #fff;
+	/*  rgba(210, 200, 225, 0.5); */
+	--gremium-width: 800px;
+	--gremium--header-height: 80px;
+	--gremium--menu-height: 57px;
+}
+
+.gremium.limit-width {
+	max-width: var(--gremium-width);
+}
+
+/* #region Gremium Header */
+.gremium>header.glue {
+	position: sticky;
+	top: var(--root--menubar-height);
+}
+
+.gremium>header {
+
+	padding: 20px 10px 0px 10px;
+	height: var(--gremium--header-height);
+	color: #333;
+	z-index: 30;
+	display: flex;
+	justify-content: space-between;
+	cursor: default;
+	user-select: none;
+	white-space: nowrap;
+	background-color: #fff;
+	display: flex;
+	justify-content: flex-start;
+	z-index: 30;
+}
+
+
+.gremium>header>h1,
+.gremium>header>cite,
+.gremium>header>ul,
+.gremium>header>a,
+.gremium>header>span {
+	font-size: 2em;
+	line-height: 2em;
+}
+
+.gremium>header>h1 {
+	font-weight: normal;
+	padding: 0;
+	margin: 0;
+}
+
+.gremium>header>cite {
+	flex: 1;
+	text-align: right;
+	font-style: normal;
+	padding-right: 10px;
+}
+
+.gremium>header>ul {
+	list-style: none;
+	display: flex;
+	padding: 0;
+	margin: 0;
+}
+
+
+.gremium>header>ul>li {
+	padding: 0;
+	margin: 0;
+	padding-left: 30px;
+	position: relative;
+}
+
+.gremium>header>ul>li::before {
+	display: block;
+	position: absolute;
+	content: "\\";
+	left: 10px;
+	color: #ccc;
+}
+
+
+.gremium>header>a.previous,
+.gremium>header>span {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 1px;
+	margin-right: 10px;
+}
+
+
+.gremium>header>a.previous::before {
+	position: absolute;
+	top: -14px;
+	display: inline-block;
+	font-family: "icomoon";
+	text-align: center;
+	color: #333;
+	content: "\e618";
+	padding: 15px 0px 15px 10px;
+	-webkit-transition: padding 0.3s ease;
+	transition: padding 0.3s ease;
+}
+
+.gremium>header>a.previous:hover::before {
+	color: #06c;
+	padding: 15px 10px 15px 0px
+}
+
+
+
+
+
+
+
+
+.gremium>header>span::before {
+	position: absolute;
+	top: -14px;
+
+	display: inline-block;
+	font-family: "icomoon4";
+	text-align: center;
+	padding: 15px 6px;
+	font-size: 1.2em;
+}
+
+.gremium>header>span.exclamation::before {
+	color: red;
+	content: "\ea08";
+}
+
+.gremium>header>span.check::before {
+	color: dodgerblue;
+	content: "\ea10";
+}
+
+.gremium>header>span.informative::before {
+	color: orange;
+	content: "\ea0c";
+}
+
+.gremium>header>span.xmark::before {
+	color: red;
+	content: "\ea0f";
+}
+
+.gremium>header>span.question::before {
+	color: limegreen;
+	content: "\ea09";
+}
+
+
+
+/* #region Gremium Header */
+
+
+
+
+
+
+
+
+
+
+
+
+/* #region Gremium Menu */
+.gremium>menu {
+	padding: 10px 10px 15px 10px;
+	margin: 0;
+	color: #333;
+	background-color: #fff;
+	z-index: 40;
+}
+
+.gremium>menu.btn-set {
+	justify-content: flex-end;
+}
+
+.gremium>menu>* {
+	color: #333
+}
+
+.gremium>menu.glue {
+	position: sticky;
+	top: calc(var(--gremium--header-height) + var(--root--menubar-height));
+}
+
+/* #endregion Gremium Menu */
+
+
+
+
+
+
+.gremium>section {
+	z-index: 28;
+	padding: 0;
+	padding-bottom: 20px;
+	background-color: #fff;
+}
+
+.gremium>section.glue>header {
+	position: sticky;
+	top: calc(var(--root--menubar-height) + var(--gremium--header-height) + var(--gremium--menu-height));
+	z-index: 20;
+}
+
+.gremium>section>header {
+	position: static;
+	padding: 10px;
+	user-select: none;
+	background-color: #fff;
+}
+
+
+
+
+.gremium>section>article {
+	padding: 0px 15px;
+}
+
+
+@media only screen and (max-width: 768px) {
+	.gremium {
+		--gremium--header-height: 60px;
+		/* --gremium--menu-height: 0px; */
+	}
+
+	.gremium>header {
+		padding-top: 10px;
+	}
+
+	.gremium>header>h1,
+	.gremium>header>cite,
+	.gremium>header>ul,
+	.gremium>header>a,
+	.gremium>header>span {
+		font-size: 1.8em;
+		line-height: 1.8em;
+	}
+
+	.gremium>menu.btn-set {
+		flex-wrap: wrap;
+	}
+}

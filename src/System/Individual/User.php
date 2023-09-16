@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace System\Individual;
 
+use Exception;
 use System\Company;
 use System\Finance\Account;
 
@@ -32,7 +33,7 @@ class User extends Person
 				companies 
 					JOIN user_company ON urc_usr_id=" . $this->app->user->info->id . " AND urc_usr_comp_id=comp_id
 					JOIN user_settings ON usrset_usr_id=" . $this->app->user->info->id . " AND usrset_name='system_working_company' AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
-					LEFT JOIN uploads ON up_rel=comp_id AND up_pagefile=" . $this->app::FILE['Company']['Logo'] . "
+					LEFT JOIN uploads ON up_rel=comp_id AND up_pagefile=" . $this->app->scope->company->logo . "
 			GROUP BY
 				comp_id
 			;"
@@ -72,7 +73,7 @@ class User extends Person
 
 					$this->account->role->inbound = isset($rowacc['upr_prt_inbound']) && (int)$rowacc['upr_prt_inbound'] == 1 ? true : false;
 					$this->account->role->outbound = isset($rowacc['upr_prt_outbound']) && (int)$rowacc['upr_prt_outbound'] == 1 ? true : false;
-					$this->account->role->fetch = isset($rowacc['upr_prt_fetch']) && (int)$rowacc['upr_prt_fetch'] == 1 ? true : false;
+					$this->account->role->access = isset($rowacc['upr_prt_fetch']) && (int)$rowacc['upr_prt_fetch'] == 1 ? true : false;
 					$this->account->role->view = isset($rowacc['upr_prt_view']) && (int)$rowacc['upr_prt_view'] == 1 ? true : false;
 				}
 			}
@@ -96,7 +97,7 @@ class User extends Person
 				if ($r) {
 					return true;
 				} else {
-					throw new CompanyReisteringException("Company registering failed", 3);
+					throw new \System\Exceptions\HR\CompanyRegisteringException();
 				}
 			}
 		}
@@ -122,7 +123,7 @@ class User extends Person
 				if ($r) {
 					return true;
 				} else {
-					throw new CompanyReisteringException("Registering company failed", 3);
+					throw new \System\Exceptions\HR\CompanyRegisteringException();
 				}
 			} else {
 				return false;
@@ -143,8 +144,7 @@ class User extends Person
 	public function login(string $username, string $password, bool $rememberuser = false): bool
 	{
 		$stmt = $this->app->db->prepare("SELECT usr_id,usr_username,usr_password,usr_activate FROM users WHERE usr_username=?;");
-		$stmt->bind_param('s', $username);
-		$stmt->execute();
+		$stmt->execute([$username]);
 		$rec = $stmt->get_result();
 		if ($rec && $rec->num_rows == 1 && $row = $rec->fetch_assoc()) {
 			if ($row['usr_password'] == $password) {
@@ -163,15 +163,15 @@ class User extends Person
 					return true;
 				} else {
 					$stmt->close();
-					throw new InactiveAccountException("Inactive account", 2);
+					throw new \System\Exceptions\HR\InactiveAccountException();
 				}
 			} else {
 				$stmt->close();
-				throw new InvalidLoginDetailsException("Invalid login details", 1);
+				throw new \System\Exceptions\HR\InvalidLoginException();
 			}
 		} else {
 			$stmt->close();
-			throw new InvalidLoginDetailsException("Invalid login details", 1);
+			throw new \System\Exceptions\HR\InvalidLoginException();
 		}
 	}
 

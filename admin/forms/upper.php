@@ -3,6 +3,7 @@
 use System\App;
 use System\FileSystem\Hierarchy;
 use System\Finance\Accounting;
+use System\Finance\AccountRole;
 use System\SmartListObject;
 
 
@@ -24,6 +25,7 @@ if ($app->user->account && $app->user->account->id) {
 }
 
 $SmartListObject = new SmartListObject($app);
+
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
@@ -32,7 +34,8 @@ $SmartListObject = new SmartListObject($app);
 	<meta charset="utf-8" />
 	<base href="<?php echo "{$app->http_root}"; ?>" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<meta name="apple-mobile-web-app-title" content="<?= $app->settings->site['title'] ?>" />
@@ -41,7 +44,9 @@ $SmartListObject = new SmartListObject($app);
 	<link rel="shortcut icon" href="static/images/logo.ico" />
 	<meta http-equiv="copyright" content="&copy; <?php echo date("Y") . " {$app->settings->site['auther']}"; ?>" />
 	<meta http-equiv="author" content="<?php echo "{$app->settings->site['auther']}"; ?>" />
-	<title><?= "{$app->settings->site['title']} - " . $fs()->title ?></title>
+	<title>
+		<?= "{$app->settings->site['title']} - " . $fs()->title ?>
+	</title>
 	<link media="screen,print" rel="stylesheet" href="static/style/style.main.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.messagesys.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.button.set.css" />
@@ -51,6 +56,7 @@ $SmartListObject = new SmartListObject($app);
 	<link media="screen,print" rel="stylesheet" href="static/style/style.popup.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.ios-checkbox.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.template.css" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css" />
 	<?php
 	if (array_key_exists('css', $fs()->cdns)) {
 		$load = explode(":", $fs()->cdns['css']);
@@ -74,7 +80,7 @@ $SmartListObject = new SmartListObject($app);
 	} ?>
 	<?php
 	if (array_key_exists('js', $fs()->cdns)) {
-		$load = explode(":",  $fs()->cdns['js']);
+		$load = explode(":", $fs()->cdns['js']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
 				echo "	<script type=\"text/javascript\" src=\"static/{$file}\"></script>\n";
@@ -87,7 +93,7 @@ $SmartListObject = new SmartListObject($app);
 <body>
 	<span class="header-ribbon noprint">
 		<div>
-			<div class="btnheader-set header-nav" style="white-space:nowrap">
+			<div class="btnheader-set" style="white-space:nowrap">
 				<?php
 				if ($app->user->logged && $app->user->company && $app->user->company->logo) {
 					echo "<a href=\"\" tabindex=\"-1\" title=\"Homepage\" id=\"header-menu-home\" style=\"padding:9px 8px 8px 8px\"><span><img src=\"download/?id=" . $app->user->company->logo . "&pr=t\" height=\"30\" /></span></a>";
@@ -109,6 +115,7 @@ $SmartListObject = new SmartListObject($app);
 					} else {
 						echo "<span>{$__workingaccount['currency']['shortname']}</span>";
 					}
+					//<cite>1</cite>
 					echo "<a href=\"user-account/\" tabindex=\"-1\" id=\"header-menu-useraccount-button\"><span style=\"font-family:icomoon4;\" title=\"User Settings\">&#xe971;</span></a>";
 					echo "<a href=\"{$fs()->dir}/?logout\" tabindex=\"-1\" id=\"header-menu-logout\"><span style=\"font-family:icomoon4;\" title=\"Logout\">&#xe9b6;</span></a>";
 				}
@@ -153,7 +160,6 @@ $SmartListObject = new SmartListObject($app);
 					<div style="white-space:nowrap;" class="menu-items">
 						<?php
 						echo "<b class=\"index-link\"><span style=\"color:#333;font-family:icomoon;\">&#xe600;</span><a class=\"alink\" href=\"\">Homepage</a></b>";
-						/*Ploting template @ class.tables.php */
 						new Hierarchy($app, $app->user->info->permissions); ?>
 					</div>
 				</div>
@@ -166,10 +172,14 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<header>
 						<span class="btn-set">
-							<input type="text" class="flex" id="account-menu-slo" data-url="<?= $fs()->dir ?>" data-list="accounts-list" data-slo=":LIST">
+							<input type="text" class="flex" id="account-menu-slo" data-url="<?= $fs()->dir ?>"
+								data-list="accounts-list" data-slo=":LIST">
 						</span>
 						<datalist id="accounts-list">
-							<?= $SmartListObject->financial_company_accounts($inbound = null, $outbound = null, $accessible = true, $viewable = null) ?>
+							<?php
+							$role = new AccountRole();
+							echo $SmartListObject->user_accounts($role, $app->user->company->id);
+							?>
 						</datalist>
 					</header>
 					<div style="white-space:nowrap;" class="menu-items">
@@ -238,7 +248,8 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<header>
 						<span class="btn-set">
-							<input type="text" class="flex" id="company-menu-slo" data-url="<?= $fs()->dir ?>" data-slo="COMPANY_USER">
+							<input type="text" class="flex" id="company-menu-slo" data-url="<?= $fs()->dir ?>"
+								data-slo="COMPANY_USER">
 						</span>
 					</header>
 					<div style="white-space:nowrap;" class="menu-items">
@@ -301,10 +312,11 @@ $SmartListObject = new SmartListObject($app);
 	<div>
 		<div>
 			<div>
-				<div>
-					<?php if ($__side_panel && !$__side_panel->permission->deny  && is_file("website-contents/" . $__side_panel->id . ".php")) { ?>
+				<div style="position:relative;">
+					<?php if ($__side_panel && !$__side_panel->permission->deny && is_file("website-contents/" . $__side_panel->id . ".php")) { ?>
 						<span style="position: absolute;right:0px;top:45px;width:310px">
-							<span style="position: fixed;display: block;z-index: 999;font-size: 0.7em;padding-left: 4px;color:#ccc">
+							<span
+								style="position: fixed;display: block;z-index: 999;font-size: 0.7em;padding-left: 4px;color:#ccc">
 								<?= $__side_panel->id; ?>
 							</span>
 							<span id="template-sidePanel" data-template_url="<?= $__side_panel->dir ?>">
@@ -314,9 +326,4 @@ $SmartListObject = new SmartListObject($app);
 							</span>
 						</span>
 					<?php } ?>
-					<div <?php
-							$no_padding = !is_null($fs()->parameters) && strpos($fs()->parameters, "no-padding") !== false ? "40px" : "59px";
-							echo ($__side_panel && $__side_panel->permission->deny == false) ?
-								"class=\"template-enableSidePanel\"" : ""; ?> style="padding:15px;
-						padding-top:<?= $no_padding ?>;
-						" id="body-content">
+					<div <?= ($__side_panel && $__side_panel->permission->deny == false) ? "class=\"template-enableSidePanel\"" : ""; ?> id="body-content">

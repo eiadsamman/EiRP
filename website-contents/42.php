@@ -128,7 +128,7 @@ if (isset($_POST['shift'])) {
 		</tbody>
 </table>
 <br />
-<form action="<?php echo $tables->pagefile_info(28, null, 'directory'); ?>" target="_blank" method="post">
+<form action="<?php echo $fs(28)->dir; ?>" target="_blank" method="post">
 	<table class="bom-table hover">
 		<tbody>
 			<tr class="special">

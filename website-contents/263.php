@@ -1,11 +1,17 @@
 <?php
+use System\Template\Gremium\Gremium;
 
-if ($h__requested_with_ajax && isset($_POST['add'])) {
-	$bookmark_add = $app->user->bookmark_add((int)$_POST['add']);
+if ($app->xhttp && isset($_POST['add'])) {
+	$bookmark_add = $app->user->bookmark_add((int) $_POST['add']);
 	if ($bookmark_add == true) {
 		header("QUERY_RESULT: 1");
-		$bookmark_page = $tables->pagefile_info((int)$_POST['add']);
-		echo json_encode(array($bookmark_page['id'], $bookmark_page['directory'], $bookmark_page['title']));
+		echo json_encode(
+			array(
+				$fs((int) $_POST['add'])->id,
+				$fs((int) $_POST['add'])->dir,
+				$fs((int) $_POST['add'])->title,
+			)
+		);
 	} elseif ($bookmark_add == null) {
 		header("QUERY_RESULT: 2");
 	} elseif ($bookmark_add == false) {
@@ -13,16 +19,19 @@ if ($h__requested_with_ajax && isset($_POST['add'])) {
 	}
 	exit;
 }
-if ($h__requested_with_ajax && isset($_POST['remove'])) {
-	echo $app->user->bookmark_remove((int)$_POST['remove']) ? "1" : "0";
+if ($app->xhttp && isset($_POST['remove'])) {
+	echo $app->user->bookmark_remove((int) $_POST['remove']) ? "1" : "0";
 	exit;
 }
 
 
 
-$_TEMPLATE 	= new \System\Template\Body();
-$_TEMPLATE->SetWidth("800px");
-$_TEMPLATE->Title("<a class=\"backward\" href=\"{$fs(27)->dir}\"></a>Bookmarks", null, null);
+
+$gremium = new Gremium(true);
+$gremium->header(true, null, null, "<h1>Bookmarks</h1>");
+$gremium->section(true);
+$gremium->sectionHeader("<span class=\"flex\">Account information</span>");
+$gremium->sectionArticle();
 
 
 $count = 0;
@@ -39,22 +48,25 @@ foreach ($app->user->bookmark_list() as $bookmark) {
 }
 
 if ($count > 0) {
-	echo $_TEMPLATE->NewFrameBodyStart();
-	echo "<table class=\"bom-table hover\"><tbody>{$buffer}</tbody></table>";
-	echo $_TEMPLATE->NewFrameBodyEnd();
+	echo "<table class=\"bom-table hover \"><tbody>{$buffer}</tbody></table>";
 } else {
 	//$_TEMPLATE->NewFrameTitle("<span class=\"flex\">N</span>", false, true);
-	$_TEMPLATE->NewFrameBody('<ul>
+	echo('<ul>
 			<li>No bookmarks found</li>
 			<li>Try adding some pages to bookmarks</li>
 			<li>Bookmarks can be added through `User Account` menu by clicking `Add` button</li>
 			<ul>');
 }
+
+$gremium->sectionArticle();
+$gremium->section();
+unset($gremium);
+
 ?>
 <script>
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 		var ajax = null;
-		$(".op-remove").on('click', function(e) {
+		$(".op-remove").on('click', function (e) {
 			let bookmarkid = $(this).attr("data-id");
 			let rowowner = $(this).parent();
 			rowowner.css("display", "none");
@@ -65,12 +77,12 @@ if ($count > 0) {
 				data: {
 					"remove": bookmarkid
 				}
-			}).done(function(data) {
+			}).done(function (data) {
 				if (parseInt(data) != 1) {
 					rowowner.css("display", "table-row");
 					messagesys.failure("Removing bookmark failed");
 				}
-			}).fail(function(a, b, c) {
+			}).fail(function (a, b, c) {
 				rowowner.css("display", "table-row");
 				messagesys.failure("Removing bookmark failed");
 			});

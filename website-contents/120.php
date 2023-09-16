@@ -11,34 +11,46 @@ $debug						= false;
 $debug_level				= "fatal";
 $accounts_comparition_style	= " OR ";
 $accounting					= new Accounting($app);
-$__defaultaccount			= $accounting->account_information($USER->account->id);
+$__defaultaccount			= $accounting->account_information($app->user->account->id);
 $__systemdefaultcurrency	= $accounting->system_default_currency();
 if ($__defaultaccount) {
 	$__defaultcurrency = $accounting->account_default_currency($__defaultaccount['id']);
 }
 
 
-$arrheader = array("ID", "Type", "Value", "Currency", "Account", "Date", "Beneficial", "System ID", "Category Family", "Category", "Editor", "Statement");
+$arrheader = array("ID", "Type", "Value", "Currency", "Company", "Account", "Date", "Beneficial", "System ID", "Category Family", "Category", "Editor", "Statement");
 $output = "";
 
-$query = "
-		SELECT
-			acm_id,UNIX_TIMESTAMP(acm_ctime) AS acm_ctime,acm_beneficial,acm_comments,acm_type,acm_rejected,acm_usr_id,acm_reference,UNIX_TIMESTAMP(acm_month) AS acm_month,
-			acccat_name,accgrp_name,acccat_id,accgrp_id,
-			CONCAT_WS(' ',COALESCE(_editor.usr_firstname,''),IF(NULLIF(_editor.usr_lastname, '') IS NULL, NULL, _editor.usr_lastname)) AS _editor_name
+$query =
+	"SELECT
+			acm_id,
+			UNIX_TIMESTAMP(acm_ctime) AS acm_ctime,
+			acm_beneficial,
+			acm_comments,
+			acm_type,
+			acm_rejected,
+			acm_usr_id,
+			acm_reference,
+			UNIX_TIMESTAMP(acm_month) AS acm_month,
+			acccat_name,
+			accgrp_name,
+			acccat_id,
+			accgrp_id,
+			CONCAT_WS(' ',COALESCE(_editor.usr_firstname,''),
+			IF(NULLIF(_editor.usr_lastname, '') IS NULL, NULL, _editor.usr_lastname)) AS _editor_name
 		FROM
 			acc_main
 				LEFT JOIN
-					(SELECT acccat_name,accgrp_name,acccat_id,accgrp_id FROM acc_categories JOIN acc_categorygroups ON accgrp_id=acccat_group) 
+					(SELECT acccat_name, accgrp_name, acccat_id, accgrp_id FROM acc_categories JOIN acc_categorygroups ON accgrp_id=acccat_group) 
 						AS _category ON _category.acccat_id=acm_category
 				LEFT JOIN
 					users AS _editor ON usr_id=acm_editor_id 
 					
 				LEFT JOIN 
-					(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} WHERE atm_value < 0) 
+					(SELECT atm_main, atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} WHERE atm_value < 0) 
 						AS _credit ON _credit.atm_main = acm_id 
 				JOIN 
-					(SELECT atm_main,atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$USER->info->id} WHERE atm_value > 0) 
+					(SELECT atm_main, atm_account_id FROM acc_temp JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} WHERE atm_value > 0) 
 						AS _debit ON _debit.atm_main = acm_id 
 				
 		WHERE
@@ -91,13 +103,16 @@ if ($r) {
 		$array_output[$row['acm_id']]["info"]["editor"] = $row['_editor_name'];
 		$array_output[$row['acm_id']]["info"]["comments"] = $row['acm_comments'];
 
-		$sub_q = $app->db->query("
-				SELECT atm_value,atm_main,prt_name,cur_shortname,atm_dir
+		$sub_q = $app->db->query(
+			"SELECT 
+					atm_value, atm_main, prt_name, cur_shortname, atm_dir, comp_name
 				FROM
-					`acc_accounts` 
+					acc_accounts
 						JOIN acc_temp ON prt_id=atm_account_id
-						LEFT JOIN currencies ON cur_id = prt_currency
-				WHERE atm_main={$row['acm_id']};");
+						JOIN currencies ON cur_id = prt_currency
+						JOIN companies ON comp_id = prt_company_id
+				WHERE atm_main = {$row['acm_id']};"
+		);
 
 		if ($sub_q) {
 			while ($row_q = $sub_q->fetch_assoc()) {
@@ -108,6 +123,7 @@ if ($r) {
 					$array_output[$row['acm_id']]["details"]['creditor']['value'] = ($row_q['atm_value'] < 0 ? "(" . number_format(abs($row_q['atm_value']), 2, ".", ",") . ")" : number_format($row_q['atm_value'], 2, ".", ","));
 					$array_output[$row['acm_id']]["details"]['creditor']['account'] = $row_q['prt_name'];
 					$array_output[$row['acm_id']]["details"]['creditor']['currency'] = $row_q['cur_shortname'];
+					$array_output[$row['acm_id']]["details"]['creditor']['company'] = $row_q['comp_name'];
 				} elseif ($row_q['atm_dir'] == 1) {
 					//debitor
 					$array_output[$row['acm_id']]["details"]['debitor'] = array();
@@ -115,6 +131,7 @@ if ($r) {
 					$array_output[$row['acm_id']]["details"]['debitor']['value'] = ($row_q['atm_value'] < 0 ? "(" . number_format(abs($row_q['atm_value']), 2, ".", ",") . ")" : number_format($row_q['atm_value'], 2, ".", ","));
 					$array_output[$row['acm_id']]["details"]['debitor']['account'] = $row_q['prt_name'];
 					$array_output[$row['acm_id']]["details"]['debitor']['currency'] = $row_q['cur_shortname'];
+					$array_output[$row['acm_id']]["details"]['debitor']['company'] = $row_q['comp_name'];
 				}
 			}
 		}
@@ -126,6 +143,7 @@ if ($r) {
 		$output .= $accounting->get_transaction_type($main['info']['transaction_type']) . "\t";
 		$output .= $main['details']['creditor']['raw_value'] . "\t";
 		$output .= $main['details']['creditor']['currency'] . "\t";
+		$output .= $main['details']['creditor']['company'] . "\t";
 		$output .= $main['details']['creditor']['account'] . "\t";
 		$output .= $main['info']['date'] . "\t";
 		$output .= $main['info']['beneficial'] . "\t";
@@ -133,12 +151,13 @@ if ($r) {
 		$output .= $main['info']['category_group'] . "\t";
 		$output .= $main['info']['category_group'] . ": " . $main['info']['category_name'] . "\t";
 		$output .= $main['info']['editor'] . "\t";
-		$output .= "\"" . $main['info']['comments'] . "\"\t";
+		$output .= preg_replace('#\s+#', ' ', trim($main['info']['comments']));
 		$output .= "\n";
 		$output .= $main['info']['id'] . "\t";
 		$output .= $accounting->get_transaction_type($main['info']['transaction_type']) . "\t";
 		$output .= $main['details']['debitor']['raw_value'] . "\t";
 		$output .= $main['details']['debitor']['currency'] . "\t";
+		$output .= $main['details']['debitor']['company'] . "\t";
 		$output .= $main['details']['debitor']['account'] . "\t";
 		$output .= $main['info']['date'] . "\t";
 		$output .= $main['info']['beneficial'] . "\t";
@@ -146,7 +165,10 @@ if ($r) {
 		$output .= $main['info']['category_group'] . "\t";
 		$output .= $main['info']['category_group'] . ": " . $main['info']['category_name'] . "\t";
 		$output .= $main['info']['editor'] . "\t";
-		$output .= "\"" . $main['info']['comments'] . "\"\t";
+		$output .= preg_replace('#\s+#', ' ', trim($main['info']['comments']));
+
+
+
 		$output .= "\n";
 	}
 }

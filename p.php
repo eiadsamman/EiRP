@@ -16,7 +16,7 @@ use System\App;
 
 $app = new App(__DIR__, "cpanel3.settings.xml", false);
 
-new System\Log\ErrorHandler($app->settings->site['errorlog'], $app->root . "admin/error.log");
+
 $performance = new System\Log\Performance($app->root . "admin/performance.log");
 
 $app->database_connect($app->settings->database['host'], $app->settings->database['username'], $app->settings->database['password'], $app->settings->database['name']);
@@ -27,15 +27,18 @@ $app->initializePermissions();
 $app->initializeSystemCurrency();
 $request = $app->process_request(str_replace("\\", "/", trim($_GET['___REQUESTURI'], "/")) . "/", $app->settings->site['index']);
 $access_error = $app->user_init();
-$fs = new System\FileSystem\File($app);
+$fs = new System\FileSystem\Page($app);
+
+
 $dir = $fs->dir($request);
-$fs->setUse($dir->id);
-if ($fs()->enabled == false) {
+if(!$dir){
 	$app->responseStatus->NotFound->response();
 }
+$fs->setUse($dir->id);
+if ($fs()->enabled == false) {
+	$app->responseStatus->Forbidden->response();
+}
 
-
-$app->build_prefix_list();
 
 
 include("admin/methods.php");
@@ -72,7 +75,6 @@ if ($fs()->permission->deny == true && $fs()->id == $app::PERMA_ID['index']) {
 }
 
 $fs->details($fs()->id);
-$fs->increment_visit();
 
 
 /* Forward */
@@ -93,6 +95,10 @@ if ($fs()->id == $app::PERMA_ID['slo']) {
 }
 
 
+$fs->increment_visit();
+$app->build_prefix_list();
+
+
 /* SECTOR REGISTER */
 if ($app->user->info && isset($_GET['--sys_sel-change'], $_GET['i']) && $_GET['--sys_sel-change'] == 'account_commit') {
 	if ($app->user->register_account((int) $_GET['i'])) {
@@ -110,7 +116,7 @@ if ($app->user->info && isset($_GET['--sys_sel-change'], $_GET['i']) && $_GET['-
 
 /* Company selection page */
 if ($app->user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel-change'] == "company" && $fs()->id != 3) {
-	$r = $sql->query("SELECT comp_name,comp_id FROM companies JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . $app->user->info->id . ";");
+	$r = $app->db->query("SELECT comp_name,comp_id FROM companies JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . $app->user->info->id . ";");
 	if ($r) {
 		require_once($app->root . "/admin/forms/upper.php");
 		require_once($app->root . "website-contents/207.php");
@@ -120,7 +126,7 @@ if ($app->user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel-cha
 }
 /* Account selection page */
 if ($app->user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel-change'] == "account" && $fs()->id != 3) {
-	$r = $sql->query("SELECT prt_name,prt_id,cur_symbol,cur_name,cur_id,cur_shortname FROM `acc_accounts` LEFT JOIN currencies ON cur_id=prt_currency JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . $app->user->info->id . ";");
+	$r = $app->db->query("SELECT prt_name,prt_id,cur_symbol,cur_name,cur_id,cur_shortname FROM `acc_accounts` LEFT JOIN currencies ON cur_id=prt_currency JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . $app->user->info->id . ";");
 	if ($r) {
 		require_once($app->root . "/admin/forms/upper.php");
 		require_once($app->root . "website-contents/33.php");

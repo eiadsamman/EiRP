@@ -1,4 +1,6 @@
 <?php
+use System\Template\Gremium\Gremium;
+
 if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 	$r = $app->db->query("SELECT usr_password FROM users WHERE usr_id={$app->user->info->id};");
 	if ($r && $row = $r->fetch_assoc()) {
@@ -33,47 +35,35 @@ if ($r && $row = $r->fetch_assoc()) {
 	$curinfo = $row;
 }
 
+?>
+<form action="<?php echo $fs()->dir; ?>" method="post" id="passForm">
+	<input type="hidden" name="method" value="changepassword" />
 
-$_TEMPLATE 	= new \System\Template\Body();
-$_TEMPLATE->SetWidth("800px");
-$_TEMPLATE->Title("My Account", null, null);
-
-
-echo $_TEMPLATE->CommandBarStart();
-echo "<div class=\"btn-set\">";
-echo "<a class=\"as-button\" href=\"{$fs(263)->dir}\">{$fs(263)->title}</a>";
-echo "</div>";
-echo $_TEMPLATE->CommandBarEnd();
-
-
-
-$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Account information</span>", false, true);
-echo $_TEMPLATE->NewFrameBodyStart();
-echo "<table class=\"bom-table\">
+	<?php
+	$gremium = new Gremium(true);
+	$gremium->header(true, null, null, "<h1>My Account</h1>");
+	$gremium->menu(true, "<a class=\"\" href=\"{$fs(263)->dir}\">{$fs(263)->title}</a><span class=\"gap\"></span><button class=\"clr-green\" type=\"submit\">Update my settings</button>");
+	$gremium->section(true);
+	$gremium->sectionHeader("<span class=\"flex\">Account information</span>");
+	$gremium->sectionArticle();
+	echo "<table class=\"bom-table mediabond-table\" style=\"margin-bottom:20px;\">
 		<tbody>
-			
 			<tr>
 				<th>Name</th><td><div class=\"btn-set\"><input type=\"text\" value=\"" . $app->user->info->name . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
 			</tr>
 			<tr>
 				<th style=\"min-width:150px;\">Username</th><td style=\"width:100%;\"><div class=\"btn-set\"><input type=\"text\" value=\"" . $app->user->info->username . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
 			</tr>
-			
 			<tr>
 				<th style=\"min-width:150px;\">Register date</th><td style=\"width:100%;\"><div class=\"btn-set\"><input type=\"text\" value=\"" . $curinfo['usr_regdate'] . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
 			</tr>
-			
 			</tbody>
 		</table>";
-echo $_TEMPLATE->NewFrameBodyEnd();
-
-
-$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Security management</span>", false, true);
-echo $_TEMPLATE->NewFrameBodyStart();
-?>
-<form action="<?php echo $fs()->dir; ?>" method="post" id="passForm">
-	<input type="hidden" name="method" value="changepassword" />
-	<table class="bom-table">
+	$gremium->sectionArticle();
+	$gremium->sectionHeader("<span class=\"flex\">Security management</span>");
+	$gremium->sectionArticle();
+	?>
+	<table class="bom-table mediabond-table">
 		<tbody>
 			<tr>
 				<th style="min-width:150px;">Current Password</th>
@@ -95,16 +85,19 @@ echo $_TEMPLATE->NewFrameBodyStart();
 			</tr>
 		</tbody>
 	</table>
-	<div class="btn-set" style="flex-direction: row-reverse;padding:10px;"><button>Update my settings</button></div>
 </form>
 <?php
-echo $_TEMPLATE->NewFrameBodyEnd();
-?>
+$gremium->sectionArticle();
 
+$gremium->section();
+unset($gremium);
+
+
+?>
 <script>
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 		var ajax = null;
-		$("#passForm").on('submit', function(e) {
+		$("#passForm").on('submit', function (e) {
 			if ($("#newpass").val().length < 6) {
 				e.preventDefault();
 				messagesys.failure("Minumum of 6 characters password is required");
@@ -124,7 +117,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST',
 				data: $("#passForm").serialize()
-			}).done(function(data) {
+			}).done(function (data) {
 				var _data = null
 				try {
 					_data = JSON.parse(data);

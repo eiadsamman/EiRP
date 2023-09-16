@@ -13,7 +13,7 @@ class Body extends Config
 		$css_position = $this->titlePlotted ? "position: sticky;" : "";
 
 		echo "
-			<div class=\"template-pageTitle\" style=\"top:{$this->topBasePoint}px;{$css_position};" . (!is_null($this->width) ? "max-width:" . $this->width : "") . "\">
+			<div class=\"template-pageTitle\" style=\"top: var(--root--menubar-height);{$css_position};" . (!is_null($this->width) ? "max-width: var(--gremium-width);" : "") . "\">
 				" . ($iconc ? "<span style=\"font-size:1rem;\" class=\"$iconc\"></span>" : "") . "
 				<div>$title</div>
 				<div>$status</div>
@@ -40,9 +40,9 @@ class Body extends Config
 	{
 		$this->commandPlotted = $this->stickyLayoutCommandBar;
 		$css_position = $this->commandPlotted ? "position: sticky;" : "";
-		$_topvalue  = $this->topCommandBar;
+		$_topvalue = $this->topCommandBar;
 		$_topvalue -= $this->titlePlotted ? 0 : $this->titleHeight;
-		return "<div class=\"template-commandBar\" style=\"top:{$_topvalue}px;{$css_position};" . (!is_null($this->width) ? "max-width:" . $this->width : "") . "\">";
+		return "<div class=\"template-commandBar\" style=\" top:{$_topvalue}px;{$css_position};" . (!is_null($this->width) ? "max-width: var(--gremium-width);" : "") . "\">";
 	}
 	public function CommandBarEnd(): string
 	{
@@ -61,7 +61,7 @@ class Body extends Config
 	public function NewFrameTitleStart(bool $limitWidth = false, bool $toggleBody = false, int $addOffset = 0): string
 	{
 		$css_position = $this->stickyLayoutFrame ? "position: sticky;" : "";
-		$_topvalue  = $this->topBasePoint;
+		$_topvalue = $this->topBasePoint;
 		$_topvalue += $this->titlePlotted ? $this->titleHeight : 0;
 		$_topvalue += $this->commandPlotted ? $this->commandBarHeight : 0;
 
@@ -74,7 +74,7 @@ class Body extends Config
 			($toggleBody ? "data-templatebody=\"jsDOMtemplateBody{$this->domseq}\" " : "") .
 			"class=\"template-frameTitle\" 
 						style=\"top:{$_topvalue}px;{$css_position};"
-			. (!is_null($this->width) ? ";max-width:" . $this->width : "")
+			. (!is_null($this->width) ? ";max-width: var(--gremium-width);" : "")
 			. ($this->framesCount == 999 ? ";padding-top:0px;" : "")
 			. "\">";
 	}
@@ -106,7 +106,7 @@ class Body extends Config
 	{
 		$visible = $visible ? "" : "display:none;";
 		return "<div id=\"jsDOMtemplateBody{$this->domseq}\" class=\"template-frameBody\" 
-					style=\"{$visible};" . ($limitWidth ? "max-width:{$limitWidth}px;" : "") . (!is_null($this->width) ? "max-width:" . $this->width : "") . "\">
+					style=\"{$visible};" . ($limitWidth ? "max-width: {$limitWidth}px;" : "") . (!is_null($this->width) ? "max-width:var(--gremium-width);": "") . "\">
 				<div>";
 	}
 	public function NewFrameBodyEnd(): string
@@ -126,12 +126,12 @@ class Body extends Config
 	public static function AttendanceTicketPlot($status, $image, $title, $content, $fade = false)
 	{
 		/* 
-		<div>
-			<span class="status l"><div></div></span>
-			<span class="image"></span>
-			<span class="content"><div class="employee-sid"></div><div class="employee-name">Loading...</div></span>
-		</div>
-			*/
+					<div>
+						<span class="status l"><div></div></span>
+						<span class="image"></span>
+						<span class="content"><div class="employee-sid"></div><div class="employee-name">Loading...</div></span>
+					</div>
+						*/
 		echo "<div>";
 		echo $status === null ? "" : "<span class=\"status " . ($status ? "s" : "f") . "\" " . ($fade ? " style=\"color:#ccc\"" : "") . "><div>" . ($status ? "&#xf00c" : "&#xf00d") . "</div></span>";
 		echo "<span class=\"image\" style=\"background-image:url('$image');" . ($fade ? "opacity:0.5; filter: grayscale(100%);-webkit-filter: grayscale(100%);" : "") . "\"></span>

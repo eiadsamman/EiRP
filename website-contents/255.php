@@ -1,7 +1,7 @@
 <?php
 
-$sqlquery_materialList = $sql->query("
-SELECT
+$r = $app->db->query(
+	"SELECT
 	mat_id,mat_long_id,mat_name,cat_alias,mattyp_name,unt_name,unt_decim,
 	SUM(pols_issued_qty) AS _matsum
 	
@@ -22,7 +22,7 @@ FROM
 	) AS _material ON pols_item_id = mat_id
 	
 WHERE
-	pols_prt_id = {$USER->account->id}
+	pols_prt_id = {$app->user->account->id}
 GROUP BY
 	mat_id
 ");
@@ -32,8 +32,8 @@ echo "<table class=\"bom-table\">";
 
 
 echo "<tbody>";
-if($sqlquery_materialList){
-	while($row=$sql->fetch_assoc($sqlquery_materialList)){
+if($r){
+	while($row=$r->fetch_assoc()){
 		echo "<tr>";
 		echo "<td>{$row['mat_name']}</td>";
 		echo "<td>{$row['_matsum']}</td>";
@@ -43,4 +43,3 @@ if($sqlquery_materialList){
 }
 
 echo "</tbody></table>";
-?>

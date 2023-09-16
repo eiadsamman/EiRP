@@ -15,8 +15,9 @@ class Employee extends Person
 			"id" => false,
 			"time" => 0,
 		);
-		$r = $this->app->db->query("
-			SELECT 
+
+		$r = $this->app->db->query(
+			"SELECT 
 				ltr_id, UNIX_TIMESTAMP(ltr_ctime) AS ltr_ctime
 			FROM 
 				labour_track 

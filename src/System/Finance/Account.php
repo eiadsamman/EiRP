@@ -7,8 +7,8 @@ namespace System\Finance;
 
 class Account
 {
-	public $id;
-	public $name;
+	public int $id;
+	public string $name;
 	public $currency;
-	public $role;
+	public \System\Finance\AccountRole $role;
 }

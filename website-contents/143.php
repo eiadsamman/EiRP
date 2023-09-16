@@ -64,7 +64,7 @@ if ($_SHIFT) {
 	}
 
 
-	$pagefile_display = $tables->pagefile_info(108, null, "directory");
+	$pagefile_display = $fs(108)->dir;
 	echo "<table class=\"bom-table hover\"><thead>
 	<tr><td>ID</td><td>Employee Name</td><td>Execused</td><td>Last attendance</td></tr>
 	</thead><tbody>";

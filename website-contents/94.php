@@ -43,8 +43,8 @@ if (!$defaultcurrency) {
 			LEFT JOIN acc_temp ON prt_id=atm_account_id
 			LEFT JOIN acc_main ON acm_id=atm_main
 			
-			JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id='{$USER->info->id}' AND upr_prt_view=1
-			JOIN companies ON comp_id=prt_company_id AND comp_id={$USER->company->id}
+			JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id='{$app->user->info->id}' AND upr_prt_view=1
+			JOIN companies ON comp_id=prt_company_id AND comp_id={$app->user->company->id}
 			JOIN currencies ON cur_id = prt_currency
 			
 			
