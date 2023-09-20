@@ -2,7 +2,7 @@
 use System\Template\Gremium;
 
 $grem = new Gremium\Gremium(false);
-$grem->header()->serve("<h1>" . date("Y-m-d H:i") . "</h1>");
+$grem->header()->sticky(false)->serve("<h1><span id=\"xxx\" style=\"\">Welcome </span> {$app->user->info->name}</h1>");
 $grem->article()->open();
 echo "<div class=\"homepageWidget\">";
 if (

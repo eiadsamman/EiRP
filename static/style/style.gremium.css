@@ -2,8 +2,7 @@
 	--testColor: #fff;
 	/*  rgba(210, 200, 225, 0.5); */
 	--gremium-width: 800px;
-	--gremium--header-height: 80px;
-	--gremium--menu-height: 57px;
+	--gremium-header-toggle: 0px;
 }
 
 .gremium.limit-width {
@@ -17,7 +16,6 @@
 }
 
 .gremium>header {
-
 	padding: 20px 10px 0px 10px;
 	height: var(--gremium--header-height);
 	color: #333;
@@ -31,6 +29,7 @@
 	display: flex;
 	justify-content: flex-start;
 	z-index: 30;
+	height: 80px;
 }
 
 
@@ -105,10 +104,9 @@
 }
 
 .gremium>header>a.previous:hover::before,
-.gremium>header>a.previous:active::before, 
+.gremium>header>a.previous:active::before,
 .gremium>header>a.previous:focus::before,
-.gremium>header>a.previous:target::before
- {
+.gremium>header>a.previous:target::before {
 	color: #06c;
 	padding: 15px 10px 15px 0px
 }
@@ -217,12 +215,12 @@
 
 @media only screen and (max-width: 768px) {
 	.gremium {
-		--gremium--header-height: 60px;
-		/* --gremium--menu-height: 0px; */
+		--gremium-header-toggle: 30px;
 	}
 
 	.gremium>header {
 		padding-top: 10px;
+		height: 50px;
 	}
 
 	.gremium>header>h1,
@@ -230,8 +228,9 @@
 	.gremium>header>ul,
 	.gremium>header>a,
 	.gremium>header>span {
-		font-size: 1.8em;
-		line-height: 1.8em;
+		font-size: 1.5em;
+		line-height: 1.5em;
+
 	}
 
 	.gremium>menu.btn-set {

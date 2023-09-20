@@ -27,7 +27,7 @@ class Personalization
 			$this->app->db->query("UPDATE user_settings SET usrset_type = {$v} WHERE usrset_name = '{$k}';");
 			$this->app->db->query("DELETE FROM user_settings WHERE usrset_name = '';");
 			$this->app->db->query("ALTER TABLE user_settings DROP INDEX usrset_usr_id, ADD UNIQUE usrset_usr_id (usrset_usr_id, usrset_type, usrset_usr_defind_name) USING BTREE;");
-			$this->app->db->query("ALTER TABLE user_settings DROP usrset_name;");
+			//$this->app->db->query("ALTER TABLE user_settings DROP usrset_name;");
 		}
 
 	}

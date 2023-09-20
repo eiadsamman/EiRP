@@ -66,7 +66,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	header("VENDOR_FN_CURRENT: " . $controller->criteria->getCurrentPage());
 
 	echo "<table class=\"bom-table statment-view hover strip\">";
-	echo "<thead class=\"sticky\" style=\"top:171px;\">";
+	echo "<thead class=\"sticky\" style=\"top: calc(171px - var(--gremium-header-toggle)) ;\">";
 	echo "<tr>";
 	echo "<td>Date</td>";
 	echo "<td>ID</td>";

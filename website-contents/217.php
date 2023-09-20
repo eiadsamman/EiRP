@@ -32,13 +32,13 @@ $r = $app->db->query(
 if ($r) {
 	echo "<div class=\"widgetWQU\"><div><div>";
 	while ($row = $r->fetch_assoc()) {
-		echo "<div><div class=\"btn-set\" style=\"flex-wrap: nowrap\">";
+		echo "<div><div class=\"btn-set\" style=\"flex-wrap: nowrap; \">";
 		if ((int) $row['upr_prt_fetch'] == 1) {
 			echo "<a class=\"flex\" href=\"?--sys_sel-change=account_commit&i={$row['prt_id']}\" title=\"{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}\">{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}</a>";
 		} else {
-			echo "<span class=\"nofetch\" title=\"{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}\">{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}</span>";
+			echo "<span class=\"nofetch flex\" title=\"{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}\">{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}</span>";
 		}
-		echo "<input type=\"text\" style=\"width:25%;min-width:120px;text-align:right;\" readonly=\"readonly\" tabindex=\"-1\" value=\"" . ($row['total_accountgroup'] < 0 ? "(" . number_format(abs($row['total_accountgroup']), 2, ".", ",") . ")" : number_format(abs($row['total_accountgroup']), 2, ".", ",")) . "\" />";
+		echo "<input type=\"text\" style=\"min-width:120px;text-align:right;\" readonly=\"readonly\" tabindex=\"-1\" value=\"" . ($row['total_accountgroup'] < 0 ? "(" . number_format(abs($row['total_accountgroup']), 2, ".", ",") . ")" : number_format(abs($row['total_accountgroup']), 2, ".", ",")) . "\" />";
 		echo "<span style=\"width:60px;text-align:center;\">" . $row['cur_shortname'] . "</span>";
 		echo "</div></div>";
 	}

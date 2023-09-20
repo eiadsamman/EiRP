@@ -182,7 +182,7 @@ class Menu extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo "<{$this->id} class=\"btn-set\"" . ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top});\" " : "") . ">\n";
+			echo "<{$this->id} class=\"btn-set\"" . ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top} - var(--gremium-header-toggle));\" " : "") . ">\n";
 			$this->opened = true;
 		}
 		return $this;
@@ -198,7 +198,7 @@ class Legend extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo "<{$this->id} class=\"btn-set\"" . ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top});\" " : "") . ">\n";
+			echo "<{$this->id} class=\"btn-set\"" . ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top} - var(--gremium-header-toggle));\" " : "") . ">\n";
 			$this->opened = true;
 		}
 		return $this;
