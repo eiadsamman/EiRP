@@ -1,4 +1,5 @@
 <?php
+use System\Template\Gremium;
 
 if (isset($_POST['bulk'])) {
 	$att = new System\Individual\Attendance\Registration($app);
@@ -43,51 +44,17 @@ if (isset($_POST['serial'])) {
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->name;
 	}
-
-
 	exit;
 }
 
 
+$grem = new Gremium\Gremium(true);
+$grem->header()->serve("<h1>{$fs()->title}</h1>");
+$grem->menu()->serve('<input type="number" id="jQserialAdd" autocomplete="off" class="flex" placeholder="Serial Number" /><button type="button" style="min-width:100px;" id="jQserialSubmit">Submit</button>');
+$grem->legend()->serve("<span class=\"flex\">Attendance records</span>");
+$grem->article()->serve( "<div id=\"jqOutput\" class=\"att-submitionlist\"></div>");
+unset ($grem);
 
-
-$_TEMPLATE = new System\Template\Body("Test");
-$_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
-$_TEMPLATE->FrameTitlesStack(false);
-$_TEMPLATE->SetWidth("800px");
-
-$_TEMPLATE->Title($fs()->title, null, null);
-
-
-
-?>
-
-
-<?php echo $_TEMPLATE->CommandBarStart(); ?>
-<table border="0" cellpadding="0" cellspacing="0" width="100%" class="bom-table">
-	<tbody>
-		<tr>
-			<td width="100%" colspan="2">
-				<div class="btn-set"><input type="number" id="jQserialAdd" autocomplete="off" class="flex" placeholder="Serial Number" /><button type="button" style="min-width:100px;" id="jQserialSubmit">Submit</button></div>
-			</td>
-		</tr>
-		<tr style="display:none">
-			<td width="100%">
-				<div class="btn-set"><textarea rows="5" placeholder="Serial Numbers" id="jQserialBulk" class="flex" style="height: 100px;resize: none;"></textarea></div>
-			</td>
-			<td>
-				<div class="btn-set"><button type="button" style="height: 100px;min-width:100px;" id="jQbuttonBulk">Check-in</button></div>
-			</td>
-		</tr>
-	</tbody>
-</table>
-<?php
-echo $_TEMPLATE->CommandBarEnd();
-$_TEMPLATE->ShiftStickyStart(16);
-$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Attendance records</span>");
-echo $_TEMPLATE->NewFrameBodyStart();
-echo "<div id=\"jqOutput\" class=\"att-submitionlist\"></div>";
-echo $_TEMPLATE->NewFrameBodyEnd();
 ?>
 
 

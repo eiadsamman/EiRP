@@ -182,7 +182,7 @@
 }
 
 #template-sidePanelGroupItems>div {
-	background-color: var(--bgColor);
+	background-color: var(--color-background);
 	padding: 7px 10px;
 	position: sticky;
 	top: 0px;
@@ -201,7 +201,7 @@
 #template-sidePanelGroupItems>div.template-nestPadding {
 	padding-left: 20px;
 	background-color: #fff;
-	color: var(--linkColor);
+	color: var(--color-link);
 	top: 28px
 }
 
@@ -227,7 +227,7 @@
 }
 
 #template-sidePanelGroupItems>div>a.template-IconAdd:hover:before {
-	color: var(--linkColor);
+	color: var(--color-link);
 }
 
 
@@ -240,7 +240,7 @@
 }
 
 #template-sidePanelGroupItems>a:hover {
-	background-color: var(--softBgColor);
+	background-color: var(--color-faint-white);
 	text-decoration: none;
 }
 
@@ -304,7 +304,7 @@
 .template-gridLayout>div>span {
 	display: block;
 	color: #777;
-	/*var(--linkColor);*/
+	/*var(--color-link);*/
 	padding: 0px 0 3px 0;
 	/*border-bottom: solid 1px #ddd;*/
 	/*text-decoration: underline;*/
@@ -326,8 +326,8 @@
 .template-gridLayout.inline-title {
 	font-weight: bold;
 	padding-bottom: 5px;
-	color: var(--linkColor);
-	border-bottom: solid 1px var(--bgColor);
+	color: var(--color-link);
+	border-bottom: solid 1px var(--color-background);
 	margin-bottom: 10px;
 	;
 	margin-top: 15px;

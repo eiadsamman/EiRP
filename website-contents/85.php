@@ -88,7 +88,6 @@ class Penumbra
 	public function output()
 	{
 		echo "<pre>";
-		var_dump($this->fields);
 	}
 }
 

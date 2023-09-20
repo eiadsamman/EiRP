@@ -254,8 +254,8 @@ class Registration extends \System\Individual\Employee
 
 	public function ReportOngoingBySector(array $parameters = array()): mysqli_result|bool
 	{
-		$r = ("
-			SELECT
+		$r = (
+			"SELECT
 				lbr_id, usr_firstname,usr_lastname, up_id
 			FROM 
 				labour_track 

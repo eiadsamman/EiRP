@@ -112,9 +112,5 @@ class Page
 			}
 		}
 	}
-	public function increment_visit(int $id = null)
-	{
-		$this->app->db->query("INSERT INTO user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value,usrset_time) 
-			VALUES (" . $this->app->user->info->id . ",'system_count_page_visit'," . (is_null($id) ? $this->inuse->id : $id) . ",'1',NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
-	}
+	
 }

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
@@ -16,22 +17,17 @@ use System\App;
 
 $app = new App(__DIR__, "cpanel3.settings.xml", false);
 
-
 $performance = new System\Log\Performance($app->root . "admin/performance.log");
-
 $app->database_connect($app->settings->database['host'], $app->settings->database['username'], $app->settings->database['password'], $app->settings->database['name']);
 $app->get_base_permission();
 $app->set_timezone($app->settings->site['timezone']);
-$app->subdomain = isset($app->settings->site['subdomain']) && trim($app->settings->site['subdomain']) != "" ? trim($app->settings->site['subdomain']) : false;
 $app->initializePermissions();
 $app->initializeSystemCurrency();
-$request = $app->process_request(str_replace("\\", "/", trim($_GET['___REQUESTURI'], "/")) . "/", $app->settings->site['index']);
+$app->register($_SERVER['REQUEST_URI']);
 $access_error = $app->user_init();
 $fs = new System\FileSystem\Page($app);
-
-
-$dir = $fs->dir($request);
-if(!$dir){
+$dir = $fs->dir($app->resolve());
+if (!$dir) {
 	$app->responseStatus->NotFound->response();
 }
 $fs->setUse($dir->id);
@@ -39,10 +35,7 @@ if ($fs()->enabled == false) {
 	$app->responseStatus->Forbidden->response();
 }
 
-
-
 include("admin/methods.php");
-
 
 /* Deny access if pagefile request a permission & display the login form */
 if ($fs()->permission->deny == true && $fs()->id == $app::PERMA_ID['index']) {
@@ -95,7 +88,8 @@ if ($fs()->id == $app::PERMA_ID['slo']) {
 }
 
 
-$fs->increment_visit();
+$frequent_visit = new System\Personalization\FrequentVisit($app);
+$frequent_visit->registerVisit($fs()->id);
 $app->build_prefix_list();
 
 
@@ -158,7 +152,4 @@ if ($app->xhttp) {
 	}
 }
 
-
-
 $performance->fullReport($fs()->dir, $app->user->info->id);
-

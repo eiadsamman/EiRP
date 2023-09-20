@@ -1,8 +1,11 @@
 <?php
-use System\Template\Gremium\Gremium;
+use System\Personalization\Bookmark;
+use System\Template\Gremium;
+
+$bookmark = new Bookmark($app);
 
 if ($app->xhttp && isset($_POST['add'])) {
-	$bookmark_add = $app->user->bookmark_add((int) $_POST['add']);
+	$bookmark_add = $bookmark->add((int) $_POST['add']);
 	if ($bookmark_add == true) {
 		header("QUERY_RESULT: 1");
 		echo json_encode(
@@ -20,23 +23,24 @@ if ($app->xhttp && isset($_POST['add'])) {
 	exit;
 }
 if ($app->xhttp && isset($_POST['remove'])) {
-	echo $app->user->bookmark_remove((int) $_POST['remove']) ? "1" : "0";
+	echo $bookmark->remove((int) $_POST['remove']) ? "1" : "0";
+	exit;
+}
+
+if ($app->xhttp) {
 	exit;
 }
 
 
 
-
-$gremium = new Gremium(true);
-$gremium->header(true, null, null, "<h1>Bookmarks</h1>");
-$gremium->section(true);
-$gremium->sectionHeader("<span class=\"flex\">Account information</span>");
-$gremium->sectionArticle();
-
+$grem = new Gremium\Gremium(true);
+$grem->header()->prev($fs(27)->dir)->serve("<h1>Bookmarks</h1>");
+$grem->legend()->serve("<span class=\"flex\">Account information</span>");
+$grem->article()->open();
 
 $count = 0;
 $buffer = "";
-foreach ($app->user->bookmark_list() as $bookmark) {
+foreach ($bookmark->list() as $bookmark) {
 	//color:#{$bookmark['trd_attrib5']}
 	//<span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px;display:inline-block;color:#555\">&#xe{$bookmark['trd_attrib4']};</span>
 	$count++;
@@ -51,16 +55,15 @@ if ($count > 0) {
 	echo "<table class=\"bom-table hover \"><tbody>{$buffer}</tbody></table>";
 } else {
 	//$_TEMPLATE->NewFrameTitle("<span class=\"flex\">N</span>", false, true);
-	echo('<ul>
+	echo ('<ul>
 			<li>No bookmarks found</li>
 			<li>Try adding some pages to bookmarks</li>
 			<li>Bookmarks can be added through `User Account` menu by clicking `Add` button</li>
 			<ul>');
 }
 
-$gremium->sectionArticle();
-$gremium->section();
-unset($gremium);
+$grem->getLast()->close();
+unset($grem);
 
 ?>
 <script>
@@ -86,9 +89,6 @@ unset($gremium);
 				rowowner.css("display", "table-row");
 				messagesys.failure("Removing bookmark failed");
 			});
-
 		});
-
-
 	});
 </script>

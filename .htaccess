@@ -12,7 +12,7 @@ RewriteBase /
 RewriteRule ^$ /eiad/index/ [L,NC,NS]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*?)/?$ /eiad/p.php?%{QUERY_STRING}&___REQUESTURI=$1 [L,NC,NS]
+RewriteRule ^.*$ /eiad/p.php [L,NC,NS]
 
 
 #<FilesMatch "\.(html|htm|js|css)$">

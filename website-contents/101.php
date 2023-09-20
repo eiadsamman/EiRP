@@ -7,9 +7,9 @@ $SmartListObject = new SmartListObject($app);
 $accounting = new Accounting($app);
 
 /*
-*Functino result@true:false, message@str, focus@str, extra@array
-*Return a JSON string
-*/
+ *Functino result@true:false, message@str, focus@str, extra@array
+ *Return a JSON string
+ */
 function _JSON_output($result, $message, $focus = null, $extra = null)
 {
 	echo "{";
@@ -28,9 +28,9 @@ function _JSON_output($result, $message, $focus = null, $extra = null)
 $transaction_id = null;
 
 if (isset($_POST['id'])) {
-	$transaction_id = isset($_POST['id']) ? (int)$_POST['id'] : null;
+	$transaction_id = isset($_POST['id']) ? (int) $_POST['id'] : null;
 } elseif (isset($_GET['id'])) {
-	$transaction_id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+	$transaction_id = isset($_GET['id']) ? (int) $_GET['id'] : null;
 }
 
 if (is_null($transaction_id)) {
@@ -40,8 +40,9 @@ if (is_null($transaction_id)) {
 
 //Check statement if valid for editing and user has permissions to do so
 $arr_transaction = null;
-if ($r = $app->db->query("
-	SELECT 
+if (
+	$r = $app->db->query(
+		"SELECT 
 		acm_id,acm_usr_id,acm_editor_id,UNIX_TIMESTAMP(acm_ctime) AS acm_ctime,acm_type,acm_beneficial,acm_comments,acm_reference,
 		_category._catname,_category._catid,acctyp_name,
 		CONCAT_WS(' ',COALESCE(_usr.usr_firstname,''),IF(NULLIF(_usr.usr_lastname, '') IS NULL, NULL, _usr.usr_lastname)) AS _usrname,
@@ -62,7 +63,9 @@ if ($r = $app->db->query("
 			LEFT JOIN acc_transtypes ON acctyp_type=acm_type
 			LEFT JOIN currencies ON cur_id=acm_realcurrency
 	WHERE 
-		acm_id=$transaction_id;")) {
+		acm_id=$transaction_id;"
+	)
+) {
 	if ($row = $r->fetch_assoc()) {
 		$arr_transaction = $row;
 	}
@@ -74,7 +77,8 @@ if (is_null($arr_transaction)) {
 
 //Get Inbound/Outbound records
 $arr_transaction['transactions'] = array();
-if ($r = $app->db->query("
+if (
+	$r = $app->db->query("
 	SELECT 
 		atm_id,atm_account_id,atm_value,atm_dir,cur_name,cur_symbol,CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name) AS prt_name,cur_id
 	FROM
@@ -85,33 +89,36 @@ if ($r = $app->db->query("
 			JOIN `acc_accounttype` ON prt_type=ptp_id
 			JOIN companies ON prt_company_id=comp_id
 	WHERE
-		atm_main={$arr_transaction['acm_id']}")) {
+		atm_main={$arr_transaction['acm_id']}")
+) {
 	while ($row = $r->fetch_assoc()) {
 		$arr_transaction['transactions'][$row['atm_dir']] = $row;
 	}
 }
 
 
+
+
 if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
-	if (!$c__actions->edit) {
+	if (!$fs()->permission->edit) {
 		_JSON_output(false, "Permissions denided", "jQvalue");
 	}
-	$_POST['id'] = (int)$_POST['id'];
-	$_POST['type'] = (int)$_POST['type'];
+	$_POST['id'] = (int) $_POST['id'];
+	$_POST['type'] = (int) $_POST['type'];
 
-	$_POST['value'] = (float)trim(str_replace(",", "", $_POST['value']));
+	$_POST['value'] = (float) trim(str_replace(",", "", $_POST['value']));
 	$_POST['comments'] = isset($_POST['comments']) && trim($_POST['comments']) != "" ? addslashes($_POST['comments']) : null;
 	$_POST['benificial'] = isset($_POST['benificial']) && trim($_POST['benificial']) != "" ? addslashes($_POST['benificial']) : null;
 	$_POST['reference'] = isset($_POST['reference']) && trim($_POST['reference']) != "" ? addslashes($_POST['reference']) : null;
 
-	$_POST['status'] = isset($_POST['status']) && (int)$_POST['status'] == 1 ? true : false;
+	$_POST['status'] = isset($_POST['status']) && (int) $_POST['status'] == 1 ? true : false;
 
-	if ($r = $app->db->query("SELECT prt_id FROM `acc_accounts` WHERE prt_id=" . ((int)$_POST['creditor']) . ";")) {
+	if ($r = $app->db->query("SELECT prt_id FROM `acc_accounts` WHERE prt_id=" . ((int) $_POST['creditor']) . ";")) {
 		if ($r->num_rows == 0) {
 			_JSON_output(false, "Select creditor account", "jQcreditor");
 		}
 	}
-	if ($r = $app->db->query("SELECT prt_id FROM `acc_accounts` WHERE prt_id=" . ((int)$_POST['debitor']) . ";")) {
+	if ($r = $app->db->query("SELECT prt_id FROM `acc_accounts` WHERE prt_id=" . ((int) $_POST['debitor']) . ";")) {
 		if ($r->num_rows == 0) {
 			_JSON_output(false, "Select creditor account", "jQdebitor");
 		}
@@ -119,7 +126,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 	if ($_POST['creditor'] == $_POST['debitor']) {
 		_JSON_output(false, "Debitor account must not be same as Creditor's", "jQcreditor");
 	}
-	if ($r = $app->db->query("SELECT acccat_id FROM acc_categories WHERE acccat_id=" . ((int)$_POST['category']) . ";")) {
+	if ($r = $app->db->query("SELECT acccat_id FROM acc_categories WHERE acccat_id=" . ((int) $_POST['category']) . ";")) {
 		if ($r->num_rows == 0) {
 			_JSON_output(false, "Select the transaction category", "jQcategory");
 		}
@@ -128,7 +135,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 		_JSON_output(false, "Enter the name of involved parties in this transaction", "jQbeneficial");
 	}
 
-	if ((float)$_POST['value'] <= 0) {
+	if ((float) $_POST['value'] <= 0) {
 		_JSON_output(false, "Enter a valid float value", "jQvalue");
 	}
 
@@ -142,7 +149,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 	if ($debitor_currency === false) {
 		_JSON_output(false, "No currency provided for the debitor account");
 	}
-	if ((int)$_POST['currency'] == 0) {
+	if ((int) $_POST['currency'] == 0) {
 		_JSON_output(false, "Enter a valid currency", "jQcurrenyident");
 	}
 
@@ -160,7 +167,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 	$attachments = array();
 	if (isset($_POST['attachments']) && is_array($_POST['attachments'])) {
 		foreach ($_POST['attachments'] as $VAtt) {
-			$attachments[] = (int)$VAtt;
+			$attachments[] = (int) $VAtt;
 		}
 	}
 
@@ -196,16 +203,16 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 					acm_comments=%5\$s,acm_reference=%6\$s,acm_rejected=%7\$d,
 					acm_realvalue=%9\$f,acm_realcurrency=%10\$d,acm_ctime=%11\$s
 		 WHERE acm_id=%8\$d;",
-		(int)$_POST['user'] == 0 ? "NULL" : (int)$_POST['user'],
-		(int)$_POST['type'],
+		(int) $_POST['user'] == 0 ? "NULL" : (int) $_POST['user'],
+		(int) $_POST['type'],
 		($_POST['benificial'] != null ? "'" . $_POST['benificial'] . "'" : "NULL"),
-		(int)$_POST['category'],
+		(int) $_POST['category'],
 		($_POST['comments'] != null ? "'" . $_POST['comments'] . "'" : "NULL"),
 		($_POST['reference'] != null ? "'" . $_POST['reference'] . "'" : "NULL"),
 		($_POST['status'] ? "0" : "1"),
 		$arr_transaction['acm_id'],
 		$_POST['value'],
-		(int)$_POST['currency'],
+		(int) $_POST['currency'],
 		"'" . date("Y-m-d", $date) . "'"
 
 
@@ -256,8 +263,6 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 	if ($result) {
 		$app->db->commit();
 		$app->db->autocommit(true);
-		$log = new Log();
-		$log->add($app->user->info->id, 23, $arr_transaction['acm_id'], $fs()->id);
 		_JSON_output(true, "Statement updated successfully");
 	} else {
 		$app->db->rollback();
@@ -267,13 +272,15 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 }
 
 include_once("admin/class/SmartListObject.php");
-$SmartListObject = new SmartListObject();
+$SmartListObject = new SmartListObject($app);
 ?>
 <input type="hidden" id="jQtransactionID" value="<?php echo $arr_transaction['acm_id']; ?>" />
 <table class="bom-table" id="jQformTable" style="min-width: 1000px">
 	<thead>
 		<tr class="special">
-			<td colspan="4">Editing transaction statement `<?php echo $arr_transaction['acm_id']; ?>`</td>
+			<td colspan="4">Editing transaction statement `
+				<?php echo $arr_transaction['acm_id']; ?>`
+			</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -281,7 +288,9 @@ $SmartListObject = new SmartListObject();
 			<th>Type</th>
 			<td>
 				<div class="btn-set normal">
-					<input tabindex="1" type="text" data-slo="ACC_TYPES" class="flex" value="<?php echo $arr_transaction['acctyp_name']; ?>" data-slodefaultid="<?php echo $arr_transaction['acm_type']; ?>" id="jQtype" />
+					<input tabindex="1" type="text" data-slo="ACC_TYPES" class="flex"
+						value="<?php echo $arr_transaction['acctyp_name']; ?>"
+						data-slodefaultid="<?php echo $arr_transaction['acm_type']; ?>" id="jQtype" />
 				</div>
 			</td>
 			<th>Status</th>
@@ -295,16 +304,19 @@ $SmartListObject = new SmartListObject();
 			<th style="min-width:100px">Creditor</th>
 			<td width="50%">
 				<div class="btn-set normal">
-					<input tabindex="2" type="text" data-slo="ACC_OUTBOUND" class="flex" value="<?php echo $arr_transaction['transactions'][0]['prt_name'] . ""; ?>" data-slodefaultid="<?php echo $arr_transaction['transactions'][0]['atm_account_id']; ?>" id="jQcreditor" />
+					<input tabindex="2" type="text" data-slo=":LIST" data-list="jQcreditorList" class="flex" id="jQcreditor" />
+					<datalist id="jQcreditorList" style="display: none;">
+						<?= $SmartListObject->userAccountsInbound($arr_transaction['transactions'][0]['atm_account_id']); ?>
+					</datalist>
 				</div>
 			</td>
-			<th style="min-width:100px">Beneficial</th>
+			<th style="min-width:100px">Beneficiary</th>
 			<td width="50%">
 				<div class="btn-set normal">
-					<input type="text" class="flex" tabindex="7" data-slo=":LIST" data-list="beneficialList" value="<?php echo $arr_transaction['acm_beneficial']; ?>" data-slodefaultid="0" id="jQbeneficial" />
+					<input type="text" class="flex" tabindex="7" data-slo=":LIST" data-list="beneficialList" id="jQbeneficial" />
 				</div>
 				<datalist id="beneficialList">
-					<?= $SmartListObject->financial_beneficiary(); ?>
+					<?= $SmartListObject->financialBeneficiary($arr_transaction['acm_beneficial']); ?>
 				</datalist>
 
 			</td>
@@ -313,13 +325,18 @@ $SmartListObject = new SmartListObject();
 			<th>Date</th>
 			<td>
 				<div class="btn-set normal">
-					<input tabindex="3" type="text" data-slo="DATE" class="flex" value="<?php echo date("Y-m-d", $arr_transaction['acm_ctime']); ?>" data-slodefaultid="<?php echo date("Y-m-d", $arr_transaction['acm_ctime']); ?>" id="jQdate" />
+					<input tabindex="3" type="text" data-slo="DATE" class="flex"
+						value="<?php echo date("Y-m-d", $arr_transaction['acm_ctime']); ?>"
+						data-slodefaultid="<?php echo date("Y-m-d", $arr_transaction['acm_ctime']); ?>" id="jQdate" />
 				</div>
 			</td>
 			<th>Reference</th>
 			<td>
 				<div class="btn-set normal">
-					<input type="text" class="text" tabindex="8" id="jQreference" data-slo="ACC_REFERENCE" data-slodefaultid="<?php echo $arr_transaction['acm_reference']; ?>" value="<?php echo $arr_transaction['acm_reference']; ?>" style="-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;" />
+					<input type="text" class="text" tabindex="8" id="jQreference" data-slo="ACC_REFERENCE"
+						data-slodefaultid="<?php echo $arr_transaction['acm_reference']; ?>"
+						value="<?php echo $arr_transaction['acm_reference']; ?>"
+						style="-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;" />
 				</div>
 			</td>
 		</tr>
@@ -327,9 +344,9 @@ $SmartListObject = new SmartListObject();
 			<th>Debitor</th>
 			<td>
 				<div class="btn-set normal">
-					<input tabindex="4" type="text" data-slo=":LIST" data-list="jQdebitorList" class="flex" value="<?php echo $arr_transaction['transactions'][1]['prt_name']; ?>" data-slodefaultid="<?php echo $arr_transaction['transactions'][1]['atm_account_id']; ?>" id="jQdebitor" />
+					<input tabindex="4" type="text" data-slo=":LIST" data-list="jQdebitorList" class="flex" id="jQdebitor" />
 					<datalist id="jQdebitorList" style="display: none;">
-						<?= $SmartListObject->user_accounts_inbound(); ?>
+						<?= $SmartListObject->userAccountsInbound($arr_transaction['transactions'][1]['atm_account_id']); ?>
 					</datalist>
 				</div>
 
@@ -337,7 +354,10 @@ $SmartListObject = new SmartListObject();
 			<th>Employee ID</th>
 			<td>
 				<div class="btn-set normal">
-					<input type="text" tabindex="9" class="flex" data-slo="B00S" value="<?php echo $arr_transaction['_usrname']; ?>" data-slodefaultid="<?php echo (int)$arr_transaction['acm_usr_id'] != 0 ? $arr_transaction['acm_usr_id'] : ""; ?>" id="jQuser" />
+					<input type="text" tabindex="9" class="flex" data-slo="B00S"
+						value="<?php echo $arr_transaction['_usrname']; ?>"
+						data-slodefaultid="<?php echo (int) $arr_transaction['acm_usr_id'] != 0 ? $arr_transaction['acm_usr_id'] : ""; ?>"
+						id="jQuser" />
 				</div>
 			</td>
 		</tr>
@@ -345,13 +365,18 @@ $SmartListObject = new SmartListObject();
 			<th>Category</th>
 			<td>
 				<div class="btn-set normal">
-					<input type="text" data-slo="ACC_CAT" value="<?php echo $arr_transaction['_catname']; ?>" data-slodefaultid="<?php echo $arr_transaction['_catid']; ?>" tabindex="5" class="flex" id="jQcategory" />
+					<input type="text" data-slo="ACC_CAT" value="<?php echo $arr_transaction['_catname']; ?>"
+						data-slodefaultid="<?php echo $arr_transaction['_catid']; ?>" tabindex="5" class="flex"
+						id="jQcategory" />
 				</div>
 			</td>
 			<th rowspan="2">Comments</th>
 			<td rowspan="2">
 				<div class="btn-set normal">
-					<textarea tabindex="10" style="-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;height:100%;" class="textarea" id="jQcomments" rows="4"><?php echo !is_null($arr_transaction['acm_comments']) ? $arr_transaction['acm_comments'] : ""; ?></textarea>
+					<textarea tabindex="10"
+						style="-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;height:100%;"
+						class="textarea" id="jQcomments"
+						rows="4"><?php echo !is_null($arr_transaction['acm_comments']) ? $arr_transaction['acm_comments'] : ""; ?></textarea>
 				</div>
 			</td>
 		</tr>
@@ -359,8 +384,13 @@ $SmartListObject = new SmartListObject();
 			<th>Value</th>
 			<td>
 				<div class="btn-set normal">
-					<input type="text" tabindex="6" style="-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;" value="<?php echo rtrim(rtrim(number_format(abs($arr_transaction['acm_realvalue']), 7, ".", ""), "0"), "."); ?>" id="jQvalue" /><!--
-		--><input tabindex="-1" type="text" data-slo="CURRENCY_SYMBOL" id="jQcurrenyident" value="<?php echo $arr_transaction['realcurrencyname']; ?>" data-slodefaultid="<?php echo $arr_transaction['realcurrencyid']; ?>" style="width:62px;" />
+					<input type="text" tabindex="6"
+						style="-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;"
+						value="<?php echo rtrim(rtrim(number_format(abs($arr_transaction['acm_realvalue']), 7, ".", ""), "0"), "."); ?>"
+						id="jQvalue" /><!--
+		--><input tabindex="-1" type="text" data-slo="CURRENCY_SYMBOL" id="jQcurrenyident"
+						value="<?php echo $arr_transaction['realcurrencyname']; ?>"
+						data-slodefaultid="<?php echo $arr_transaction['realcurrencyid']; ?>" style="width:62px;" />
 				</div>
 			</td>
 		</tr>
@@ -368,10 +398,12 @@ $SmartListObject = new SmartListObject();
 			<td colspan="4">
 				<div class="btn-set" style="justify-content:center">
 					<button id="js_upload_trigger" class="js_upload_trigger">Attachments</button>
-					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
+					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple"
+						accept="image/*" />
 					<span id="js_upload_list" class="js_upload_list"></span>
 					<button id="js_upload_count" class="js_upload_count"><span>0</span> files</button>
-					<button id="jQsubmit" tabindex="11">Edit</button><?php echo isset($_GET['ajax']) ? "<button id=\"jQpopupCancel\">Cancel</button>" : ""; ?>
+					<button id="jQsubmit" tabindex="11">Edit</button>
+					<?php echo isset($_GET['ajax']) ? "<button id=\"jQpopupCancel\">Cancel</button>" : ""; ?>
 				</div>
 			</td>
 		</tr>
@@ -379,7 +411,7 @@ $SmartListObject = new SmartListObject();
 </table>
 <script>
 	var $ajax = null;
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 		Upload = $.Upload({
 			objectHandler: $("#js_upload_list"),
 			domselector: $("#js_uploader_btn"),
@@ -431,8 +463,8 @@ $SmartListObject = new SmartListObject();
 			$jQstatus = $("#jQstatus"),
 
 			$jQsubmit = $("#jQsubmit");
-		var addStatement = function() {
-			var inputStatus = function(status) {
+		var addStatement = function () {
+			var inputStatus = function (status) {
 				$jQuser.input[0].prop("disabled", status);
 				$jQdate.input[0].prop("disabled", status);
 				$jQcategory.input[0].prop("disabled", status);
@@ -519,7 +551,7 @@ $SmartListObject = new SmartListObject();
 				data: preparePOST,
 				url: "<?php echo $fs()->dir; ?>/?id=<?php echo $arr_transaction['acm_id']; ?>",
 				type: "POST"
-			}).done(function(data) {
+			}).done(function (data) {
 				var _data = null;
 				try {
 					_data = JSON.parse(data);
@@ -540,16 +572,16 @@ $SmartListObject = new SmartListObject();
 						$("#" + _data.focus).focus().select();
 					return false;
 				}
-			}).fail(function(a, b, c) {
+			}).fail(function (a, b, c) {
 				messagesys.failure(b + " - " + c);
-			}).always(function() {
+			}).always(function () {
 				inputStatus(false);
 			});
 		}
-		$("#jQsubmit").on('click', function() {
+		$("#jQsubmit").on('click', function () {
 			addStatement();
 		});
-		$("#jQpopupCancel").on('click', function() {
+		$("#jQpopupCancel").on('click', function () {
 			if ($ajax != null) {
 				$ajax.abort();
 			}

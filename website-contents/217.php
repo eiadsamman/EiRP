@@ -4,7 +4,6 @@ $r = $app->db->query(
 	"SELECT
 		 SUM(atm_value) AS total_accountgroup, mua.upr_prt_fetch,
 		 mua.comp_name, mua.cur_shortname, mua.ptp_name, mua.prt_name, mua.prt_id
-	
 	FROM 
 		acc_temp 
 		JOIN acc_main ON acm_id = atm_main
@@ -15,7 +14,7 @@ $r = $app->db->query(
 				view_financial_accounts
 					
 					JOIN user_partition ON prt_id = upr_prt_id AND upr_usr_id = {$app->user->info->id} AND upr_prt_view = 1
-					LEFT JOIN user_settings ON usrset_usr_defind_name = prt_id AND usrset_usr_id = {$app->user->info->id} AND usrset_name = 'system_count_account_selection'
+					LEFT JOIN user_settings ON usrset_usr_defind_name = prt_id AND usrset_usr_id = {$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::SystemCountAccountSelection->value . "
 			ORDER BY 
 				(usrset_value + 0) DESC
 			LIMIT 5
@@ -31,10 +30,10 @@ $r = $app->db->query(
 );
 
 if ($r) {
-	echo "<div><div class=\"widgetWQU\"><div>";
+	echo "<div class=\"widgetWQU\"><div><div>";
 	while ($row = $r->fetch_assoc()) {
 		echo "<div><div class=\"btn-set\" style=\"flex-wrap: nowrap\">";
-		if ((int)$row['upr_prt_fetch'] == 1) {
+		if ((int) $row['upr_prt_fetch'] == 1) {
 			echo "<a class=\"flex\" href=\"?--sys_sel-change=account_commit&i={$row['prt_id']}\" title=\"{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}\">{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}</a>";
 		} else {
 			echo "<span class=\"nofetch\" title=\"{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}\">{$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}</span>";

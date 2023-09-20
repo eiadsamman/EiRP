@@ -1,10 +1,22 @@
 <?php
+use System\Personalization\Personalization;
+/* Fix user_settings once */
 
+if(isset($_GET['migrate'])){
+
+	$perz = new Personalization($app);
+
+	$perz->migrate();
+
+}
+
+
+
+
+
+exit;
 use System\SmartListObject;
-
-
 $SmartListObject = new SmartListObject($app);
-
 ?>
 <div class="btn-set">
 	<input type="text" id="list" data-slo=":LIST" data-list="zlist" />
@@ -13,7 +25,7 @@ $SmartListObject = new SmartListObject($app);
 </div>
 
 <datalist id="zlist">
-	<?= $SmartListObject->system_individual($app->user->company->id); ?>
+	<?= $SmartListObject->systemIndividual($app->user->company->id); ?>
 </datalist>
 <?php
 echo "<pre>" . print_r($app->user, true) . "</pre>";

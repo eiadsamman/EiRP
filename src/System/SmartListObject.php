@@ -11,28 +11,32 @@ class SmartListObject
 	{
 		$this->app = $app;
 	}
-	private function template(string $id, string $value, string $keywords = null): string
+	private function template(string $id, string $value, string $keywords = null, bool $selected = false): string
 	{
-		$output = "<option";
+		$output = "<option" . ($selected ? " selected=\"selected\"" : "") . "";
 		$output .= " data-id=\"" . htmlentities($id, ENT_QUOTES, "UTF-8", false) . "\"";
 		$output .= !is_null($keywords) ? " data-keywords=\"" . htmlentities($keywords, ENT_QUOTES, "UTF-8", false) . "\"" : "";
 		$output .= ">";
 		$output .= htmlentities($value, ENT_QUOTES, "UTF-8", false);
 		$output .= "</option>";
-		return  $output;
+		return $output;
 	}
 
-	public function system_accounts(int $company_filter = null): string
+
+
+	public function systemAccounts(int $company_filter = null): string
 	{
 		$output = "";
 		try {
-			if ($r = $this->app->db->query("SELECT 
+			if (
+				$r = $this->app->db->query("SELECT 
 				prt_id, comp_name, ptp_name, prt_name, cur_name, cur_shortname
 			FROM
 				view_financial_accounts
 			WHERE
 				1 " . ($company_filter != null ? " AND comp_id = {$company_filter}" : "") . "
-			")) {
+			")
+			) {
 				while ($row = $r->fetch_assoc()) {
 					$output .= $this->template($row['prt_id'], "[{$row['cur_shortname']}] {$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}", "");
 				}
@@ -47,26 +51,29 @@ class SmartListObject
 
 
 
-	public function user_accounts(?\System\Finance\AccountRole &$role = null, ?int $company_id = null): string
+	public function userAccounts(?\System\Finance\AccountRole &$role = null, ?int $company_id = null, mixed $select = null): string
 	{
 		$output = "";
 		try {
-			if ($r = $this->app->db->query(
-				"SELECT 
+			if (
+				$r = $this->app->db->query(
+					"SELECT 
 				prt_id, comp_name, ptp_name, prt_name, cur_name, cur_shortname, usrset_value
 			FROM
 				view_financial_accounts
 				JOIN user_partition ON prt_id = upr_prt_id AND upr_usr_id=" . $this->app->user->info->id . (!is_null($role) ? " AND " . $role->sqlClause() : "") . "
-					LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id=" . $this->app->user->info->id . " AND usrset_name = 'system_count_account_selection'
+					LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id=" . $this->app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemCountAccountSelection->value . "
 				" .
 					(!is_null($company_id) ? "WHERE comp_id = " . $this->app->user->company->id . " " : "")
 					. "ORDER BY(usrset_value + 0) DESC"
-			)) {
+				)
+			) {
 				while ($row = $r->fetch_assoc()) {
 					$output .= $this->template(
 						$row['prt_id'],
 						"[" . $row['cur_shortname'] . "] " . ($company_id != null ? "" : $row['comp_name'] . ": ") . $row['ptp_name'] . ": " . $row['prt_name'],
-						""
+						"",
+						$select == $row['prt_id']
 					);
 				}
 			}
@@ -90,17 +97,17 @@ class SmartListObject
 
 
 
-	public function user_accounts_inbound(): string
+	public function userAccountsInbound(mixed $select = null): string
 	{
 		$role = new \System\Finance\AccountRole();
 		$role->inbound = true;
-		return $this->user_accounts($role);
+		return $this->userAccounts($role, null, $select);
 	}
-	public function user_accounts_outbound(): string
+	public function userAccounts_outbound(mixed $select = null): string
 	{
 		$role = new \System\Finance\AccountRole();
 		$role->outbound = true;
-		return $this->user_accounts($role);
+		return $this->userAccounts($role, null, $select);
 	}
 
 
@@ -110,13 +117,15 @@ class SmartListObject
 	 *
 	 * @return string HTML string `<option />` tags based on `System\SmartListObject\template` function
 	 */
-	public function financial_categories(): string
+	public function financialCategories(): string
 	{
 		$output = "";
-		if ($r = $this->app->db->query("SELECT 
+		if (
+			$r = $this->app->db->query("SELECT 
 				 acccat_id,CONCAT(accgrp_name,\": \",acccat_name) AS category_name, acccat_name, accgrp_name
 						FROM acc_categories JOIN acc_categorygroups ON accgrp_id=acccat_group
-			")) {
+			")
+		) {
 			while ($row = $r->fetch_assoc()) {
 				$output .= $this->template($row['acccat_id'], "{$row['acccat_name']}: {$row['accgrp_name']}", $row['category_name']);
 			}
@@ -130,12 +139,13 @@ class SmartListObject
 	 *
 	 * @return string HTML string `<option />` tags based on `System\SmartListObject\template` function
 	 */
-	public function system_individual(int $company_filter = null): string
+	public function systemIndividual(int $company_filter = null): string
 	{
 		$output = "";
 		try {
-			if ($r = $this->app->db->query(
-				"SELECT 
+			if (
+				$r = $this->app->db->query(
+					"SELECT 
 				usr_id, 
 				usr_firstname, 
 				usr_lastname
@@ -144,7 +154,8 @@ class SmartListObject
 					JOIN labour ON lbr_id=usr_id
 			WHERE 
 				1 " . ($company_filter != null ? " AND lbr_company=" . $company_filter : "") . ";"
-			)) {
+				)
+			) {
 				while ($row = $r->fetch_assoc()) {
 					$output .= $this->template($row['usr_id'], $row['usr_firstname'] . (!is_null($row['usr_lastname']) ? " " . $row['usr_lastname'] : ""));
 				}
@@ -161,13 +172,18 @@ class SmartListObject
 	 *
 	 * @return string HTML string `<option />` tags based on `System\SmartListObject\template` function
 	 */
-	public function financial_beneficiary(): string
+	public function financialBeneficiary(mixed $select = null): string
 	{
 		$output = "";
 		try {
 			if ($r = $this->app->db->query("SELECT acm_beneficial, count(acm_beneficial) as trend FROM acc_main GROUP BY acm_beneficial ORDER BY trend DESC")) {
 				while ($row = $r->fetch_assoc()) {
-					$output .= $this->template($row['acm_beneficial'], $row['acm_beneficial']);
+					$output .= $this->template(
+						$row['acm_beneficial'],
+						$row['acm_beneficial'],
+						null,
+						$select == $row['acm_beneficial']
+					);
 				}
 			}
 		} catch (\mysqli_sql_exception $e) {
@@ -176,4 +192,23 @@ class SmartListObject
 		}
 		return $output;
 	}
+
+
+	public function hrPaymentMethod(): string
+	{
+		$output = "";
+		try {
+			if ($r = $this->app->db->query("SELECT lbr_mth_id, lbr_mth_name FROM labour_method ORDER BY lbr_mth_id")) {
+				while ($row = $r->fetch_assoc()) {
+					$output .= $this->template($row['lbr_mth_id'], $row['lbr_mth_name']);
+				}
+			}
+		} catch (\mysqli_sql_exception $e) {
+			$this->app->errorHandler->logError($e);
+			return "<option>" . $e->getCode() . " Server error!</option>";
+		}
+		return $output;
+	}
+
+
 }

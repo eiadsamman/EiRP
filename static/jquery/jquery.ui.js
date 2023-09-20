@@ -33,12 +33,13 @@ $(document).ready(function (e) {
 				InitiatorObject = initiator;
 				initiator.classList.add("active");
 			}
+			/* window.onscroll=function(){window.scrollTo(x, y);}; */
 			if (focusGoto && menu == RootHeaderMenu) { setTimeout(function () { RootHeaderPFSelector.focus().select(); }, 30); }
 		} else {
 			MenuVisible = false;
 			MenuCurrent.removeClass("show");
 			backgroundObject.removeClass("blur");
-
+			/* window.onscroll=function(){}; */
 			ClearInitiators();
 			MenuCurrent = null;
 		}

@@ -1,5 +1,5 @@
 <?php
-use System\Template\Gremium\Gremium;
+use System\Template\Gremium;
 
 if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 	$r = $app->db->query("SELECT usr_password FROM users WHERE usr_id={$app->user->info->id};");
@@ -40,59 +40,52 @@ if ($r && $row = $r->fetch_assoc()) {
 	<input type="hidden" name="method" value="changepassword" />
 
 	<?php
-	$gremium = new Gremium(true);
-	$gremium->header(true, null, null, "<h1>My Account</h1>");
-	$gremium->menu(true, "<a class=\"\" href=\"{$fs(263)->dir}\">{$fs(263)->title}</a><span class=\"gap\"></span><button class=\"clr-green\" type=\"submit\">Update my settings</button>");
-	$gremium->section(true);
-	$gremium->sectionHeader("<span class=\"flex\">Account information</span>");
-	$gremium->sectionArticle();
-	echo "<table class=\"bom-table mediabond-table\" style=\"margin-bottom:20px;\">
-		<tbody>
-			<tr>
-				<th>Name</th><td><div class=\"btn-set\"><input type=\"text\" value=\"" . $app->user->info->name . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
-			</tr>
-			<tr>
-				<th style=\"min-width:150px;\">Username</th><td style=\"width:100%;\"><div class=\"btn-set\"><input type=\"text\" value=\"" . $app->user->info->username . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
-			</tr>
-			<tr>
-				<th style=\"min-width:150px;\">Register date</th><td style=\"width:100%;\"><div class=\"btn-set\"><input type=\"text\" value=\"" . $curinfo['usr_regdate'] . "\" class=\"flex\" readonly=\"readonly\" /></div></td>
-			</tr>
-			</tbody>
-		</table>";
-	$gremium->sectionArticle();
-	$gremium->sectionHeader("<span class=\"flex\">Security management</span>");
-	$gremium->sectionArticle();
+	$grem = new Gremium\Gremium(true);
+
+	$grem->header()->serve("<h1>My Account</h1>");
+	$grem->menu()->serve("<a class=\"\" href=\"{$fs(263)->dir}\">{$fs(263)->title}</a><span class=\"gap\"></span>");
+	$grem->legend()->serve("<span class=\"flex\">Account information</span>");
+
+	$grem->article()->serve('
+	<div class="template-gridLayout role-input">
+		<div class="btn-set vertical" ><span>Name</span><input type="text" tabindex="-1" value="' . $app->user->info->name . '" readonly="readonly" /></div>
+		<div></div>
+	</div>
+	<div class="template-gridLayout role-input">
+		<div class="btn-set vertical" ><span>Username</span><input type="text" tabindex="-1" value="' . $app->user->info->username . '" readonly="readonly" /></div>
+		<div></div>
+	</div>
+	<div class="template-gridLayout role-input">
+		<div class="btn-set vertical" ><span>Register date</span><input type="text" tabindex="-1" value="' . $curinfo['usr_regdate'] . '" readonly="readonly" /></div>
+		<div></div>
+	</div>
+	');
+
+
+	$grem->legend()->serve("<span class=\"flex\">Security management</span><button type=\"submit\">Update Password</button>");
+	$grem->article()->open();
 	?>
-	<table class="bom-table mediabond-table">
-		<tbody>
-			<tr>
-				<th style="min-width:150px;">Current Password</th>
-				<td style="width:100%;">
-					<div class="btn-set"><input type="password" name="oldpass" id="oldpass" class="flex" /></div>
-				</td>
-			</tr>
-			<tr>
-				<th>New Password</th>
-				<td>
-					<div class="btn-set"><input type="password" name="newpass" id="newpass" class="flex" /></div>
-				</td>
-			</tr>
-			<tr>
-				<th>Retype new password</th>
-				<td>
-					<div class="btn-set"><input type="password" name="conpass" id="conpass" class="flex" /></div>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+	<div class="template-gridLayout role-input">
+		<div class="btn-set vertical"><span>Current password</span><input type="password" name="oldpass" id="oldpass" />
+		</div>
+		<div></div>
+	</div>
+	<div class="template-gridLayout role-input">
+		<div class="btn-set vertical"><span>New password</span><input type="password" name="newpass" id="newpass" />
+		</div>
+		<div></div>
+	</div>
+	<div class="template-gridLayout role-input">
+		<div class="btn-set vertical"><span>Password confirmation</span><input type="password" name="conpass"
+				id="conpass" />
+		</div>
+		<div></div>
+	</div>
 </form>
+
 <?php
-$gremium->sectionArticle();
-
-$gremium->section();
-unset($gremium);
-
-
+$grem->getLast()->close();
+unset($grem);
 ?>
 <script>
 	$(document).ready(function (e) {

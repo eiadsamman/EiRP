@@ -20,8 +20,9 @@
 	position: absolute;
 	width: 0px;
 	z-index: 101;
-	padding: 0px;
+	padding: 0px !important;
 	border: none;
+	height: 0;
 }
 
 .js_upload_list>div {

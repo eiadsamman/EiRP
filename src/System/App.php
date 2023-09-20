@@ -40,7 +40,25 @@ class App
 	public Scope $scope;
 
 	protected array $permissions_array = array();
+	private string|null $route = null;
 
+	public function register(string $route): bool
+	{
+		$route = explode("?", $route)[0];
+		$route = ltrim($route, "/");
+		if (substr($route, 0, strlen($this->subdomain)) == $this->subdomain) {
+			$route = substr($route, strlen($this->subdomain));
+		}
+		$route = trim($route, "/ ");
+		$this->route = $route == "" ? $this->settings->site['index'] : $route;
+
+		return true;
+	}
+
+	public function resolve(): string
+	{
+		return $this->route;
+	}
 	function __construct(string $root, string $settings_file, ?bool $chache = true)
 	{
 
@@ -50,11 +68,6 @@ class App
 		/* Create HTTP response status code instance */
 		$this->responseStatus = new ResponseStatus();
 
-		/* Invalid request */
-		if (!isset($_SERVER['QUERY_STRING'], $_GET['___REQUESTURI'])) {
-			$this->responseStatus->NotFound->response();
-			;
-		}
 
 		/* Get System settings */
 		$this->settings = new Settings($this->root . $settings_file);
@@ -65,7 +78,7 @@ class App
 		$this->errorHandler = new \System\Log\ErrorHandler($this->settings->site['errorlog'], $this->root . "admin/error.log");
 		/* Set http root */
 		$this->http_root = (isset($this->settings->site['forcehttps']) && $this->settings->site['forcehttps'] === true ? "https" : "http") . "://{$_SERVER['SERVER_NAME']}/" . (isset($this->settings->site['subdomain']) && trim($this->settings->site['subdomain']) != "" ? $this->settings->site['subdomain'] . "/" : "");
-
+		$this->subdomain = isset($this->settings->site['subdomain']) ? ltrim(trim($this->settings->site['subdomain']), "/") : "";
 		/* Start session */
 		session_start();
 
@@ -86,22 +99,7 @@ class App
 
 		$this->scope = new Scope();
 	}
-	public function process_request(string $request, string $default): string
-	{
-		$request_uri = null;
-		$_uri = trim($request);
 
-		if (preg_match("#^(.*?)$#i", $_uri, $_chunk)) {
-			$request_uri = trim(rtrim($_chunk[1], "\\/"));
-		} else {
-			$this->responseStatus->NotFound->response();
-		}
-
-		if ($request_uri == "") {
-			$request_uri = $default;
-		}
-		return $request_uri;
-	}
 
 	public function permission(int $id): Permission|bool
 	{
@@ -227,6 +225,20 @@ class App
 		return $output;
 	}
 
+
+	public function date_validate(string $query, ?bool $end_of_day = false): int|bool
+	{
+		if (preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $query, $match)) {
+			if (checkdate((int) $match[2], (int) $match[3], (int) $match[1])) {
+				if ($end_of_day) {
+					return mktime(23, 59, 59, (int) $match[2], (int) $match[3], (int) $match[1]);
+				} else {
+					return mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1]);
+				}
+			}
+		}
+		return false;
+	}
 
 	public function user_init(): int
 	{

@@ -2,20 +2,20 @@
 
 use System\Finance\Accounting;
 use System\SmartListObject;
-use System\Template\Body;
+use System\Template\Gremium;
 
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
-$ajax_debug					= false;
-$debug_level				= 3;
-$accounts_comparition_style	= " AND ";
-$accounting					= new Accounting($app);
-$__defaultaccount			= $accounting->account_information($app->user->account->id);
-$__systemdefaultcurrency	= $accounting->system_default_currency();
-$currency_list				= $accounting->get_currency_list();
-$default_perpage			= 25;
-$arr_overview				= array("total" => 0, "sum" => 0);
-$pre_load_variables			= true;
+$ajax_debug = false;
+$debug_level = 3;
+$accounts_comparition_style = " AND ";
+$accounting = new Accounting($app);
+$__defaultaccount = $accounting->account_information($app->user->account->id);
+$__systemdefaultcurrency = $accounting->system_default_currency();
+$currency_list = $accounting->get_currency_list();
+$default_perpage = 25;
+$arr_overview = array("total" => 0, "sum" => 0);
+$pre_load_variables = true;
 
 if ($__defaultaccount) {
 	$__defaultcurrency = $accounting->account_default_currency($__defaultaccount['id']);
@@ -32,11 +32,11 @@ if ($ajax_debug) {
 /*
 Retreive user setting (per_page)
 */
-$per_page					= $default_perpage;
-$r_perpage = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_name='account_custome_perpage';");
+$per_page = $default_perpage;
+$r_perpage = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::AccountCustomePerpage->value . ";");
 if ($r_perpage) {
 	if ($row_perpage = $r_perpage->fetch_assoc()) {
-		$per_page = (int)$row_perpage['usrset_value'];
+		$per_page = (int) $row_perpage['usrset_value'];
 	}
 }
 
@@ -133,8 +133,8 @@ function layout_extrusion($array, $map, $keys, $max_depth, $current_depth, $firs
 				/*Add current depth in array*/
 				$current_depth++;
 				/*recursive function 
-					Re call
-				*/
+																				Re call
+																			*/
 				layout_extrusion($v, $map, $keys, $max_depth, $current_depth, $first_item);
 				$current_depth--;
 				array_pop($keys);
@@ -225,7 +225,7 @@ function id_maping(&$app, &$array, $array_exclusions, $map)
 			} else {
 				$array_exclusions_index[$v] = false;
 			}
-			$serialized .= $smart . ((int)$v);
+			$serialized .= $smart . ((int) $v);
 			$smart = ",";
 		}
 
@@ -241,9 +241,9 @@ function id_maping(&$app, &$array, $array_exclusions, $map)
 Save custome user perpage setting
 */
 if (isset($_POST['method']) && $_POST['method'] == 'save_per_page_setting') {
-	$value = (int)$_POST['value'];
+	$value = (int) $_POST['value'];
 	$q = sprintf(
-		"INSERT INTO user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value) VALUES (%1\$d,'account_custome_perpage','UNIQUE',%2\$d) ON DUPLICATE KEY UPDATE usrset_value=%2\$d",
+		"INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value) VALUES (%1\$d," . \System\Personalization\Identifiers::AccountCustomePerpage->value . ",'UNIQUE',%2\$d) ON DUPLICATE KEY UPDATE usrset_value=%2\$d",
 		$app->user->info->id,
 		$value
 	);
@@ -265,7 +265,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'load_query') {
 		exit;
 	}
 
-	$r = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_name='account_custome_query_save' AND usrset_id={$_POST['query_id']} AND usrset_usr_id='{$app->user->info->id}'");
+	$r = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_id={$_POST['query_id']} AND usrset_usr_id='{$app->user->info->id}'");
 	if ($r) {
 		if ($row = $r->fetch_assoc()) {
 			$arr_output['result'] = true;
@@ -308,7 +308,7 @@ if (isset($_POST['save_query'])) {
 
 	$_POST['save_name'] = str_replace(array("'", '"', "\\", "(", ")"), "-", $_POST['save_name']);
 	$r = $app->db->query('INSERT INTO 
-		user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value,usrset_time) VALUES (' . $app->user->info->id . ',\'account_custome_query_save\',\'' . $_POST["save_name"] . '\',\'' .
+		user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) VALUES (' . $app->user->info->id . ',' . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . ',\'' . $_POST["save_name"] . '\',\'' .
 		$prepare . '\',FROM_UNIXTIME(' . time() . ')) ON DUPLICATE KEY UPDATE
 		usrset_value=\'' . $prepare . '\',
 		usrset_time=FROM_UNIXTIME(\'' . time() . '\')
@@ -332,7 +332,7 @@ if (isset($_POST['method']) && $_POST['method'] == "delete_query") {
 	if (!isset($_POST['query_id'])) {
 		echo "0";
 	}
-	$r = $app->db->query("DELETE FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_name='account_custome_query_save' AND usrset_id=" . ((int)$_POST['query_id']) . "");
+	$r = $app->db->query("DELETE FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_id=" . ((int) $_POST['query_id']) . "");
 	if ($r) {
 		echo "1";
 	} else {
@@ -346,8 +346,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 	$executingtime = microtime(true);
 	include("99.prepare.php");
 	/*Prefetch filter (count, sum)*/
-	$fetch_report = "
-		SELECT
+	$fetch_report =
+		"SELECT
 			COUNT(DISTINCT(acm_id)) AS zcount,SUM(IF(acm_rejected=1,0,_accounts.atm_value)) AS zsum
 		FROM
 			acc_main
@@ -416,7 +416,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 		}
 	}
 	if ($offset > (ceil($arr_overview['total'] / $per_page))) {
-		$offset = (int)(ceil($arr_overview['total'] / $per_page)) - 1;
+		$offset = (int) (ceil($arr_overview['total'] / $per_page)) - 1;
 	}
 	if ($ajax_debug && $debug_level == 0) {
 		//echo $fetch_report;
@@ -429,8 +429,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 
 	/*Output: Individual statements*/
 	if ($start_grouping == false) {
-		$query = "
-			SELECT
+		$query =
+			"SELECT
 				acm_id,UNIX_TIMESTAMP(acm_ctime) AS acm_ctime,acm_beneficial,acm_comments,acm_type,acm_rejected,acm_usr_id,acm_reference,UNIX_TIMESTAMP(acm_month) AS acm_month,acm_rel,
 				acccat_name,accgrp_name,
 				CONCAT_WS(' ',COALESCE(_editor.usr_firstname,''),IF(NULLIF(_editor.usr_lastname, '') IS NULL, NULL, _editor.usr_lastname)) AS _editor_name
@@ -497,8 +497,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 			ORDER BY 
 				acm_ctime DESC,acm_id DESC
 			LIMIT
-				" . ($offset * $per_page) . ",$per_page
-			;";
+				" . ($offset * $per_page) . ",$per_page;";
 
 		$ftime = microtime(true);
 		$r = $app->db->query($query);
@@ -809,12 +808,10 @@ if ($app->xhttp) {
 
 
 $SmartListObject = new SmartListObject($app);
-$_TEMPLATE = new Body("Test");
-$_TEMPLATE->SetLayout(/*Sticky Title*/false,/*Command Bar*/ false,/*Sticky Frame*/ false);
-$_TEMPLATE->FrameTitlesStack(false);
+$grem = new Gremium\Gremium();
 
-$_TEMPLATE->Title("Ledger Report", null, null);
-
+$grem->header()->serve("<h1>Ledger Report</h1>");
+unset($grem);
 
 ?><br />
 <iframe style="display:none;" name="iframe" id="iframe"></iframe>
@@ -830,7 +827,8 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 			</tr>
 			<tr>
 				<td valign="top" style="border:solid 1px #bbb">
-					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="creditor_account" data-slo="ACC_VIEW" /></div>
+					<div class="btn-set normal list"><input type="text" data-list_object="true"
+							data-rel="creditor_account" data-slo="ACC_VIEW" /></div>
 					<div class="slo_list" data-role="creditor_account">
 						<?php
 						echo $pre_load_variables && $__defaultaccount && $__defaultcurrency ? "<span 
@@ -840,7 +838,8 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 					</div>
 				</td>
 				<td valign="top" style="border:solid 1px #bbb">
-					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="debitor_account" data-slo="ACC_VIEW" /></div>
+					<div class="btn-set normal list"><input type="text" data-list_object="true"
+							data-rel="debitor_account" data-slo="ACC_VIEW" /></div>
 					<div class="slo_list" data-role="debitor_account">
 						<?php
 						echo $pre_load_variables && $__defaultaccount && $__defaultcurrency ? "<span data-id=\"{$__defaultaccount['id']}\"><b>&#xea0f;</b><span>[{$__defaultcurrency['shortname']}] {$__defaultaccount['company']}: {$__defaultaccount['group']}: {$__defaultaccount['name']}</span><input type=\"hidden\" name=\"debitor_account[1]\" value=\"{$__defaultaccount['id']}\" /><label style=\"background-color:#fff\">Exclude<input name=\"debitor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
@@ -849,12 +848,14 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				</td>
 
 				<td valign="top" style="border:solid 1px #bbb">
-					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="category_family" data-slo="ACC_CATGRP" /></div>
+					<div class="btn-set normal list"><input type="text" data-list_object="true"
+							data-rel="category_family" data-slo="ACC_CATGRP" /></div>
 					<div class="slo_list" data-role="category_family">
 					</div>
 				</td>
 				<td valign="top" style="border:solid 1px #bbb">
-					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="category" data-slo="ACC_CAT" /></div>
+					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="category"
+							data-slo="ACC_CAT" /></div>
 					<div class="slo_list" data-role="category">
 					</div>
 				</td>
@@ -870,12 +871,14 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				</td>
 				<th style="min-width:100px;">Editor</th>
 				<td style="width:25%;" valign="top">
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="editor" data-slo="ACC_EDITORS" /></div>
+					<div class="btn-set normal list"><input type="text" data-input_object="true" name="editor"
+							data-slo="ACC_EDITORS" /></div>
 				</td>
 				<th style="min-width:100px;border-left: solid 1px #ccc;" rowspan="4">Group By</th>
 				<td style="width:25%;padding:0px;" valign="top" rowspan="4">
 					<div id="jQgroupable_list">
-						<div><label><input type="checkbox" name="group[account]" value="1"><span>Account</span></label></div>
+						<div><label><input type="checkbox" name="group[account]" value="1"><span>Account</span></label>
+						</div>
 						<div><label><input type="checkbox" name="group[type]" value="1"><span>Type</span></label></div>
 						<div>
 							<label><input type="checkbox" name="group[year]" value="1"><span>Year</span></label>
@@ -884,50 +887,62 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 							</div>
 						</div>
 						<div>
-							<label><input type="checkbox" name="group[category_family]" value="1"><span>Category Family</span></label>
+							<label><input type="checkbox" name="group[category_family]" value="1"><span>Category
+									Family</span></label>
 							<div>
-								<label><input type="checkbox" name="group[category]" value="1"><span>Category</span></label>
+								<label><input type="checkbox" name="group[category]"
+										value="1"><span>Category</span></label>
 							</div>
 						</div>
-						<div><label><input type="checkbox" name="group[benifical]" value="1"><span>Benifical ID</span></label></div>
-						<div><label><input type="checkbox" name="group[benifical_t]" value="1"><span>Benifical Name</span></label></div>
-						<div><label><input type="checkbox" name="group[reference]" value="1"><span>Reference</span></label></div>
+						<div><label><input type="checkbox" name="group[benifical]" value="1"><span>Benifical
+									ID</span></label></div>
+						<div><label><input type="checkbox" name="group[benifical_t]" value="1"><span>Benifical
+									Name</span></label></div>
+						<div><label><input type="checkbox" name="group[reference]"
+									value="1"><span>Reference</span></label></div>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Type</th>
 				<td>
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="type" data-slo="ACC_TYPES" /></div>
+					<div class="btn-set normal list"><input type="text" data-input_object="true" name="type"
+							data-slo="ACC_TYPES" /></div>
 				</td>
 				<th>Reference</th>
 				<td>
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="reference" data-slo="ACC_REFERENCE" /></div>
+					<div class="btn-set normal list"><input type="text" data-input_object="true" name="reference"
+							data-slo="ACC_REFERENCE" /></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Benifical</th>
 				<td>
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="benifical" data-slo=":LIST" data-list="beneficialList" /></div>
+					<div class="btn-set normal list"><input type="text" data-input_object="true" name="benifical"
+							data-slo=":LIST" data-list="beneficialList" /></div>
 					<datalist id="beneficialList">
-						<?= $SmartListObject->financial_beneficiary(); ?>
+						<?= $SmartListObject->financialBeneficiary(); ?>
 					</datalist>
 				</td>
 				<th>Employee</th>
 				<td>
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="employee" data-slo="B00S" /></div>
+					<div class="btn-set normal list"><input type="text" data-input_object="true" name="employee"
+							data-slo="B00S" /></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Date range</th>
 				<td>
 					<div class="btn-set normal list"><!--
-				--><input type="text" name="fromdate" data-input_object="true" value="<?php echo $pre_load_variables ? date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) : ""; ?>" <?php echo $pre_load_variables ? " data-slodefaultid=\"" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "\"" : ""; ?> data-slo="DATE" /><!--
+				--><input type="text" name="fromdate" data-input_object="true"
+							value="<?php echo $pre_load_variables ? date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) : ""; ?>"
+							<?php echo $pre_load_variables ? " data-slodefaultid=\"" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "\"" : ""; ?> data-slo="DATE" /><!--
 				--><input type="text" name="todate" data-input_object="true" data-slo="DATE" /></div>
 				</td>
 				<th>Month reference</th>
 				<td>
-					<div class="btn-set normal list"><input name="month-reference" data-input_object="true" data-slo="MONTH" type="text" /></div>
+					<div class="btn-set normal list"><input name="month-reference" data-input_object="true"
+							data-slo="MONTH" type="text" /></div>
 				</td>
 			</tr>
 		</tbody>
@@ -936,7 +951,11 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 		<tbody>
 			<tr>
 				<td>
-					<div class="btn-set" style="justify-content:center"><label class="btn-checkbox"><input type="checkbox" name="strict_filter" /> <span>&nbsp;Strict accounts filter&nbsp;</span></label><button id="jQfetch" type="submit">Submit</button><button id="jQclear" type="button">Clear</button><button id="jQsave" type="button">Save</button><button id="jQload" type="button">Load</button></div>
+					<div class="btn-set" style="justify-content:center"><label class="btn-checkbox"><input
+								type="checkbox" name="strict_filter" /> <span>&nbsp;Strict accounts
+								filter&nbsp;</span></label><button id="jQfetch" type="submit">Submit</button><button
+							id="jQclear" type="button">Clear</button><button id="jQsave"
+							type="button">Save</button><button id="jQload" type="button">Load</button></div>
 				</td>
 			</tr>
 		</tbody>
@@ -950,15 +969,20 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 					<td width="50%">
 						<div class="btn-set">
 							<span id="jQnavRec">0</span>
-							<input type="text" readonly id="jQresult_value" style="text-align:right;width:130px" value="0.00" /><input type="text" id="jQcurrency" name="filtercurrency" data-slo="CURRENCY_SYMBOL" style="width:70px" <?php echo $__systemdefaultcurrency ? " value=\"{$__systemdefaultcurrency['shortname']}\"" : ""; ?> <?php echo $__systemdefaultcurrency ? " data-slodefaultid=\"{$__systemdefaultcurrency['id']}\"" : ""; ?> />
+							<input type="text" readonly id="jQresult_value" style="text-align:right;width:130px"
+								value="0.00" /><input type="text" id="jQcurrency" name="filtercurrency"
+								data-slo="CURRENCY_SYMBOL" style="width:70px" <?php echo $__systemdefaultcurrency ? " value=\"{$__systemdefaultcurrency['shortname']}\"" : ""; ?> <?php echo $__systemdefaultcurrency ? " data-slodefaultid=\"{$__systemdefaultcurrency['id']}\"" : ""; ?> />
 							<span id="jQbalance_status">N\A</span>
 							<span class="gap"></span>
-							<label class="btn-checkbox" style="white-space: nowrap;"><input type="checkbox" name="display_altered" /> <span>&nbsp;Show deleted&nbsp;</span></label>
+							<label class="btn-checkbox" style="white-space: nowrap;"><input type="checkbox"
+									name="display_altered" /> <span>&nbsp;Show deleted&nbsp;</span></label>
 
 							<b id="jQperpage" class="menu_screen">
-								<div><span data-per="25">25</span><span data-per="50">50</span><span data-per="75">75</span><span data-per="100">100</span></div>
+								<div><span data-per="25">25</span><span data-per="50">50</span><span
+										data-per="75">75</span><span data-per="100">100</span></div>
 							</b>
-							<input type="text" style="text-align:center;width:130px;" readonly id="jQperpage_btn" value="<?php echo $per_page; ?> Perpage" />
+							<input type="text" style="text-align:center;width:130px;" readonly id="jQperpage_btn"
+								value="<?php echo $per_page; ?> Perpage" />
 
 							<button disabled id="jQnavFirst" type="button">First</button>
 							<button disabled id="jQnavPrev" type="button">Previous</button>
@@ -966,7 +990,8 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 							<b id="jQpageination" class="menu_screen">
 								<div></div>
 							</b>
-							<input type="text" style="text-align:center;width:80px;" readonly id="jQnavTitle" value="No results" />
+							<input type="text" style="text-align:center;width:80px;" readonly id="jQnavTitle"
+								value="No results" />
 							<button disabled id="jQnavNext" type="button">Next</button>
 							<button id="jQexport" type="button">Export</button>
 						</div>
@@ -979,10 +1004,10 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 </form>
 <iframe id="jQiframe" name="jQiframe" style="display:none;"></iframe>
 <script>
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 		var $form = $("#jQfilterform");
 
-		$("#jQoutput").on('click', '.upload-list > div', function() {
+		$("#jQoutput").on('click', '.upload-list > div', function () {
 			var acm_id = $(this).attr("data-acm_id");
 			var $ajax = $.ajax({
 				type: "POST",
@@ -990,9 +1015,9 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				data: {
 					"statement_id": acm_id
 				}
-			}).done(function(output) {
+			}).done(function (output) {
 				popup.show(output);
-			}).fail(function(a, b, c) {
+			}).fail(function (a, b, c) {
 				messagesys.failure(c);
 			});
 
@@ -1021,7 +1046,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 			'editor': $("input[name=editor]").slo(),
 		}
 		var slo_list = $("input[data-list_object]").slo({
-			onselect: function(data) {
+			onselect: function (data) {
 				indexing++;
 				var rel = (data.object.attr("data-rel"));
 				var list = $(".slo_list[data-role=" + rel + "]");
@@ -1035,31 +1060,31 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				}
 			}
 		});
-		$("#jQnavTitle,#jQpageination").on('mouseenter', function() {
+		$("#jQnavTitle,#jQpageination").on('mouseenter', function () {
 			if (pageination_list_timer != null) {
 				clearTimeout(pageination_list_timer);
 			}
 			if ($("#jQpageination > div").children().length > 0)
 				$("#jQpageination > div").css("display", "block");
-		}).on('mouseleave', function() {
-			pageination_list_timer = setTimeout(function() {
+		}).on('mouseleave', function () {
+			pageination_list_timer = setTimeout(function () {
 				$("#jQpageination > div").css("display", "none");
 			}, 500);
 		});
 
 
-		$("#jQperpage,#jQperpage_btn").on('mouseenter', function() {
+		$("#jQperpage,#jQperpage_btn").on('mouseenter', function () {
 			if (perpage_list_timer != null) {
 				clearTimeout(perpage_list_timer);
 			}
 			$("#jQperpage > div").css("display", "block");
-		}).on('mouseleave', function() {
-			perpage_list_timer = setTimeout(function() {
+		}).on('mouseleave', function () {
+			perpage_list_timer = setTimeout(function () {
 				$("#jQperpage > div").css("display", "none");
 			}, 500);
 		});
 
-		$("#jQperpage > div > span").on('click', function() {
+		$("#jQperpage > div > span").on('click', function () {
 			var _per = $(this).attr("data-per");
 			var $ajax = $.ajax({
 				type: "POST",
@@ -1068,17 +1093,17 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 					"method": "save_per_page_setting",
 					"value": _per
 				}
-			}).done(function(output) {
+			}).done(function (output) {
 				$("#jQperpage_btn").val(_per + " Perpage");
 				fetch();
-			}).fail(function(a, b, c) {
+			}).fail(function (a, b, c) {
 				messagesys.failure(c);
 			});
 
 		});
 
 
-		$("#jQsave").on('click', function() {
+		$("#jQsave").on('click', function () {
 
 			var seria = $form.serialize({
 				checkboxesAsBools: true
@@ -1088,22 +1113,22 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				data: seria + "&method=filter",
 				url: '<?= $fs(164)->dir ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				overlay.hide();
 				popup.show(data);
 				var $save_form = popup.self().find("#jQsaveform");
 
 				var $save_name = popup.self().find("#jQsave_name");
 				$save_name.focus();
-				popup.self().find("#jQsave_cancel").on('click', function() {
+				popup.self().find("#jQsave_cancel").on('click', function () {
 					popup.hide();
 				});
-				popup.self().find("#jQsave_submit").on('click', function() {
+				popup.self().find("#jQsave_submit").on('click', function () {
 					$save_form.submit();
 
 				});
 
-				$save_form.on('submit', function(e) {
+				$save_form.on('submit', function (e) {
 					e.preventDefault();
 					if ($save_name.val().trim() == "") {
 						messagesys.failure("Type in query name");
@@ -1114,7 +1139,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 						data: $save_form.serialize(),
 						url: '<?php echo $fs()->dir; ?>',
 						type: 'POST'
-					}).done(function(data) {
+					}).done(function (data) {
 						overlay.hide();
 						var json = null;
 						try {
@@ -1129,7 +1154,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 						} else {
 							messagesys.failure(json.message);
 						}
-					}).fail(function(a, b, c) {
+					}).fail(function (a, b, c) {
 						messagesys.failure(b);
 						overlay.hide();
 					});
@@ -1137,7 +1162,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				});
 			});
 		});
-		$("#jQload").on('click', function() {
+		$("#jQload").on('click', function () {
 			overlay.show();
 			$.ajax({
 				data: {
@@ -1145,14 +1170,14 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				},
 				url: '<?= $fs(165)->dir ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				overlay.hide();
 				popup.show(data);
 				popup.self().find("#jQload_cancel").focus();
-				popup.self().find("#jQload_cancel").on('click', function() {
+				popup.self().find("#jQload_cancel").on('click', function () {
 					popup.hide();
 				});
-				popup.self().find(".jQload_query").on('click', function() {
+				popup.self().find(".jQload_query").on('click', function () {
 					var $tr = $(this).closest("tr");
 					var _id = $tr.attr("data-id");
 					overlay.show();
@@ -1163,7 +1188,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 						},
 						url: '<?php echo $fs()->dir; ?>',
 						type: 'POST'
-					}).done(function(data) {
+					}).done(function (data) {
 						overlay.hide();
 						var json = null;
 						try {
@@ -1206,13 +1231,13 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 						} else {
 							messagesys.failure("Parsing query failed");
 						}
-					}).fail(function(a, b, c) {
+					}).fail(function (a, b, c) {
 						overlay.hide();
 					});
 				});
 
 
-				popup.self().find(".jQremove_query").on('click', function() {
+				popup.self().find(".jQremove_query").on('click', function () {
 					var $tr = $(this).closest("tr");
 					var _id = $tr.attr("data-id");
 					overlay.show();
@@ -1223,7 +1248,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 						},
 						url: '<?php echo $fs()->dir; ?>',
 						type: 'POST'
-					}).done(function(data) {
+					}).done(function (data) {
 						overlay.hide();
 						if (data == "1") {
 							messagesys.success("Query removed successfully");
@@ -1231,13 +1256,13 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 						} else {
 							messagesys.success("Query removing failed");
 						}
-					}).fail(function() {
+					}).fail(function () {
 						overlay.hide();
 					});
 				});
 			});
 		});
-		$(".menu_screen > div,.slo_list").on('mousewheel DOMMouseScroll', function(e) {
+		$(".menu_screen > div,.slo_list").on('mousewheel DOMMouseScroll', function (e) {
 			var scrollTo = null;
 			if (e.type == 'mousewheel') {
 				scrollTo = (e.originalEvent.wheelDelta * -1);
@@ -1249,22 +1274,22 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				$(this).scrollTop(scrollTo + $(this).scrollTop());
 			}
 		});
-		$(".slo_list").on('click', '> span > b', function() {
+		$(".slo_list").on('click', '> span > b', function () {
 			var $this = $(this);
 			$this.parent().remove();
 		});
 
 		var filtercurrency = $("#jQcurrency").slo({
-			onselect: function(data) {
+			onselect: function (data) {
 				fetch();
 			},
-			ondeselect: function(data) {
+			ondeselect: function (data) {
 				fetch();
 			}
 		});
 		var $ajax = null;
 
-		var fetch = function() {
+		var fetch = function () {
 			if ($ajax != null) {
 				$ajax.abort();
 			}
@@ -1275,7 +1300,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				url: "<?php echo $fs()->dir; ?>",
 				type: "POST",
 				data: formSerialized + "&method=filter",
-			}).done(function(data) {
+			}).done(function (data) {
 				<?php echo ($ajax_debug) ? "console.clear();console.log(data);return;" : ""; ?>
 
 				var $data = $(data);
@@ -1345,29 +1370,29 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				}
 
 				$("#jQoutput").html($data.find("#___ajax_tbody").html());
-			}).fail(function(a, b, c) {
+			}).fail(function (a, b, c) {
 				messagesys.failure("Processing request failed `" + c + "`");
-			}).always(function() {
+			}).always(function () {
 				overlay.hide();
 			});
 		}
 
-		$("#jQpageination > div").on('click', 'span', function() {
+		$("#jQpageination > div").on('click', 'span', function () {
 			var pos = $(this).attr("data-pos");
 			$("#jQoffset").val(~~pos - 1);
 			fetch();
 		});
 
-		$("#jQnavNext").on('click', function() {
+		$("#jQnavNext").on('click', function () {
 			$("#jQoffset").val(~~$("#jQoffset").val() + 1);
 			fetch();
 		});
-		$("#jQnavFirst").on('click', function() {
+		$("#jQnavFirst").on('click', function () {
 			$("#jQoffset").val(0);
 			fetch();
 		});
 
-		$("#jQclear").on('click', function() {
+		$("#jQclear").on('click', function () {
 			for (var slo_object in slo_line_object) {
 				slo_line_object[slo_object].clear();
 			}
@@ -1377,12 +1402,12 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 			//$("#jQgroupable_list").find("input[type=checkbox]").prop("checked",false);
 			fetch();
 		});
-		$("#jQnavPrev").on('click', function() {
+		$("#jQnavPrev").on('click', function () {
 			$("#jQoffset").val(~~$("#jQoffset").val() - 1);
 			fetch();
 		});
 
-		$("#jQoutput").on('click', ".op-edit > a", function(e) {
+		$("#jQoutput").on('click', ".op-edit > a", function (e) {
 			e.preventDefault();
 			var $this = $(this);
 
@@ -1393,16 +1418,16 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				type: "POST",
 				url: $this.attr("href") + "&ajax",
 				data: ""
-			}).done(function(data) {
+			}).done(function (data) {
 				popup.show(data);
-			}).always(function() {
+			}).always(function () {
 				$("#jQtracer").find(" > div.overlay").css({
 					'display': 'none'
 				});
 			});
 			return false;
 		});
-		$("#jQoutput").on('click', ".op-display > a", function(e) {
+		$("#jQoutput").on('click', ".op-display > a", function (e) {
 			e.preventDefault();
 			var $this = $(this);
 			$("#jQtracer").find(" > div.overlay").css({
@@ -1412,9 +1437,9 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				type: "POST",
 				url: $this.attr("href") + "&ajax",
 				data: ""
-			}).done(function(data) {
+			}).done(function (data) {
 				popup.show(data);
-			}).always(function() {
+			}).always(function () {
 				$("#jQtracer").find(" > div.overlay").css({
 					'display': 'none'
 				});
@@ -1422,18 +1447,18 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 			return false;
 		});
 
-		$("#jQoutput").on('click', ".op-print", function(e) {
+		$("#jQoutput").on('click', ".op-print", function (e) {
 			const id = $(this).attr('data-id');
 			const objPrintFrame = window.frames['jQiframe'];
 			objPrintFrame.location = "<?= $fs(142)->dir ?>/?id=" + id;
-			document.getElementById("jQiframe").onload = function() {
+			document.getElementById("jQiframe").onload = function () {
 				objPrintFrame.focus();
 				objPrintFrame.print();
 			}
 		});
 
 
-		$form.on('submit', function(e) {
+		$form.on('submit', function (e) {
 			if (!export_order) {
 				$form.attr("method", "");
 				$form.attr("action", "");
@@ -1443,7 +1468,7 @@ $_TEMPLATE->Title("Ledger Report", null, null);
 				return false;
 			}
 		});
-		$("#jQexport").on('click', function() {
+		$("#jQexport").on('click', function () {
 			export_order = true;
 			$form.attr("method", "post");
 			$form.attr("action", "<?= $fs(120)->dir ?>");

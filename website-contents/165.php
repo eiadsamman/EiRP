@@ -8,7 +8,7 @@
 	</thead>
 	<tbody>
 		<?php
-		$r = $app->db->query("SELECT usrset_id,usrset_value,usrset_usr_defind_name,UNIX_TIMESTAMP(usrset_time) AS usrset_time FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_name='account_custome_query_save'");
+		$r = $app->db->query("SELECT usrset_id,usrset_value,usrset_usr_defind_name,UNIX_TIMESTAMP(usrset_time) AS usrset_time FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . ";");
 		if ($r) {
 			if ($r->num_rows == 0) {
 				echo "<tr><td colspan=\"4\">No saved queries</td></tr>";
@@ -23,4 +23,5 @@
 		?>
 	</tbody>
 </table>
-<div class="btn-set" style="justify-content:center;margin-top:10px;"><button type="button" id="jQload_cancel">Close</button></div>
+<div class="btn-set" style="justify-content:center;margin-top:10px;"><button type="button"
+		id="jQload_cancel">Close</button></div>

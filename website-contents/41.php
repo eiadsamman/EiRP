@@ -1,8 +1,8 @@
 <?php
 
 $__type = array(
-	1 => "system_productiontrack_section",
-	2 => "system_productiontrack_material",
+	1 => \System\Personalization\Identifiers::SystemProductiontrackSection->value,
+	2 => \System\Personalization\Identifiers::SystemProductiontrackMaterial->value
 );
 
 function PopulateConfigs(&$app)
@@ -31,13 +31,13 @@ function FetchCountDay(&$app, &$__type)
 {
 	$s__type1 = 0;
 	$s__type2 = 0;
-	$rr = $app->db->query("SELECT usrset_name,usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->id} AND usrset_name=\"{$__type[1]}\" AND usrset_usr_defind_name=\"UNIQUE\";");
+	$rr = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->id} AND usrset_type=\"{$__type[1]}\" AND usrset_usr_defind_name=\"UNIQUE\";");
 	if ($rr) {
 		if ($row = $rr->fetch_assoc()) {
 			$s__type1 = $row['usrset_value'];
 		}
 	}
-	$rr = $app->db->query("SELECT usrset_name,usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->id} AND usrset_name=\"{$__type[2]}\" AND usrset_usr_defind_name=\"UNIQUE\";");
+	$rr = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->id} AND usrset_type=\"{$__type[2]}\" AND usrset_usr_defind_name=\"UNIQUE\";");
 	if ($rr) {
 		if ($row = $rr->fetch_assoc()) {
 			$s__type2 = $row['usrset_value'];
@@ -57,7 +57,7 @@ function FetchCountDay(&$app, &$__type)
 	$rfetchCount = $app->db->query($qfetchCount);
 	if ($rfetchCount) {
 		if ($rfetchCountRow = $rfetchCount->fetch_assoc()) {
-			$output = (int)$rfetchCountRow['_count'] . " * " . (int)$rfetchCountRow['cot_capacity'] . " = " . ((int)$rfetchCountRow['_count'] * (int)$rfetchCountRow['cot_capacity']);
+			$output = (int) $rfetchCountRow['_count'] . " * " . (int) $rfetchCountRow['cot_capacity'] . " = " . ((int) $rfetchCountRow['_count'] * (int) $rfetchCountRow['cot_capacity']);
 		}
 	}
 	return $output;
@@ -71,7 +71,7 @@ function ChangeUserTypes(&$app, &$__type, $type, $typeid)
 	$r = $app->db->query("
 		INSERT INTO 
 			user_settings 
-			(usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value,usrset_time) 
+			(usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) 
 		VALUES 
 			({$app->user->id},\"{$type}\",\"UNIQUE\",$typeid,NOW()) 
 		ON DUPLICATE KEY UPDATE 
@@ -82,11 +82,11 @@ function ChangeUserTypes(&$app, &$__type, $type, $typeid)
 	} else {
 		$output = false;
 	}
-	return (bool)$output;
+	return (bool) $output;
 }
 
 if (isset($_POST['method'], $_POST['type'], $_POST['id']) && $_POST['method'] == "change") {
-	$chres = ChangeUserTypes($app,  $__type, (int)$_POST['type'], (int)$_POST['id']);
+	$chres = ChangeUserTypes($app, $__type, (int) $_POST['type'], (int) $_POST['id']);
 	if ($chres == true) {
 		echo FetchCountDay($app, $__type);
 	} else {
@@ -99,13 +99,13 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 
 	$s__type1 = 0;
 	$s__type2 = 0;
-	$rr = $app->db->query("SELECT usrset_name,usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_name=\"{$__type[1]}\" AND usrset_usr_defind_name=\"UNIQUE\";");
+	$rr = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_type=\"{$__type[1]}\" AND usrset_usr_defind_name=\"UNIQUE\";");
 	if ($rr) {
 		if ($row = $rr->fetch_assoc()) {
 			$s__type1 = $row['usrset_value'];
 		}
 	}
-	$rr = $app->db->query("SELECT usrset_name,usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_name=\"{$__type[2]}\" AND usrset_usr_defind_name=\"UNIQUE\";");
+	$rr = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_type=\"{$__type[2]}\" AND usrset_usr_defind_name=\"UNIQUE\";");
 	if ($rr) {
 		if ($row = $rr->fetch_assoc()) {
 			$s__type2 = $row['usrset_value'];
@@ -123,17 +123,17 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 	$popConfigs = PopulateConfigs($app);
 
 	if (isset($popConfigs['stations'][$serial])) {
-		if (ChangeUserTypes($app,  $__type, 1, $popConfigs['stations'][$serial])) {
+		if (ChangeUserTypes($app, $__type, 1, $popConfigs['stations'][$serial])) {
 			$output['result'] = 2;
 			$output['confid'] = $popConfigs['stations'][$serial];
 			$output['instruct'] = FetchCountDay($app, $__type);
 		}
 	}
 	if (isset($popConfigs['materials'][$serial])) {
-		if (ChangeUserTypes($app,  $__type, 2, $popConfigs['materials'][$serial])) {
+		if (ChangeUserTypes($app, $__type, 2, $popConfigs['materials'][$serial])) {
 			$output['result'] = 3;
 			$output['confid'] = $popConfigs['materials'][$serial];
-			$output['instruct'] = FetchCountDay($app,  $__type);
+			$output['instruct'] = FetchCountDay($app, $__type);
 		}
 	}
 	if ($output['result'] != 0) {
@@ -152,7 +152,7 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 		");
 	if ($rprevious) {
 		if ($rowprevious = $rprevious->fetch_assoc()) {
-			if ((int)$rowprevious['cprevious'] > 0) {
+			if ((int) $rowprevious['cprevious'] > 0) {
 				$output['result'] = 7;
 				echo json_encode($output);
 				exit;
@@ -299,7 +299,7 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 	<div class="horzScroll" id="JQSelectSection">
 		<?php
 		$resStations = $app->db->query("SELECT cob_id,cob_serial,cob_hash,usrset_value FROM cobject 
-										LEFT JOIN user_settings ON cob_id = usrset_value AND usrset_usr_id={$app->user->info->id} AND usrset_name=\"{$__type[1]}\"
+										LEFT JOIN user_settings ON cob_id = usrset_value AND usrset_usr_id={$app->user->info->id} AND usrset_type=\"{$__type[1]}\"
 										WHERE cob_checked=1");
 		if ($resStations) {
 			while ($row = $resStations->fetch_assoc()) {
@@ -313,7 +313,7 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 	<div class="horzScroll" id="JQSelectMat" style="margin-top: 20px;">
 		<?php
 		$r = $app->db->query("SELECT cot_id,cot_name,cot_init ,usrset_value FROM cobjecttype 
-									LEFT JOIN user_settings ON cot_id = usrset_value AND usrset_usr_id={$app->user->info->id} AND usrset_name=\"{$__type[2]}\"
+									LEFT JOIN user_settings ON cot_id = usrset_value AND usrset_usr_id={$app->user->info->id} AND usrset_type=\"{$__type[2]}\"
 									WHERE cot_mastercarton=1");
 		if ($r) {
 			while ($row = $r->fetch_assoc()) {
@@ -325,8 +325,12 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 	</div>
 
 	<div style="position: relative;left:0px;right: 0px;bottom: 0px;margin-top: 15px;">
-		<div class="btn-set"><button id="JQInputButtonSubmit" type="button">Submit</button><span id="JQHTMLSpanCount">Count <?php echo FetchCountDay($app, $__type); ?></span></div>
-		<div class="btn-set" style="margin-top: 10px;"><textarea id="JQInputField" class="flex" style="width: 100%;height: 150px"></textarea></div>
+		<div class="btn-set"><button id="JQInputButtonSubmit" type="button">Submit</button><span
+				id="JQHTMLSpanCount">Count
+				<?php echo FetchCountDay($app, $__type); ?>
+			</span></div>
+		<div class="btn-set" style="margin-top: 10px;"><textarea id="JQInputField" class="flex"
+				style="width: 100%;height: 150px"></textarea></div>
 		<div class="btn-set"></div>
 		<div class="listShots" id="JQDIVOutput">
 		</div>
@@ -335,31 +339,31 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 
 <script type="text/javascript">
 	"use strict";
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 		var _htmlInputTextSerial = $("#JQInputField");
 		var _intSectionID = 0;
 		var _intMaterialID = 0;
 		var _htmlDivOutput = $("#JQDIVOutput");
 		var _htmlSpanCount = $("#JQHTMLSpanCount");
 
-		$("#JQSelectSection > div").on("click", function() {
+		$("#JQSelectSection > div").on("click", function () {
 			_htmlInputTextSerial.focus().select();
 			_intSectionID = ~~$(this).attr("data-id");
 			funChangeSecMat(1, _intSectionID, $("#JQSelectSection > div"), $(this));
 		});
 
-		$("#JQSelectMat > div").on("click", function() {
+		$("#JQSelectMat > div").on("click", function () {
 			_htmlInputTextSerial.focus().select();
 			_intMaterialID = ~~$(this).attr("data-id");
 			funChangeSecMat(2, _intMaterialID, $("#JQSelectMat > div"), $(this));
 		});
 
-		var funChangeSecMat = function(type, id, objs, obj) {
+		var funChangeSecMat = function (type, id, objs, obj) {
 			$.ajax({
 				data: "method=change&type=" + type + "&id=" + id + "",
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				if (data != "false") {
 					objs.removeClass("selected");
 					obj.addClass("selected");
@@ -368,16 +372,16 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 			});
 		};
 
-		var funStreamInput = function(input, obj) {
+		var funStreamInput = function (input, obj) {
 			$.ajax({
 				data: "method=stream&serial=" + input + "",
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				var json = null;
 				try {
 					json = JSON.parse(data);
-				} catch (e) {}
+				} catch (e) { }
 
 				if (json.result == 1) {
 					obj.removeClass("p").addClass("s");
@@ -399,12 +403,12 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 				} else {
 					obj.removeClass("p").addClass("f");
 				}
-			}).fail(function(a, b, c) {
+			}).fail(function (a, b, c) {
 				obj.removeClass("p").addClass("f");
 			});
 		}
 
-		var funInputHandler = function(input) {
+		var funInputHandler = function (input) {
 			var _valline = input.split("\n");
 			var lineprep = null;
 			for (var line in _valline) {
@@ -418,12 +422,12 @@ if (isset($_POST['method'], $_POST['serial']) && $_POST['method'] == "stream") {
 				}
 			}
 		}
-		$("#JQInputButtonSubmit").on("click", function() {
+		$("#JQInputButtonSubmit").on("click", function () {
 			funInputHandler(_htmlInputTextSerial.val());
 			_htmlInputTextSerial.val("");
 			_htmlInputTextSerial.focus();
 		});
-		_htmlInputTextSerial.on("keyup", function(e) {
+		_htmlInputTextSerial.on("keyup", function (e) {
 			var keycode = (e.keyCode ? e.keyCode : e.which);
 			var $this = $(this);
 			if (keycode == 13) {

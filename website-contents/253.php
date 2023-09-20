@@ -288,7 +288,7 @@ if ($doc_id)
 				if ($bomlegend != $row['pols_bom_part']) {
 					$bomlegend = $row['pols_bom_part'];
 					echo "<tr>";
-					echo "<td colspan=\"3\" style=\"color:var(--linkColor);border-left:solid 2px var(--linkColor)\">{$row['_mat_bom']}</td>";
+					echo "<td colspan=\"3\" style=\"color:var(--color-link);border-left:solid 2px var(--color-link)\">{$row['_mat_bom']}</td>";
 					echo "</tr>";
 				}
 				echo "<tr>";

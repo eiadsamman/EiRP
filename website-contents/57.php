@@ -1,4 +1,6 @@
 <?php
+use System\Template\Gremium;
+
 if (isset($_POST['bulk'])) {
 	exit;
 }
@@ -7,8 +9,8 @@ if (isset($_POST['serial'])) {
 	$att = new System\Individual\Attendance\Registration($app);
 	$att->SetDefaultCheckInAccount($app->user->company->id);
 	try {
-		$att->load((int)$_POST['serial']);
-		$ratt 	= $att->CheckIn(null);
+		$att->load((int) $_POST['serial']);
+		$ratt = $att->CheckIn(null);
 
 		if ($ratt) {
 			header("ATT_RESULT: OK");
@@ -57,43 +59,18 @@ if (!$defaultaccount) {
 	exit;
 }
 
-$_TEMPLATE = new System\Template\Body("Test");
-$_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
-$_TEMPLATE->FrameTitlesStack(false);
-$_TEMPLATE->SetWidth("800px");
-$_TEMPLATE->Title($fs()->title, null, null);
 
 
-echo $_TEMPLATE->CommandBarStart(); ?>
-<table border="0" cellpadding="0" cellspacing="0" width="100%" class="bom-table">
-	<tbody>
-		<tr>
-			<td width="100%" colspan="2">
-				<div class="btn-set"><input type="number" id="jQserialAdd" autocomplete="off" class="flex" placeholder="Serial Number" /><button type="button" style="min-width:100px;" id="jQserialSubmit">Submit</button></div>
-			</td>
-		</tr>
-		<tr style="display:none">
-			<td width="100%">
-				<div class="btn-set"><textarea rows="5" placeholder="Serial Numbers" id="jQserialBulk" class="flex" style="height: 100px;resize: none;"></textarea></div>
-			</td>
-			<td>
-				<div class="btn-set"><button type="button" style="height: 100px;min-width:100px;" id="jQbuttonBulk">Check-in</button></div>
-			</td>
-		</tr>
-	</tbody>
-</table>
-<?php
-echo $_TEMPLATE->CommandBarEnd();
-$_TEMPLATE->ShiftStickyStart(16);
-$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Attendance records</span>");
-echo $_TEMPLATE->NewFrameBodyStart();
-echo "<div id=\"jqOutput\" class=\"att-submitionlist\"></div>";
-echo $_TEMPLATE->NewFrameBodyEnd();
+$grem = new Gremium\Gremium(true);
+$grem->header()->serve("<h1>{$fs()->title}</h1>");
+$grem->menu()->serve('<input type="number" id="jQserialAdd" autocomplete="off" class="flex" placeholder="Serial Number" /><button type="button" style="min-width:100px;" id="jQserialSubmit">Submit</button>');
+$grem->legend()->serve("<span class=\"flex\">Attendance records</span>");
+$grem->article()->serve( "<div id=\"jqOutput\" class=\"att-submitionlist\"></div>");
+unset ($grem);
+
 ?>
-
-
 <script>
-	$(function() {
+	$(function () {
 		let _jqOutput = $("#jqOutput"),
 			_jqInput = $("#jQserialAdd");
 		var ticket = `<div>
@@ -102,7 +79,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 				<span class="content"><div class="employee-sid"></div><div class="employee-name">Loading...</div></span>
 			</div>`;
 
-		var submitserial = function() {
+		var submitserial = function () {
 			let inputid = _jqInput.val().trim();
 			if (inputid != "") {
 
@@ -117,7 +94,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 					data: {
 						'serial': inputid
 					}
-				}).done(function(o, textStatus, request) {
+				}).done(function (o, textStatus, request) {
 					let response = request.getResponseHeader('ATT_RESULT');
 
 					let responseimage = request.getResponseHeader('ATT_IMAGE_ID');
@@ -151,21 +128,21 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 						}
 					}
 
-				}).fail(function(a, b, c) {
+				}).fail(function (a, b, c) {
 					messagesys.failure(b + " " + c);
-				}).always(function() {
+				}).always(function () {
 					_jqInput.focus().select();
 				});
 			}
 		}
 
-		_jqInput.on('keydown', function(e) {
+		_jqInput.on('keydown', function (e) {
 			if ((e.keyCode ? e.keyCode : e.which) == 13) {
 				submitserial();
 			}
 		});
 
-		$("#jQserialSubmit").on("click", function(e) {
+		$("#jQserialSubmit").on("click", function (e) {
 			submitserial();
 		});
 

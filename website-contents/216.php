@@ -1,10 +1,9 @@
 <?php
 
 
-
 echo "
-<div style=\"min-width:300px\">
-	<div class=\"widgetWQY\" style=\"padding-right:10px;\">
+<div class=\"widgetWQY\">
+	<div style=\"padding-right:10px;\">
 		<div>";
 if ($app->user->account) {
 	$accounting = new \System\Finance\Accounting($app);

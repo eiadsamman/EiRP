@@ -38,20 +38,18 @@ if ($app->xhttp) {
 	exit;
 }
 
-$_TEMPLATE 	= new \System\Template\Body();
-$_TEMPLATE->SetWidth("800px");
-$_TEMPLATE->Title($fs()->title, null, null);
+use System\Template\Gremium;
+$grem = new Gremium\Gremium(true);
+
+$grem->header()->serve("<h1>{$fs()->title}</h1>");
 
 
-echo $_TEMPLATE->CommandBarStart();
-echo "<div class=\"btn-set\">";
+$grem->menu()->open();
 echo "<span class=\"gap\"></span>";
 echo "<button id=\"js-button-update\" type=\"button\">Update rates table</button>";
-echo "</div>";
-echo $_TEMPLATE->CommandBarEnd();
+$grem->getLast()->close();
 
-
-echo $_TEMPLATE->NewFrameBodyStart();
+$grem->article()->open();
 ?>
 <form id="js-formDetails">
 	<div class="template-gridLayout role-input">
@@ -60,10 +58,12 @@ echo $_TEMPLATE->NewFrameBodyStart();
 		<div></div>
 	</div>
 </form>
-<?php echo $_TEMPLATE->NewFrameBodyEnd();
 
-$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Exchange rates table</span>", false, true);
-echo $_TEMPLATE->NewFrameBodyStart();
+<?php 
+$grem->getLast()->close();
+$grem->legend()->serve("<span class=\"flex\">Exchange rates table</span>");
+
+$grem->article()->open();
 echo "<form id=\"js-form\">
 <input type=\"hidden\" name=\"request\" value=\"update\" />
 <table class=\"bom-table mediabond-table\"><thead style=\"display:none;\"><tr><td>Sell</td><td>Curreny</td></tr></thead><tbody>";
@@ -84,7 +84,9 @@ if ($r) {
 
 echo "</tbody>
 </table></form>";
-echo $_TEMPLATE->NewFrameBodyEnd();
+
+$grem->getLast()->close();
+unset($grem);
 
 ?>
 <script type="text/javascript">

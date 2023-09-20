@@ -9,7 +9,7 @@
 .att-submitionlist > div{
 	text-align: center;
 	position: relative;
-	border: solid 1px var(--ribbonColor);
+	border: solid 1px var(--color-faint-gray);
 	border-radius: 3px;
 	
 	padding: 20px;
@@ -77,7 +77,7 @@
 	display: block;
 	font-weight: bold;
 	padding: 10px 0px;
-	color:var(--linkColor)
+	color:var(--color-link)
 }
 
 @media only screen and (max-width: 750px) {
@@ -170,10 +170,4 @@
 }
 .horzScroll > div:only-child,.horzFixed{
 	border-radius:4px;
-}
-.horzScroll > div.locSelected,.locSelected,.locSelected:hover{
-	color:#000;
-	background-color: #E7F3FF;
-	border-color	:rgba(82,168,236,.75);
-	z-index: 1;
 }

@@ -1,20 +1,14 @@
 <?php
 
-use System\App;
 use System\Template\Body;
+use System\Template\Gremium;
 
 
-$_TEMPLATE = new Body("");
-$_TEMPLATE->SetLayout( /*Sticky Title*/true, /*Command Bar*/true, /*Sticky Frame*/true);
-$_TEMPLATE->FrameTitlesStack(false);
-$_TEMPLATE->SetWidth("800px");
 
 
 
 if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchrecord") {
-
 	$employeeID = (int) $_POST['employeeID'];
-
 	if (
 		$r = $app->db->query("
 		SELECT
@@ -65,10 +59,12 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				}
 			}
 
-
+			$grem = new Gremium\Gremium(true);
+			$grem->header();
+			$grem->menu();
 			if ($fs(227)->permission->read) {
-				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Personal Information:</span>", false, false, 105);
-				echo $_TEMPLATE->NewFrameBodyStart();
+				$grem->legend()->serve("<span class=\"flex\">Personal Information:</span>");
+				$grem->article()->open();
 				echo '
 					<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:10px;">
 					<tr>
@@ -117,12 +113,12 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 					<div class="template-gridLayout">
 						<div><span>References</span><div>' . $socialidphotos . '</div></div>
 					</div>';
-				echo $_TEMPLATE->NewFrameBodyEnd();
+				$grem->getLast()->close();
 			}
 
 			if ($fs(228)->permission->read) {
-				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Job Information:</span>", false, false, 105);
-				echo $_TEMPLATE->NewFrameBodyStart();
+				$grem->legend()->serve("<span class=\"flex\">Job Information:</span>");
+				$grem->article()->open();
 				echo '
 				<div class="template-gridLayout">
 					<div><span>Registration date</span><div>' . $row['lbr_registerdate'] . '</div></div>
@@ -142,33 +138,35 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 					
 					<div><span></span><div></div></div>
 				</div>';
-				echo $_TEMPLATE->NewFrameBodyEnd();
+				$grem->getLast()->close();
 			}
 
 
 			if ($fs(229)->permission->read) {
-				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Salary Details:</span>", false, false, 105);
-				echo $_TEMPLATE->NewFrameBodyStart();
+				$grem->legend()->serve("<span class=\"flex\">Salary Details:</span>");
+				$grem->article()->open();
 				echo '<div class="template-gridLayout">
 					<div><span>Salary</span><div>' . (is_null($row['lbr_fixedsalary']) ? number_format((float) $row['lbr_typ_sal_basic_salary'], 2, ".", ",") : number_format((float) $row['lbr_fixedsalary'], 2, ".", ",")) . '</div></div>
 					<div><span>Variable</span><div>' . (is_null($row['lbr_variable']) ? number_format((float) $row['lbr_typ_sal_variable'], 2, ".", ",") : number_format((float) $row['lbr_variable'], 2, ".", ",")) . '</div></div>
 					<div><span>Allowance</span><div>' . (is_null($row['lbr_allowance']) ? number_format((float) $row['lbr_typ_sal_allowance'], 2, ".", ",") : number_format((float) $row['lbr_allowance'], 2, ".", ",")) . '</div></div>
 				</div>';
-				echo $_TEMPLATE->NewFrameBodyEnd();
+				$grem->getLast()->close();
 			}
-
+			unset($grem);
 			exit;
 		} else {
+			$grem = new Gremium\Gremium(true);
 			header("HTTP_X_RESPONSE: ERROR");
-			$_TEMPLATE->Title("&nbsp;Not Found!", null, "", "mark-error");
-			$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Loading select personnel failed:</span>");
-			$_TEMPLATE->NewFrameBody('<ul>
+			$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>Not Found</h1>");
+			$grem->legend()->serve("<span class=\"flex\">Loading select personnel failed:</span>");
+			$grem->article()->serve('<ul>
 				<li>Personnel ID is invalid</li>
 				<li>Session has expired</li>
 				<li>Database query failed, contact system administrator</li>
 				<li>Permission denied or not enough privileges to proceed with this document</li>
 				</ul>
 				');
+			unset($grem);
 			exit;
 		}
 	}
@@ -197,24 +195,19 @@ $SmartListObject = new System\SmartListObject($app);
 <a id="jQtriggerlink" style="display: none;" href="" target="_blank"></a>
 <?php
 
+echo "<datalist id=\"personList\">" . $SmartListObject->systemIndividual($app->user->company->id) . "</datalist>";
+$grem= new Gremium\Gremium(true);
+$grem->header()->serve("<h1>{$fs()->title}</h1><ul><li id=\"jQdomPID\"></li></ul>");
 
-$_TEMPLATE->Title($fs()->title, null, "<span id=\"jQdomPID\"></span>");
-
-echo $_TEMPLATE->CommandBarStart();
-echo "<div class=\"btn-set\">";
+$grem->menu()->open();
 echo "<input id=\"employeIDFormSearch\" tabindex=\"1\" type=\"text\" data-slo=\":LIST\" data-list=\"personList\" class=\"flex\" placeholder=\"Employee name or id\" />";
 echo "<button type=\"button\" id=\"jQedit\" tabindex=\"2\" disabled>Edit information</button>";
 echo "<button type=\"button\" id=\"jQprintIDCard\" tabindex=\"3\" disabled>Print ID Card</button>";
-echo "</div>";
-echo "<datalist id=\"personList\">" . $SmartListObject->system_individual($app->user->company->id) . "</datalist>";
-echo $_TEMPLATE->CommandBarEnd();
+$grem->getLast()->close();
 
 ?>
 
-
-
 <div id="jQoutput" style="position:relative;"></div>
-
 
 <script>
 	$(document).ready(function (e) {
@@ -319,7 +312,7 @@ echo $_TEMPLATE->CommandBarEnd();
 			}
 		}
 		?>
-		window.onpopstate = function(e) {
+		window.onpopstate = function (e) {
 			if (e.state && e.state.method == "view") {
 				SLO_employeeID.set(e.state.id, e.state.name);
 				fn_fetchfile();
@@ -329,7 +322,7 @@ echo $_TEMPLATE->CommandBarEnd();
 			}
 		};
 
-	SLO_employeeID.focus();
+		SLO_employeeID.focus();
 
 	});
 </script>

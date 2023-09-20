@@ -1,7 +1,8 @@
 .bom-table {
-	border: solid 1px #f3f3f3;
+	border: solid 1px var(--BorderColor);
 	border-collapse: collapse;
 	width: 100%;
+	--BorderColor: rgb(235, 235, 238);
 }
 
 .bom-table>tfoot>tr>th,
@@ -13,7 +14,7 @@
 
 .bom-table>tbody>tr:not(:first-child)>td,
 .bom-table>tfoot>tr:not(:first-child)>td {
-	border-top: solid 1px #f3f3f3;
+	border-top: solid 1px var(--BorderColor);
 }
 
 .bom-table>tbody>tr>td,
@@ -30,10 +31,11 @@
 	font-size: 0.9em;
 }
 
-.bom-table>tbody>tr>th {
+.bom-table>tbody>tr>th,
+.bom-table>tfoot>tr>th {
 	padding: 10px 8px;
 	color: #3C77C3;
-	border-top: solid 1px #f3f3f3;
+	border-top: solid 1px var(--BorderColor);
 	border-bottom: none;
 	border-right: none;
 	border-left: none;
@@ -41,33 +43,44 @@
 }
 
 .bom-table>tbody>tr>th:first-child {
-	border-left: solid 1px #f3f3f3;
+	border-left: solid 1px var(--BorderColor);
 }
 
 .bom-table>tbody>tr>th:last-child {
-	border-right: solid 1px #f3f3f3;
+	border-right: solid 1px var(--BorderColor);
 }
 
-.bom-table>thead>tr>td {
-	border: solid 1px #f3f3f3;
+.bom-table>thead>tr>td,
+.bom-table>tfoot>tr>td {
+	border: solid 1px var(--BorderColor);
 	border-left: none;
 	border-right: none;
 	padding: 10px 8px;
-	color: #3C77C3;
+	color: dodgerblue;
 	white-space: nowrap;
 	cursor: default;
+	font-weight: bold;
 }
 
+.bom-table>thead>tr>td {
+	border-bottom: double 3px gainsboro;
+}
+
+.bom-table>tfoot>tr>td {
+	border-top: double 3px gainsboro;
+}
+
+
 .bom-table>thead>tr>td:first-child {
-	border-left: solid 1px #f3f3f3;
+	border-left: solid 1px var(--BorderColor);
 }
 
 .bom-table>thead>tr>td:last-child {
-	border-right: solid 1px #f3f3f3;
+	border-right: solid 1px var(--BorderColor);
 }
 
 .bom-table>thead>tr>th {
-	border: solid 1px #f3f3f3;
+	border: solid 1px var(--BorderColor);
 	height: 25px;
 }
 
@@ -115,9 +128,21 @@
 	background-color: #ccc;
 }
 
-.bom-table.hover>tbody>tr:hover>td {
-	background-color: rgb(245, 245, 249);
+.bom-table.strip>tbody>tr:nth-child(2n)>td {
+	background-color: var(--color-faint-white);
 }
+
+.bom-table.strip.hover>tbody>tr:hover:nth-child(2n)>td,.bom-table.hover>tbody>tr:hover>td {
+	background-color: var(--color-soft-gray)
+}
+
+.bom-table>thead.sticky{
+	position:sticky;
+	background-color:#fff;
+	outline: solid .5px gainsboro;
+}
+
+
 
 
 
@@ -230,9 +255,7 @@
 
 
 
-.bom-table.strip>tbody>tr:nth-child(2n)>td {
-	background-color: var(--softBgColor);
-}
+
 
 
 @media only screen and (max-width: 480px) {

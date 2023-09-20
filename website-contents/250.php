@@ -234,7 +234,7 @@ if ($doc_id)
 				<span>Inventory/Asset Account</span>
 				<input type="text" name="vinventoryasset" data-slo=":LIST" data-list="jQGIdestList" id="jQGIdest" />
 				<datalist id="jQGIdestList" style="display: none;">
-					' . $SmartListObject->user_accounts_inbound() . '
+					' . $SmartListObject->userAccountsInbound() . '
 				</datalist>
 
 
@@ -334,7 +334,7 @@ if ($doc_id)
 				if ($bomlegend != $row['pols_bom_part']) {
 					$bomlegend = $row['pols_bom_part'];
 					echo "<tr>";
-					echo "<td colspan=\"3\" style=\"color:var(--linkColor);border-left:solid 2px var(--linkColor)\">{$row['_mat_bom']}</td>";
+					echo "<td colspan=\"3\" style=\"color:var(--color-link);border-left:solid 2px var(--color-link)\">{$row['_mat_bom']}</td>";
 					echo "</tr>";
 				}
 				echo "<tr>";

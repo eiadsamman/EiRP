@@ -76,22 +76,9 @@ if ($r = $app->db->query("SELECT
 	$sat = 2;
 	$col = 0;
 	while ($row = $r->fetch_assoc()) {
-
-
 		$sat++;
 	}
 }
-
-
-
-
-
-$objPHPExcel->getActiveSheet()->setAutoFilter(
-	$objPHPExcel->getActiveSheet()
-		->calculateWorksheetDimension()
-);
-
-
 
 
 exit;

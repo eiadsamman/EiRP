@@ -2,8 +2,8 @@
 
 use System\App;
 use System\Individual\Attendance\Registration;
-use System\Person\Attendance;
-use System\Template\Body;
+use System\SmartListObject;
+use System\Template\Gremium;
 
 
 $settings = array();
@@ -67,9 +67,9 @@ if (isset($_POST['posubmit'])) {
 
 	$parameters = array(
 		"company" => $app->user->company->id,
-		"paymethod" => isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1] != 0 ? (int)$_POST['paymethod'][1] : null,
-		"section" => isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? (int)$_POST['section'][1] : null,
-		"job" => isset($_POST['section'][1]) && (int)$_POST['job'][1] != 0 ? (int)$_POST['job'][1] : null,
+		"paymethod" => isset($_POST['paymethod'][1]) && (int) $_POST['paymethod'][1] != 0 ? (int) $_POST['paymethod'][1] : null,
+		"section" => isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? (int) $_POST['section'][1] : null,
+		"job" => isset($_POST['section'][1]) && (int) $_POST['job'][1] != 0 ? (int) $_POST['job'][1] : null,
 
 
 		//"shift"=>isset($_POST['shift'][1]) && (int)$_POST['shift'][1]!=0?(int)$_POST['shift'][1]:null,
@@ -304,43 +304,47 @@ if ($app->xhttp) {
 	}
 
 	#jsTimeMatrix>table>thead>tr>td {
-		min-width: <?php echo $settings['matrix']['column']['width']; ?>px;
-		max-width: <?php echo $settings['matrix']['column']['width']; ?>px;
-		text-align: <?php echo $settings['matrix']['column']['align']; ?>;
+		min-width:
+			<?php echo $settings['matrix']['column']['width']; ?>
+			px;
+		max-width:
+			<?php echo $settings['matrix']['column']['width']; ?>
+			px;
+		text-align:
+			<?php echo $settings['matrix']['column']['align']; ?>
+		;
 	}
 </style>
 
 <?php
 
 
-$_TEMPLATE = new Body("Test");
-$_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
-$_TEMPLATE->FrameTitlesStack(false);
+$grem = new Gremium\Gremium(false);
 
+$grem->header()->serve("<h1>{$fs()->title}</h1>");
 
-$_TEMPLATE->Title($fs()->title, null, null);
-
-echo $_TEMPLATE->CommandBarStart();
-echo "<div class=\"btn-set\">";
+$grem->menu()->open();
 echo "<button id=\"jQreport\" type=\"button\">Update Report</button>";
 echo "<button id=\"jQexport\" disabled=\"disabled\" type=\"button\">Export</button>";
-echo "</div>";
-echo $_TEMPLATE->CommandBarEnd();
+echo "<span class=\"gap\"></span>";
+$grem->getLast()->close();
 
+$grem->legend()->serve("<span class=\"flex\">Filter query</span>");
+$grem->article()->open();
 
-$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Filter query</span>");
-echo $_TEMPLATE->NewFrameBodyStart();
+$slo = new SmartListObject($app);
+
 ?>
+<datalist id="js-data-list_paygroup"><?=$slo->hrPaymentMethod()?></datalist>
 
 <iframe style="display: none;" name="iframe" id="iframe"></iframe>
-
-
 <form action="<?= $fs(133)->dir ?>" method="post" target="_blank" id="searchform">
 	<input type="hidden" name="posubmit">
 	<input type="hidden" id="export_param" name="export" value="">
 	<div class="template-gridLayout role-input">
 		<div class="btn-set vertical"><span>Payment Group</span>
-			<input name="paymethod" id="input-payment-method" type="text" data-slo="SALARY_PAYMENT_METHOD" />
+			<input name="paymethod" id="input-payment-method" type="text" data-slo=":SELECT"
+				data-list="js-data-list_paygroup" />
 		</div>
 		<div></div>
 		<div></div>
@@ -354,65 +358,34 @@ echo $_TEMPLATE->NewFrameBodyStart();
 		</div>
 		<div></div>
 	</div>
-
-
 	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Start Date</span><input type="text" name="dateFrom" id="input-date-start" data-slo=":DATE" value="<?php echo date("Y-m-1"); ?>"></div>
-		<div class="btn-set vertical"><span>End Date</span><input type="text" name="dateTo" id="input-date-end" data-slo=":DATE" value="<?php echo date("Y-m-d"); ?>"></div>
+		<div class="btn-set vertical"><span>Start Date</span><input type="text" name="dateFrom" id="input-date-start"
+				data-slo=":DATE" value="<?php echo date("Y-m-1"); ?>"></div>
+		<div class="btn-set vertical"><span>End Date</span><input type="text" name="dateTo" id="input-date-end"
+				data-slo=":DATE" value="<?php echo date("Y-m-d"); ?>"></div>
 		<div></div>
 	</div>
-</form>
+</form><br />
 <?php
-echo $_TEMPLATE->NewFrameBodyEnd();
-
-
-$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Query Result</span>");
-echo $_TEMPLATE->NewFrameBodyStart();
+$grem->getLast()->close();
+$grem->legend()->serve("<span class=\"flex\">Query Result</span>");
+$grem->article()->serve("<div id=\"jQoutput\"></div>");
+unset($grem);
 ?>
-<div id="jQoutput"></div>
-<?php
-echo $_TEMPLATE->NewFrameBodyEnd();
-?>
-
-<table class="bom-table hover p131" style="display:none">
-	<thead>
-		<tr class="special">
-			<td>#</td>
-			<td title="Employee system ID">ID</td>
-			<td title="Employee name (Permanent employee `stared`, Suspended employee `red x`)">Name</td>
-			<td title="Job Title">Job Title</td>
-
-			<td title="Basic salary (Fixed `blue`, derived from job title `black`)">Salary</td>
-			<td title="">Variable</td>
-			<td title="">Allowance</td>
-			<td title="Employee time group">Time Group</td>
-			<td title="Attendend days / Overtime days" colspan="2">Attendance</td>
-			<!--<td title="Absent without notice / Absent with notice" colspan="2">Absence</td>
-		<td title="" class="progress"></td>-->
-			<td title="Attendance percentage">%</td>
-
-		</tr>
-	</thead>
-	<tbody id="jQoutputX"></tbody>
-</table>
-
 
 <script>
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 		$("#input-payment-method").slo();
 		$("#input-job-group").slo();
 		$("#input-job-title").slo();
 		$("#input-date-start").slo();
 		$("#input-date-end").slo();
-
-
-
 		var $form = $("#searchform");
 
-		$("#jQreport").on("click", function() {
+		$("#jQreport").on("click", function () {
 			fetch();
 		});
-		var fetch = function() {
+		var fetch = function () {
 			$form.attr("method", "post");
 			$form.attr("action", "<?= $fs(131)->dir ?>");
 			$form.attr("target", "_blank");
@@ -421,7 +394,7 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 				type: "POST",
 				url: "<?php echo $fs()->dir; ?>",
 				data: $("#searchform").serialize()
-			}).done(function(o, textStatus, request) {
+			}).done(function (o, textStatus, request) {
 				let response = request.getResponseHeader('HTTP_X_RESPONSE');
 				if (response == "SUCCESS") {
 					$("#jQexport").prop("disabled", false);
@@ -433,12 +406,12 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 					$("#jQexport").prop("disabled", true);
 					messagesys.failure("Query execution failed, try again");
 				}
-			}).always(function() {
+			}).always(function () {
 				overlay.hide();
 			});
 		}
 
-		$("#jQexport").on('click', function() {
+		$("#jQexport").on('click', function () {
 			overlay.show();
 			$form.attr("method", "post");
 			$form.attr("action", "<?= $fs(133)->dir ?>");
@@ -450,7 +423,5 @@ echo $_TEMPLATE->NewFrameBodyEnd();
 			}, 1000);
 
 		});
-
-
 	});
 </script>

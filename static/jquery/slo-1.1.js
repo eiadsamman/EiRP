@@ -15,7 +15,7 @@ class SmartListObjectHandler {
 		this.output = false;
 	}
 	setItemsLimit(items_limit) {
-		this.items_limit = items_limit ;
+		this.items_limit = items_limit;
 	}
 	generate(limit = 0) {
 		return [];
@@ -37,7 +37,8 @@ class SmartListObjectHandler {
 class ListHandler extends SmartListObjectHandler {
 	constructor(initial = null, start = null, end = null) {
 		super(initial, start, end);
-		let buffer = []
+		let buffer = [];
+		this.dropdown = false;
 		let selected_buffer = false;
 		initial.children('option').each(function () {
 			buffer.push({
@@ -66,27 +67,36 @@ class ListHandler extends SmartListObjectHandler {
 				return false
 			}
 
-		const chunks = input.split(" ");
+		this.output = [];
 		let chunk_found = true;
 		let chunks_found_count = 0;
-		this.output = [];
 
-		for (let listitem of this.dataset) {
-			if (chunks_found_count > this.items_limit)
-				break;
-			chunk_found = true;
-			for (let chunk of chunks) {
-				if (chunk.trim() == "") continue;
-				if ((listitem.id + listitem.value + listitem.keywords + listitem.height).toLocaleLowerCase().includes(chunk.toLocaleLowerCase())) {
-					chunk_found &= true;
-				} else {
-					chunk_found &= false;
-					continue;
-				}
-			}
-			if (chunk_found) {
-				chunks_found_count++;
+		if (this.dropdown) {
+			for (let listitem of this.dataset) {
+				if (chunks_found_count > this.items_limit)
+					break;
 				this.output.push(listitem);
+				chunks_found_count++
+			}
+		} else {
+			const chunks = input.split(" ");
+			for (let listitem of this.dataset) {
+				if (chunks_found_count > this.items_limit)
+					break;
+				chunk_found = true;
+				for (let chunk of chunks) {
+					if (chunk.trim() == "") continue;
+					if ((listitem.id + listitem.value + listitem.keywords + listitem.height).toLocaleLowerCase().includes(chunk.toLocaleLowerCase())) {
+						chunk_found &= true;
+					} else {
+						chunk_found &= false;
+						continue;
+					}
+				}
+				if (chunk_found) {
+					chunks_found_count++;
+					this.output.push(listitem);
+				}
 			}
 		}
 		if (this.output.length == 0) {
@@ -174,7 +184,6 @@ class NumberHandler extends SmartListObjectHandler {
 		return [this.output, this.output];
 	}
 }
-
 
 class DateHandler extends SmartListObjectHandler {
 	constructor(initial = null, start = null, end = null) {
@@ -344,7 +353,8 @@ class DateHandler extends SmartListObjectHandler {
 			onblur: function () { },
 			ondeselect: function () { },
 			align: "left",
-			limit: 5
+			limit: 5,
+			dropdown: false
 		}, options);
 		const $jq = this;
 		let safeClearTrigger = false;
@@ -437,12 +447,40 @@ class DateHandler extends SmartListObjectHandler {
 				});
 				return output;
 			},
+			'reinit': function () {
+				const _parent = this;
+				$jq.each(function () {
+					if (this.object_role == ":NUMBER") {
+						this.handler = new NumberHandler(this.object_htmlinput_text.val() ?? null, this.object_htmlinput_text.attr("data-rangestart") ?? null, this.object_htmlinput_text.attr("data-rangeend") ?? null);
+					} else if (this.object_role == ":DATE") {
+						this.handler = new DateHandler(this.object_htmlinput_text.val() ?? null, this.object_htmlinput_text.attr("data-rangestart") ?? null, this.object_htmlinput_text.attr("data-rangeend") ?? null);
+					} else if (this.object_role == ":LIST") {
+						this.handler = new ListHandler($("#" + me.object_htmlinput_text.attr("data-list")));
+					} else if (this.object_role == ":SELECT") {
+						this.object_htmlinput_text.parent().addClass("slo-select");
+						this.object_htmlinput_text.prop("readonly", true);
+						this.handler = new ListHandler($("#" + me.object_htmlinput_text.attr("data-list")));
+						slosettings.treat_as_select = true;
+						this.handler.dropdown = true;
+					}
+					if (this.handler !== false) {
+						this.handler.setItemsLimit(this.object_list_limit);
+						if (this.handler.validate(this.object_htmlinput_text.val(), true)) {
+							_parent.set(this.handler.toString(true)[0], this.handler.toString(true)[1]);
+							this.stamped = true;
+						} else
+							_parent.clear();
+					}
+				});
+			},
 			'input': [],
 			'hidden': [],
 			'focus': function () {
 				$jq.each(function () {
 					this.focusfix = true;
-					this.object_htmlinput_text.focus().select();
+					this.object_htmlinput_text.focus()
+					if (!slosettings.treat_as_select)
+						this.object_htmlinput_text.select();
 				});
 			},
 			//#endregion
@@ -512,26 +550,33 @@ class DateHandler extends SmartListObjectHandler {
 
 					/* Set handler */
 					if (this.object_role == ":NUMBER") {
+
 						this.handler = new NumberHandler(this.object_htmlinput_text.val() ?? null, this.object_htmlinput_text.attr("data-rangestart") ?? null, this.object_htmlinput_text.attr("data-rangeend") ?? null);
 					} else if (this.object_role == ":DATE") {
 						this.handler = new DateHandler(this.object_htmlinput_text.val() ?? null, this.object_htmlinput_text.attr("data-rangestart") ?? null, this.object_htmlinput_text.attr("data-rangeend") ?? null);
 					} else if (this.object_role == ":LIST") {
 						this.handler = new ListHandler($("#" + me.object_htmlinput_text.attr("data-list")));
-
+					} else if (this.object_role == ":SELECT") {
+						this.object_htmlinput_text.parent().addClass("slo-select");
+						this.object_htmlinput_text.prop("readonly", true);
+						this.handler = new ListHandler($("#" + me.object_htmlinput_text.attr("data-list")));
+						slosettings.treat_as_select = true;
+						this.handler.dropdown = true;
 					}
+
 
 					/* Initilize handlers */
 					if (this.handler !== false) {
 						this.handler.setItemsLimit(me.object_list_limit);
 						if (this.handler.validate(this.object_htmlinput_text.val(), true)) {
-							_parent.set(this.handler.toString(true)[0], this.handler.toString(true)[1])
+							_parent.set(this.handler.toString(true)[0], this.handler.toString(true)[1]);
+							this.stamped = true;
 						} else
 							_parent.clear();
 					}
 
 					const listpopulate = function () {
 						const query = me.object_htmlinput_text.val();
-
 						if (me.handler !== false) {
 							let validate = me.handler.validate(query);
 							if (validate) {
@@ -544,7 +589,6 @@ class DateHandler extends SmartListObjectHandler {
 							}
 							return;
 						}
-
 
 						me.http_request.abort();
 						me.http_request = $.ajax({
@@ -677,7 +721,8 @@ class DateHandler extends SmartListObjectHandler {
 							me.enter_key_event = true;
 							$current.trigger("click");
 							me.focusfix = false;
-							me.object_htmlinput_text.select();
+							if (!slosettings.treat_as_select)
+								me.object_htmlinput_text.select();
 							return false;
 						}
 						if (keycode == 40 && me.state == state.up) {
@@ -749,7 +794,8 @@ class DateHandler extends SmartListObjectHandler {
 						slohide();
 						me.focusfix = true;
 						slofocus(false);
-						me.object_htmlinput_text.select();
+						if (!slosettings.treat_as_select)
+							me.object_htmlinput_text.select();
 						if (me.enter_key_event) { return; }
 						if (typeof (slosettings.onselect) == "function") {
 

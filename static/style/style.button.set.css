@@ -1,23 +1,21 @@
 .btn-set {
-	--elemntBorderColor: rgb(200,200,210);
+	--color-mid-gray: rgb(200, 200, 210);
+	
 	display: flex;
 	flex-wrap: nowrap;
 	display: flex;
-	
+	margin-left: 1px;
 }
 
 .btn-set.center {
 	justify-content: center;
 }
 
-
 .btn-set>* {
-	padding: 8px 10px;
+	padding: 7px 12px 13px 12px;
 	outline: none;
 	background-color: #fff;
-	border: solid 1px var(--elemntBorderColor);
-	display: inline-block;
-	vertical-align: top;
+	border: solid 1px var(--color-mid-gray);
 	height: 32px;
 	position: relative;
 	margin-left: -1px;
@@ -25,35 +23,29 @@
 	/* box-shadow: 2px 2px 2px rgba(200,200,200,0.3); */
 }
 
-.btn-set>*:first-child {
-	margin-left: 0px;
-}
-
-
 /* #region - Components*/
 
 .btn-set>span {
 	white-space: nowrap;
-	padding-top: 9px;
-	color: #444;
-	background-color: rgba(240, 240, 245, .5);
-	/* background-color: var(--softBgColor); */
+	color: #333;
+	background-color: var(--color-faint-gray);
+	/* background-color: var(--color-faint-white); */
 }
 
-.btn-set>a {
-	padding-top: 8px;
+.btn-set>a,
+.btn-set>div,
+.btn-set>span {
+	padding: 8.5px 12px 11.5px 12px;
 }
 
 .btn-set>div {
 	background-color: #666;
 	border-color: #000;
 	color: #fff;
+
 }
 
 .btn-set>button {
-	padding-left: 15px;
-	padding-right: 15px;
-	padding-top: 4px;
 	font-size: 1em;
 	color: #333;
 	font-weight: normal;
@@ -70,13 +62,14 @@
 	border-radius: 0px;
 	-webkit-border-radius: 0px;
 	-moz-border-radius: 0px;
-	border: solid 1px var(--elemntBorderColor);
+	border: solid 1px var(--color-mid-gray);
 }
 
 .btn-set>span.gap {
 	background-color: transparent;
 	border: none;
 	flex: 1;
+	box-shadow: none;
 }
 
 .btn-set>button,
@@ -85,9 +78,7 @@
 .btn-set>span.menu {
 	background-color: #fff;
 	background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgba(240, 241, 247, 1) 90%);
-
 	user-select: none;
-
 }
 
 .btn-set>input:hover,
@@ -121,12 +112,14 @@
 
 .btn-set>input[disabled],
 .btn-set>textarea[disabled] {
-	background-color: #eee;
+	
+	background-color: var(--color-faint-gray);
 	pointer-events: none;
 }
 
 .btn-set>button[disabled] {
-	color: #888 !important;
+	color: #aaa !important;
+	background-image: linear-gradient(180deg, var(--color-faint-gray) 90%, rgb(230, 230, 230) 90%);
 	pointer-events: none;
 }
 
@@ -153,7 +146,7 @@
 
 .btn-set>a.as-button {
 	cursor: default;
-	color: var(--fontColor);
+	color: var(--color-font);
 }
 
 
@@ -644,19 +637,6 @@
 	-moz-border-radius: 0px;
 }
 
-.btn-set>span.cssSLO_wrap>input[type=text].listvisible,
-.btn-set>span.cssSLO_wrap>input[type=date].listvisible {
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
-
-}
-
-.btn-set>span.cssSLO_wrap>input[type=text].listvisibletop,
-.btn-set>span.cssSLO_wrap>input[type=date].listvisibletop {
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-}
-
 .btn-set>span.cssSLO_wrap.valid:after,
 .btn-set>span.cssSLO_wrap.unvalid:after {
 	top: 9px;
@@ -694,13 +674,35 @@
 /* #endregion */
 
 
-input[type="number"],
-input[type="date"] {
-	/* appearance: textfield;
-		-webkit-appearance: textfield;
-		-moz-appearance: textfield; */
-	background-color: #fff !important;
+/* #region - Pagination */
+.btn-set>button.pagination {
+	min-width: 45px;
+	position: relative;
 }
+
+.btn-set>button.pagination::before {
+	font-family: "icomoon";
+	position: absolute;
+	pointer-events: none;
+	content: "";
+	display: block;
+	text-align: center;
+	width: 20px;
+	height: 20px;
+	top: 6px;
+	right: 11px;
+	font-size: 17px;
+}
+
+.btn-set>button.pagination.next:before {
+	content: "\e61B";
+}
+
+.btn-set>button.pagination.prev:before {
+	content: "\E618";
+}
+
+/* #endregion */
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {

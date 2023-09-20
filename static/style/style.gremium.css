@@ -87,6 +87,7 @@
 	width: 40px;
 	height: 1px;
 	margin-right: 10px;
+	outline: none;
 }
 
 
@@ -103,7 +104,11 @@
 	transition: padding 0.3s ease;
 }
 
-.gremium>header>a.previous:hover::before {
+.gremium>header>a.previous:hover::before,
+.gremium>header>a.previous:active::before, 
+.gremium>header>a.previous:focus::before,
+.gremium>header>a.previous:target::before
+ {
 	color: #06c;
 	padding: 15px 10px 15px 0px
 }
@@ -168,7 +173,7 @@
 
 /* #region Gremium Menu */
 .gremium>menu {
-	padding: 10px 10px 15px 10px;
+	padding: 5px 10px 10px 10px;
 	margin: 0;
 	color: #333;
 	background-color: #fff;
@@ -195,30 +200,17 @@
 
 
 
-.gremium>section {
-	z-index: 28;
-	padding: 0;
-	padding-bottom: 20px;
-	background-color: #fff;
-}
 
-.gremium>section.glue>header {
-	position: sticky;
-	top: calc(var(--root--menubar-height) + var(--gremium--header-height) + var(--gremium--menu-height));
+.gremium>legend {
+	position: static;
+	padding: 0px 10px 10px 10px;
+
+	user-select: none;
+	background-color: #fff;
 	z-index: 20;
 }
 
-.gremium>section>header {
-	position: static;
-	padding: 10px;
-	user-select: none;
-	background-color: #fff;
-}
-
-
-
-
-.gremium>section>article {
+.gremium>article {
 	padding: 0px 15px;
 }
 

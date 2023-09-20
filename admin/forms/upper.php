@@ -4,6 +4,7 @@ use System\App;
 use System\FileSystem\Hierarchy;
 use System\Finance\Accounting;
 use System\Finance\AccountRole;
+use System\Personalization\Bookmark;
 use System\SmartListObject;
 
 
@@ -141,7 +142,7 @@ $SmartListObject = new SmartListObject($app);
 									JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1 
 									JOIN 
 										pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id=" . $app->user->info->permissions . "
-											LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_name='system_count_page_visit'	
+											LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemFrequentVisit->value . "	
 								WHERE 
 									trd_enable = 1 AND trd_visible = 1
 								ORDER BY
@@ -178,7 +179,7 @@ $SmartListObject = new SmartListObject($app);
 						<datalist id="accounts-list">
 							<?php
 							$role = new AccountRole();
-							echo $SmartListObject->user_accounts($role, $app->user->company->id);
+							echo $SmartListObject->userAccounts($role, $app->user->company->id);
 							?>
 						</datalist>
 					</header>
@@ -208,10 +209,10 @@ $SmartListObject = new SmartListObject($app);
 										FROM
 											companies
 												JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . $app->user->info->id . "
-												JOIN user_settings ON usrset_usr_id=" . $app->user->info->id . " AND usrset_name='system_working_company' AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
+												JOIN user_settings ON usrset_usr_id=" . $app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemWorkingCompany->value . " AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
 									) AS _fusro ON _fusro.comp_id=prt_company_id
 									
-									LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_name='system_count_account_selection'
+									LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemCountAccountSelection->value . "
 								ORDER BY
 									(usrset_value + 0) DESC,cur_id,ptp_name,prt_name
 								;"
@@ -259,7 +260,7 @@ $SmartListObject = new SmartListObject($app);
 							comp_id,comp_name 
 						FROM companies 
 							JOIN user_company ON urc_usr_comp_id = comp_id AND urc_usr_id = " . $app->user->info->id . "
-							LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_name='system_count_company_selection'
+							LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemCountCompanySelection->value . "
 						ORDER BY
 							(usrset_value+0) DESC"
 						);
@@ -279,7 +280,8 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<div style="white-space:nowrap;" class="menu-items">
 						<?php
-						$bookmarked = $app->user->bookmark_status($fs()->id);
+						$bookmark = new Bookmark($app);
+						$bookmarked = $bookmark->isBookmarked($fs()->id);
 
 						echo "<div>" . $app->user->info->name . "</div>";
 						echo "<a href=\"user-account/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"User Settings\">&#xe971;</span><span>Password & Security</span></a>";
@@ -293,7 +295,7 @@ $SmartListObject = new SmartListObject($app);
 						}
 						echo "</span></div>";
 
-						foreach ($app->user->bookmark_list() as $bookmark) {
+						foreach ($bookmark->list() as $bookmark) {
 							#sticky
 							#slo search
 							#add/remove from dom

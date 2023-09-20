@@ -26,7 +26,8 @@ if (isset($_POST['salarymonth'])) {
 	$page60 = $fs(60)->dir;
 	$total = $count = 0;
 	echo "<div><table><tbody id=\"___ajax_tbody\">";
-	if ($r = $app->db->query("
+	if (
+		$r = $app->db->query("
 		SELECT
 			acm_id,
 			SUM(_accounts.atm_value) AS atm_value,
@@ -56,7 +57,8 @@ if (isset($_POST['salarymonth'])) {
 			acm_usr_id
 		ORDER BY
 			acm_usr_id;
-		")) {
+		")
+	) {
 		while ($row = $r->fetch_assoc()) {
 			echo "<tr>";
 			$total += $row['atm_value'];
@@ -95,15 +97,15 @@ if ($__defaultaccount === false) {
 			<input type=\"text\" style=\"width:80px;text-align:right\" id=\"jQcount\" readonly=\"readonly\" value=\"0\" />
 			" . ($fs(121)->permission->read ? "<span class=\"gap\"></span><button id=\"jQexportButton\">Export</button>" : "") . "
 		</div>";
-?>
-	<form action="<?php echo $export_pagefile['directory']; ?>" method="post" target="_blank" id="jQexportFrom" style="display:none;">
+	?>
+	<form action="<?php echo $fs(121)->dir; ?>" method="post" target="_blank" id="jQexportFrom" style="display:none;">
 		<input type="hidden" name="month" value="" />
 	</form>
 	<table class="bom-table hover">
 		<thead>
 			<tr>
 				<td colspan="2">Employee</td>
-				<td  style="min-width:150px;">Salary</td>
+				<td style="min-width:150px;">Salary</td>
 				<td width="100%">Records</td>
 
 			</tr>
@@ -111,24 +113,24 @@ if ($__defaultaccount === false) {
 		<tbody id="jQoutput"></tbody>
 	</table>
 	<script>
-		$(document).ready(function(e) {
+		$(document).ready(function (e) {
 			$("#jQmonthSelection").slo({
-				onselect: function(slodata) {
+				onselect: function (slodata) {
 					fetch();
 				},
-				ondeselect: function() {
+				ondeselect: function () {
 					$("#jQoutput").html("");
 					$("#jQtotal").val("0.00");
 					$("#jQcount").val("0");
 
 				}
 			});
-			$("#jQexportButton").on('click', function() {
+			$("#jQexportButton").on('click', function () {
 				$("#jQexportFrom").find("[name=month]").val($("#jQmonthSelection_1").val());
 				$("#jQexportFrom").submit();
 			});
 
-			var fetch = function() {
+			var fetch = function () {
 				var month = $("#jQmonthSelection_1").val();
 				$.ajax({
 					url: '<?php echo $fs()->dir; ?>',
@@ -136,7 +138,7 @@ if ($__defaultaccount === false) {
 					data: {
 						'salarymonth': month
 					}
-				}).done(function(data) {
+				}).done(function (data) {
 					var $data = $(data);
 					var json = null;
 					try {

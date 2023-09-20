@@ -113,7 +113,7 @@ $SmartListObject = new SmartListObject($app);
 </div>
 
 <datalist id="emplist">
-	<?= $SmartListObject->system_individual($app->user->company->id) ?>
+	<?= $SmartListObject->systemIndividual($app->user->company->id) ?>
 </datalist>
 
 

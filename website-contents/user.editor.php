@@ -369,7 +369,7 @@ $SmartListObject = new System\SmartListObject($app);
 		<span>Employee Name \ ID</span><input type="text" id="employeIDFormSearch" data-slo=":LIST" data-list="personList" class="flex" value="<?php echo $UserFound ? $UserFound['usr_firstname'] . " " . $UserFound['usr_lastname'] : ""; ?>" <?php echo $UserFound ? "data-slodefaultid=\"" . $UserFound['usr_id'] . "\"" : ""; ?> placeholder="Select user..." />
 	</div>
 	<datalist id="personList">
-		<?= $SmartListObject->system_individual($app->user->company->id); ?>
+		<?= $SmartListObject->systemIndividual($app->user->company->id); ?>
 	</datalist>
 </div>
 

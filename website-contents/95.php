@@ -1,7 +1,7 @@
 <?php
 
 use System\SmartListObject;
-use System\Template\Gremium\Gremium;
+use System\Template\Gremium;
 
 
 $accounting = new System\Finance\Accounting($app);
@@ -136,10 +136,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	}
 
 	/*
-			  $balance=null;
-			  if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
-			  if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
-		  */
+					   $balance=null;
+					   if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
+					   if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
+				   */
 
 	$result = true;
 	$app->db->autocommit(false);
@@ -224,8 +224,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	if ($result) {
 		$app->db->commit();
 		$balance = 0;
-		$app->db->query("INSERT INTO user_settings (usrset_usr_id,usrset_name,usrset_usr_defind_name,usrset_value,usrset_time) 
-				VALUES ({$app->user->info->id},'system_count_account_operation','$creditor','1',NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
+		$app->db->query("INSERT INTO user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) 
+				VALUES ({$app->user->info->id}," . \System\Personalization\Identifiers::SystemCountAccountOperation->value . ",'$creditor','1',NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
 
 		if ($r = $app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE atm_account_id={$__workingaccount['id']} AND acm_rejected=0;")) {
 			if ($row = $r->fetch_assoc()) {
@@ -254,37 +254,36 @@ if (!$__workingaccount) {
 } elseif ($__workingcurrency === false) {
 	echo "<div class=\"btn-set\"><span class=\"bnt-error\">&nbsp;No currency provided for selected account</span></div>";
 } elseif (!$app->user->account->role->outbound) {
-	$gremium = new Gremium();
-	$gremium->header(true, $gremium->exclamation, null, "<h1>Invalid outbound account!</h1>");
-	$gremium->section();
-	$gremium->sectionHeader("<span class=\"flex\">Selected account is not valid for outbound operations:</span>");
-	$gremium->sectionArticle('
-	<li>Outbound accounts are only valid for receipt operations, chose a valid account and try again</li>
-	<li>Contact system adminstration for further assistance</li>
-	<li>Permission denied or not enough privileges to proceed with this document</li>
-	</ul>
-	<b>Actions</b>
-	<ul>
-		<li>Goto <a href="{$fs(99)->dir}">Ledger report</a></li>
-		<li>Goto <a href="{$fs(91)->dir}">New Receipt</a></li>
-	</ul>
-	');
-	$gremium->section();
-	unset($gremium);
-	exit;
+	$grem = new Gremium\Gremium();
 
+	$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>Invalid outbound account!</h1>");
+	$grem->legend()->serve("<span class=\"flex\">Selected account is not valid for payment operations:</span>");
+	$grem->article()->serve('
+		<ul>
+		<li>Payments require an account with outbound rules, chose a valid account and try again</li>
+		<li>Contact system adminstration for further assistance</li>
+		<li>Permission denied or not enough privileges to proceed with this document</li>
+		</ul>
+		<b>Actions</b>
+		<ul>
+			<li>Goto <a href="{$fs(99)->dir}">Ledger report</a></li>
+			<li>Goto <a href="{$fs(91)->dir}">New Receipt</a></li>
+		</ul>
+	');
+	unset($grem);
+	exit;
 } else {
 	?>
 	<iframe style="display:none;" src="" id="jQiframe"></iframe>
 
 	<?php
 
-	$gremium = new Gremium(true);
-	$gremium->header(true, null, $fs(99)->dir, "<h1>{$fs()->title}</h1><div style=\"flex:1\"></div><div class=\"btn-set\" style=\"padding-top:10px\"><button class=\"clr-red\" id=\"jQsubmit\" tabindex=\"9\" >Submit Payment</button></div>");
+	$grem = new Gremium\Gremium();
+
+	$grem->header()->prev($fs(99)->dir)->serve("<h1>{$fs()->title}</h1><div style=\"flex:1\"></div><div class=\"btn-set\" style=\"padding-top:10px\"><button class=\"clr-red\" id=\"jQsubmit\" tabindex=\"9\" >Submit Payment</button></div>");
 
 
-	$gremium->section();
-	$gremium->sectionArticle();
+	$grem->article()->open();
 	?>
 	<table class="bom-table mediabond-table" id="jQformTable">
 		<tbody>
@@ -318,7 +317,7 @@ if (!$__workingaccount) {
 					<div class="btn-set"><input tabindex="2" type="text" data-slo=":LIST" data-list="jQcreditorList"
 							class="flex" id="jQcreditor" /></div>
 					<datalist id="jQcreditorList" style="display: none;">
-						<?= $SmartListObject->user_accounts_inbound(); ?>
+						<?= $SmartListObject->userAccountsInbound(); ?>
 					</datalist>
 				</td>
 			</tr>
@@ -328,7 +327,7 @@ if (!$__workingaccount) {
 					<div class="btn-set"><input type="text" data-slo=":LIST" data-list="jQcategoryList" tabindex="3"
 							class="flex" id="jQcategory" /></div>
 					<datalist id="jQcategoryList">
-						<?= $SmartListObject->financial_categories(); ?>
+						<?= $SmartListObject->financialCategories(); ?>
 					</datalist>
 				</td>
 			</tr>
@@ -341,7 +340,7 @@ if (!$__workingaccount) {
 						<input type="text" tabindex="-1" class="flex" data-slo="B00S" id="jQemployee" />
 					</div>
 					<datalist id="jQbeneficialList">
-						<?= $SmartListObject->financial_beneficiary(); ?>
+						<?= $SmartListObject->financialBeneficiary(); ?>
 					</datalist>
 				</td>
 			</tr>
@@ -377,15 +376,20 @@ if (!$__workingaccount) {
 			</tr>
 			<tr>
 				<th>Comments</th>
-				<td><div class="btn-set"><textarea type="text" tabindex="8" style="width:100%;min-width:100%;max-width:100%;min-height:100px;"  class="textarea" id="jQcomments"
-						rows="7"></textarea></div></td>
+				<td>
+					<div class="btn-set"><textarea type="text" tabindex="8"
+							style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
+							id="jQcomments" rows="7"></textarea></div>
+				</td>
 			</tr>
 		</tbody>
 	</table>
+	<br />
 	<?php
-	$gremium->sectionArticle();
-	$gremium->sectionHeader("<span class=\"flex\">Session Receipts</span><span id=\"jQtotalEntries\">0</span><input tabindex=\"-1\" type=\"text\" style=\"text-align: right;\" readonly=\"readonly\" id=\"jQtotalTotal\" value=\"0\" />");
-	$gremium->sectionArticle();
+	$grem->getLast()->close();
+
+	$grem->legend()->serve("<span class=\"flex\">Session Receipts</span><span id=\"jQtotalEntries\">0</span><input tabindex=\"-1\" type=\"text\" style=\"text-align: right;\" readonly=\"readonly\" id=\"jQtotalTotal\" value=\"0\" />");
+	$grem->article()->open();
 	?>
 	<table class="bom-table hover">
 		<thead>
@@ -400,8 +404,8 @@ if (!$__workingaccount) {
 	</table>
 
 	<?php
-	$gremium->sectionArticle();
-	unset($gremium);
+	$grem->getLast()->close();
+	unset($grem);
 	?>
 
 	<script>

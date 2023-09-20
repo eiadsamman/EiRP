@@ -1,171 +1,186 @@
-.bom-table.attendance > tbody > tr > td.css_attendanceBlocks{
-	white-space:nowrap;
-	width:100%;
+.bom-table.attendance>tbody>tr>td.css_attendanceBlocks {
+	white-space: nowrap;
+	width: 100%;
 	height: 27px;
 	vertical-align: bottom;
 }
-.bom-table.attendance > tbody > tr > td.css_attendanceBlocks > div{
-	display:inline-block;
-	position:relative;
-	height:27px;
+
+.bom-table.attendance>tbody>tr>td.css_attendanceBlocks>div {
+	display: inline-block;
+	position: relative;
+	height: 27px;
 	opacity: 0.8;
 }
-.bom-table.attendance > tbody > tr > td.css_attendanceBlocks > div.empty{
-	background-color:transparent;
-	border-color:transparent;
-	cursor:default;
-}
-.bom-table.attendance > tbody > tr > td{
-	padding:0px;
-}
-.bom-table.attendance > tbody > tr > th{
-	padding:0px 10px;
-	color:#000;
+
+.bom-table.attendance>tbody>tr>td.css_attendanceBlocks>div.empty {
+	background-color: transparent;
+	border-color: transparent;
+	cursor: default;
 }
 
-div.attendance-monthfooter{
-	padding:10px;
-	color:#000;
+.bom-table.attendance>tbody>tr>td {
+	padding: 0px;
+}
+
+.bom-table.attendance>tbody>tr>th {
+	padding: 0px 10px;
+	color: #000;
+}
+
+div.attendance-monthfooter {
+	padding: 10px;
+	color: #000;
 	font-weight: bold;
 	text-align: right;
 }
 
 
 
-.bom-table.attendance > tbody > tr > th:nth-child(1n+3){
+.bom-table.attendance>tbody>tr>th:nth-child(1n+3) {
 	min-width: 15px;
 }
 
 
-.bom-table.attendance > tbody > tr.weekend > th{
-	background: repeating-linear-gradient(
-		45deg,
-		rgba(0,0,0,0.03),
-		rgba(0,0,0,0.03) 10px,
-		rgba(255,255,255,0) 10px,
-		rgba(255,255,255,0) 20px
-	);
-}
-.bom-table.attendance > tbody > tr.weekend > td{
-	background: repeating-linear-gradient(
-		45deg,
-		rgba(0,0,0,0.03),
-		rgba(0,0,0,0.03) 10px,
-		rgba(255,255,255,0) 10px,
-		rgba(255,255,255,0) 20px
-	);
-	
+.bom-table.attendance>tbody>tr.weekend>th {
+	background: repeating-linear-gradient(45deg,
+			rgba(0, 0, 0, 0.03),
+			rgba(0, 0, 0, 0.03) 10px,
+			rgba(255, 255, 255, 0) 10px,
+			rgba(255, 255, 255, 0) 20px);
 }
 
-.bom-table.attendance > tbody > tr.outofrange > td,.bom-table.attendance > tbody > tr.outofrange > th{
-	background: repeating-linear-gradient(
-		45deg,
-		rgba(255,0,0,0.03),
-		rgba(255,0,0,0.03) 20px,
-		rgba(255,255,255,0) 20px,
-		rgba(255,255,255,0) 40px
-	);
-	
-	
-	color:#999;
+.bom-table.attendance>tbody>tr.weekend>td {
+	background: repeating-linear-gradient(45deg,
+			rgba(0, 0, 0, 0.03),
+			rgba(0, 0, 0, 0.03) 10px,
+			rgba(255, 255, 255, 0) 10px,
+			rgba(255, 255, 255, 0) 20px);
+
+}
+
+.bom-table.attendance>tbody>tr.outofrange>td,
+.bom-table.attendance>tbody>tr.outofrange>th {
+	background: repeating-linear-gradient(45deg,
+			rgba(255, 0, 0, 0.03),
+			rgba(255, 0, 0, 0.03) 20px,
+			rgba(255, 255, 255, 0) 20px,
+			rgba(255, 255, 255, 0) 40px);
+
+
+	color: #999;
 }
 
 
-.calendar-point{
+.calendar-point {
 	cursor: pointer;
 	position: relative;
 }
-.calendar-point > div{
-	font-family:icomoon4;
-}
-.ccode001 > div{
-	color:#0c6;
-}
-.ccode002 > div{
-	color:#f03;
-}
-.ccode003 > div{
-	color:#06c;
+
+.calendar-point>div {
+	font-family: icomoon4;
 }
 
-.calendar-point > span{
-	left:0px;
-	position:absolute;
-	pointer-events:none;
-	display: block;;
-	z-index:99;
-	background-color:rgba(255,255,255,0.9);
-	padding:10px;
-	border:solid 1px rgba(0,0,0,0.7);
+.ccode001>div {
+	color: #0c6;
+}
+
+.ccode002>div {
+	color: #f03;
+}
+
+.ccode003>div {
+	color: #06c;
+}
+
+.calendar-point>span {
+	left: 0px;
+	position: absolute;
+	pointer-events: none;
+	display: block;
+	;
+	z-index: 99;
+	background-color: rgba(255, 255, 255, 0.9);
+	padding: 10px;
+	border: solid 1px rgba(0, 0, 0, 0.7);
 	border-radius: 8px 8px 8px 0px;
-	bottom:100%;
-	display:none;
-	min-width:240px;
-}
-.calendar-point:hover > span{
-	display:block;
+	bottom: 100%;
+	display: none;
+	min-width: 240px;
 }
 
-.bom-table.attendance > tbody > tr:hover > th,.bom-table.attendance > tbody > tr:hover > td{
+.calendar-point:hover>span {
+	display: block;
+}
+
+.bom-table.attendance>tbody>tr:hover>th,
+.bom-table.attendance>tbody>tr:hover>td {
 	/*background-color: #f5f5f5;*/
 }
-.calendar-absent-table > div{
-	line-height:1.8em;
+
+.calendar-absent-table>div {
+	line-height: 1.8em;
 }
-.calendar-absent-table > div > span{
-	min-width:100px;display:inline-block;
-	color:#555;
+
+.calendar-absent-table>div>span {
+	min-width: 100px;
+	display: inline-block;
+	color: #555;
 }
-.calendar-absent-table > div > span:nth-child(2){
-	color:#333;	
+
+.calendar-absent-table>div>span:nth-child(2) {
+	color: #333;
 }
 
 
 
-.bom-table.attendance > tbody > tr > th.details{
-	text-align:right;
-	min-width:100px;
-}
-.bom-table.attendance > tbody > tr > td > div > div.inprog{
-	position:absolute;
-	height:100%;
-	left:100%;
-}
-.bom-table.attendance > tbody > tr > td > div > div.inprog:after{
-	font-family:icomoon;
-	content:"\e61b";
-	font-size:1.3em;
-	line-height:1.3em;
-	position:relative;
-	top:1px;
-	left:-4px;
+.bom-table.attendance>tbody>tr>th.details {
+	text-align: right;
+	min-width: 100px;
 }
 
-#jQpopupAttDetails{
-	position:fixed;
-	pointer-events:none;
+.bom-table.attendance>tbody>tr>td>div>div.inprog {
+	position: absolute;
+	height: 100%;
+	left: 100%;
+}
+
+.bom-table.attendance>tbody>tr>td>div>div.inprog:after {
+	font-family: icomoon;
+	content: "\e61b";
+	font-size: 1.3em;
+	line-height: 1.3em;
+	position: relative;
+	top: 1px;
+	left: -4px;
+}
+
+#jQpopupAttDetails {
+	position: fixed;
+	pointer-events: none;
 	display: block;
-	width:1px;
+	width: 1px;
 	height: 1px;
 	z-index: 99;
 }
-#jQpopupAttDetails > div{
+
+#jQpopupAttDetails>div {
 	display: block;
 	background-color: rgba(255, 255, 255, 0.95);
 	border: solid 2px #03f;
 	min-width: 250px;
-	padding: 3px 10px 10px 10px ;
-	
-	border:solid 1px rgba(100,100,100,0.7);
+	padding: 3px 10px 10px 10px;
+
+	border: solid 1px rgba(100, 100, 100, 0.7);
 }
-#jQpopupAttDetails > div > div{
-	line-height:1.8em;
+
+#jQpopupAttDetails>div>div {
+	line-height: 1.8em;
 	white-space: nowrap;
 }
 
-#jQpopupAttDetails > div > div > span{
+#jQpopupAttDetails>div>div>span {
 	display: inline-block;
-	color:#555;
+	color: #555;
 	min-width: 50px;
 	padding-right: 10px;
 	text-align: right;

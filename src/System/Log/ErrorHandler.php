@@ -32,7 +32,7 @@ class ErrorHandler
 			if (!isset($errortype[$errno])) {
 				$errortype[$errno] = "Unknow";
 			}
-			error_log("[" . date("Y-m-d H:i:s (T)") . "] {$errortype[$errno]}: {$errmsg} in {$filename} on line {$linenum}\r\n", 3, $this->_log_error_file);
+			error_log("[" . date("Y-m-d H:i:s (T)") . "] {$errortype[$errno]}: {$errmsg} in {$filename} on line {$linenum}".PHP_EOL, 3, $this->_log_error_file);
 		}
 	}
 }
