@@ -114,7 +114,7 @@ class User extends Person
 						`acc_accounts`
 							JOIN companies ON comp_id = prt_company_id
 							LEFT JOIN currencies ON cur_id = prt_currency
-							JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . $this->app->user->info->id . " AND upr_prt_id={$account_id} AND upr_prt_fetch=1 ;");
+							JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id={$this->app->user->info->id} AND upr_prt_id={$account_id} AND upr_prt_fetch=1;");
 		if ($r->num_rows > 0) {
 			if ($row = $r->fetch_assoc()) {
 				$r = $this->app->db->query("INSERT INTO user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) 

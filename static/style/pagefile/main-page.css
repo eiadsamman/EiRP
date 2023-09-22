@@ -19,32 +19,23 @@
 
 #xxx {
 	color: #999;
-	
+
 }
 
-div.widgetWQT {
-	flex-grow: 1;
-	flex-shrink: 2;
-	min-width: 250px;
-}
-
-div.widgetWQU {
-	flex-grow: 2;
-	flex-shrink: 1;
-	min-width: 350px;
-}
-
+div.widgetWQT,
+div.widgetWQU,
 div.widgetWQY {
 	flex-grow: 1;
-	flex-shrink: 2;
+	flex-shrink: 1;
 	min-width: 250px;
+	max-width: 520px;
 }
 
 
 
 
 div.widgetWQT>div>a {
-	padding:  10px;
+	padding: 10px;
 	color: #000;
 	margin-left: 25px;
 	background-color: #fff;
@@ -121,6 +112,12 @@ div.widgetWQU>div>div {
 div.widgetWQU>div>div>div {
 	width: 100%;
 	overflow: hidden;
+}
+
+div.widgetWQU>div>h1 {
+	padding: 0;
+	padding-left: 3px;
+	color: dodgerblue
 }
 
 div.widgetWQU>div>div>div>div>a,

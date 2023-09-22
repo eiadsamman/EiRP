@@ -146,7 +146,7 @@ class Blocks
 class Header extends Blocks
 {
 	protected string $id = "header";
-	public int $height = 80;
+	public int $height = 70;
 	private string|null $status = null;
 	private string|null $prev = null;
 

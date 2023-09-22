@@ -55,7 +55,7 @@ body {
 
 	font-size: var(--font-size);
 	line-height: 1em;
-	color: var(--color-font) ;
+	color: var(--color-font);
 	background-color: var(--color-background);
 	font-weight: normal;
 	text-align: center;
@@ -123,6 +123,7 @@ h2 {
 }
 
 input[type=text],
+input[type=number],
 input[type=password],
 textarea,
 select {
@@ -133,6 +134,7 @@ select {
 }
 
 input[type=text]:hover,
+input[type=number]:hover,
 input[type=password]:hover,
 textarea:hover,
 select:hover {
@@ -140,6 +142,7 @@ select:hover {
 }
 
 input[type=text]:focus,
+input[type=number]:focus,
 input[type=password]:focus,
 textarea:focus,
 select:focus {
@@ -149,7 +152,8 @@ select:focus {
 	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
 }
 
-input[type=text]:disabled {
+input[type=text]:disabled,
+input[type=number]:disabled {
 	background-color: #eee;
 }
 

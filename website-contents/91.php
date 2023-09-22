@@ -1,7 +1,14 @@
 <?php
-
-use System\SmartListObject;
 use System\Template\Gremium;
+use System\Finance\PredefinedRules;
+use System\SmartListObject;
+
+
+$predefined = new PredefinedRules($app);
+$SmartListObject = new SmartListObject($app);
+$defines = $predefined->incomeRules();
+
+
 
 $accounting = new \System\Finance\Accounting($app);
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
@@ -135,10 +142,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	}
 
 	/*
-						  $balance=null;
-						  if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
-						  if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
-					  */
+											   $balance=null;
+											   if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
+											   if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
+										   */
 
 	$result = true;
 	$app->db->autocommit(false);
@@ -267,8 +274,8 @@ if (!$__workingaccount) {
 		</ul>
 		<b>Actions</b>
 		<ul>
-			<li>Goto <a href="' . $fs(99)->dir . '">Ledger report</a></li>
-			<li>Goto <a href="' . $fs(95)->dir . '">New Payment</a></li>
+			<li>Goto <a href="{$fs(99)->dir}">Ledger report</a></li>
+			<li>Goto <a href="{$fs(95)->dir}">New Payment</a></li>
 		</ul>
 	');
 	unset($grem);
@@ -280,13 +287,22 @@ if (!$__workingaccount) {
 	<?php
 
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><div style=\"flex:1\"></div><div class=\"btn-set\" style=\"padding-top:10px\"><button class=\"clr-green\" id=\"jQsubmit\" tabindex=\"9\">Submit Receipt</button></div>");
+	$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1>");
+
+	$grem->menu()->open();
+
+	if (sizeof($defines) > 0) {
+		echo "<span>Actions</span><input type=\"text\" id=\"js-defines\" data-slo=\":LIST\" data-list=\"defines\" /><span class=\"gap\"></span>";
+	}
+
+	echo "<button class=\"clr-green\" id=\"jQsubmit\" tabindex=\"9\">Submit Receipt</button>";
+	$grem->getLast()->close();
 
 	$grem->article()->open();
 	?>
 	<table class="bom-table mediabond-table" id="jQformTable">
 		<tbody>
-			<tr>
+			<tr class="predefined">
 				<th>Creditor</th>
 				<td>
 					<div class="btn-set"><input tabindex="1" type="text" data-slo=":LIST" data-list="jQcreditorList"
@@ -297,7 +313,7 @@ if (!$__workingaccount) {
 
 				</td>
 			</tr>
-			<tr>
+			<tr class="predefined">
 				<th>Date</th>
 				<td>
 					<div class="btn-set">
@@ -309,9 +325,9 @@ if (!$__workingaccount) {
 					</div>
 				</td>
 			</tr>
-			<tr>
+			<tr class="predefined">
 				<th>Debitor</th>
-				<td width="100%">
+				<td>
 					<?php
 					echo "<div class=\"btn-set\">";
 					echo "<button tabindex=\"-1\">{$__workingaccount['group']}: {$__workingaccount['name']}</button>";
@@ -320,7 +336,7 @@ if (!$__workingaccount) {
 					?>
 				</td>
 			</tr>
-			<tr>
+			<tr class="predefined">
 				<th>Category</th>
 				<td>
 					<div class="btn-set"><input type="text" data-slo=":LIST" data-list="jQcategoryList" tabindex="3"
@@ -331,8 +347,8 @@ if (!$__workingaccount) {
 				</td>
 			</tr>
 			<tr>
-				<th>Beneficial</th>
-				<td>
+				<th>Beneficiary</th>
+				<td width="100%">
 					<div class="btn-set">
 						<input type="text" class="flex" tabindex="4" data-slo=":LIST" data-list="jQbeneficialList"
 							id="jQbeneficial" />
@@ -350,7 +366,6 @@ if (!$__workingaccount) {
 							inputmode="decimal" /><input value="<?php echo $__workingcurrency['shortname']; ?>"
 							tabindex="-1" data-slodefaultid="<?php echo $__workingcurrency['id']; ?>" type="text"
 							data-slo="CURRENCY_SYMBOL" id="jQcurrenyident" style="width:100px;" /></div>
-					<!-- <div id="dom-div-valueformat" style="padding:10px 11px;color:#888">0.00</div> -->
 				</td>
 			</tr>
 			<tr>
@@ -385,9 +400,9 @@ if (!$__workingaccount) {
 		</tbody>
 	</table>
 	<br />
-
 	<?php
 	$grem->getLast()->close();
+
 	$grem->legend()->serve("<span class=\"flex\">Session Receipts</span><span id=\"jQtotalEntries\">0</span><input tabindex=\"-1\" type=\"text\" style=\"text-align: right;\" readonly=\"readonly\" id=\"jQtotalTotal\" value=\"0\" />");
 	$grem->article()->open();
 	?>
@@ -399,7 +414,6 @@ if (!$__workingaccount) {
 				<td>Benificial</td>
 				<td colspan="3" stlye="text-align:center" width="100%"></td>
 			</tr>
-			</tr>
 		</thead>
 		<tbody id="jQoutput"></tbody>
 	</table>
@@ -409,6 +423,19 @@ if (!$__workingaccount) {
 	unset($grem);
 	?>
 
+	<datalist id="defines">
+		<?php
+		if (sizeof($defines) > 0) {
+			foreach ($defines as $rule) {
+				echo "<option 
+						data-id = \"{$rule->id}\"
+						data-account_bound = \"{$rule->outbound_account}\"
+						data-category = \"{$rule->category}\"
+						>{$rule->name}</option>";
+			}
+		}
+		?>
+	</datalist>
 
 	<script type="text/javascript">
 		var $ajax = null;
@@ -439,16 +466,12 @@ if (!$__workingaccount) {
 			}
 			?>
 
-
-
 			const $jQcreditor = $("#jQcreditor").slo({
 				'limit': 10,
-				onselect: function () { }
 			}),
 				$jQcurrency = $("#jQcurrenyident").slo(),
 				$jQbeneficial = $("#jQbeneficial").slo({
 					'limit': 7,
-					onselect: function () { }
 				}),
 				$jQdate = $("#jQdate").slo(),
 				$form = $("#jQformTable"),
@@ -467,8 +490,7 @@ if (!$__workingaccount) {
 				$jQcategory = $("#jQcategory").slo({
 					'onselect': function (data) { }
 				}),
-				$jQrel = $("#jQrel"),
-				domDivValueformat = document.getElementById("dom-div-valueformat");
+				$jQrel = $("#jQrel");
 
 
 			$("#jQvalue").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
@@ -495,7 +517,7 @@ if (!$__workingaccount) {
 					$submitbtn = $("#jQsubmit"),
 					$reference = $("#jQreference");
 
-				var inputStatus = function (status) {
+				var waitingState = function (status) {
 					$submitbtn.prop("disabled", status);
 					$creditorSLO.prop("disabled", status);
 					$categorySLO.prop("disabled", status);
@@ -508,23 +530,23 @@ if (!$__workingaccount) {
 					$monthSLO.prop("disabled", status);
 					$employeeSLO.prop("disabled", status);
 				}
-				if ($creditor.val() == "" || $creditor.val() == "0") {
+				if ($creditor.val() == "" || parseInt($creditor.val()) == 0) {
 					messagesys.failure("Select debitor account");
 					$creditorSLO.focus().select();
 					return false;
 				}
-				if ($creditor.val() == <?php echo $app->user->account->id; ?>) {
+				if (parseInt($creditor.val()) == <?php echo $app->user->account->id; ?>) {
 					messagesys.failure("Debitor account must not be same as Creditor account");
 					$creditorSLO.focus().select();
 					return false;
 				}
-				if ($category.val() == "" || $category.val() == "0") {
+				if ($category.val() == "" || parseInt($category.val()) == 0) {
 					messagesys.failure("Select the transaction category");
 					$categorySLO.focus().select();
 					return false;
 				}
 				if ($benificialSLO.val().trim() == "") {
-					messagesys.failure("Enter the name of involved parties in this transaction");
+					messagesys.failure("Beneficiary name is required");
 					$jQbeneficial.focus();
 					return false;
 				}
@@ -532,24 +554,24 @@ if (!$__workingaccount) {
 				try {
 					_value = parseFloat($value.val());
 				} catch (e) {
-					messagesys.failure("Enter a valid falot value");
+					messagesys.failure("Enter a valid value");
 					$value.focus().select();
 					return false;
 				}
 				if (isNaN(_value) || _value <= 0) {
-					messagesys.failure("Enter a valid float value");
+					messagesys.failure("Enter a valid value");
 					$value.focus().select();
 					return false;
 				}
 
-				if ($currency.val() == "" || $currency.val() == "0") {
+				if ($currency.val() == "" || parseInt($currency.val()) == "0") {
 					messagesys.failure("Select the transaction currency");
 					$currencySLO.focus().select();
 					return false;
 				}
 
 
-				inputStatus(true);
+				waitingState(true);
 				var preparePOST = $("#js_upload_list :input").serialize() + '&' + $.param({
 					method: 'addstatement',
 					creditor: $creditor.val(),
@@ -575,7 +597,7 @@ if (!$__workingaccount) {
 						_data = JSON.parse(data);
 					} catch (e) {
 						messagesys.failure("Parsing JSON failed");
-						inputStatus(false);
+						waitingState(false);
 						return false;
 					}
 
@@ -592,7 +614,7 @@ if (!$__workingaccount) {
 
 						if (!$("#jQprodmode").prop("checked")) {
 							$jQemployee.clear();
-							//$jQreference.clear();
+							$jQreference.clear();
 							$jQbeneficial.clear();
 							$comments.val("");
 						}
@@ -602,7 +624,7 @@ if (!$__workingaccount) {
 						$("#jQtotalTotal").val(trantotal.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
 						$("#jQbalanceTitle").val(_data.newbalance);
 						BALANCE_UPDATE();
-						inputStatus(false);
+						waitingState(false);
 						$("#jQbeneficial").prop("readonly", false).prop("disabled", false);
 						//$("#jQiframe").attr("src","<?= $fs(142)->dir ?>/?id="+_data.id);
 						$value.val("").focus().select();
@@ -611,7 +633,7 @@ if (!$__workingaccount) {
 						return true;
 					} else {
 						messagesys.failure(_data.message);
-						inputStatus(false);
+						waitingState(false);
 						if (_data.focus != false)
 							$("#" + _data.focus).focus().select();
 						return false;
@@ -619,11 +641,29 @@ if (!$__workingaccount) {
 				}).fail(function (a, b, c) {
 					messagesys.failure(b + " - " + c);
 				}).always(function () {
-					inputStatus(false);
+					waitingState(false);
 				});
 			}
 			$("#jQsubmit").on('click', function () {
 				addStatement();
+			});
+
+			$("#js-defines").slo({
+				onselect: function (e) {
+					const selected_option = document.querySelector("#defines option[data-id='" + e.hidden + "']");
+					$jQcreditor.set(selected_option.dataset.account_bound, selected_option.dataset.account_bound);
+					$jQcategory.set(selected_option.dataset.category, selected_option.dataset.category);
+					document.querySelectorAll(".predefined").forEach(element => {
+						element.style.display = "none";
+					});
+					$jQbeneficial.focus();
+				}, ondeselect: function (e) {
+					$jQcreditor.clear();
+					$jQcategory.clear();
+					document.querySelectorAll(".predefined").forEach(element => {
+						element.style.display = "table-row";
+					});
+				}
 			});
 			$jQcreditor.focus();
 		});

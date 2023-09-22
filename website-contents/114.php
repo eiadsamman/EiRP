@@ -3,11 +3,8 @@ use System\Personalization\Personalization;
 /* Fix user_settings once */
 
 if(isset($_GET['migrate'])){
-
 	$perz = new Personalization($app);
-
 	$perz->migrate();
-
 }
 
 

@@ -67,28 +67,23 @@ $SmartListObject = new SmartListObject($app);
 		}
 	}
 	?>
-	<script type="text/javascript" src="static/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="static/jquery/jquery.min-3.7.1.js"></script>
 	<script type="text/javascript" src="static/jquery/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="static/jquery/ease.js"></script>
-	<script type="text/javascript" src="static/jquery/jquery.ui.js"></script>
-	<script type="text/javascript" src="static/jquery/slo-1.1.js?rev=230905"></script>
-	<script type="text/javascript" src="static/jquery/msgsys-1.0.js"></script>
-	<script type="text/javascript" src="static/jquery/popup-1.0.js"></script>
-	<script type="text/javascript" src="static/jquery/msgoverlay1.0.js"></script>
-	<script type="text/javascript" src="static/jquery/serialize.js"></script>
+	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js"></script>
+	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js"></script>
+	<script type="text/javascript" src="static/jquery/slo-1.2.js"></script>
 	<?php if ($__side_panel && $__side_panel->permission->deny == false) {
 		echo '<script type="text/javascript" src="static/javascript/template.sidepanel.js"></script>';
 	} ?>
 	<?php
 	if (array_key_exists('js', $fs()->cdns)) {
-		$load = explode(":", $fs()->cdns['js']);
+		$load = explode(";", $fs()->cdns['js']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "	<script type=\"text/javascript\" src=\"static/{$file}\"></script>\n";
+				echo "	<script type=\"text/javascript\" src=\"{$file}\"></script>\n";
 		}
 	}
 	?>
-
 </head>
 
 <body>

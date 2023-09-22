@@ -66,7 +66,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	header("VENDOR_FN_CURRENT: " . $controller->criteria->getCurrentPage());
 
 	echo "<table class=\"bom-table statment-view hover strip\">";
-	echo "<thead class=\"sticky\" style=\"top: calc(171px - var(--gremium-header-toggle)) ;\">";
+	echo "<thead class=\"sticky\" style=\"top: calc(161px - var(--gremium-header-toggle)) ;\">";
 	echo "<tr>";
 	echo "<td>Date</td>";
 	echo "<td>ID</td>";
@@ -117,7 +117,7 @@ if ($app->xhttp) {
 }
 $initial_values = array(
 	'from' => isset($_GET['from']) && $app->date_validate($_GET['from']) ? date("Y-m-d", $app->date_validate($_GET['from'])) : "",
-	'to' => isset($_GET['to']) && $app->date_validate($_GET['to']) ? date("Y-m-d", $app->date_validate($_GET['to'])) : date("Y-m-d"),
+	'to' => isset($_GET['to']) && $app->date_validate($_GET['to']) ? date("Y-m-d", $app->date_validate($_GET['to'])) : "",
 	"page" => isset($_GET['page']) ? abs((int) $_GET['page']) : 0
 );
 
@@ -126,7 +126,9 @@ $initial_values = array(
 $SmartListObject = new SmartListObject($app);
 $grem = new Gremium\Gremium(false);
 
-$grem->header()->serve("<h1>{$fs()->title}</h1><ul><li>{$app->user->company->name}: {$app->user->account->name}</li></ul><cite><span id=\"js-output-total\">0.00</span>{$app->user->account->currency->shortname}</cite>");
+$grem->header()->serve("<h1>{$fs()->title}</h1>" .
+	"<ul><li>{$app->user->company->name}: {$app->user->account->name}</li></ul>" .
+	"<cite><span id=\"js-output-total\">0.00</span>{$app->user->account->currency->shortname}</cite>");
 
 $menu = $grem->menu()->sticky(false)->open();
 echo "<span>Date</span>";

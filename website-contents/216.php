@@ -1,6 +1,5 @@
 <?php
 
-
 echo "
 <div class=\"widgetWQY\">
 	<div style=\"padding-right:10px;\">
@@ -12,7 +11,7 @@ if ($app->user->account) {
 if ($app->user->account->role->view) {
 	if ($app->user->account->id && $__workingaccount) {
 		echo "
-			<div><b>{$app->user->company->name}</b><br />{$__workingaccount['group']}<br />{$__workingaccount['name']}</div>
+			<div><span style=\"color:#999;\">{$app->user->company->name}<br />{$__workingaccount['group']}</span><br /><span style=\"display:block;font-size:1.3em;padding-top:6px\">{$__workingaccount['name']}</span></div>
 			<div style=\"padding-top:10px;font-size:1.8em;font-weight:bold;color:dodgerblue;\">" . ($__workingaccount['balance'] < 0 ? "(" . number_format(abs($__workingaccount['balance']), 2, ".", ",") . ")" : number_format(abs($__workingaccount['balance']), 2, ".", ",")) . "</div>
 			<div style=\"color:#777;font-size:1em;\">{$__workingaccount['currency']['shortname']}</div>
 		";
@@ -25,12 +24,11 @@ if ($app->user->account->role->view) {
 	}
 } else {
 	echo "
-		<div><b>{$app->user->company->name}</b><br />{$__workingaccount['group']}<br />{$__workingaccount['name']}</div>
+		<div><span style=\"color:#999;\">{$app->user->company->name}<br />{$__workingaccount['group']}</span><br /><span style=\"display:block;font-size:1.3em;padding-top:6px\">{$__workingaccount['name']}</span></div>
 		<div style=\"padding-top:10px;font-size:1.8em;font-weight:bold;color:dodgerblue;text\"><cite>[Restricted]</cite></div>
 		<div style=\"color:#777;font-size:1em;\">{$__workingaccount['currency']['shortname']}</div>
 	";
 }
-//echo "<div><span style=\"background-color:#{$arrout[$cotk][2][$valk]};\"></span><b>$valv</b> $valk</div>";
 echo "
 		</div>
 	</div>

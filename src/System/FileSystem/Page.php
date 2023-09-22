@@ -14,10 +14,11 @@ class Page
 	{
 		$this->app = $app;
 		$this->inuse = new Data();
-		$this->files[0] =  new Data();
+		$this->files[0] = new Data();
 
-		if ($r = $this->app->db->query(
-			"SELECT 
+		if (
+			$r = $this->app->db->query(
+				"SELECT 
 				trd_id, trd_directory,pfl_value,trd_parent,trd_enable, trd_visible,
 				trd_keywords, trd_description, trd_header, trd_param, trd_attrib4, trd_attrib5, pfp_value,trd_loader
 			FROM 
@@ -27,22 +28,23 @@ class Page
 			ORDER BY
 				trd_parent, trd_zorder
 			;"
-		)) {
+			)
+		) {
 			while ($row = $r->fetch_assoc()) {
 				$data = new Data();
-				$data->id = (int)$row['trd_id'];
+				$data->id = (int) $row['trd_id'];
 				$data->dir = $row['trd_directory'];
 				$data->directory = $row['trd_directory'];
 				$data->title = $row['pfl_value'];
-				$data->parent = (int)$row['trd_parent'];
-				$data->icon = (string)$row['trd_attrib4'];
-				$data->color = (string)$row['trd_attrib5'];
-				$data->visible = (bool)$row['trd_visible'];
-				$data->enabled = (bool)$row['trd_enable'];
-				$data->loader = (int)$row['trd_loader'];
+				$data->parent = (int) $row['trd_parent'];
+				$data->icon = (string) $row['trd_attrib4'];
+				$data->color = (string) $row['trd_attrib5'];
+				$data->visible = (bool) $row['trd_visible'];
+				$data->enabled = (bool) $row['trd_enable'];
+				$data->loader = (int) $row['trd_loader'];
 				//$data->parameters = (string)$row['trd_param'];
 
-				$data->permission = new Permission((int)$row['pfp_value']);
+				$data->permission = new Permission((int) $row['pfp_value']);
 				$this->files[$row['trd_id']] = $data;
 			}
 		}
@@ -88,7 +90,7 @@ class Page
 	public function dir(string $dir): Data|bool
 	{
 		$_dir = trim($dir);
-		foreach ($this->files as  $file) {
+		foreach ($this->files as $file) {
 			if ($file->dir == $_dir) {
 				return $file;
 			}
@@ -102,15 +104,15 @@ class Page
 		$stmt->bind_param("i", $id);
 		if ($stmt->execute() && $res = $stmt->get_result()) {
 			if ($row = $res->fetch_assoc()) {
-				$this->files[$id]->parameters = (string)$row['trd_param'];
-				$this->files[$id]->cdns = array("css" => (string)$row['trd_css'], "js" => (string)$row['trd_js']);
-				$this->files[$id]->forward = (int)$row['trd_forward'];
+				$this->files[$id]->parameters = (string) $row['trd_param'];
+				$this->files[$id]->cdns = array("css" => (string) $row['trd_css'], "js" => (string) $row['trd_js']);
+				$this->files[$id]->forward = (int) $row['trd_forward'];
 				$this->files[$id]->headers = array(
-					"html-header" => (int)((string)$row['trd_header'])[1],
-					"contents" => (int)((string)$row['trd_header'])[0]
+					"html-header" => (int) ((string) $row['trd_header'])[1],
+					"contents" => (int) ((string) $row['trd_header'])[0]
 				);
 			}
 		}
 	}
-	
+
 }

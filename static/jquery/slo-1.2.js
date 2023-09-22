@@ -475,6 +475,13 @@ class DateHandler extends SmartListObjectHandler {
 			},
 			'input': [],
 			'hidden': [],
+			'xxx': function () {
+				alert("ASF")
+				$jq.each(function () {
+					console.log(this);
+					this.slohide();
+				});
+			},
 			'focus': function () {
 				$jq.each(function () {
 					this.focusfix = true;
@@ -505,7 +512,7 @@ class DateHandler extends SmartListObjectHandler {
 
 					_parent.hidden.push(me.object_htmlinput_id);
 					_parent.input.push(me.object_htmlinput_text);
-					this.output_window.addClass("cssSLO_output");
+					this.output_window.addClass("slo-container");
 					this.object_container.addClass("cssSLO_wrap");
 					this.object_htmlinput_id.val(me.object_default_id);
 					this.object_htmlinput_text.attr("autocomplete", "off");
@@ -656,7 +663,7 @@ class DateHandler extends SmartListObjectHandler {
 								me.object_htmlinput_id.val("");
 								me.object_htmlinput_text.parent().removeClass("valid").addClass("unvalid");
 								if (typeof (slosettings.ondeselect) == "function") {
-									slosettings.ondeselect.call(this, {
+									slosettings.ondeselect.call(me, {
 										object: me.object_htmlinput_text,
 										value: me.object_htmlinput_text.val(),
 										hidden: me.object_htmlinput_id.val(),
@@ -696,12 +703,12 @@ class DateHandler extends SmartListObjectHandler {
 							if (me.datetemplate) {
 								me.datetemplate.clear();
 							}
-							me.object_htmlinput_id.val("0");
+							me.object_htmlinput_id.val("");
 							me.object_htmlinput_text.val("");
 							me.stamped = false;
 							me.object_htmlinput_text.parent().removeClass("valid").addClass("unvalid");
 							if (typeof (slosettings.ondeselect) == "function") {
-								slosettings.ondeselect.call(this, pass);
+								slosettings.ondeselect.call(me, pass);
 							}
 							execut($(this));
 							return;
@@ -772,7 +779,7 @@ class DateHandler extends SmartListObjectHandler {
 									hidden: me.object_htmlinput_id.val(),
 									text: $clicked.find("span").html(),
 								};
-								slosettings.onselect.call(this, pass);
+								slosettings.onselect.call(me, pass);
 							}
 
 							me.enter_key_event = false;
@@ -800,7 +807,7 @@ class DateHandler extends SmartListObjectHandler {
 						if (typeof (slosettings.onselect) == "function") {
 
 
-							slosettings.onselect.call(this, {
+							slosettings.onselect.call(me, {
 								this: _parent,
 								object: me.object_htmlinput_text,
 								value: me.object_htmlinput_text.val(),

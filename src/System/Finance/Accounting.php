@@ -191,7 +191,7 @@ class Accounting
 				_outbound_acc.prt_id AS _outbound_acc_id,_outbound_acc.prt_name AS _outbound_acc_name,_outbound_acc.cur_id AS _outbound_acc_cur_id,_outbound_acc.cur_symbol AS _outbound_acc_cur_symbol,_outbound_acc.cur_shortname AS _outbound_acc_cur_shortname,_outbound_acc.cur_name AS _outbound_acc_cur_name,
 				_cats.acccat_id,_cats.acc_catdet,accdef_operation
 			FROM 
-				acc_opperationsdefault 
+				acc_predefines 
 					
 					LEFT JOIN (SELECT prt_name,prt_id,cur_id,cur_symbol,cur_shortname,cur_name FROM `acc_accounts` JOIN currencies ON cur_id=prt_currency) AS _inbound_acc  ON _inbound_acc.prt_id =accdef_in_acc_id 
 					LEFT JOIN (SELECT prt_name,prt_id,cur_id,cur_symbol,cur_shortname,cur_name FROM `acc_accounts` JOIN currencies ON cur_id=prt_currency) AS _outbound_acc ON _outbound_acc.prt_id=accdef_out_acc_id 

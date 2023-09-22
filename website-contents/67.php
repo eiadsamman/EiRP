@@ -96,7 +96,7 @@ if ($app->xhttp) {
 $grem = new Gremium\Gremium(true, false);
 $grem->header()->serve("<h1>{$fs()->title}</h1><cite id=\"s-output_count\"></cite>");
 $grem->menu()->open();
-echo "<input type=\"text\" placeholder=\"Search...\">";
+//echo "<input type=\"text\" placeholder=\"Search...\">";
 echo "<span class=\"gap\"></span>";
 echo "<input type=\"text\" id=\"js-input_filter-list\" data-slo=\":SELECT\" placeholder=\"Group options...\" readonly style=\"width:130px;\" data-list=\"js-data-list_group\" />";
 echo "<button id=\"btn-card_view\" data-state=\"$ui_view_selection\" tabindex=\"1\">" . $ui_view[$ui_view_selection] . "</button>";

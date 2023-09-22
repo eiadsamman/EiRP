@@ -6,7 +6,22 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 	exit;
 }
 
-$output = "";
+ob_start();
+header("Accept-Ranges: bytes");
+header("Content-Transfer-Encoding: binary");
+header('Content-Type: text/csv; charset=utf-8');
+header('Cache-Control: max-age=1');
+header("Content-Type: application/force-download");
+header("Content-Type: application/octet-stream");
+header("Content-Type: application/download");
+
+header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+header('Content-Disposition: attachment;filename="Attendance report ' . date("ymd") . " [" . $app->user->company->name . "] " . ".csv");
+
+ob_end_clean();
+
+
 
 if (isset($_POST['posubmit'])) {
 
@@ -30,7 +45,7 @@ if (isset($_POST['posubmit'])) {
 
 	if (!$dateFrom || !$dateTo) {
 		header("HTTP_X_RESPONSE: INERR");
-		$output .= "Select a valid date range";
+		echo "Select a valid date range";
 		exit;
 	}
 
@@ -39,20 +54,20 @@ if (isset($_POST['posubmit'])) {
 	$date__ToCompare = new DateTime(date("Y-m-d", $dateTo));
 	$dateInterval = $dateFromCompare->diff($date__ToCompare);
 	if ($dateInterval->days > 31) {
-		$output .= "Date range is too big, maximum date range is 31 days";
+		echo "Date range is too big, maximum date range is 31 days";
 		exit;
 	}
 	if ($dateFromCompare > $date__ToCompare) {
-		$output .= "Selected start date must be smaller than the end date";
+		echo "Selected start date must be smaller than the end date";
 		exit;
 	}
 
 
 	$parameters = array(
 		"company" => $app->user->company->id,
-		"paymethod" => isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1] != 0 ? (int)$_POST['paymethod'][1] : null,
-		"section" => isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? (int)$_POST['section'][1] : null,
-		"job" => isset($_POST['section'][1]) && (int)$_POST['job'][1] != 0 ? (int)$_POST['job'][1] : null,
+		"paymethod" => isset($_POST['paymethod'][1]) && (int) $_POST['paymethod'][1] != 0 ? (int) $_POST['paymethod'][1] : null,
+		"section" => isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? (int) $_POST['section'][1] : null,
+		"job" => isset($_POST['section'][1]) && (int) $_POST['job'][1] != 0 ? (int) $_POST['job'][1] : null,
 		//"shift"=>isset($_POST['shift'][1]) && (int)$_POST['shift'][1]!=0?(int)$_POST['shift'][1]:null,
 		//"workingtime"=>isset($_POST['workingtime'][1]) && (int)$_POST['workingtime'][1]!=0?(int)$_POST['workingtime'][1]:null,
 		//"residence"=>null,
@@ -71,6 +86,10 @@ if (isset($_POST['posubmit'])) {
 	$arrDisplay = array();
 	if ($r) {
 		$cnt = 1;
+
+		$output_pointer = fopen('php://output', 'w');
+		fprintf($output_pointer, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
 
 		while ($row = $r->fetch_assoc()) {
 			if (!isset($arrDisplay[$row['personID']])) {
@@ -94,37 +113,37 @@ if (isset($_POST['posubmit'])) {
 			$dayPlot = strtotime(date("Y-m-d", $dayPlot) . ' + 1 days');
 		}
 
-		$output .= "ID\tName\tTotal";
+
+		$array_header = array("ID", "Name", "Total");
+
 		foreach ($daysList as $dayId => $day) {
-			$output .= "\t" . $day;
+			array_push($array_header, $day);
 		}
-		$output .= "\n";
+
+		fputcsv(
+			$output_pointer,
+			$array_header
+		);
+
+
 		foreach ($arrDisplay as $empID => $empData) {
-			$output .= $empID . "\t" . $empData['info']['name'] . "\t";
-			$output .= number_format($empData['info']['totalAttendedTime'] / 3600, 2, ".", ",");
+			$array_record = array($empID, $empData['info']['name'], number_format($empData['info']['totalAttendedTime'] / 3600, 2, ".", ""));
 
 			foreach ($daysList as $dayId => $day) {
 				if (isset($empData['days'][$day])) {
-					$output .= "\t" . $app->formatTime($empData['days'][$day]);
+					array_push($array_record, $app->formatTime($empData['days'][$day]));
 				} else {
-					$output .= "\t0";
+					array_push($array_record, 0);
 				}
 			}
-			$output .= "\n";
+			fputcsv(
+				$output_pointer,
+				$array_record
+			);
 		}
+		fclose($output_pointer);
+
 	}
 
-	header("Accept-Ranges: bytes");
-	header("Content-Transfer-Encoding: binary");
-	header('Content-Type: text/csv');
-	header('Cache-Control: max-age=1');
-	header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-	header('Cache-Control: cache, must-revalidate');
-	header('Pragma: public');
-	header('Content-Length: ' . strlen($output));
-	header('Content-Disposition: attachment;filename="Attendance Rerport, ' . $app->user->company->name . ", " . gmdate("ymd") . '.txt"');
-
-	flush();
-	echo $output;
+	exit;
 }

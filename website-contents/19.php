@@ -1,4 +1,5 @@
 <?php
+
 use System\Template\Gremium;
 
 $grem = new Gremium\Gremium(false);

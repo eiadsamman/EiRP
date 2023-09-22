@@ -132,7 +132,7 @@ $(document).ready(function (e) {
 				let response = request.getResponseHeader('QUERY_RESULT');
 				if (parseInt(response) == 1) {
 					messagesys.success("Bookmark added successfully");
-					
+
 					e.target.textContent = "Remove";
 					e.target.dataset.role = "remove";
 				} else if (parseInt(response) == 2) {
@@ -144,7 +144,7 @@ $(document).ready(function (e) {
 				messagesys.failure("Adding bookmark failed, server error");
 			});
 
-			
+
 		}
 		if (e.target.dataset.role == "remove") {
 			$.ajax({
@@ -175,7 +175,7 @@ $(document).ready(function (e) {
 			url: "acc/report/balupd",
 			type: "POST"
 		}).done(function (data) {
-			
+
 			try { var json = JSON.parse(data); } catch (err) { return; }
 			if (json.currency != undefined && json.currency != undefined && json.currency != false && json.value != false) {
 				jqroot_bal.show();
@@ -199,17 +199,16 @@ $(document).ready(function (e) {
 
 
 });
-var formatter = new Intl.NumberFormat('en-US', {
-});
+
 Number.prototype.numberFormat = function (decimals, dec_point, thousands_sep) {
 	dec_point = typeof dec_point !== 'undefined' ? dec_point : '.';
 	thousands_sep = typeof thousands_sep !== 'undefined' ? thousands_sep : ',';
 	var parts = this.toFixed(decimals).split('.');
 	parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_sep);
 	return parts.join(dec_point);
-}
+};
 
-var OnlyFloat = function (obj, uLimit = null, lLimit = null) {
+function OnlyFloat(obj, uLimit = null, lLimit = null) {
 	if (/^-?\d*[.,]?\d*$/.test(obj.value)) {
 		if (uLimit != null && obj.value > uLimit) { obj.value = uLimit; }
 		if (lLimit != null && parseFloat(obj.value) < lLimit) { obj.value = lLimit; }
@@ -222,4 +221,43 @@ var OnlyFloat = function (obj, uLimit = null, lLimit = null) {
 	} else {
 		obj.value = "";
 	}
-}
+};
+
+(function ($) {
+	$.fn.serialize = function (options) {
+		return $.param(this.serializeArray(options));
+	};
+	$.fn.serializeArray = function (options) {
+		var o = $.extend({
+			checkboxesAsBools: false
+		}, options || {});
+
+		var rselectTextarea = /select|textarea/i;
+		var rinput = /text|hidden|password|search/i;
+
+		return this.map(function () {
+			return this.elements ? $.makeArray(this.elements) : this;
+		}).filter(function () {
+			return this.name && !this.disabled &&
+				(this.checked
+					|| (o.checkboxesAsBools && this.type === 'checkbox')
+					|| rselectTextarea.test(this.nodeName)
+					|| rinput.test(this.type));
+		}).map(function (i, elem) {
+			var val = $(this).val();
+			return val == null ?
+				null :
+				$.isArray(val) ?
+					$.map(val, function (val, i) {
+						return { name: elem.name, value: val };
+					}) :
+					{
+						name: elem.name,
+						value: (o.checkboxesAsBools && this.type === 'checkbox') ?
+							(this.checked ? 'true' : 'false') :
+							val
+					};
+		}).get();
+	};
+
+})(jQuery);

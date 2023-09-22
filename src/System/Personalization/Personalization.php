@@ -30,5 +30,8 @@ class Personalization
 			//$this->app->db->query("ALTER TABLE user_settings DROP usrset_name;");
 		}
 
+		$this->app->db->query("update pagefile set trd_css = replace(trd_css ,\":\",\";\");");
+		$this->app->db->query("update pagefile set trd_js = replace(trd_js ,\":\",\";\");");
+
 	}
 }

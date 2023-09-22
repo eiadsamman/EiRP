@@ -1,4 +1,4 @@
-.cssSLO_output {
+.slo-container {
 	display: block;
 	position: absolute;
 	min-width: 100%;
@@ -14,7 +14,7 @@
 	box-shadow: 0px 0px 18px 0px rgba(0, 0, 0, 0.3);
 }
 
-.cssSLO_output>div {
+.slo-container>div {
 	display: block;
 	border: none;
 	border-radius: 7px;
@@ -26,23 +26,23 @@
 }
 
 
-.cssSLO_output>div:hover {
+.slo-container>div:hover {
 	background-color: #ECF5FF;
 	z-index: 99 !important;
 }
 
-.cssSLO_output>div.active {
+.slo-container>div.active {
 	background-color: rgba(217, 235, 255, 1);
 	z-index: 99 !important;
 }
 
 
 
-.cssSLO_output>div>p {
+.slo-container>div>p {
 	display: none;
 }
 
-.cssSLO_output>div>span {
+.slo-container>div>span {
 	color: #777;
 }
 
@@ -51,6 +51,7 @@
 }
 
 .cssSLO_wrap>input[type=text],
+.cssSLO_wrap>input[type=number],
 .cssSLO_wrap>input[type=date] {
 	position: relative;
 	outline: none;
@@ -63,18 +64,14 @@
 }
 
 .cssSLO_wrap>input[type=text]:not(:disabled):hover,
+.cssSLO_wrap>input[type=number]:not(:disabled):hover,
 .cssSLO_wrap>input[type=date]:not(:disabled):hover {
 	border-color: #999;
 }
 
-.cssSLO_wrap>input[type=text]:disabled,
-.cssSLO_wrap>input[type=date]:disabled {
-	background-color: rgb(248, 248, 251);
-	color: #555;
-	text-shadow: 1px 1px 0px #fff;
-}
 
 .cssSLO_wrap>input[type=text]:not(:disabled):focus,
+.cssSLO_wrap>input[type=number]:not(:disabled):focus,
 .cssSLO_wrap>input[type=date]:not(:disabled):focus {
 	border-color: rgba(82, 168, 236, .75);
 	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
@@ -126,15 +123,15 @@
 .cssSLO_wrap.slo-select>input {
 	user-select: none;
 	cursor: default;
-	background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgba(240, 241, 247, 1) 90%);
+	/* background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgba(240, 241, 247, 1) 90%); */
 }
 
 .cssSLO_wrap.slo-select>input:hover {
-	background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgb(200, 200, 200) 90%);
+	/* background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgb(200, 200, 200) 90%); */
 }
 
 .cssSLO_wrap.slo-select>input:focus {
-	border-color: rgba(82, 168, 236, .75);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .5);
-	background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgba(82, 168, 236, .5) 90%);
+	/* border-color: rgba(82, 168, 236, .75); */
+	/* box-shadow: 0 0 4px rgba(82, 168, 236, .5); */
+	/* background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgba(82, 168, 236, .5) 90%); */
 }

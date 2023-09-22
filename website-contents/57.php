@@ -54,7 +54,7 @@ $defaultaccount = $att->DefaultCheckInAccount($app->user->company->id);
 if (!$defaultaccount) {
 	echo "<h3>Selected company isn't valid or no linked account for check-in operations</h3>";
 	if ($__helper) {
-		echo "See documentations for this error at: <a href=\"{$__helper['directory']}\"/>{$__helper['title']}</a>, or contact system administrator";
+		echo "See documentations for this error at: <a href=\"{$__helper->directory}\"/>{$__helper->title}</a>, or contact system administrator";
 	}
 	exit;
 }

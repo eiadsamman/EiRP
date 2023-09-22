@@ -20,7 +20,7 @@ $arr_tables=array(
 	"t25"=>array("Accounts","acc_accounts","truncate",1000),
 	"t03"=>array("Fincancial statements","acc_main","truncate",100000),
 	"t05"=>array("Fincancial statements records","acc_temp","truncate",100000),
-	"t04"=>array("Account default operations","acc_opperationsdefault","truncate",0),
+	"t04"=>array("Account default operations","acc_predefines","truncate",0),
 	"t14"=>array("Invoices","invoices","truncate",100000),
 	
 
