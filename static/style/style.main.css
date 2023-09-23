@@ -101,7 +101,7 @@ b {
 
 a {
 	text-decoration: none;
-	color: #06c;
+	color: var(--color-link);
 }
 
 a:hover {

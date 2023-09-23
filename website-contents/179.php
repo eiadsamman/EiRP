@@ -70,7 +70,10 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	echo "<tr>";
 	echo "<td>Date</td>";
 	echo "<td>ID</td>";
-	echo "<td colspan=\"2\">Description</td>";
+	echo "<td></td>";
+	echo "<td>Description</td>";
+
+	echo "<td class=\"blank\"></td>";
 	echo "<td class=\"value-number\">Debit</td>";
 	echo "<td class=\"value-number\">Credit</td>";
 	echo "<td class=\"value-number\" style=\"padding-right:17px;min-width:120px\">Balance</td>";
@@ -83,11 +86,12 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 			while ($row = $mysqli_result->fetch_assoc()) {
 				echo "<tr>";
 				echo "<td>{$row['acm_ctime']}</td>"; //date("Y-m-d",$row['acm_ctime'])
-				echo "<td>{$row['acm_id']}</td>";
+				echo "<td><a>{$row['acm_id']}</a></td>";
 				echo "<td>" . ($row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") . "{$row['acm_beneficial']}</td>";
-				echo "<td class=\"value-comment\">" . (is_null($row['acm_comments']) ? "" : nl2br($row['acm_comments'])) . "</td>";
-				echo "<td class=\"value-number\">" . ($row['atm_value'] > 0 ? number_format($row['atm_value'], 2) : "") . "</td>";
-				echo "<td class=\"value-number\">" . ($row['atm_value'] <= 0 ? number_format(abs($row['atm_value']), 2) : "") . "</td>";
+				echo "<td class=\"value-comment\"><div>" . (is_null($row['acm_comments']) ? "" : nl2br($row['acm_comments'])) . "</div></td>";
+				echo "<td class=\"blank\"></td>";
+				echo "<td class=\"value-number\">" . ($row['atm_value'] > 0 ? number_format($row['atm_value'], 2) : "-") . "</td>";
+				echo "<td class=\"value-number\">" . ($row['atm_value'] <= 0 ? number_format(abs($row['atm_value']), 2) : "-") . "</td>";
 
 				echo "<td class=\"value-number final " . ($row['cumulative_sum'] < 0 ? "negative" : "positive") . "\">" . number_format(abs($row['cumulative_sum']), 2) . "</td>";
 				echo "</tr>";
@@ -95,14 +99,18 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 		}
 	} else {
 		echo "<tr>";
-		echo "<td colspan=\"3\">No records found</td><td class=\"value-comment\"></td><td colspan=\"3\"></td>";
+		echo "<td></td><td></td><td>No records found</td><td class=\"value-comment\"></td><td></td><td></td><td></td><td></td>";
 		echo "</tr>";
 	}
 	echo "</tbody>";
 	if ($controller->criteria->getCurrentPage() == $pages) {
 		echo '<tfoot>';
 		echo "<tr>";
-		echo "<td colspan=\"4\">End of statement</td>";
+		echo "<td></td>";
+		echo "<td></td>";
+		echo "<td></td>";
+		echo "<td></td>";
+		echo "<td></td>";
 		echo "<td colspan=\"2\" class=\"value-number\">Final Balance</td>";
 		echo "<td class=\"value-number final " . ($sum < 0 ? "negative" : "positive") . "\">" . number_format(abs($sum), 2) . "</td>";
 		echo "</tr>";
@@ -126,12 +134,12 @@ $initial_values = array(
 $SmartListObject = new SmartListObject($app);
 $grem = new Gremium\Gremium(false);
 
-$grem->header()->serve("<h1>{$fs()->title}</h1>" .
+$grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
 	"<ul><li>{$app->user->company->name}: {$app->user->account->name}</li></ul>" .
 	"<cite><span id=\"js-output-total\">0.00</span>{$app->user->account->currency->shortname}</cite>");
 
 $menu = $grem->menu()->sticky(false)->open();
-echo "<span>Date</span>";
+echo "<span class=\"menu-date_title\">Date</span>";
 echo "<input type=\"text\" id=\"js-input_date-start\" style=\"width:120px\" data-slo=\":DATE\" placeholder=\"From\" value=\"{$initial_values['from']}\" value=\"\"  />";
 echo "<input type=\"text\" id=\"js-input_date-end\" style=\"width:120px\" data-slo=\":DATE\" placeholder=\"To\" value=\"{$initial_values['to']}\" value=\"" . date("Y-m-d") . "\"  />";
 echo "<button id=\"js-input_cmd-update\">Search</button>";
@@ -141,7 +149,7 @@ $menu->close();
 
 $legend = $grem->legend()->open();
 echo "<span id=\"js-output_stetements-count\">0</span>";
-echo "<span class=\"flex\">Account statements</span>";
+echo "<span class=\"flex\">Statements</span>";
 echo "<button class=\"pagination prev\" id=\"js-input_page-prev\" disabled></button>";
 echo "<input type=\"text\" id=\"js-input_page-current\" data-slo=\":NUMBER\" style=\"width:80px;text-align:center\" data-rangestart=\"1\" value=\"0\" data-rangeend=\"100\" />";
 echo "<button class=\"pagination next\" id=\"js-input_page-next\" disabled></button>";
@@ -156,7 +164,12 @@ unset($grem);
 ?>
 <style>
 	td.value-comment {
-		width: 100%
+		width: 100%;
+	}
+
+
+	td.value-comment>div {
+		white-space: wrap;
 	}
 
 	td.value-number {
@@ -194,6 +207,98 @@ unset($grem);
 
 	span.value-hightlight {
 		color: crimson;
+	}
+
+	.statment-view>td.blank {
+		display: none;
+	}
+
+	@media only screen and (max-width: 768px) {
+
+		table.bom-table.statment-view>thead>tr>td:nth-child(4),
+		table.bom-table.statment-view>tbody>tr>td:nth-child(4),
+		table.bom-table.statment-view>tfoot>tr>td:nth-child(4) {
+			/* display: none; */
+		}
+
+		table.bom-table.statment-view>thead,
+		table.bom-table.statment-view>tfoot {
+			display: none;
+		}
+
+		table.bom-table.statment-view>tbody {
+			display: block;
+		}
+
+		table.bom-table.statment-view>tbody>tr {
+			border-bottom: solid 1px var(--color-soft-gray);
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		table.bom-table.statment-view>tbody>tr>td {
+			border: none;
+
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(1) {
+			width: 100px;
+			min-width: 100px;
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(2) {
+			width: 70px;
+			min-width: 70px;
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(3) {
+			flex: 1;
+
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(4) {
+			flex-basis: 100%;
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(5) {
+			display: block;
+			flex: 1
+		}
+
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(5),
+		table.bom-table.statment-view>tbody>tr>td:nth-child(6),
+		table.bom-table.statment-view>tbody>tr>td:nth-child(7) {
+			/* border-right: solid 1px rgb(230, 230, 235); */
+
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(6) {
+			color: darkcyan
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(7) {
+			color: crimson
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(n+6) {
+			min-width: 80px;
+			width: 100px;
+		}
+	}
+
+	@media only screen and (max-width: 624px) {
+		.header-title {
+			display: none;
+		}
+	}
+
+	@media only screen and (max-width: 480px) {
+
+		.header-title,
+		.menu-date_title {
+			display: none;
+		}
 	}
 </style>
 <form method="post" id="js-form_export" style="display:none;">
@@ -240,7 +345,7 @@ unset($grem);
 		nav.setProperty("from", slo_date_start.get()[0].id);
 		nav.setProperty("to", slo_date_end.get()[0].id);
 
-		xhttp_request = function (nav) {
+		xhttp_request = function (nav, isloaded = false) {
 			js_input_cmd_prev.attr("disabled", nav.getProperty("page") == 1);
 			js_input_cmd_next.attr("disabled", parseInt(nav.getProperty("page")) >= total_pages);
 			overlay.show();
@@ -288,11 +393,13 @@ unset($grem);
 				js_output_page_total.html(total_pages);
 				js_container_output.html(output);
 
-				const y = js_output_total[0].getBoundingClientRect().top + window.scrollY;
-				window.scroll({
-					top: 0,
-					behavior: 'smooth'
-				});
+				if (isloaded) {
+					const y = js_output_total[0].getBoundingClientRect().top;
+					window.scroll({
+						top: y - 15,
+						behavior: 'smooth'
+					});
+				}
 			}).always(function () {
 				overlay.hide();
 			});
@@ -318,13 +425,13 @@ unset($grem);
 			slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"));
 			slo_date_start.set(nav.getProperty("from"), nav.getProperty("from"));
 			slo_date_end.set(nav.getProperty("to"), nav.getProperty("to"));
-			xhttp_request(nav);
+			xhttp_request(nav, true);
 		});
 
 		js_output_page_total.on("click", function () {
 			nav.setProperty("page", 0);
 			nav.pushState();
-			xhttp_request(nav)
+			xhttp_request(nav, true)
 		});
 		/* Events binding */
 		js_input_cmd_next.on("click", function () {
@@ -333,14 +440,14 @@ unset($grem);
 			nav.pushState();
 			js_input_cmd_prev.attr("disabled", false);
 			slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"));
-			xhttp_request(nav);
+			xhttp_request(nav, true);
 		});
 		js_input_cmd_prev.on("click", function () {
 			if (parseInt(nav.getProperty("page")) <= 1) { return; };
 			nav.setProperty("page", parseInt(nav.getProperty("page")) - 1);
 			nav.pushState();
 			slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"))
-			xhttp_request(nav);
+			xhttp_request(nav, true);
 		});
 
 		js_input_cmd_update.on('click', function () {
@@ -350,8 +457,8 @@ unset($grem);
 			slo_page_current.input[0][0].dataset.rangeend = 1;
 			slo_page_current.reinit();
 
-			xhttp_request(nav);
+			xhttp_request(nav, false);
 		});
-		xhttp_request(nav);
+		xhttp_request(nav, false);
 	});
 </script>

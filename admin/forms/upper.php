@@ -35,8 +35,7 @@ $SmartListObject = new SmartListObject($app);
 	<meta charset="utf-8" />
 	<base href="<?php echo "{$app->http_root}"; ?>" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport"
-		content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<meta name="apple-mobile-web-app-title" content="<?= $app->settings->site['title'] ?>" />
@@ -60,7 +59,7 @@ $SmartListObject = new SmartListObject($app);
 	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css" />
 	<?php
 	if (array_key_exists('css', $fs()->cdns)) {
-		$load = explode(":", $fs()->cdns['css']);
+		$load = explode(";", $fs()->cdns['css']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
 				echo "	<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}\" />\n";

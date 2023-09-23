@@ -386,7 +386,7 @@ class Report
 
 				if (!isset($this->_partitionlist[$rowa['prt_id']])) {
 					$colorlist = array();
-					$rowa['prt_color'] = substr(str_pad($rowa['prt_color'], 6, "0", STR_PAD_LEFT), 0, 6);
+					$rowa['prt_color'] = substr(str_pad($rowa['prt_color'] ?? "000000", 6, "0", STR_PAD_LEFT), 0, 6);
 					$colorlist[0] = hexdec($rowa['prt_color'][0] . $rowa['prt_color'][1]);
 					$colorlist[1] = hexdec($rowa['prt_color'][2] . $rowa['prt_color'][4]);
 					$colorlist[2] = hexdec($rowa['prt_color'][4] . $rowa['prt_color'][5]);
@@ -476,9 +476,9 @@ class Report
 	 * param: time(int) time in seconds
 	 * returns: string
 	**/
-	public function formatTime($time)
+	public function formatTime(int|float $time)
 	{
-		return $this->app->formatTime($time);
+		return $this->app->formatTime((int)$time);
 		
 	}
 

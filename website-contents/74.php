@@ -15,7 +15,7 @@ if ($r && $r->num_rows > 0) {
 		if (!isset($company_hr[$row['lbr_company']])) {
 			$company_hr[$row['lbr_company']] = array();
 		}
-		$company_hr[$row['lbr_company']][0] = $row['company_count'];
+		$company_hr[$row['lbr_company']][0] = $row['company_count'] ?? 0;
 	}
 }
 
@@ -35,7 +35,7 @@ if ($r && $r->num_rows > 0) {
 		if (!isset($company_hr[$row['comp_id']])) {
 			$company_hr[$row['comp_id']] = array();
 		}
-		$company_hr[$row['comp_id']][1] = $row['company_count'];
+		$company_hr[$row['comp_id']][1] = $row['company_count'] ?? 0;
 		$company_hr[$row['comp_id']][2] = $row['comp_name'];
 	}
 }
@@ -45,15 +45,14 @@ if ($r && $r->num_rows > 0) {
 if (sizeof($company_hr) > 0) {
 	$cnt = 0;
 	echo "<div class=\"widgetWQU\"><div>";
-	echo "<h1>Companies Manpower:</h1>";
+	//echo "<h1>Companies Manpower:</h1>";
 	echo "<div>";
 	foreach ($company_hr as $comp => $data) {
 		$account_title = "Comapny";
 
 		echo "<div><div class=\"btn-set\" style=\"flex-wrap: nowrap; \">";
-		echo "<span class=\"nofetch flex\">{$data[2]}</span>";
-		echo "<input type=\"text\" style=\"width:70px;text-align:right;\" readonly=\"readonly\" tabindex=\"-1\" value=\"{$data[0]}\" />";
-		echo "<input type=\"text\" style=\"width:70px;text-align:right;\" readonly=\"readonly\" tabindex=\"-1\" value=\"{$data[1]}\" />";
+		echo "<span class=\"nofetch flex\">{$data[2]} <span style=\"color:#999\">employees</span></span>";
+		echo "<input type=\"text\" style=\"width:70px;text-align:right;\" readonly=\"readonly\" tabindex=\"-1\" value=\"" . (isset($data[0]) ? (int) $data[0] : 0) . "/" . $data[1] . "\" />";
 		echo "</div></div>";
 	}
 	echo "</div></div></div>";
