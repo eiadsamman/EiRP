@@ -19,11 +19,11 @@ if (isset($_POST['bulkeditorsubmit']) && $fs(154)->permission->edit) {
 		if (isset($_POST[$k])) {
 			$cnt++;
 			if ($v[3] == "int") {
-				$_POST[$k] = (int)$_POST[$k];
+				$_POST[$k] = (int) $_POST[$k];
 				if ($_POST[$k] == 0) {
 					$q .= $smart . $v[2] . "= NULL ";
 				} else {
-					$q .= $smart . $v[2] . "=" . (int)$_POST[$k];
+					$q .= $smart . $v[2] . "=" . (int) $_POST[$k];
 				}
 			} elseif ($v[3] == "string") {
 				$_POST[$k] = trim($_POST[$k]);
@@ -78,8 +78,8 @@ if (isset($_POST['bulkeditorform'])) {
 }
 
 if (isset($_POST['employeecheck'])) {
-	$id = (int)$_POST['id'];
-	$checked = (int)$_POST['checked'];
+	$id = (int) $_POST['id'];
+	$checked = (int) $_POST['checked'];
 	if ($checked == 0) {
 		$r = $app->db->query("DELETE FROM user_employeeselection WHERE sel_usremp_usr_id={$app->user->info->id} AND sel_usremp_emp_id=$id;");
 	} else {
@@ -123,10 +123,10 @@ if (isset($_POST['selectsearch'])) {
 					) AS st ON st.lty_id=lbr_type
 		WHERE 
 			lbr_resigndate IS NULL AND lbr_id!=1 
-			" . (isset($_POST['user'][1]) && (int)$_POST['user'][1] != 0 ? " AND usr_id=" . ((int)$_POST['user'][1]) . "" : "") . "
-			" . (isset($_POST['job'][1]) && (int)$_POST['job'][1] != 0 ? " AND lbr_type=" . ((int)$_POST['job'][1]) . "" : "") . "
-			" . (isset($_POST['shift'][1]) && (int)$_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int)$_POST['shift'][1]) . "" : "") . "
-			" . (isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? " AND lsc_id=" . ((int)$_POST['section'][1]) . "" : "") . "
+			" . (isset($_POST['user'][1]) && (int) $_POST['user'][1] != 0 ? " AND usr_id=" . ((int) $_POST['user'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND lbr_type=" . ((int) $_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['shift'][1]) && (int) $_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int) $_POST['shift'][1]) . "" : "") . "
+			" . (isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? " AND lsc_id=" . ((int) $_POST['section'][1]) . "" : "") . "
 			" . (isset($_POST['onlyselection']) ? " AND sel_usremp_emp_id IS NOT NULL" : "") . "
 			AND lbr_company={$app->user->company->id}
 		;");
@@ -146,7 +146,8 @@ if (isset($_POST['selectall'])) {
 	exit;
 }
 if (isset($_POST['cards']) && $_POST['cards'] == '1') {
-	if ($r = $app->db->query("
+	if (
+		$r = $app->db->query("
 		SELECT 
 			usr_id
 		FROM
@@ -166,21 +167,22 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		WHERE
 			( (lbr_role & b'001') > 0 )
 			" . (isset($_POST['displaysuspended']) ? " AND usr_id=usr_id " : " AND lbr_resigndate IS NULL") . "
-			" . (isset($_POST['user'][1]) && (int)$_POST['user'][1] != 0 ? " AND usr_id=" . ((int)$_POST['user'][1]) . "" : "") . "
-			" . (isset($_POST['job'][1]) && (int)$_POST['job'][1] != 0 ? " AND lbr_type=" . ((int)$_POST['job'][1]) . "" : "") . "
-			" . (isset($_POST['shift'][1]) && (int)$_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int)$_POST['shift'][1]) . "" : "") . "
-			" . (isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? " AND lsc_id=" . ((int)$_POST['section'][1]) . "" : "") . "
+			" . (isset($_POST['user'][1]) && (int) $_POST['user'][1] != 0 ? " AND usr_id=" . ((int) $_POST['user'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND lbr_type=" . ((int) $_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['shift'][1]) && (int) $_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int) $_POST['shift'][1]) . "" : "") . "
+			" . (isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? " AND lsc_id=" . ((int) $_POST['section'][1]) . "" : "") . "
 			AND lbr_company={$app->user->company->id}
 		ORDER BY
 			usr_id
-		")) {
+		")
+	) {
 		while ($row = $r->fetch_assoc()) {
 			echo "<input type=\"hidden\" name=\"employees[]\" value=\"{$row['usr_id']}\" />";
 		}
 	}
 	exit;
 } elseif (isset($_POST['user'])) {
-	$offset = isset($_POST['offset']) ? (int)$_POST['offset'] : 0;
+	$offset = isset($_POST['offset']) ? (int) $_POST['offset'] : 0;
 	$countrow = true;
 	$total = 0;
 	$sort_query = false;
@@ -197,13 +199,14 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 	);
 
 	if (isset($_POST['sort_field'], $_POST['sort_dir']) && isset($sort_list[$_POST['sort_field']])) {
-		$sort_query = " ORDER BY {$sort_list[$_POST['sort_field']]} " . ((int)$_POST['sort_dir'] == 1 ? "DESC" : "ASC");
+		$sort_query = " ORDER BY {$sort_list[$_POST['sort_field']]} " . ((int) $_POST['sort_dir'] == 1 ? "DESC" : "ASC");
 	} else {
 		$sort_query = " ORDER BY lbr_perma DESC,usr_id ";
 	}
 
-	if ($r = $app->db->query(
-		"SELECT 
+	if (
+		$r = $app->db->query(
+			"SELECT 
 			COUNT(usr_id) AS count
 		FROM
 			labour 
@@ -221,14 +224,16 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		WHERE
 			( (lbr_role & b'001') > 0 )
 			" . (isset($_POST['displaysuspended']) ? " AND usr_id=usr_id " : " AND lbr_resigndate IS NULL ") . "
-			" . (isset($_POST['user'][1]) && (int)$_POST['user'][1] != 0 ? " AND usr_id=" . ((int)$_POST['user'][1]) . "" : "") . "
-			" . (isset($_POST['job'][1]) && (int)$_POST['job'][1] != 0 ? " AND lbr_type=" . ((int)$_POST['job'][1]) . "" : "") . "
-			" . (isset($_POST['shift'][1]) && (int)$_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int)$_POST['shift'][1]) . "" : "") . "
-			" . (isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? " AND lsc_id=" . ((int)$_POST['section'][1]) . "" : "") . "
-			" . (isset($_POST['workingtime'][1]) && (int)$_POST['workingtime'][1] != 0 ? " AND lbr_workingtimes=" . ((int)$_POST['workingtime'][1]) . "" : "") . "
-			" . (isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1] != 0 ? " AND lbr_payment_method=" . ((int)$_POST['paymethod'][1]) . "" : "") . "
+			" . (isset($_POST['user'][1]) && (int) $_POST['user'][1] != 0 ? " AND usr_id=" . ((int) $_POST['user'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND lbr_type=" . ((int) $_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['shift'][1]) && (int) $_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int) $_POST['shift'][1]) . "" : "") . "
+			" . (isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? " AND lsc_id=" . ((int) $_POST['section'][1]) . "" : "") . "
+			" . (isset($_POST['workingtime'][1]) && (int) $_POST['workingtime'][1] != 0 ? " AND lbr_workingtimes=" . ((int) $_POST['workingtime'][1]) . "" : "") . "
+			" . (isset($_POST['paymethod'][1]) && (int) $_POST['paymethod'][1] != 0 ? " AND lbr_payment_method=" . ((int) $_POST['paymethod'][1]) . "" : "") . "
 			AND lbr_company={$app->user->company->id}
-		")) {
+		"
+		)
+	) {
 		if ($row = $r->fetch_assoc()) {
 			$total = $row['count'];
 		}
@@ -246,15 +251,16 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 
 	//Handle various search keys
 	$rawselect = "";
-	if (isset($_POST['user'][1]) && (int)$_POST['user'][1] == 0 || (!isset($_POST['user'][1]))) {
-		$cols	= array("usr_firstname" => "", "usr_lastname" => "", "usr_id" => "");
-		$q		= preg_replace('/[^\p{Arabic}\da-z_\- ]/ui', " ", trim($_POST['user'][0]));
-		$sq 		= ' ';
-		$i		= 0;
-		$sJS		= "";
+	if (isset($_POST['user'][1]) && (int) $_POST['user'][1] == 0 || (!isset($_POST['user'][1]))) {
+		$cols = array("usr_firstname" => "", "usr_lastname" => "", "usr_id" => "");
+		$_POST['user'][0] = empty($_POST['user'][0]) ? " " : $_POST['user'][0];
+		$q = preg_replace('/[^\p{Arabic}\da-z_\- ]/ui', " ", trim($_POST['user'][0]));
+		$sq = ' ';
+		$i = 0;
+		$sJS = "";
 
-		$q		= trim($q);
-		$smart  	= "";
+		$q = trim($q);
+		$smart = "";
 		if ($q == "") {
 			$sq .= "(";
 			foreach ($cols as $k => $v) {
@@ -279,7 +285,8 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		$rawselect = " AND " . $sq;
 	}
 
-	if ($r = $app->db->query("
+	if (
+		$r = $app->db->query("
 		SELECT 
 			usr_id,
 			UNIX_TIMESTAMP(lbr_registerdate) AS lbr_registerdate,
@@ -314,12 +321,12 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		WHERE
 			( (lbr_role & b'001') > 0 )
 			" . (isset($_POST['displaysuspended']) ? " AND 1 " : " AND lbr_resigndate IS NULL ") . "
-			" . (isset($_POST['user'][1]) && (int)$_POST['user'][1] != 0 ? " AND usr_id=" . ((int)$_POST['user'][1]) . "" : "") . "
-			" . (isset($_POST['job'][1]) && (int)$_POST['job'][1] != 0 ? " AND lbr_type=" . ((int)$_POST['job'][1]) . "" : "") . "
-			" . (isset($_POST['workingtime'][1]) && (int)$_POST['workingtime'][1] != 0 ? " AND lbr_workingtimes=" . ((int)$_POST['workingtime'][1]) . "" : "") . "
-			" . (isset($_POST['paymethod'][1]) && (int)$_POST['paymethod'][1] != 0 ? " AND lbr_payment_method=" . ((int)$_POST['paymethod'][1]) . "" : "") . "
-			" . (isset($_POST['shift'][1]) && (int)$_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int)$_POST['shift'][1]) . "" : "") . "
-			" . (isset($_POST['section'][1]) && (int)$_POST['section'][1] != 0 ? " AND lsc_id=" . ((int)$_POST['section'][1]) . "" : "") . "
+			" . (isset($_POST['user'][1]) && (int) $_POST['user'][1] != 0 ? " AND usr_id=" . ((int) $_POST['user'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND lbr_type=" . ((int) $_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['workingtime'][1]) && (int) $_POST['workingtime'][1] != 0 ? " AND lbr_workingtimes=" . ((int) $_POST['workingtime'][1]) . "" : "") . "
+			" . (isset($_POST['paymethod'][1]) && (int) $_POST['paymethod'][1] != 0 ? " AND lbr_payment_method=" . ((int) $_POST['paymethod'][1]) . "" : "") . "
+			" . (isset($_POST['shift'][1]) && (int) $_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int) $_POST['shift'][1]) . "" : "") . "
+			" . (isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? " AND lsc_id=" . ((int) $_POST['section'][1]) . "" : "") . "
 			" . (isset($_POST['onlyselection']) ? " AND sel_usremp_emp_id IS NOT NULL" : "") . "
 			AND lbr_company={$app->user->company->id}
 			$rawselect
@@ -328,7 +335,8 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 			$sort_query
 		LIMIT
 			" . ($offset * $perpage) . ",$perpage
-		")) {
+		")
+	) {
 		while ($row = $r->fetch_assoc()) {
 			if ($countrow) {
 				echo "<tr>";
@@ -532,16 +540,26 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				<td>
 					<div class="btn-set" style="margin-bottom: 10px;">
 						<button type="button" id="jQdosearch">Search</button>
-						<label class="btn-checkbox"><input type="checkbox" name="onlyselection" id="onlyselection" /> <span>&nbsp;Show selection only&nbsp;</span></label>
-						<label class="btn-checkbox"><input type="checkbox" name="displaysuspended" id="jQdisplaySuspended" /> <span>&nbsp;Display Suspended&nbsp;</span></label>
+						<label class="btn-checkbox"><input type="checkbox" name="onlyselection" id="onlyselection" />
+							<span>&nbsp;Show selection only&nbsp;</span></label>
+						<label class="btn-checkbox"><input type="checkbox" name="displaysuspended"
+								id="jQdisplaySuspended" /> <span>&nbsp;Display Suspended&nbsp;</span></label>
 					</div>
 					<div class="btn-set">
-						<input class="jsFilterFeild flex" name="user" type="text" data-slo="B00S" style="min-width:160px;max-width:220px;" id="user" placeholder="Employee name, serial or id" />
-						<input class="jsFilterFeild flex" name="section" type="text" data-slo="E001" style="min-width:160px;max-width:220px;" id="section" placeholder="Section" />
-						<input class="jsFilterFeild flex" name="job" type="text" data-slo="E002A" style="min-width:160px;max-width:220px;" id="job" placeholder="Job" />
-						<input class="jsFilterFeild flex" name="shift" type="text" data-slo="E003" style="min-width:100px;max-width:220px;" id="shift" placeholder="Shift" />
-						<input class="jsFilterFeild flex" name="workingtime" type="text" data-slo="WORKING_TIMES" style="min-width:100px;max-width:220px;" id="workingtime" placeholder="Working Time" />
-						<input class="jsFilterFeild flex" name="paymethod" type="text" data-slo="SALARY_PAYMENT_METHOD" style="min-width:100px;max-width:220px;" id="paymethod" placeholder="Salary Payment Method" />
+						<input class="jsFilterFeild flex" name="user" type="text" data-slo="B00S"
+							style="min-width:160px;max-width:220px;" id="user"
+							placeholder="Employee name, serial or id" />
+						<input class="jsFilterFeild flex" name="section" type="text" data-slo="E001"
+							style="min-width:160px;max-width:220px;" id="section" placeholder="Section" />
+						<input class="jsFilterFeild flex" name="job" type="text" data-slo="E002A"
+							style="min-width:160px;max-width:220px;" id="job" placeholder="Job" />
+						<input class="jsFilterFeild flex" name="shift" type="text" data-slo="E003"
+							style="min-width:100px;max-width:220px;" id="shift" placeholder="Shift" />
+						<input class="jsFilterFeild flex" name="workingtime" type="text" data-slo="WORKING_TIMES"
+							style="min-width:100px;max-width:220px;" id="workingtime" placeholder="Working Time" />
+						<input class="jsFilterFeild flex" name="paymethod" type="text" data-slo="SALARY_PAYMENT_METHOD"
+							style="min-width:100px;max-width:220px;" id="paymethod"
+							placeholder="Salary Payment Method" />
 					</div>
 				</td>
 				<td>
@@ -571,7 +589,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 			<td class="sa" data-feild="transportation"><span>Transportation</span></td>
 			<td class="sa" data-feild="residence"><span>Residence</span></td>
 
-			<?php echo ($fs()->permission->edit  ? "<td style=\"width:10px;\"></td>" : "") ?>
+			<?php echo ($fs()->permission->edit ? "<td style=\"width:10px;\"></td>" : "") ?>
 			<td style="width:10px"></td>
 		</tr>
 	</thead>
@@ -579,9 +597,9 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 </table>
 
 <script>
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 
-		$("#doprint").on('click', function() {
+		$("#doprint").on('click', function () {
 			$("#cards").val("1");
 			var serialized = $("#searchform").serialize();
 			$("#cards").val("0");
@@ -589,15 +607,15 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				data: serialized,
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				$("#jQprintformData").html(data);
 				$("#jQprintform").submit();
 			});
 		});
-		$("#jQvericheck").on('change', function() {
+		$("#jQvericheck").on('change', function () {
 			$("#jQveriforminput").val($("#jQvericheck").prop("checked") ? "1" : "0");
 		});
-		$("#jQoutput").on('click', "#jQaction_exportselection", function() {
+		$("#jQoutput").on('click', "#jQaction_exportselection", function () {
 			$("#searchform").attr("target", "_blank");
 			$("#searchform").attr("method", "post");
 			$("#searchform").attr("action", "<?= $fs(77)->dir ?>/?onlyselection");
@@ -609,7 +627,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 			$("#searchform").attr("method", "");
 			$("#searchform").attr("action", "");
 		});
-		$("#jQoutput").on('click', "#jQaction_exportall", function() {
+		$("#jQoutput").on('click', "#jQaction_exportall", function () {
 			$("#searchform").attr("target", "_blank");
 			$("#searchform").attr("method", "post");
 			$("#searchform").attr("action", "<?= $fs(77)->dir ?>/");
@@ -622,7 +640,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 			$("#searchform").attr("action", "");
 		});
 
-		$("#jQoutput").on('click', '#jQselectaction', function() {
+		$("#jQoutput").on('click', '#jQselectaction', function () {
 			var $menu = $("#jQactionmenu");
 			if ($menu.attr('data-status') == 'off') {
 				$menu.show();
@@ -633,7 +651,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 			}
 		});
 
-		$("#jQoutput").on('click', '#jQaction_bulkeditor', function() {
+		$("#jQoutput").on('click', '#jQaction_bulkeditor', function () {
 			var $menu = $("#jQactionmenu");
 			$menu.hide();
 			$menu.attr('data-status', 'off');
@@ -644,14 +662,14 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				},
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				popup.show(data);
 				overlay.hide();
 
-				popup.self().find("#jQcancel").on('click', function() {
+				popup.self().find("#jQcancel").on('click', function () {
 					popup.hide();
 				});
-				popup.self().find(".jQalter_checkbox").on('change', function() {
+				popup.self().find(".jQalter_checkbox").on('change', function () {
 					var $checkbox = $(this);
 					$checkbox.closest("div").find("input[type=text]").prop("disabled", !$checkbox.prop("checked"));
 				});
@@ -660,7 +678,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 					limit: 10
 				}).disable();
 
-				popup.self().find("#jQsubmit_bulk").on('click', function() {
+				popup.self().find("#jQsubmit_bulk").on('click', function () {
 					let ajaxdata = {};
 					let fields = {};
 
@@ -678,7 +696,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 						data: ajaxdata,
 						url: '<?php echo $fs()->dir; ?>',
 						type: 'POST'
-					}).done(function(bulkboutput) {
+					}).done(function (bulkboutput) {
 						overlay.hide();
 						if (bulkboutput == "empty") {
 							messagesys.success("Nothing to edit");
@@ -697,10 +715,10 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		});
 
 
-		$("#jQdosearch").on('click', function() {
+		$("#jQdosearch").on('click', function () {
 			ajaxcall();
 		});
-		$("#jQoutput").on('click', '#jQaction_clearall', function() {
+		$("#jQoutput").on('click', '#jQaction_clearall', function () {
 			var $menu = $("#jQactionmenu");
 			overlay.show();
 			$menu.hide();
@@ -711,12 +729,12 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				},
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				ajaxcall();
 				overlay.hide();
 			});
 		});
-		$("#jQoutput").on('click', '#jQaction_selectall', function() {
+		$("#jQoutput").on('click', '#jQaction_selectall', function () {
 			var $menu = $("#jQactionmenu");
 			overlay.show();
 			$menu.hide();
@@ -727,12 +745,12 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				},
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				ajaxcall();
 				overlay.hide();
 			});
 		});
-		$("#jQoutput").on('click', '#jQaction_selectsearch', function() {
+		$("#jQoutput").on('click', '#jQaction_selectsearch', function () {
 			var $menu = $("#jQactionmenu");
 			overlay.show();
 			$menu.hide();
@@ -741,31 +759,31 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				data: $("#searchform").serialize() + '&selectsearch=0',
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				ajaxcall();
 				overlay.hide();
 			});
 		});
 
 
-		$("#onlyselection").on('change', function() {
+		$("#onlyselection").on('change', function () {
 			ajaxcall();
 		});
 
 
-		var ajaxcall = function() {
+		var ajaxcall = function () {
 			$.ajax({
 				data: $("#searchform").serialize(),
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
-			}).done(function(data) {
+			}).done(function (data) {
 				$data = $(data);
 				$("#jQoutput").html(data);
 			});
 		}
 
 
-		$("#jQoutput").on('change', '.jQempcheck', function() {
+		$("#jQoutput").on('change', '.jQempcheck', function () {
 			var _this = $(this);
 			var _check = _this.prop('checked');
 			var _id = _this.attr("data-id");
@@ -777,7 +795,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				},
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
-			}).done(function(output) {
+			}).done(function (output) {
 				if (output == "false") {
 
 				} else {
@@ -787,7 +805,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		});
 
 
-		$(".sa").on('click', function() {
+		$(".sa").on('click', function () {
 			$(".sa").removeClass("down").removeClass("up");
 			var _dir = 0;
 			if ($("#sort_field").val() == $(this).attr("data-feild")) {
@@ -803,12 +821,12 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 			ajaxcall();
 		});
 
-		$("#jQoutput").on('click', 'button[data-offset]', function() {
+		$("#jQoutput").on('click', 'button[data-offset]', function () {
 			var offset = $(this).attr('data-offset');
 			$("#offset").val(offset);
 			ajaxcall();
 		});
-		$("#jQoutput").on('click', ".op-display > a", function(e) {
+		$("#jQoutput").on('click', ".op-display > a", function (e) {
 			e.preventDefault();
 			var $this = $(this);
 			popup.show("Loading");
@@ -817,17 +835,17 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				type: "POST",
 				url: $this.attr("href") + "&ajax",
 				data: ""
-			}).done(function(data) {
+			}).done(function (data) {
 				popup.show(data);
 			});
 			return false;
 		});
 		var userinput = $(".jsFilterFeild").slo({
-			onselect: function(value) {
+			onselect: function (value) {
 				$("#offset").val("0");
 				ajaxcall();
 			},
-			ondeselect: function() {
+			ondeselect: function () {
 				$("#offset").val("0");
 				ajaxcall();
 			},
@@ -836,7 +854,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 
 
 
-		$("#jQdisplaySuspended").on('change', function() {
+		$("#jQdisplaySuspended").on('change', function () {
 			ajaxcall();
 		});
 		ajaxcall();

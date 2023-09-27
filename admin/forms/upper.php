@@ -35,7 +35,8 @@ $SmartListObject = new SmartListObject($app);
 	<meta charset="utf-8" />
 	<base href="<?php echo "{$app->http_root}"; ?>" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<meta name="apple-mobile-web-app-title" content="<?= $app->settings->site['title'] ?>" />
@@ -47,6 +48,7 @@ $SmartListObject = new SmartListObject($app);
 	<title>
 		<?= "{$app->settings->site['title']} - " . $fs()->title ?>
 	</title>
+
 	<link media="screen,print" rel="stylesheet" href="static/style/style.main.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.messagesys.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.button.set.css" />
@@ -56,7 +58,7 @@ $SmartListObject = new SmartListObject($app);
 	<link media="screen,print" rel="stylesheet" href="static/style/style.popup.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.ios-checkbox.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.template.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css?fuck=<?=uniqid() ;?>" />
 	<?php
 	if (array_key_exists('css', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['css']);
@@ -79,13 +81,15 @@ $SmartListObject = new SmartListObject($app);
 		$load = explode(";", $fs()->cdns['js']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "	<script type=\"text/javascript\" src=\"{$file}\"></script>\n";
+				echo "	<script type=\"text/javascript\" src=\"static/{$file}\"></script>\n";
 		}
 	}
 	?>
 </head>
 
 <body>
+
+	
 	<span class="header-ribbon noprint">
 		<div>
 			<div class="btnheader-set" style="white-space:nowrap">
@@ -145,7 +149,7 @@ $SmartListObject = new SmartListObject($app);
 
 								if ($r = $app->db->query($q)) {
 									while ($row = $r->fetch_assoc()) {
-										echo "<option data-id=\"{$row['trd_directory']}\" data-keywords=\"{$row['trd_id']}\">{$row['pagefile_title']}</option>";
+										echo "<option data-id=\"{$row['trd_directory']}\">{$row['pagefile_title']}</option>"; // data-keywords=\"{$row['trd_id']}\"
 									}
 								}
 								?>

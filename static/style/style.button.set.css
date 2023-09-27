@@ -1,10 +1,11 @@
 .btn-set {
 	--color-mid-gray: rgb(200, 200, 210);
-
-	display: flex;
 	flex-wrap: nowrap;
+	-webkit-display: flex;
 	display: flex;
-	margin-left: 1px;
+	margin-left: .5px;
+	margin-right: .5px;
+	box-sizing: border-box;
 }
 
 .btn-set.center {
@@ -18,7 +19,8 @@
 	border: solid 1px var(--color-mid-gray);
 	height: 32px;
 	position: relative;
-	margin-left: -1px;
+	margin-left: -.5px;
+	margin-right: -.5px;
 	white-space: nowrap;
 }
 
@@ -140,9 +142,10 @@
 
 .btn-set>button:active,
 .btn-set>a:active {
-	box-shadow: 0 0 4px 1px rgba(82, 168, 236, .3);
+	box-shadow: 0 0 4px 1px rgba(82, 168, 236, .3), inset 1px 2px 3px 0px rgba(50,50,50,0.3);
 	background-color: rgba(243, 247, 255, 1);
 	padding: 8px 11px 11px 13px;
+
 }
 
 .btn-set>a:active {
@@ -272,7 +275,7 @@
 
 /* #region - Checkbox*/
 .btn-set>label.btn-checkbox {
-	padding: 6px 10px;
+	padding: 7px 10px;
 	height: 16px;
 	cursor: default;
 	-webkit-touch-callout: none;
@@ -633,54 +636,54 @@
 	align-self: stretch;
 }
 
-.btn-set>span.cssSLO_wrap {
+.btn-set>span.slo-wrap {
 	background-color: transparent;
 	padding: 0px;
 	border: none;
 }
 
-.btn-set.vertical>span.cssSLO_wrap {
+.btn-set.vertical>span.slo-wrap {
 	color: #333;
 }
 
-.btn-set.vertical>span.cssSLO_wrap>input[type=text],
-.btn-set.vertical>span.cssSLO_wrap>input[type=date],
-.btn-set.vertical>span.cssSLO_wrap>input[type=number] {
+.btn-set.vertical>span.slo-wrap>input[type=text],
+.btn-set.vertical>span.slo-wrap>input[type=date],
+.btn-set.vertical>span.slo-wrap>input[type=number] {
 	padding: 6px 6px;
 	border-radius: 0px;
 	-webkit-border-radius: 0px;
 	-moz-border-radius: 0px;
 }
 
-.btn-set>span.cssSLO_wrap>input[type=text],
-.btn-set>span.cssSLO_wrap>input[type=date],
-.btn-set>span.cssSLO_wrap>input[type=number] {
+.btn-set>span.slo-wrap>input[type=text],
+.btn-set>span.slo-wrap>input[type=date],
+.btn-set>span.slo-wrap>input[type=number] {
 	height: 100%;
 	border-radius: 0px;
 	-webkit-border-radius: 0px;
 	-moz-border-radius: 0px;
 }
 
-.btn-set>span.cssSLO_wrap.valid:after,
-.btn-set>span.cssSLO_wrap.unvalid:after {
+.btn-set>span.slo-wrap.valid:after,
+.btn-set>span.slo-wrap.unvalid:after {
 	top: 9px;
 	right: 8px;
 }
 
-.btn-set.normal>span.cssSLO_wrap.valid:after,
-.btn-set.normal>span.cssSLO_wrap.unvalid:after {
+.btn-set.normal>span.slo-wrap.valid:after,
+.btn-set.normal>span.slo-wrap.unvalid:after {
 	top: 6px;
 	right: 6px;
 }
 
-.btn-set.normal>span.cssSLO_wrap {
+.btn-set.normal>span.slo-wrap {
 	padding: 0px;
 	height: 24px;
 }
 
-.btn-set.normal>span.cssSLO_wrap>input[type=text],
-.btn-set.normal>span.cssSLO_wrap>input[type=date], 
-.btn-set.normal>span.cssSLO_wrap>input[type=number] {
+.btn-set.normal>span.slo-wrap>input[type=text],
+.btn-set.normal>span.slo-wrap>input[type=date], 
+.btn-set.normal>span.slo-wrap>input[type=number] {
 	padding: 3px 19px 3px 6px;
 	height: 24px;
 }

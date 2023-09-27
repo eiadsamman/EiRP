@@ -142,10 +142,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	}
 
 	/*
-											   $balance=null;
-											   if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
-											   if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
-										   */
+														$balance=null;
+														if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
+														if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
+													*/
 
 	$result = true;
 	$app->db->autocommit(false);
@@ -287,16 +287,13 @@ if (!$__workingaccount) {
 	<?php
 
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1>");
-
-	$grem->menu()->open();
+	$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"clr-green\" id=\"jQsubmit\" tabindex=\"9\">Submit Receipt</button></div>");
 
 	if (sizeof($defines) > 0) {
-		echo "<span>Actions</span><input type=\"text\" id=\"js-defines\" data-slo=\":LIST\" data-list=\"defines\" /><span class=\"gap\"></span>";
+		$grem->menu()->sticky(false)->open();
+		echo "<input placeholder=\"Actions...\" type=\"text\" id=\"js-defines\" data-slo=\":LIST\" data-list=\"defines\" />";
+		$grem->getLast()->close();
 	}
-
-	echo "<button class=\"clr-green\" id=\"jQsubmit\" tabindex=\"9\">Submit Receipt</button>";
-	$grem->getLast()->close();
 
 	$grem->article()->open();
 	?>

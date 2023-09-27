@@ -46,13 +46,13 @@
 	color: #777;
 }
 
-.cssSLO_wrap {
+.slo-wrap {
 	position: relative;
 }
 
-.cssSLO_wrap>input[type=text],
-.cssSLO_wrap>input[type=number],
-.cssSLO_wrap>input[type=date] {
+.slo-wrap>input[type=text],
+.slo-wrap>input[type=number],
+.slo-wrap>input[type=date] {
 	position: relative;
 	outline: none;
 	border: solid 1px var(--color-mid-gray);
@@ -63,16 +63,16 @@
 	border-radius: 0;
 }
 
-.cssSLO_wrap>input[type=text]:not(:disabled):hover,
-.cssSLO_wrap>input[type=number]:not(:disabled):hover,
-.cssSLO_wrap>input[type=date]:not(:disabled):hover {
+.slo-wrap>input[type=text]:not(:disabled):hover,
+.slo-wrap>input[type=number]:not(:disabled):hover,
+.slo-wrap>input[type=date]:not(:disabled):hover {
 	border-color: #999;
 }
 
 
-.cssSLO_wrap>input[type=text]:not(:disabled):focus,
-.cssSLO_wrap>input[type=number]:not(:disabled):focus,
-.cssSLO_wrap>input[type=date]:not(:disabled):focus {
+.slo-wrap>input[type=text]:not(:disabled):focus,
+.slo-wrap>input[type=number]:not(:disabled):focus,
+.slo-wrap>input[type=date]:not(:disabled):focus {
 	border-color: rgba(82, 168, 236, .75);
 	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
@@ -80,7 +80,7 @@
 }
 
 
-.cssSLO_wrap:after {
+.slo-wrap:after {
 	font-family: "icomoon4";
 	text-align: center;
 	position: absolute;
@@ -89,7 +89,7 @@
 	content: "";
 }
 
-.cssSLO_wrap.valid:after {
+.slo-wrap.valid:after {
 	content: "\EA10";
 	top: 6px;
 	right: 7px;
@@ -97,7 +97,7 @@
 	color: dodgerblue;
 }
 
-.cssSLO_wrap.unvalid:after {
+.slo-wrap.unvalid:after {
 	content: "\EA0F";
 	top: 4px;
 	right: 9px;
@@ -106,9 +106,9 @@
 }
 
 
-.cssSLO_wrap.slo-select:after,
-.cssSLO_wrap.valid.slo-select:after,
-.cssSLO_wrap.unvalid.slo-select:after {
+.slo-wrap.slo-select:after,
+.slo-wrap.valid.slo-select:after,
+.slo-wrap.unvalid.slo-select:after {
 	font-family: "icomoon";
 	content: "\e619";
 	top: 9px;
@@ -120,17 +120,17 @@
 
 
 
-.cssSLO_wrap.slo-select>input {
+.slo-wrap.slo-select>input {
 	user-select: none;
 	cursor: default;
 	/* background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgba(240, 241, 247, 1) 90%); */
 }
 
-.cssSLO_wrap.slo-select>input:hover {
+.slo-wrap.slo-select>input:hover {
 	/* background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgb(200, 200, 200) 90%); */
 }
 
-.cssSLO_wrap.slo-select>input:focus {
+.slo-wrap.slo-select>input:focus {
 	/* border-color: rgba(82, 168, 236, .75); */
 	/* box-shadow: 0 0 4px rgba(82, 168, 236, .5); */
 	/* background-image: linear-gradient(180deg, rgba(255, 255, 255, 1) 90%, rgba(82, 168, 236, .5) 90%); */

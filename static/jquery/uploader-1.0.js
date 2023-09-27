@@ -25,17 +25,17 @@
 			_liststate = false;
 
 		var _AddListItem = function (id, name, size = false, checked = false, mime = "image") {
-			var $up_record = $("<span />");
-			var $up_state = $("<span class=\"upload_record_pointer\" />");
-			var $up_operation = $("<span class=\"btn-set\" />");
-			var $up_filedet = $("<span class=\"upload_file_details\" />");
-			$up_state.append($up_operation);
-			$up_record.append($up_state);
-			$up_record.append($up_filedet);
-			$up_operation.html("<label class=\"btn-checkbox\"><input type=\"checkbox\" " + (checked ? " checked=\"checked\" " : "") + " name=\"" + settings.inputname + "[]\" value=\"" + id + "\" /><span></span></label>" +
+			var up_record = $("<span />");
+			var up_state = $("<span class=\"upload_record_pointer\" />");
+			var up_operation = $("<span class=\"btn-set\" />");
+			var up_filedet = $("<span class=\"upload_file_details\" />");
+			up_state.append(up_operation);
+			up_record.append(up_state);
+			up_record.append(up_filedet);
+			up_operation.html("<label class=\"btn-checkbox\"><input type=\"checkbox\" " + (checked ? " checked=\"checked\" " : "") + " name=\"" + settings.inputname + "[]\" value=\"" + id + "\" /><span></span></label>" +
 				"<button type=\"button\" data-id=\"" + id + "\" class=\"js_up_delete bnt-remove\"></button>");
-			$up_filedet.html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + mime + "\" href=\"download/?id=" + id + "&pr=v\" data-href=\"download/?pr=v&id=" + id + "\">" + name + "</a>");
-			_objectHandler.append($up_record);
+			up_filedet.html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + mime + "\" href=\"download/?id=" + id + "&pr=v\" data-href=\"download/?pr=v&id=" + id + "\">" + name + "</a>");
+			_objectHandler.append(up_record);
 
 			updateCount();
 		}
@@ -47,18 +47,18 @@
 			}
 
 			var formData = new FormData();
-			var $up_record = $("<span />");
-			var $up_state = $("<span class=\"upload_record_pointer\" />");
-			var $up_operation = $("<span class=\"btn-set\" />");
-			var $up_filedet = $("<span class=\"upload_file_details\" />");
+			var up_record = $("<span />");
+			var up_state = $("<span class=\"upload_record_pointer\" />");
+			var up_operation = $("<span class=\"btn-set\" />");
+			var up_filedet = $("<span class=\"upload_file_details\" />");
 
-			$up_state.append($up_operation);
-			$up_record.append($up_state);
-			$up_record.append($up_filedet);
-			$up_operation.html("<span>0%</span>");
-			$up_filedet.html("<b>" + file.name + "</b>&nbsp;&nbsp;&nbsp;[" + (file.size / 1024).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + "KB]");
+			up_state.append(up_operation);
+			up_record.append(up_state);
+			up_record.append(up_filedet);
+			up_operation.html("<span>0%</span>");
+			up_filedet.html("<b>" + file.name + "</b>&nbsp;&nbsp;&nbsp;[" + (file.size / 1024).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + "KB]");
 
-			_objectHandler.append($up_record);
+			_objectHandler.append(up_record);
 
 			formData.append("file", file, file.name);
 			formData.append("upload_file", true);
@@ -77,9 +77,9 @@
 								total = event.total;
 							if (event.lengthComputable) {
 								percent = Math.ceil(position / total * 100);
-								$up_operation.html("<span style=\"background:linear-gradient(90deg,#ffffff " + percent + "%,#dddddd 0%);\">" + percent + "%</span>");
+								up_operation.html("<span style=\"background:linear-gradient(90deg,#ffffff " + percent + "%,#dddddd 0%);\">" + percent + "%</span>");
 							} else {
-								$up_operation.html("<span style=\"background:linear-gradient(90deg,#ffffff 0%,#dddddd 0%);\">0?</span>");
+								up_operation.html("<span style=\"background:linear-gradient(90deg,#ffffff 0%,#dddddd 0%);\">0?</span>");
 							}
 						}, false);
 						myXhr.upload.addEventListener('load', function (event) {
@@ -87,10 +87,10 @@
 						myXhr.upload.addEventListener('timeout', function (event) {
 						}, false);
 						myXhr.upload.addEventListener('abort', function (event) {
-							$up_operation.html("<span style=\"color:#f04;\">Aborted</span>");
+							up_operation.html("<span style=\"color:#f04;\">Aborted</span>");
 						}, false);
 					} else {
-						$up_operation.html("<span style=\"color:#f04;\">Error</span>");
+						up_operation.html("<span style=\"color:#f04;\">Error</span>");
 					}
 					return myXhr;
 				},
@@ -101,33 +101,33 @@
 						json = JSON.parse(output);
 					} catch (e) {
 						/* console.log(e); */
-						$up_operation.html("<span style=\"color:#f04;\" title=\"Parsing output error\">Failed</span>");
+						up_operation.html("<span style=\"color:#f04;\" title=\"Parsing output error\">Failed</span>");
 						updateCount();
 						return false;
 					}
 					if (json == null) {
 						/* console.log("Empty Response"); */
-						$up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
+						up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
 						updateCount();
 						return false;
 					}
 					if (json.result == 0) {
 						/* console.log("Server Response Error \n" + output); */
-						$up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
+						up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
 						updateCount();
 						return false;
 					}
 					if (typeof (settings.onupload) == "function") {
 						settings.onupload.call(this, { "id": json.id, "size": json.size, "name": json.name, "mime": json.mime })
 					}
-					$up_operation.html("<label class=\"btn-checkbox\"><input type=\"checkbox\" checked=\"checked\" name=\"" + settings.inputname + "[]\" value=\"" + json.id + "\" /><span></span><div></div></label>" +
+					up_operation.html("<label class=\"btn-checkbox\"><input type=\"checkbox\" checked=\"checked\" name=\"" + settings.inputname + "[]\" value=\"" + json.id + "\" /><span></span><div></div></label>" +
 						"<button type=\"button\" data-id=\"" + json.id + "\" class=\"js_up_delete bnt-remove\"></button>");
-					$up_filedet.html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + json.mime + "\" href=\"download/?id=" + json.id + "&pr=v\" data-href=\"download/?pr=v&id=" + json.id + "\">" + json.name + "</a>");
+					up_filedet.html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + json.mime + "\" href=\"download/?id=" + json.id + "&pr=v\" data-href=\"download/?pr=v&id=" + json.id + "\">" + json.name + "</a>");
 					updateCount();
 				},
 				error: function (e, b, c) {
 					if (b == "timeout") {
-						$up_operation.html("<span style=\"color:#f04;\">Timeout, uploading failed</span>");
+						up_operation.html("<span style=\"color:#f04;\">Timeout, uploading failed</span>");
 					} else {
 						up_operation.html("<span style=\"color:#f04;\">" + c + "</span>");
 					}

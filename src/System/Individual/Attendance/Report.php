@@ -29,15 +29,15 @@ class Report
 	}
 	public function GetDateFrom($details)
 	{
-		if (isset($this->_dateFrom[(int)$details]))
-			return $this->_dateFrom[(int)$details];
+		if (isset($this->_dateFrom[(int) $details]))
+			return $this->_dateFrom[(int) $details];
 		else
 			return null;
 	}
 	public function GetDateTo($details)
 	{
-		if (isset($this->_dateTo[(int)$details]))
-			return $this->_dateTo[(int)$details];
+		if (isset($this->_dateTo[(int) $details]))
+			return $this->_dateTo[(int) $details];
 		else
 			return null;
 	}
@@ -53,8 +53,8 @@ class Report
 				foreach ($dayv as $k => $v) {
 					echo "\t\t$k\n";
 					echo "\t\t\tOpnID:\t" . $v[2] . "\t\t\tColser ID:\t" . $v[3] . ($v[9] != null ? "\t\t\t<b>Owner: </b>" . $v[9] : "") . "\n";
-					echo "\t\t\tStart:\t" . ((int)$v[0] != 0 ? date("Y-m-d H:i:s", $v[0]) : "-") . "\tEarly Start:\t" . ((int)$v[6] != 0 ? date("Y-m-d H:i:s", $v[6]) : "-") . "\n";
-					echo "\t\t\tClose:\t" . ((int)$v[1] != 0 ? date("Y-m-d H:i:s", $v[1]) : "-") . "\tLate Finish:\t" . ((int)$v[7] != 0 ? date("Y-m-d H:i:s", $v[7]) : "-") . "\n";
+					echo "\t\t\tStart:\t" . ((int) $v[0] != 0 ? date("Y-m-d H:i:s", $v[0]) : "-") . "\tEarly Start:\t" . ((int) $v[6] != 0 ? date("Y-m-d H:i:s", $v[6]) : "-") . "\n";
+					echo "\t\t\tClose:\t" . ((int) $v[1] != 0 ? date("Y-m-d H:i:s", $v[1]) : "-") . "\tLate Finish:\t" . ((int) $v[7] != 0 ? date("Y-m-d H:i:s", $v[7]) : "-") . "\n";
 					echo "\t\t\tStatu:\t" . $v[5] . "\t\t\t<span style=\"color:#f03;font-weight:bold\">" . (isset($v[8]) ? $v[8] : "") . "</span>\n";
 				}
 			}
@@ -68,7 +68,7 @@ class Report
 	 *
 	 *
 	 *
-	**/
+	 **/
 	private function FillGaps($from, $to, $prt, $ltrid, $latefinish, $earlystart, $closerid, $status, $maincheckinOwner, $CutDownStart = false)
 	{
 		$smonth = date("Y-m", $from);
@@ -86,11 +86,16 @@ class Report
 
 			$this->_arratt[$smonth][$sdate][$time] = array(
 				/*0:StartTime*/
-				$from,					/*1:FinishTime*/	0,
-				/*2:OpenRecordID*/	$ltrid,					/*3:CloseRecordID*/	$closerid,
-				/*4:Sector*/		$prt,					/*5:status*/		$status,
-				/*6:EarylStart*/	$earlystart,			/*7:LateFinish*/	$latefinish,
-				/*8:*/				"",						/*9:*/				$maincheckinOwner
+				$from,
+				/*1:FinishTime*/	0,
+				/*2:OpenRecordID*/	$ltrid,
+				/*3:CloseRecordID*/	$closerid,
+				/*4:Sector*/	$prt,
+				/*5:status*/	$status,
+				/*6:EarylStart*/	$earlystart,
+				/*7:LateFinish*/	$latefinish,
+				/*8:*/	"",
+				/*9:*/	$maincheckinOwner
 			);
 
 			if (isset($CutDownStart) && $CutDownStart != false) {
@@ -98,11 +103,11 @@ class Report
 			}
 
 			if ($sdate != $fdate) {
-				$this->_arratt[$smonth][$sdate][$time][1] = mktime(23, 59, 59, (int)date("m", $from), (int)date("d", $from), (int)date("Y", $from));
+				$this->_arratt[$smonth][$sdate][$time][1] = mktime(23, 59, 59, (int) date("m", $from), (int) date("d", $from), (int) date("Y", $from));
 			} else {
 				$this->_arratt[$smonth][$sdate][$time][1] = $to;
 			}
-			$from = mktime(0, 0, 0, (int)date("m", $from), (int)date("d", $from) + 1, (int)date("Y", $from));
+			$from = mktime(0, 0, 0, (int) date("m", $from), (int) date("d", $from) + 1, (int) date("Y", $from));
 			$smonth = date("Y-m", $from);
 			$sdate = date("Y-m-d", $from);
 			$cnt++;
@@ -114,8 +119,8 @@ class Report
 	{
 		$currentTime = $this->_dateFrom[2];
 		while ($currentTime <= $this->_dateTo[2]) {
-			$scurrent = mktime(0, 0, 0, (int)date("m", $currentTime), (int)date("d", $currentTime), (int)date("Y", $currentTime));
-			$fcurrent = mktime(23, 59, 59, (int)date("m", $currentTime), (int)date("d", $currentTime), (int)date("Y", $currentTime));
+			$scurrent = mktime(0, 0, 0, (int) date("m", $currentTime), (int) date("d", $currentTime), (int) date("Y", $currentTime));
+			$fcurrent = mktime(23, 59, 59, (int) date("m", $currentTime), (int) date("d", $currentTime), (int) date("Y", $currentTime));
 
 			if (!isset($this->_arratt[date("Y-m", $scurrent)][date("Y-m-d", $scurrent)])) {
 				$this->_arratt[date("Y-m", $scurrent)][date("Y-m-d", $scurrent)] = array();
@@ -128,7 +133,8 @@ class Report
 					0,
 					0,
 					0,
-					"Filled", null
+					"Filled",
+					null
 				);
 			}
 			$currentTime = strtotime(" +1 Day", $currentTime);
@@ -155,12 +161,17 @@ class Report
 					if ($temp == null && date("His", $v[0]) != "000000") {
 						$this->_arratt[$monthk][$datek]['000000'] = array(
 							/*0:StartTime*/
-							mktime(0, 0, 0, (int)date("m", $v[0]), (int)date("d", $v[0]), (int)date("Y", $v[0])),	/*1:FinishTime*/	$v[0],
-							/*2:OpenRecordID*/	0,			/*3:CloseRecordID*/	0,
-							/*4:Sector*/		0,			/*5:status*/		0,
-							/*6:EarylStart*/	0,			/*7:LateFinish*/	0,
+							mktime(0, 0, 0, (int) date("m", $v[0]), (int) date("d", $v[0]), (int) date("Y", $v[0])),
+							/*1:FinishTime*/	$v[0],
+							/*2:OpenRecordID*/	0,
+							/*3:CloseRecordID*/	0,
+							/*4:Sector*/	0,
+							/*5:status*/	0,
+							/*6:EarylStart*/	0,
+							/*7:LateFinish*/	0,
 							"Starter!",
-							/*8:Comments*/		null,		/*9:Owner*/		null
+							/*8:Comments*/	null,
+							/*9:Owner*/	null
 						);
 
 						$temp = array($v[0], $v[1]);
@@ -176,8 +187,16 @@ class Report
 				}
 				if (date("His", $temp[1]) != "235959") {
 					$this->_arratt[$monthk][$datek][date("His", $temp[1])] = array(
-						$temp[1], mktime(23, 59, 59, (int)date("m", $temp[1]), (int)date("d", $temp[1]), (int)date("Y", $temp[1])),
-						0, 0, 0, 0, 0, 0, null, null
+						$temp[1],
+						mktime(23, 59, 59, (int) date("m", $temp[1]), (int) date("d", $temp[1]), (int) date("Y", $temp[1])),
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						null,
+						null
 					);
 					$this->_arratt[$monthk][$datek][date("His", $temp[1])][8] = "Closer!";
 				}
@@ -322,16 +341,17 @@ class Report
 	 * desc: Prepare _arratt array
 	 * param: userid(int)= user id, date(str:yyyy-mm-dd)=report date range, filldays(bool)=fill empty days
 	 * returns: null
-	**/
+	 **/
 	public function getAttendaceList($userid, $dateFrom, $dateTo, $filldays = false, $consider_last_checking = false)
 	{
-		$currentTimeStamp = date("Y-m-d H:i:s", time());;
+		$currentTimeStamp = date("Y-m-d H:i:s", time());
+		;
 		$this->_arratt = array();
 		$this->_partitionlist = array(0 => array("NaN", "255,255,255", 0));
 		$this->_dateFrom = array(0 => null, 1 => null, 2 => null);
 		$this->_dateTo = array(0 => null, 1 => null, 2 => null);
 
-		$this->_user_id = (int)$userid;
+		$this->_user_id = (int) $userid;
 
 		$dateFrom = $dateFrom > 0 ? $dateFrom : time();
 		$this->_dateFrom[2] = $dateFrom;
@@ -345,8 +365,9 @@ class Report
 
 
 
-		if ($ra = $this->app->db->query(
-			"SELECT 
+		if (
+			$ra = $this->app->db->query(
+				"SELECT 
 				lbr_id, 
 				UNIX_TIMESTAMP(IF(ltr_ctime < '{$this->_dateFrom[1]} 00:00:00','{$this->_dateFrom[1]} 00:00:00',ltr_ctime)) AS _tstart,
 				UNIX_TIMESTAMP(IF(ltr_otime > '{$this->_dateTo[1]} 23:59:59','{$this->_dateTo[1]} 23:59:59',COALESCE(ltr_otime,'$currentTimeStamp'))) AS _tend,
@@ -375,10 +396,11 @@ class Report
 				AND lbr_id = {$this->_user_id}
 			
 			;"
-		)) {
+			)
+		) {
 			while ($rowa = $ra->fetch_assoc()) {
-				$rowa['_tend'] = (int)$rowa['_tend'];
-				$rowa['_tstart'] = (int)$rowa['_tstart'];
+				$rowa['_tend'] = (int) $rowa['_tend'];
+				$rowa['_tstart'] = (int) $rowa['_tstart'];
 
 				if ($rowa['_tend'] < $rowa['_tstart']) {
 					$rowa['_tend'] = $rowa['_tstart'];
@@ -390,7 +412,7 @@ class Report
 					$colorlist[0] = hexdec($rowa['prt_color'][0] . $rowa['prt_color'][1]);
 					$colorlist[1] = hexdec($rowa['prt_color'][2] . $rowa['prt_color'][4]);
 					$colorlist[2] = hexdec($rowa['prt_color'][4] . $rowa['prt_color'][5]);
-					$this->_partitionlist[$rowa['prt_id']] = array($rowa['comp_name'] . ": " . $rowa['ptp_name'] . ": " . $rowa['prt_name'], implode(",", $colorlist), (float)$rowa['prt_lbr_perc']);
+					$this->_partitionlist[$rowa['prt_id']] = array($rowa['comp_name'] . ": " . $rowa['ptp_name'] . ": " . $rowa['prt_name'], implode(",", $colorlist), (float) $rowa['prt_lbr_perc']);
 				}
 
 				$month = date("Y-m", $rowa['_tstart']);
@@ -409,11 +431,11 @@ class Report
 					/*1:FinishTime*/	$rowa['_tend'],
 					/*2:OpenRecordID*/	$rowa['ltr_id'],
 					/*3:CloseRecordID*/	$rowa['ltr_id'],
-					/*4:Sector*/		$rowa['prt_id'],
-					/*5:status*/		1,
+					/*4:Sector*/	$rowa['prt_id'],
+					/*5:status*/	1,
 					/*6:EarylStart*/	$rowa['_tstart'],
 					/*7:LateFinish*/	$rowa['_tend'],
-					/*8:Comments*/		"",
+					/*8:Comments*/	"",
 					/*9:Owner record*/	$rowa['ltr_id']
 				);
 
@@ -475,11 +497,11 @@ class Report
 	 * desc: Fomrated seconds HH:SS
 	 * param: time(int) time in seconds
 	 * returns: string
-	**/
+	 **/
 	public function formatTime(int|float $time)
 	{
-		return $this->app->formatTime((int)$time);
-		
+		return $this->app->formatTime((int) $time, false);
+
 	}
 
 	/*
@@ -487,21 +509,21 @@ class Report
 	 * desc: Print out attendance report for pre-analyzed list _arratt @ getAttendaceList
 	 * param: strict(bool) print out only provided month, rejecting any records from previous month
 	 * returns: null
-	**/
+	 **/
 	public function PrintTable()
 	{
 		foreach ($this->_arratt as $monthk => $monthv) {
 			$month_name = null;
 			if (preg_match("/^([0-9]{4})-([0-9]{2})$/i", $monthk, $matches)) {
-				if (checkdate((int)$matches[2], 1, (int)$matches[1])) {
-					$month_name = date("Y, F", mktime(0, 0, 0, (int)$matches[2], 1, (int)$matches[1]));
+				if (checkdate((int) $matches[2], 1, (int) $matches[1])) {
+					$month_name = date("Y, F", mktime(0, 0, 0, (int) $matches[2], 1, (int) $matches[1]));
 				}
 			}
 
 			$totalmonth = 0;
 			$totalactualmonth = 0;
 			$workingdate = false;
-			echo "<div class=\"btn-set\" style=\"position: sticky;top: 206px;padding-bottom: 10px;z-index: 19;background-color: #fff\"><span class=\"flex\">$month_name</span></div><div>";
+			echo "<div class=\"btn-set\" style=\"position: sticky;top: calc(162px - var(--gremium-header-toggle));padding-bottom: 10px;z-index: 2;background-color: #fff\"><span class=\"flex\">$month_name</span></div><div>";
 			echo "<table class=\"bom-table attendance\"><tbody>";
 
 			foreach ($monthv as $datek => $datev) {
@@ -509,8 +531,8 @@ class Report
 				$printdate = $datek;
 				$printday = $weekday = "";
 				if (preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/i", $datek, $matches)) {
-					if (checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1])) {
-						$workingdate = mktime(0, 0, 0, (int)$matches[2], (int)$matches[3], (int)$matches[1]);
+					if (checkdate((int) $matches[2], (int) $matches[3], (int) $matches[1])) {
+						$workingdate = mktime(0, 0, 0, (int) $matches[2], (int) $matches[3], (int) $matches[1]);
 						$printdate = date("d", $workingdate);
 						$printday = date("D", $workingdate);
 						$weekday = date("w", $workingdate);
@@ -584,7 +606,7 @@ class Report
 					}
 					$majortot = $this->formatTime($v[7] - (isset($v[10]) ? $v[10] : $v[6]));
 					$diff = $this->formatTime($diff);
-					$actual = $this->formatTime(($v[7] - (isset($v[10]) ? $v[10] : $v[6])) * $this->_partitionlist[$v[4]][2]); //xxxxxxxxxxxxxxx
+					$actual = $this->formatTime(($v[7] - (isset($v[10]) ? $v[10] : $v[6])) * $this->_partitionlist[$v[4]][2]);
 
 					echo "<div 
 							style=\"width:{$per}%;" . ($v[4] != 0 ? "background-color:rgba(" . $this->_partitionlist[$v[4]][1] . ",1);" : "") . "\"
@@ -606,7 +628,7 @@ class Report
 					$totalminutes = $this->formatTime($totalminutes);
 					$totalactualminutes = $this->formatTime($totalactualminutes);
 					$difference_between_actualtotal = $this->formatTime($difference_between_actualtotal);
-					$totalminutes = "$difference_between_actualtotal / $totalactualminutes | $totalminutes";
+					$totalminutes = $totalminutes; //"$difference_between_actualtotal / $totalactualminutes | $totalminutes";
 				}
 				echo "</td><th class=\"details\">$totalminutes</th></tr>";
 			}

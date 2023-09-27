@@ -1,9 +1,8 @@
 <?php
-include_once("admin/class/person.php");
 
 if (isset($_GET['id'])) {
-	if ($r = $app->db->query("
-		SELECT
+	if ($r = $app->db->query(
+		"SELECT
 			_up.usr_id,_up.usr_username,_up.usr_firstname,usr_birthdate,
 			_up.usr_lastname,_up.usr_phone_list,_up.per_title,
 			
@@ -34,7 +33,7 @@ if (isset($_GET['id'])) {
 				LEFT JOIN gender ON gnd_id=_up.usr_gender
 				LEFT JOIN labour_residentail ON ldn_id=lbr_residential
 		WHERE
-			lbr_id=" . ((int)$_GET['id']) . "" . ($app->user->info->id != 1 ? " AND usr_id!=1 " : "") . ";")) {
+			lbr_id=" . ((int)$_GET['id']) . "" . ($app->user->info->id != 1 ? " AND usr_id != 1 " : "") . ";")) {
 		if ($row = $r->fetch_assoc()) {
 			echo "<table class=\"bom-table hover\" id=\"rowtable\"><tbody>";
 
@@ -60,8 +59,7 @@ if (isset($_GET['id'])) {
 
 			echo "<tr><th>Job</th><td width=\"100%\">{$row['lsc_name']} - {$row['lty_name']}</td></tr>";
 			echo "<tr><th>Shift</th><td width=\"100%\">" . ($row['lsf_id'] == null ? "" : $row['lsf_name']) . "</td></tr>";
-			if (isset($_GET['ajax'])) {
-			}
+			
 			echo "<tr><th colspan=\"3\"><div class=\"btn-set\" style=\"justify-content:center\"><button id=\"jQclosePopup\" onclick=\"popup.hide();\" type=\"button\">&nbsp;&nbsp;Close&nbsp;&nbsp;</button></div></th></tr>";
 			echo "</tbody></table></form>";
 		} else {

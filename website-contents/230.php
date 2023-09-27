@@ -1,12 +1,12 @@
 <?php
 
-use \System\Finance\Invoice
-
-$material = new Materials();
+use \System\Finance\Invoice;
 use System\Template\Body;
 
+$material = new Materials();
+
 if ($h__requested_with_ajax && isset($_POST['posubmit'])) {
-	$invoice = new Invoice();
+	$invoice = new Invoice($app);
 
 
 	$output = array("inv" => array(), "msg" => array(), "result" => false);

@@ -142,10 +142,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	}
 
 	/*
-									  $balance=null;
-									  if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
-									  if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
-								  */
+											$balance=null;
+											if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
+											if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
+										*/
 
 	$result = true;
 	$app->db->autocommit(false);
@@ -255,7 +255,6 @@ if ($app->xhttp) {
 $SmartListObject = new SmartListObject($app);
 
 
-
 if (!$__workingaccount) {
 	echo "<div class=\"btn-set\"><button>{$app->user->account->name}</button><span>Is not a valid account</span></div>";
 } elseif ($__workingcurrency === false) {
@@ -272,7 +271,7 @@ if (!$__workingaccount) {
 			<li>Contact system adminstration for further assistance</li>
 			<li>Permission denied or not enough privileges to proceed with this document</li>
 		</ul>
-		<b>Actions</b>
+		<b>Related links:</b>
 		<ul>
 			<li>Goto <a href="{$fs(99)->dir}">Ledger report</a></li>
 			<li>Goto <a href="{$fs(91)->dir}">New Receipt</a></li>
@@ -287,16 +286,13 @@ if (!$__workingaccount) {
 	<?php
 
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1>");
-
-	$grem->menu()->open();
-
+	$grem->header()->prev($fs(179)->dir)->sticky(true)->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"clr-red\" id=\"jQsubmit\" tabindex=\"9\">Submit Payment</button></div>");
+	
 	if (sizeof($defines) > 0) {
-		echo "<span>Actions</span><input type=\"text\" id=\"js-defines\" data-slo=\":LIST\" data-list=\"defines\" /><span class=\"gap\"></span>";
+		$grem->menu()->sticky(false)->open();
+		echo "<input placeholder=\"Actions...\" type=\"text\" id=\"js-defines\" data-slo=\":LIST\" data-list=\"defines\" />";
+		$grem->getLast()->close();
 	}
-
-	echo "<button class=\"clr-green\" id=\"jQsubmit\" tabindex=\"9\">Submit Receipt</button>";
-	$grem->getLast()->close();
 
 	$grem->article()->open();
 	?>
@@ -307,7 +303,7 @@ if (!$__workingaccount) {
 				<td width="100%">
 					<?php
 					echo "<div class=\"btn-set\">
-							<button tabindex=\"-1\">{$__workingaccount['group']}: {$__workingaccount['name']}</button>
+							<span tabindex=\"-1\">{$__workingaccount['name']}</span>
 							<input type=\"text\" readonly=\"readonly\" class=\"flex\" style=\"text-align:right\" tabindex=\"-1\" id=\"jQbalanceTitle\" value=\"" . number_format($__workingaccount['balance'], 2, ".", ",") . "\" />
 							<span style=\"text-align:center\">{$__workingcurrency['shortname']}</span>
 						</div>";

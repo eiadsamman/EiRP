@@ -66,13 +66,12 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	header("VENDOR_FN_CURRENT: " . $controller->criteria->getCurrentPage());
 
 	echo "<table class=\"bom-table statment-view hover strip\">";
-	echo "<thead class=\"sticky\" style=\"top: calc(161px - var(--gremium-header-toggle)) ;\">";
+	echo "<thead class=\"table-head\" style=\"top: calc(161px - var(--gremium-header-toggle));background-color:#fff;z-index:1\">";
 	echo "<tr>";
 	echo "<td>Date</td>";
 	echo "<td>ID</td>";
 	echo "<td></td>";
 	echo "<td>Description</td>";
-
 	echo "<td class=\"blank\"></td>";
 	echo "<td class=\"value-number\">Debit</td>";
 	echo "<td class=\"value-number\">Credit</td>";
@@ -88,11 +87,10 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 				echo "<td>{$row['acm_ctime']}</td>"; //date("Y-m-d",$row['acm_ctime'])
 				echo "<td><a>{$row['acm_id']}</a></td>";
 				echo "<td>" . ($row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") . "{$row['acm_beneficial']}</td>";
-				echo "<td class=\"value-comment\"><div>" . (is_null($row['acm_comments']) ? "" : nl2br($row['acm_comments'])) . "</div></td>";
+				echo "<td class=\"value-comment\"><div><span>" . (str_repeat("<br/>", substr_count($row['acm_comments'] ?? "", "\n") + 1)) . "</span><div>" . (is_null($row['acm_comments']) ? "" : nl2br($row['acm_comments'])) . "</div></div></td>";
 				echo "<td class=\"blank\"></td>";
 				echo "<td class=\"value-number\">" . ($row['atm_value'] > 0 ? number_format($row['atm_value'], 2) : "-") . "</td>";
 				echo "<td class=\"value-number\">" . ($row['atm_value'] <= 0 ? number_format(abs($row['atm_value']), 2) : "-") . "</td>";
-
 				echo "<td class=\"value-number final " . ($row['cumulative_sum'] < 0 ? "negative" : "positive") . "\">" . number_format(abs($row['cumulative_sum']), 2) . "</td>";
 				echo "</tr>";
 			}
@@ -135,21 +133,20 @@ $SmartListObject = new SmartListObject($app);
 $grem = new Gremium\Gremium(false);
 
 $grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
-	"<ul><li>{$app->user->company->name}: {$app->user->account->name}</li></ul>" .
+	"<ul class=\"small-media-hide\"><li class=\"small-media-hide\">{$app->user->company->name}: {$app->user->account->name}</li></ul>" .
 	"<cite><span id=\"js-output-total\">0.00</span>{$app->user->account->currency->shortname}</cite>");
 
 $menu = $grem->menu()->sticky(false)->open();
 echo "<span class=\"menu-date_title\">Date</span>";
-echo "<input type=\"text\" id=\"js-input_date-start\" style=\"width:120px\" data-slo=\":DATE\" placeholder=\"From\" value=\"{$initial_values['from']}\" value=\"\"  />";
-echo "<input type=\"text\" id=\"js-input_date-end\" style=\"width:120px\" data-slo=\":DATE\" placeholder=\"To\" value=\"{$initial_values['to']}\" value=\"" . date("Y-m-d") . "\"  />";
+echo "<input type=\"text\" id=\"js-input_date-start\" style=\"width:110px\" data-slo=\":DATE\" placeholder=\"From\" value=\"{$initial_values['from']}\" value=\"\"  />";
+echo "<input type=\"text\" id=\"js-input_date-end\" style=\"width:110px\" data-slo=\":DATE\" placeholder=\"To\" value=\"{$initial_values['to']}\" value=\"" . date("Y-m-d") . "\"  />";
 echo "<button id=\"js-input_cmd-update\">Search</button>";
 echo "<button id=\"js-input_cmd-export\">Export</button>";
-echo "<span class=\"gap\"></span>";
 $menu->close();
 
 $legend = $grem->legend()->open();
-echo "<span id=\"js-output_stetements-count\">0</span>";
-echo "<span class=\"flex\">Statements</span>";
+echo "<span id=\"js-output_statements-count\">0</span>";
+echo "<span class=\"small-media-hide flex\">Statements</span>";
 echo "<button class=\"pagination prev\" id=\"js-input_page-prev\" disabled></button>";
 echo "<input type=\"text\" id=\"js-input_page-current\" data-slo=\":NUMBER\" style=\"width:80px;text-align:center\" data-rangestart=\"1\" value=\"0\" data-rangeend=\"100\" />";
 echo "<button class=\"pagination next\" id=\"js-input_page-next\" disabled></button>";
@@ -163,14 +160,33 @@ $article->close();
 unset($grem);
 ?>
 <style>
+	.table-head {
+		position: sticky;
+	}
+
 	td.value-comment {
 		width: 100%;
 	}
 
-
 	td.value-comment>div {
-		white-space: wrap;
+		position: relative;
 	}
+
+	td.value-comment>div>span {
+		display: block;
+		width: 0px;
+	}
+
+	td.value-comment>div>div {
+		position: absolute;
+		right: 0px;
+		left: 0px;
+		top: 0px;
+		padding-bottom: 10px;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
 
 	td.value-number {
 		text-align: right;
@@ -212,6 +228,13 @@ unset($grem);
 	.statment-view>td.blank {
 		display: none;
 	}
+	@media only screen and (max-width: 800px) {
+		.table-head {
+			position: relative;
+			top:0 !important
+		}
+
+	}
 
 	@media only screen and (max-width: 768px) {
 
@@ -234,11 +257,11 @@ unset($grem);
 			border-bottom: solid 1px var(--color-soft-gray);
 			display: flex;
 			flex-wrap: wrap;
+
 		}
 
 		table.bom-table.statment-view>tbody>tr>td {
 			border: none;
-
 		}
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(1) {
@@ -259,6 +282,7 @@ unset($grem);
 		table.bom-table.statment-view>tbody>tr>td:nth-child(4) {
 			flex-basis: 100%;
 		}
+
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(5) {
 			display: block;
@@ -283,7 +307,7 @@ unset($grem);
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(n+6) {
 			min-width: 80px;
-			width: 100px;
+			width: 90px;
 		}
 	}
 
@@ -296,8 +320,13 @@ unset($grem);
 	@media only screen and (max-width: 480px) {
 
 		.header-title,
+		.small-media-hide,
 		.menu-date_title {
 			display: none;
+		}
+
+		#js-output_statements-count {
+			flex: 1;
 		}
 	}
 </style>
@@ -337,7 +366,7 @@ unset($grem);
 		let js_input_cmd_prev = $("#js-input_page-prev");
 		let js_output_total = $("#js-output-total");
 		let js_output_page_total = $("#js-output_page-total");
-		let js_output_stetements_count = $("#js-output_stetements-count");
+		let js_output_statements_count = $("#js-output_statements-count");
 		let js_input_cmd_export = $("#js-input_cmd-export");
 		let js_form_export = $("#js-form_export");
 		let total_pages = 1;
@@ -371,7 +400,7 @@ unset($grem);
 				slo_page_current.set(fn_current, fn_current);
 
 				slo_page_current.input[0][0].dataset.rangeend = total_pages;
-				slo_page_current.reinit();
+				slo_page_current.handlersInit();
 
 				if (total_pages == 1) {
 					js_input_cmd_next.attr("disabled", true);
@@ -388,7 +417,7 @@ unset($grem);
 					}
 				}
 
-				js_output_stetements_count.html(fn_count);
+				js_output_statements_count.html(fn_count);
 				js_output_total.html(fn_sum);
 				js_output_page_total.html(total_pages);
 				js_container_output.html(output);
@@ -455,7 +484,7 @@ unset($grem);
 			js_input_cmd_prev.attr("disabled", true);
 			nav.pushState();
 			slo_page_current.input[0][0].dataset.rangeend = 1;
-			slo_page_current.reinit();
+			slo_page_current.handlersInit();
 
 			xhttp_request(nav, false);
 		});

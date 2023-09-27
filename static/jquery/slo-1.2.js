@@ -11,6 +11,7 @@ class SmartListObjectHandler {
 		this.range = { start: null, end: null };
 		this.items_limit = 5;
 	}
+	set() { }
 	clear() {
 		this.output = false;
 	}
@@ -38,8 +39,8 @@ class ListHandler extends SmartListObjectHandler {
 	constructor(initial = null, start = null, end = null) {
 		super(initial, start, end);
 		let buffer = [];
-		this.dropdown = false;
 		let selected_buffer = false;
+		this.dropdown = false;
 		initial.children('option').each(function () {
 			buffer.push({
 				id: this.dataset.id ?? "",
@@ -345,9 +346,19 @@ class DateHandler extends SmartListObjectHandler {
 	}
 }
 
+const state = { 'idle': 0, 'up': 1, 'busy': 2 };
+
+
+
+
+
+
+
 
 (function ($) {
 	$.fn.slo = function (options) {
+		const $jq = this;
+
 		const slosettings = jQuery.extend({
 			onselect: function () { },
 			onblur: function () { },
@@ -356,477 +367,460 @@ class DateHandler extends SmartListObjectHandler {
 			limit: 5,
 			dropdown: false
 		}, options);
-		const $jq = this;
+
 		let safeClearTrigger = false;
-		const state = { 'idle': 0, 'up': 1, 'busy': 2 }
 
-		const output = {
-			//#region - Controlers
-			'prop': function (property, value) {
-				$jq.each(function () {
-					this.object_htmlinput_id.prop(property, value);
-					this.object_htmlinput_text.prop(property, value);
-				});
-			},
-			'change': function (role) {
-				$jq.each(function () {
-					this.object_role = role;
-				});
-			},
-			'disable': function () {
-				$jq.each(function () {
-					this.disabled = true;
-					this.object_htmlinput_id.prop("disabled", true);
-					this.object_htmlinput_text.prop("disabled", true);
-					this.output_window.css({ "visibility": "hidden", "display": "none" });
-					this.object_htmlinput_text.removeClass("listvisible", "listvisibletop");
+		this.input = [];
+		this.hidden = [];
 
-				});
-			},
-			'enable': function () {
-				$jq.each(function () {
-					this.disabled = false;
-					this.object_htmlinput_id.prop("disabled", false);
-					this.object_htmlinput_text.prop("disabled", false);
+		const handlerInit = function (obj) {
+			/* Set handler */
+			if (obj.object_role == ":NUMBER") {
+				obj.handler = new NumberHandler(obj.object_htmlinput_text.val() ?? null, obj.object_htmlinput_text.attr("data-rangestart") ?? null, obj.object_htmlinput_text.attr("data-rangeend") ?? null);
+			} else if (obj.object_role == ":DATE") {
+				obj.handler = new DateHandler(obj.object_htmlinput_text.val() ?? null, obj.object_htmlinput_text.attr("data-rangestart") ?? null, obj.object_htmlinput_text.attr("data-rangeend") ?? null);
+			} else if (obj.object_role == ":LIST") {
+				obj.handler = new ListHandler($("#" + obj.object_htmlinput_text.attr("data-list")));
+			} else if (obj.object_role == ":SELECT") {
+				obj.object_htmlinput_text.parent().addClass("slo-select");
+				obj.object_htmlinput_text.prop("readonly", true);
+				obj.handler = new ListHandler($("#" + obj.object_htmlinput_text.attr("data-list")));
+				obj.treat_as_select = true;
+				obj.handler.dropdown = true;
+			}
 
-				});
-			},
-			'clear': function (deselectEvent = true) {
-				safeClearTrigger = true;
-				$jq.each(function () {
-					this.output_window.css("display", "none");
-					this._status = state.idle;
-					var pass = {
-						object: this.object_htmlinput_text,
-						value: this.object_htmlinput_text.val(),
-						hidden: this.object_htmlinput_id.val(),
-					};
-					this.object_htmlinput_id.val("");
-					this.object_htmlinput_text.val("");
-					this.object_htmlinput_text.parent().removeClass("valid", "unvalid");
-					if (typeof (slosettings.ondeselect) == "function" && deselectEvent) {
-						slosettings.ondeselect.call(this, pass);
+			/* Initilize handlers */
+			if (obj.handler !== false) {
+				obj.handler.setItemsLimit(obj.object_list_limit);
+				if (obj.handler.validate(obj.object_htmlinput_text.val(), true)) {
+					$jq.set(obj.handler.toString(true)[0], obj.handler.toString(true)[1]);
+					obj.stamped = true;
+				}
+			}
+		};
+
+
+
+		//#region - Controlers
+		this.self = function () {
+			const output = [];
+			$jq.each(function () {
+				output.push(this);
+			});
+			return output;
+		};
+
+		this.change = function (role) {
+			$jq.each(function () {
+				this.object_role = role;
+			});
+			return $jq;
+		};
+		this.disable = function () {
+			$jq.each(function () {
+				this.disabled = true;
+				this.object_htmlinput_id.prop("disabled", true);
+				this.object_htmlinput_text.prop("disabled", true);
+				this.output_window.css({ "visibility": "hidden", "display": "none" });
+				this.object_htmlinput_text.removeClass("listvisible", "listvisibletop");
+			});
+			return $jq;
+		};
+		this.enable = function () {
+			$jq.each(function () {
+				this.disabled = false;
+				this.object_htmlinput_id.prop("disabled", false);
+				this.object_htmlinput_text.prop("disabled", false);
+			});
+			return $jq;
+		};
+		this.clear = function (deselectEvent = true) {
+			safeClearTrigger = true;
+			$jq.each(function () {
+				this.output_window.css("display", "none");
+				this._status = state.idle;
+				var pass = {
+					object: this.object_htmlinput_text,
+					value: this.object_htmlinput_text.val(),
+					hidden: this.object_htmlinput_id.val(),
+				};
+				this.object_htmlinput_id.val("");
+				this.object_htmlinput_text.val("");
+				this.object_htmlinput_text.parent().removeClass("valid", "unvalid");
+				if (typeof (slosettings.ondeselect) == "function" && deselectEvent) {
+					slosettings.ondeselect.call(this, pass);
+				}
+			});
+			safeClearTrigger = false;
+			return $jq;
+		};
+		this.set = function (id, value = "") {
+			safeClearTrigger = true;
+			$jq.each(function () {
+				this.output_window.css("display", "none");
+				this._status = state.idle;
+
+				if (this.object_role == ":LIST" || this.object_role == ":SELECT") {
+
+					var result = this.handler.dataset.filter(option => {
+						return option.id == id;
+					});
+					if (result.length > 0) {
+						this.object_htmlinput_id.val(result[0].id);
+						this.object_htmlinput_text.val(result[0].value);
+						this.object_htmlinput_text.parent().removeClass("unvalid").addClass("valid");
+						this.stamped = true;
+					} else {
+						this.object_htmlinput_text.parent().removeClass("valid").addClass("unvalid");
 					}
-				});
-				safeClearTrigger = false;
-			},
-			'set': function (id, value) {
-				safeClearTrigger = true;
-				$jq.each(function () {
-					this.output_window.css("display", "none");
-					this._status = state.idle;
+				} else {
 					this.object_htmlinput_id.val(id);
 					this.object_htmlinput_text.val(value);
-					if (id == 0) {
+					if (id == false) {
 						this.object_htmlinput_text.parent().removeClass("unvalid", "valid");
 					} else {
+						this.stamped = true;
 						this.object_htmlinput_text.parent().removeClass("unvalid").addClass("valid");
 					}
+				}
+			});
+			safeClearTrigger = false;
+			return $jq;
+		};
+		this.setparam = function (param) {
+			$jq.each(function () {
+				this.object_parameters = param;
+			});
+			return $jq;
+		};
+		this.getparam = function () {
+			const output = []
+			$jq.each(function () {
+				output.push(this.object_parameters);
+			});
+			return output;
+		};
+		this.get = function () {
+			const output = []
+			$jq.each(function () {
+				output.push({
+					"id": this.object_htmlinput_id.val(),
+					"value": this.object_htmlinput_text.val()
+				})
+			});
+			return output;
+		};
+		this.handlersInit = function () {
+			const _parent = this;
+			$jq.each(function () {
+				handlerInit(this);
+			});
+			return $jq;
+		};
+
+		this.focus = function () {
+			$jq.each(function () {
+				this.focusfix = true;
+				this.object_htmlinput_text.focus()
+				if (!this.treat_as_select)
+					this.object_htmlinput_text.select();
+			});
+			return $jq;
+		};
+		//#endregion
+		this.init = function () {
+			const _parent = this;
+			$jq.each(function () {
+				//#region - Initialize
+				const me = this;
+				this.object_htmlinput_text = $(this);
+				this.object_role = this.object_htmlinput_text.attr('data-slo');
+				this.object_list_limit = parseInt(slosettings.limit);
+				this.object_default_id = this.object_htmlinput_text.attr('data-slodefaultid');
+				this.object_parameters = this.object_htmlinput_text.attr('data-sloparam');
+				this.object_htmlinput_id = $("<input type=\"hidden\" />");
+				this.object_container = $("<span />");
+				this.output_window = $("<div />");
+				this.http_request = $.ajax({ url: "slo" });
+				this.current_selectin = null;
+				this.state = state.idle;
+				this.stamped = this.focusfix = this.enter_key_event = this.disabled = this.datalist = false;
+				this.handler = false;
+
+				_parent.hidden.push(me.object_htmlinput_id);
+				_parent.input.push(me.object_htmlinput_text);
+				this.output_window.addClass("slo-container");
+				this.object_container.addClass("slo-wrap");
+				this.object_htmlinput_id.val(me.object_default_id);
+				this.object_htmlinput_text.attr("autocomplete", "off");
+				this.object_htmlinput_text.wrap(this.object_container);
+				this.object_htmlinput_text.parent().append(this.output_window);
+				this.object_htmlinput_text.parent().append(this.object_htmlinput_id);
+
+				this.state = state.idle;
+				if (isNaN(this.object_list_limit)) {
+					this.object_list_limit = 5;
+				}
+
+				if (this.object_htmlinput_text.attr("name") != undefined) {
+					this.object_htmlinput_id.attr("name", this.object_htmlinput_text.attr("name") + "[1]");
+					this.object_htmlinput_text.attr("name", this.object_htmlinput_text.attr("name") + "[0]");
+				}
+
+				if (this.object_htmlinput_text.attr("id") != undefined)
+					this.object_htmlinput_id.attr("id", this.object_htmlinput_text.attr("id") + "_1");
+				if (this.object_htmlinput_text.attr('class') != undefined)
+					$.each(this.object_htmlinput_text.attr('class').split(/\s+/), function (index, class_name) { me.object_htmlinput_text.parent().addClass(class_name); });
+				if (slosettings.align != undefined) {
+					this.output_window.css("left", "0px");
+					if (slosettings.align != "left")
+						this.output_window.css("right", "0px");
+				}
+				if (this.object_default_id != undefined && this.object_default_id != "") {
+					me.object_htmlinput_text.parent().removeClass("unvalid").addClass("valid");
+					me.stamped = true;
+				}
+				this.object_container.css({
+					'display': me.object_htmlinput_text.css('display'),
+					'width': me.object_htmlinput_text[0].style.width,
+					'max-width': me.object_htmlinput_text[0].style.maxWidth,
+					'min-width': me.object_htmlinput_text[0].style.minWidth,
+					'flex': me.object_htmlinput_text[0].style.flex,
+					'flex-grow': me.object_htmlinput_text[0].style.flexGrow,
 				});
-				safeClearTrigger = false;
-			},
-			'setparam': function (param) {
-				$jq.each(function () {
-					this.object_parameters = param;
-				});
-			},
-			'getparam': function () {
-				const output = []
-				$jq.each(function () {
-					output.push(this.object_parameters);
-				});
-				return output;
-			},
-			'get': function () {
-				const output = []
-				$jq.each(function () {
-					output.push({
-						"id": this.object_htmlinput_id.val(),
-						"value": this.object_htmlinput_text.val()
-					})
-				});
-				return output;
-			},
-			'reinit': function () {
-				const _parent = this;
-				$jq.each(function () {
-					if (this.object_role == ":NUMBER") {
-						this.handler = new NumberHandler(this.object_htmlinput_text.val() ?? null, this.object_htmlinput_text.attr("data-rangestart") ?? null, this.object_htmlinput_text.attr("data-rangeend") ?? null);
-					} else if (this.object_role == ":DATE") {
-						this.handler = new DateHandler(this.object_htmlinput_text.val() ?? null, this.object_htmlinput_text.attr("data-rangestart") ?? null, this.object_htmlinput_text.attr("data-rangeend") ?? null);
-					} else if (this.object_role == ":LIST") {
-						this.handler = new ListHandler($("#" + me.object_htmlinput_text.attr("data-list")));
-					} else if (this.object_role == ":SELECT") {
-						this.object_htmlinput_text.parent().addClass("slo-select");
-						this.object_htmlinput_text.prop("readonly", true);
-						this.handler = new ListHandler($("#" + me.object_htmlinput_text.attr("data-list")));
-						slosettings.treat_as_select = true;
-						this.handler.dropdown = true;
-					}
-					if (this.handler !== false) {
-						this.handler.setItemsLimit(this.object_list_limit);
-						if (this.handler.validate(this.object_htmlinput_text.val(), true)) {
-							_parent.set(this.handler.toString(true)[0], this.handler.toString(true)[1]);
-							this.stamped = true;
-						} else
-							_parent.clear();
-					}
-				});
-			},
-			'input': [],
-			'hidden': [],
-			'xxx': function () {
-				alert("ASF")
-				$jq.each(function () {
-					console.log(this);
-					this.slohide();
-				});
-			},
-			'focus': function () {
-				$jq.each(function () {
-					this.focusfix = true;
-					this.object_htmlinput_text.focus()
-					if (!slosettings.treat_as_select)
-						this.object_htmlinput_text.select();
-				});
-			},
-			//#endregion
-			'init': function () {
-				const _parent = this;
-				$jq.each(function () {
-					//#region - Initialize
-					const me = this;
-					this.object_htmlinput_text = $(this);
-					this.object_role = this.object_htmlinput_text.attr('data-slo');
-					this.object_list_limit = parseInt(slosettings.limit);
-					this.object_default_id = this.object_htmlinput_text.attr('data-slodefaultid');
-					this.object_parameters = this.object_htmlinput_text.attr('data-sloparam');
-					this.object_htmlinput_id = $("<input type=\"hidden\" />");
-					this.object_container = $("<span />");
-					this.output_window = $("<div />");
-					this.http_request = $.ajax({ url: "slo" });
-					this.current_selectin = null;
-					this.state = state.idle;
-					this.stamped = this.focusfix = this.enter_key_event = this.disabled = this.datalist = false;
-					this.handler = false;
+				//#endregion
 
-					_parent.hidden.push(me.object_htmlinput_id);
-					_parent.input.push(me.object_htmlinput_text);
-					this.output_window.addClass("slo-container");
-					this.object_container.addClass("cssSLO_wrap");
-					this.object_htmlinput_id.val(me.object_default_id);
-					this.object_htmlinput_text.attr("autocomplete", "off");
-					this.object_htmlinput_text.wrap(this.object_container);
-					this.object_htmlinput_text.parent().append(this.output_window);
-					this.object_htmlinput_text.parent().append(this.object_htmlinput_id);
-
-					this.state = state.idle;
-
-					if (isNaN(this.object_list_limit)) {
-						this.object_list_limit = 5;
-					}
-
-					if (me.object_htmlinput_text.attr("name") != undefined) {
-						this.object_htmlinput_id.attr("name", me.object_htmlinput_text.attr("name") + "[1]");
-						this.object_htmlinput_text.attr("name", me.object_htmlinput_text.attr("name") + "[0]");
-					}
-
-					if (me.object_htmlinput_text.attr("id") != undefined)
-						this.object_htmlinput_id.attr("id", me.object_htmlinput_text.attr("id") + "_1");
-					if (this.object_htmlinput_text.attr('class') != undefined)
-						$.each(this.object_htmlinput_text.attr('class').split(/\s+/), function (index, class_name) { me.object_htmlinput_text.parent().addClass(class_name); });
-					if (slosettings.align != undefined) {
-						this.output_window.css("left", "0px");
-						if (slosettings.align != "left")
-							this.output_window.css("right", "0px");
-					}
-					if (this.object_default_id != undefined && this.object_default_id != "") {
-						me.object_htmlinput_text.parent().removeClass("unvalid").addClass("valid");
-						me.stamped = true;
-					}
-					this.object_container.css({
-						'display': me.object_htmlinput_text.css('display'),
-						'width': me.object_htmlinput_text[0].style.width,
-						'max-width': me.object_htmlinput_text[0].style.maxWidth,
-						'min-width': me.object_htmlinput_text[0].style.minWidth,
-						'flex': me.object_htmlinput_text[0].style.flex,
-						'flex-grow': me.object_htmlinput_text[0].style.flexGrow,
-					});
-					//#endregion
+				handlerInit(this);
 
 
-					/* Set handler */
-					if (this.object_role == ":NUMBER") {
-
-						this.handler = new NumberHandler(this.object_htmlinput_text.val() ?? null, this.object_htmlinput_text.attr("data-rangestart") ?? null, this.object_htmlinput_text.attr("data-rangeend") ?? null);
-					} else if (this.object_role == ":DATE") {
-						this.handler = new DateHandler(this.object_htmlinput_text.val() ?? null, this.object_htmlinput_text.attr("data-rangestart") ?? null, this.object_htmlinput_text.attr("data-rangeend") ?? null);
-					} else if (this.object_role == ":LIST") {
-						this.handler = new ListHandler($("#" + me.object_htmlinput_text.attr("data-list")));
-					} else if (this.object_role == ":SELECT") {
-						this.object_htmlinput_text.parent().addClass("slo-select");
-						this.object_htmlinput_text.prop("readonly", true);
-						this.handler = new ListHandler($("#" + me.object_htmlinput_text.attr("data-list")));
-						slosettings.treat_as_select = true;
-						this.handler.dropdown = true;
-					}
-
-
-					/* Initilize handlers */
-					if (this.handler !== false) {
-						this.handler.setItemsLimit(me.object_list_limit);
-						if (this.handler.validate(this.object_htmlinput_text.val(), true)) {
-							_parent.set(this.handler.toString(true)[0], this.handler.toString(true)[1]);
-							this.stamped = true;
-						} else
-							_parent.clear();
-					}
-
-					const listpopulate = function () {
-						const query = me.object_htmlinput_text.val();
-						if (me.handler !== false) {
-							let validate = me.handler.validate(query);
-							if (validate) {
-								me.state = state.up;
-								me.output_window.html(me.handler.generate());
-								me.output_window.find(">div:first-child").addClass("active");
-								sloshow();
-							} else {
-								slohide();
-							}
-							return;
-						}
-
-						me.http_request.abort();
-						me.http_request = $.ajax({
-							type: 'POST',
-							url: 'slo',
-							data: slomerge({ 'role': me.object_role, 'query': query, 'limit': me.object_list_limit }, me.object_parameters)
-						}).done(function (data) {
-							if (data != "") {
-								me.state = state.up;
-								me.output_window.css({ "visibility": "hidden", "display": "block", "position": "fixed" });
-								me.output_window.html(data);
-								me.output_window.find(">div:first-child").addClass("active");
-								sloshow();
-							} else {
-								me.state = state.idle;
-								slohide();
-							}
-						}).fail(function (a, b, c) {
-							me.state = state.idle;
-						});
-					}
-					const slohide = function () {
-						me.output_window.css({ "visibility": "hidden", "display": "none" });
-						me.object_htmlinput_text.removeClass("listvisible", "listvisibletop");
-						if (me.datetemplate) {
-							me.datetemplate.clear();
-						}
-						me.http_request.abort();
-					}
-					const sloshow = function () {
-						if (me.disabled) {
-							return;
-						}
-						var _dh = $(document).height();
-						me.output_window.css({ "visibility": "hidden", "display": "block", "position": "fixed" });
-						if (_dh < me.output_window.height() + me.object_htmlinput_text.offset().top + me.object_htmlinput_text.height()) {
-							me.object_htmlinput_text.removeClass("listvisible").addClass("listvisibletop");
-							me.output_window.css({
-								'bottom': '100%',
-								'top': 'auto',
-							});
+				const listpopulate = function () {
+					const query = me.object_htmlinput_text.val();
+					if (me.handler !== false) {
+						let validate = me.handler.validate(query);
+						if (validate) {
+							me.state = state.up;
+							me.output_window.html(me.handler.generate());
+							me.output_window.find(">div:first-child").addClass("active");
+							sloshow();
 						} else {
-							me.object_htmlinput_text.removeClass("listvisibletop").addClass("listvisible");
-							me.output_window.css({
-								'top': '100%',
-								'bottom': 'auto',
-							});
+							slohide();
 						}
-						me.output_window.css({ "visibility": "visible", "position": "absolute" });
-					}
-					const slofocus = function (displaylist) {
-						if ((displaylist != undefined && displaylist != true) || me.disabled) {
-							return false;
-						}
-						listpopulate();
-					}
-					const execut = function (obj) {
-						if (me.disabled) { return }
-						if (me.current_selectin == obj.val()) {
-							me.state = state.idle;
-							return;
-						} else {
-							if (me.stamped == true) {
-								me.state = state.idle;
-								me.object_htmlinput_id.val("");
-								me.object_htmlinput_text.parent().removeClass("valid").addClass("unvalid");
-								if (typeof (slosettings.ondeselect) == "function") {
-									slosettings.ondeselect.call(me, {
-										object: me.object_htmlinput_text,
-										value: me.object_htmlinput_text.val(),
-										hidden: me.object_htmlinput_id.val(),
-									});
-								}
-							}
-							me.stamped = false;
-						}
-						listpopulate();
-					}
-
-					this.object_htmlinput_text.on('input propertychange paste contextmenu drop', function (e) {
-						if (!safeClearTrigger)
-							execut($(this));
-					}).on('focus', function (e) {
-						if (me.focusfix == true) { me.focusfix = false; return false; }
-						//self.object_htmlinput_text[0].scrollIntoView();
-						/* const y = self.object_htmlinput_text[0].getBoundingClientRect().top + window.scrollY;
-						window.scroll({
-							top: y-180,
-							behavior: 'smooth'
-						  }); */
-						slofocus();
 						return;
-					}).on('keydown', function (e) {
-						var keycode = (e.keyCode ? e.keyCode : e.which);
-						if (keycode == 27) {
-							if (me.object_htmlinput_text.val() == "") {
-								slohide();
-								return;
-							}
-							var pass = {
-								object: me.object_htmlinput_text,
-								value: me.object_htmlinput_text.val(),
-								hidden: me.object_htmlinput_id.val(),
-							};
-							if (me.datetemplate) {
-								me.datetemplate.clear();
-							}
-							me.object_htmlinput_id.val("");
-							me.object_htmlinput_text.val("");
-							me.stamped = false;
-							me.object_htmlinput_text.parent().removeClass("valid").addClass("unvalid");
-							if (typeof (slosettings.ondeselect) == "function") {
-								slosettings.ondeselect.call(me, pass);
-							}
-							execut($(this));
-							return;
-						}
-						if (keycode == 27 || keycode == 9) {
+					}
+
+					me.http_request.abort();
+					me.http_request = $.ajax({
+						type: 'POST',
+						url: 'slo',
+						data: slomerge({ 'role': me.object_role, 'query': query, 'limit': me.object_list_limit }, me.object_parameters)
+					}).done(function (data) {
+						if (data != "") {
+							me.state = state.up;
+							me.output_window.css({ "visibility": "hidden", "display": "block", "position": "fixed" });
+							me.output_window.html(data);
+							me.output_window.find(">div:first-child").addClass("active");
+							sloshow();
+						} else {
 							me.state = state.idle;
 							slohide();
-							return;
 						}
-						if (keycode == 27) {
-							e.preventDefault();
-							return false;
-						}
-						if (keycode == 13 && me.state == state.up) {
-							e.preventDefault();
-							var $current = me.output_window.find(">div.active");
-							me.enter_key_event = true;
-							$current.trigger("click");
-							me.focusfix = false;
-							if (!slosettings.treat_as_select)
-								me.object_htmlinput_text.select();
-							return false;
-						}
-						if (keycode == 40 && me.state == state.up) {
-							e.preventDefault();
-							var $current = me.output_window.find(">div.active");
-							if ($current.next().length > 0) {
-								$current.next().addClass("active");
-								$current.removeClass("active");
-							} else {
+					}).fail(function (a, b, c) {
+						me.state = state.idle;
+					});
+				}
+				const slohide = function () {
+					me.output_window.css({ "visibility": "hidden", "display": "none" });
+					me.object_htmlinput_text.removeClass("listvisible", "listvisibletop");
+					if (me.datetemplate) {
+						me.datetemplate.clear();
+					}
+					me.http_request.abort();
+				}
 
-							}
-
-							return false;
-						} else if (keycode == 40 && me.state == state.idle) {
-							me.object_htmlinput_text.trigger("click");
-						}
-						if (keycode == 38 && me.state == state.up) {
-							e.preventDefault();
-							var $current = me.output_window.find(">div.active");
-							if ($current.prev().length > 0) {
-								$current.prev().addClass("active");
-								$current.removeClass("active");
-							} else {
-
-							}
-							return false;
-						} else if (keycode == 38 && me.state == state.idle) {
-							me.object_htmlinput_text.trigger("click");
-						}
-					}).on('click', function (e) {
-						if ($(this).is(":focus")) {
-							me.focusfix == true;
-							slofocus(true);
-						} else {
-							return false;
-						}
-					}).on('keyup', function (e) {
-						var keycode = (e.keyCode ? e.keyCode : e.which);
-						if (keycode == 13 && me.enter_key_event) {
-							var $clicked = me.output_window.find(">div.active");
-							if (typeof (slosettings.onselect) == "function") {
-
-								var pass = {
-									this: _parent,
+				const sloshow = function () {
+					if (me.disabled) {
+						return;
+					}
+					var _dh = $(document).height();
+					me.output_window.css({ "visibility": "hidden", "display": "block", "position": "fixed" });
+					if (_dh < me.output_window.height() + me.object_htmlinput_text.offset().top + me.object_htmlinput_text.height()) {
+						me.object_htmlinput_text.removeClass("listvisible").addClass("listvisibletop");
+						me.output_window.css({
+							'bottom': '100%',
+							'top': 'auto',
+						});
+					} else {
+						me.object_htmlinput_text.removeClass("listvisibletop").addClass("listvisible");
+						me.output_window.css({
+							'top': '100%',
+							'bottom': 'auto',
+						});
+					}
+					me.output_window.css({ "visibility": "visible", "position": "absolute" });
+				}
+				const slofocus = function (displaylist) {
+					if ((displaylist != undefined && displaylist != true) || me.disabled) {
+						return false;
+					}
+					listpopulate();
+				}
+				const execut = function (obj) {
+					if (me.disabled) { return }
+					if (me.current_selectin == obj.val()) {
+						me.state = state.idle;
+						return;
+					} else {
+						if (me.stamped == true) {
+							me.state = state.idle;
+							me.object_htmlinput_id.val("");
+							me.object_htmlinput_text.parent().removeClass("valid").addClass("unvalid");
+							if (typeof (slosettings.ondeselect) == "function") {
+								slosettings.ondeselect.call(me, {
 									object: me.object_htmlinput_text,
 									value: me.object_htmlinput_text.val(),
 									hidden: me.object_htmlinput_id.val(),
-									text: $clicked.find("span").html(),
-								};
-								slosettings.onselect.call(me, pass);
+								});
 							}
-
-							me.enter_key_event = false;
 						}
-					}).on('blur', function (e) {
-						/*Wont work because setting focus on list objects will make the input loose its focus*/
-					});
+						me.stamped = false;
+					}
+					listpopulate();
+				}
 
-					this.output_window.on('click', " > div", function () {
-						var $clicked = $(this);
-						me.object_htmlinput_text.parent().addClass("valid").removeClass("unvalid");
-						me.object_htmlinput_text.val($clicked.find("p").html());
-						me.object_htmlinput_id.val($clicked.attr("data-return_id"));
-						me.current_selectin = me.object_htmlinput_text.val();
+				this.object_htmlinput_text.on('input propertychange paste contextmenu drop', function (e) {
+					if (!safeClearTrigger)
+						execut($(this));
+				}).on('focus', function (e) {
+					if (me.focusfix == true) { me.focusfix = false; return false; }
+					slofocus();
+					return;
+				}).on('keydown', function (e) {
+
+					if (e.code === "Escape") {
+						e.preventDefault();
+						if (me.object_htmlinput_text.val() == "") {
+							slohide();
+							return;
+						}
+						var pass = {
+							object: me.object_htmlinput_text,
+							value: me.object_htmlinput_text.val(),
+							hidden: me.object_htmlinput_id.val(),
+						};
+						if (me.datetemplate) {
+							me.datetemplate.clear();
+						}
+						me.object_htmlinput_id.val("");
+						me.object_htmlinput_text.val("");
+						me.stamped = false;
+						me.object_htmlinput_text.parent().removeClass("valid").addClass("unvalid");
+						if (typeof (slosettings.ondeselect) == "function") {
+							slosettings.ondeselect.call(me, pass);
+						}
+						execut($(this));
+						return;
+					}
+					if (e.code === "Tab") {
 						me.state = state.idle;
-						me.stamped = true;
-
-
 						slohide();
-						me.focusfix = true;
-						slofocus(false);
-						if (!slosettings.treat_as_select)
+						return;
+					}
+
+					if (e.code === "Enter" && me.state === state.up) {
+						e.preventDefault();
+						var $current = me.output_window.find(">div.active");
+						me.enter_key_event = true;
+						$current.trigger("click");
+						me.focusfix = false;
+						if (!me.treat_as_select)
 							me.object_htmlinput_text.select();
-						if (me.enter_key_event) { return; }
+						return false;
+					}
+
+
+					if (e.code === "ArrowDown" || e.code === "ArrowUp") {
+						if (me.state == state.up) {
+							e.preventDefault();
+							var $current = me.output_window.find(">div.active");
+							if (e.code === "ArrowDown" && $current.next().length > 0) {
+								$current.next().addClass("active");
+								$current.removeClass("active");
+							} else if (e.code === "ArrowUp" && $current.prev().length > 0) {
+								$current.prev().addClass("active");
+								$current.removeClass("active");
+							}
+							return false;
+						} else {
+							me.focusfix == true;
+							slofocus(true);
+						}
+					}
+
+
+				}).on('click', function (e) {
+					if ($(this).is(":focus")) {
+						me.focusfix == true;
+						slofocus(true);
+					} else {
+						return false;
+					}
+				}).on('keyup', function (e) {
+					if (e.code === "Enter" && me.enter_key_event) {
+						var $clicked = me.output_window.find(">div.active");
+						me.stamped = true;
 						if (typeof (slosettings.onselect) == "function") {
-
-
-							slosettings.onselect.call(me, {
+							var pass = {
 								this: _parent,
 								object: me.object_htmlinput_text,
 								value: me.object_htmlinput_text.val(),
 								hidden: me.object_htmlinput_id.val(),
-								text: $clicked.find("span").html()
-							});
+								text: $clicked.find("span").html(),
+							};
+							slosettings.onselect.call(me, pass);
 						}
-					});
-					$(document).mousedown(function (e) {
-						var container = me.object_htmlinput_text.parent();
-						if (!container.is(e.target) && container.has(e.target).length === 0) {
-							slohide();
-						}
-					});
+						me.enter_key_event = false;
+					}
+				}).on('blur', function (e) {
+					/*Wont work because setting focus on list objects will make the input loose its focus*/
 				});
-			}
-		}
-		output.init();
-		return output;
+
+				this.output_window.on('click', " > div", function () {
+					var $clicked = $(this);
+					me.object_htmlinput_text.parent().addClass("valid").removeClass("unvalid");
+					me.object_htmlinput_text.val($clicked.find("p").html());
+					me.object_htmlinput_id.val($clicked.attr("data-return_id"));
+					me.current_selectin = me.object_htmlinput_text.val();
+					me.state = state.idle;
+					me.stamped = true;
+
+
+					slohide();
+					me.focusfix = true;
+					slofocus(false);
+					me.object_htmlinput_text.focus();
+					if (!me.treat_as_select)
+						me.object_htmlinput_text.select();
+					if (me.enter_key_event) { return; }
+					if (typeof (slosettings.onselect) == "function") {
+						slosettings.onselect.call(me, {
+							this: _parent,
+							object: me.object_htmlinput_text,
+							value: me.object_htmlinput_text.val(),
+							hidden: me.object_htmlinput_id.val(),
+							text: $clicked.find("span").html()
+						});
+					}
+				});
+				$(document).mousedown(function (e) {
+					var container = me.object_htmlinput_text.parent();
+					if (!container.is(e.target) && container.has(e.target).length === 0) {
+						slohide();
+					}
+				});
+			});
+		};
+		this.init();
+		return $jq;
 	};
 
 })(jQuery);

@@ -139,7 +139,7 @@ class SmartListObject
 	 *
 	 * @return string HTML string `<option />` tags based on `System\SmartListObject\template` function
 	 */
-	public function systemIndividual(int $company_filter = null): string
+	public function systemIndividual(int $company_filter = null, mixed $select = null): string
 	{
 		$output = "";
 		try {
@@ -157,7 +157,13 @@ class SmartListObject
 				)
 			) {
 				while ($row = $r->fetch_assoc()) {
-					$output .= $this->template($row['usr_id'], $row['usr_firstname'] . (!is_null($row['usr_lastname']) ? " " . $row['usr_lastname'] : ""));
+					$output .= $this->template(
+						$row['usr_id'],
+						$row['usr_firstname'] . (!is_null($row['usr_lastname']) ? " " . $row['usr_lastname'] : ""),
+						null,
+						((int) $select == $row['usr_id']) ? true : false
+
+					);
 				}
 			}
 		} catch (\mysqli_sql_exception $e) {
@@ -211,6 +217,6 @@ class SmartListObject
 	}
 
 
-	
+
 
 }

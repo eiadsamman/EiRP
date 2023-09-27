@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 error_reporting(E_ALL);
@@ -12,6 +11,9 @@ spl_autoload_register(function ($class) {
 		include_once($class);
 	}
 });
+
+
+
 
 use System\App;
 

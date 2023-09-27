@@ -271,7 +271,6 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 	exit;
 }
 
-include_once("admin/class/SmartListObject.php");
 $SmartListObject = new SmartListObject($app);
 ?>
 <input type="hidden" id="jQtransactionID" value="<?php echo $arr_transaction['acm_id']; ?>" />

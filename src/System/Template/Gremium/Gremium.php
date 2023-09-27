@@ -266,11 +266,12 @@ class Gremium
 	 * @param bool $limit_width
 	 * @param mixed $legends_stackable
 	 */
-	public function __construct(bool $limit_width = true, ?bool $legends_stackable = true)
+	public function __construct(bool $limit_width = true, ?bool $legends_stackable = true, ?bool $omit_html = false, ?string $html_id = null)
 	{
 		$this->legends_stackable = $legends_stackable;
 		$this->stack = array();
-		echo "<div class=\"gremium " . ($limit_width ? "limit-width" : "") . "\">\n\n\n\n";
+		if (!$omit_html)
+			echo "<div " . (!is_null($html_id) ? " id=\"$html_id\" " : "") . " class=\"gremium " . ($limit_width ? "limit-width" : "") . "\">\n\n\n\n";
 	}
 
 	/**

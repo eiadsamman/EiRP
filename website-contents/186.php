@@ -139,6 +139,11 @@ if (isset($_POST, $_POST['upload_file']) && $_POST['upload_file'] == "true" && !
 						}
 					}
 				} catch (Exception $e) {
+					$app->db->rollback();
+					$outjson = array(
+						"result" => 0,
+						"msg" => "Image resizing failed",
+					);
 				}
 			} else {
 				$app->db->rollback();
