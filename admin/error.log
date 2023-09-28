@@ -1,18 +1,2 @@
-[2023-09-23 18:49:42 (EET)] Warning: Undefined array key "salary_basic" in C:\xampp\htdocs\eiad\website-contents\user.editor.php on line 320
-[2023-09-23 21:44:57 (EET)] Warning: Undefined array key "salary_basic" in C:\xampp\htdocs\eiad\website-contents\user.editor.php on line 325
-[2023-09-23 21:56:01 (EET)] Warning: Undefined array key "salary_basic" in C:\xampp\htdocs\eiad\website-contents\user.editor.php on line 325
-[2023-09-24 15:37:08 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 22
-[2023-09-24 15:37:08 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 23
-[2023-09-24 15:37:08 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 24
-[2023-09-24 15:37:08 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 25
-[2023-09-24 15:37:08 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 26
-[2023-09-24 15:37:08 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 27
-[2023-09-24 15:37:17 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 22
-[2023-09-24 15:37:17 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 23
-[2023-09-24 15:37:17 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 24
-[2023-09-24 15:37:17 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 25
-[2023-09-24 15:37:17 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 26
-[2023-09-24 15:37:17 (EET)] Warning: Undefined array key "FILE_SYSTEM_ROOT" in C:\xampp\htdocs\eiad\src\System\IO\AttachLib.php on line 27
-[2023-09-25 01:45:18 (EET)] Warning: include_once(C:\xampp\htdocs\eiad\website-contents/242.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\eiad\p.php on line 143
-[2023-09-25 01:45:18 (EET)] Warning: include_once(): Failed opening 'C:\xampp\htdocs\eiad\website-contents/242.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\eiad\p.php on line 143
-[2023-09-27 14:36:23 (EET)] Warning: Undefined variable $gre in C:\xampp\htdocs\eiad\website-contents\109.php on line 103
+[2023-09-28 01:00:02 (CEST)] Notice: date_default_timezone_set(): Timezone ID 'Asia/Syria' is invalid in C:\xampp\htdocs\eiad\src\System\App.php on line 157
+[2023-09-28 01:00:05 (CEST)] Notice: date_default_timezone_set(): Timezone ID 'Asia/Syria' is invalid in C:\xampp\htdocs\eiad\src\System\App.php on line 157

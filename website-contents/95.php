@@ -76,7 +76,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		}
 	}
 	if (trim($benificial) == "") {
-		_JSON_output(false, "Benificial name is required", "jQbeneficial");
+		_JSON_output(false, "Benificiary name is required", "jQbeneficial");
 	}
 	if ((float) $value <= 0) {
 		_JSON_output(false, "Enter a valid float value", "jQvalue");
@@ -100,7 +100,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		}
 	}
 	if ($date == null) {
-		_JSON_output(false, "Select the statement date", "jQdate");
+		_JSON_output(false, "Invalid transaction date", "jQdate");
 	}
 
 	$month = false;
@@ -142,10 +142,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	}
 
 	/*
-											$balance=null;
-											if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
-											if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
-										*/
+	  $balance=null;
+	  if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
+	  if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
+	  */
 
 	$result = true;
 	$app->db->autocommit(false);
@@ -287,7 +287,7 @@ if (!$__workingaccount) {
 
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->prev($fs(179)->dir)->sticky(true)->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"clr-red\" id=\"jQsubmit\" tabindex=\"9\">Submit Payment</button></div>");
-	
+
 	if (sizeof($defines) > 0) {
 		$grem->menu()->sticky(false)->open();
 		echo "<input placeholder=\"Actions...\" type=\"text\" id=\"js-defines\" data-slo=\":LIST\" data-list=\"defines\" />";
@@ -464,6 +464,9 @@ if (!$__workingaccount) {
 
 			const $jQcreditor = $("#jQcreditor").slo({
 				'limit': 10,
+				onselect: function (e) {
+					console.log(e)
+				}
 			}),
 				$jQcurrency = $("#jQcurrenyident").slo(),
 				$jQbeneficial = $("#jQbeneficial").slo({
@@ -475,7 +478,7 @@ if (!$__workingaccount) {
 				$jQreference = $("#jQreference").slo(),
 				$jQemployee = $("#jQemployee").slo({
 					'onselect': function (data) {
-						$jQbeneficial.set(data.hidden, data.value);
+						$jQbeneficial.set(data.value, data.value);
 						$("#jQbeneficial").prop("readonly", true).prop("disabled", true);
 					},
 					'ondeselect': function () {

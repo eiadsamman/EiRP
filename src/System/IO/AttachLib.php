@@ -19,12 +19,12 @@ class AttachLib
 		if ($r) {
 			$dr = true;
 			try {
-				if (file_exists($_SERVER['FILE_SYSTEM_ROOT'] . "uploads/" . $up_id))
-					$dr &= @unlink($_SERVER['FILE_SYSTEM_ROOT'] . "uploads/" . $up_id);
-				if (file_exists($_SERVER['FILE_SYSTEM_ROOT'] . "uploads/" . $up_id . "_v"))
-					$dr &= @unlink($_SERVER['FILE_SYSTEM_ROOT'] . "uploads/" . $up_id . "_v");
-				if (file_exists($_SERVER['FILE_SYSTEM_ROOT'] . "uploads/" . $up_id . "_t"))
-					$dr &= @unlink($_SERVER['FILE_SYSTEM_ROOT'] . "uploads/" . $up_id . "_t");
+				if (file_exists($app->root . "uploads/" . $up_id))
+					$dr &= @unlink($app->root . "uploads/" . $up_id);
+				if (file_exists($app->root . "uploads/" . $up_id . "_v"))
+					$dr &= @unlink($app->root . "uploads/" . $up_id . "_v");
+				if (file_exists($app->root . "uploads/" . $up_id . "_t"))
+					$dr &= @unlink($app->root . "uploads/" . $up_id . "_t");
 			} catch (\Exception $e) {
 			}
 			if ($dr) {

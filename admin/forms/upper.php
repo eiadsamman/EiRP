@@ -58,7 +58,7 @@ $SmartListObject = new SmartListObject($app);
 	<link media="screen,print" rel="stylesheet" href="static/style/style.popup.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.ios-checkbox.css" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.template.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css?fuck=<?=uniqid() ;?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css" />
 	<?php
 	if (array_key_exists('css', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['css']);
@@ -72,7 +72,7 @@ $SmartListObject = new SmartListObject($app);
 	<script type="text/javascript" src="static/jquery/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js"></script>
 	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js"></script>
-	<script type="text/javascript" src="static/jquery/slo-1.2.js"></script>
+	<script type="text/javascript" src="static/jquery/slo-1.4.js"></script>
 	<?php if ($__side_panel && $__side_panel->permission->deny == false) {
 		echo '<script type="text/javascript" src="static/javascript/template.sidepanel.js"></script>';
 	} ?>
