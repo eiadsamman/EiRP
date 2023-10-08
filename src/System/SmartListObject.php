@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace System;
 
+
 class SmartListObject
 {
 	protected App $app;
@@ -51,7 +52,7 @@ class SmartListObject
 
 
 
-	public function userAccounts(?\System\Finance\AccountRole &$role = null, ?int $company_id = null, mixed $select = null): string
+	public function userAccounts(?\System\Finance\AccountRole &$role = null, ?int $company_id = null, mixed $select = null, ?array $exclude = null): string
 	{
 		$output = "";
 		try {
@@ -69,6 +70,9 @@ class SmartListObject
 				)
 			) {
 				while ($row = $r->fetch_assoc()) {
+					if ($exclude != null && in_array((int) $row['prt_id'], $exclude)) {
+						continue;
+					}
 					$output .= $this->template(
 						$row['prt_id'],
 						"[" . $row['cur_shortname'] . "] " . ($company_id != null ? "" : $row['comp_name'] . ": ") . $row['ptp_name'] . ": " . $row['prt_name'],
@@ -97,42 +101,19 @@ class SmartListObject
 
 
 
-	public function userAccountsInbound(mixed $select = null): string
+	public function userAccountsInbound(mixed $select = null, ?array $exclude = null): string
 	{
 		$role = new \System\Finance\AccountRole();
 		$role->inbound = true;
-		return $this->userAccounts($role, null, $select);
+		return $this->userAccounts($role, null, $select, $exclude);
 	}
-	public function userAccounts_outbound(mixed $select = null): string
+	public function userAccountsOutbound(mixed $select = null, ?array $exclude = null): string
 	{
 		$role = new \System\Finance\AccountRole();
 		$role->outbound = true;
-		return $this->userAccounts($role, null, $select);
+		return $this->userAccounts($role, null, $select, $exclude);
 	}
 
-
-
-	/**
-	 * Returns SmartList Accounts List for finanace categories\sub categories
-	 *
-	 * @return string HTML string `<option />` tags based on `System\SmartListObject\template` function
-	 */
-	public function financialCategories(): string
-	{
-		$output = "";
-		if (
-			$r = $this->app->db->query("SELECT 
-				 acccat_id,CONCAT(accgrp_name,\": \",acccat_name) AS category_name, acccat_name, accgrp_name
-						FROM acc_categories JOIN acc_categorygroups ON accgrp_id=acccat_group
-			")
-		) {
-			while ($row = $r->fetch_assoc()) {
-				$output .= $this->template($row['acccat_id'], "{$row['acccat_name']}: {$row['accgrp_name']}", $row['category_name']);
-			}
-		}
-
-		return $output;
-	}
 
 	/**
 	 * Returns SmartList Accounts List for system employee\client\vendor
@@ -173,6 +154,31 @@ class SmartListObject
 		return $output;
 	}
 
+
+
+	/**
+	 * Returns SmartList Accounts List for finanace categories\sub categories
+	 *
+	 * @return string HTML string `<option />` tags based on `System\SmartListObject\template` function
+	 */
+	public function financialCategories(): string
+	{
+		$output = "";
+		if (
+			$r = $this->app->db->query("SELECT 
+				 acccat_id,CONCAT(accgrp_name,\": \",acccat_name) AS category_name, acccat_name, accgrp_name
+						FROM acc_categories JOIN acc_categorygroups ON accgrp_id=acccat_group
+			")
+		) {
+			while ($row = $r->fetch_assoc()) {
+				$output .= $this->template($row['acccat_id'], "{$row['acccat_name']}: {$row['accgrp_name']}", $row['category_name']);
+			}
+		}
+
+		return $output;
+	}
+
+
 	/**
 	 * Returns SmartList Accounts List for fianance general beneficiary list from acc_main table
 	 *
@@ -199,6 +205,16 @@ class SmartListObject
 		return $output;
 	}
 
+
+	public function financialTransactionNature(mixed $select = null): string
+	{
+		$output = "";
+		foreach ( \System\Finance\Transaction\Nature::array() as $k => $v) {
+			$output .= $this->template((string) $k, $v, null, (int) $k == (int) $select);
+		}
+
+		return $output;
+	}
 
 	public function hrPaymentMethod(): string
 	{

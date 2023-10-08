@@ -105,7 +105,6 @@ $_TEMPLATE = new \System\Template\Body();
 if (is_null($accounting)) {
 	include_once("admin/class/accounting.php");
 	$accounting = new Accounting($app);
-	$__workingaccount = $accounting->account_information($app->user->account->id);
 }
 
 

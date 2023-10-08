@@ -133,12 +133,11 @@
 
 	$.overlay = function (options) {
 		var settings = jQuery.extend({
-			message: "Loading, please wait...",
+			message: "Loading...",
 			className: "loading_overlay",
 			backgroundObject: $("#body-content, #template-sidePanel")
 		}, options);
 		var container = $("<span />"),
-			vertical = $("<span />"),
 			content = $("<div />"),
 			timer = null,
 			hideTrigger = false;
@@ -148,9 +147,9 @@
 				timer = setTimeout(function () {
 					if (!hideTrigger) {
 						settings.backgroundObject.addClass("blur");
-						container.css("display", "block");
+						container.css("display", "flex");
 					}
-				}, 100);
+				}, 300);
 				return output;
 			},
 			'hide': function () {
@@ -162,7 +161,6 @@
 			},
 			'init': function () {
 				container.addClass(settings.className);
-				container.append(vertical);
 				container.append(content);
 				content.html("\
 					<span style=\"display:inline-block;vertical-align:middle\">"+ settings.message + "</span>\

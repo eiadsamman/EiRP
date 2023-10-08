@@ -65,7 +65,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "update") {
 				LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
 				LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
-				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . $app->scope->individual->portrait . " AND up_deleted = 0
+				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . \System\Attachment\Type::HrPerson->value . " AND up_deleted = 0
 				LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
 				LEFT JOIN companies ON comp_id = lbr_company
 		WHERE
@@ -82,7 +82,7 @@ $q_socialid_uploads_query =
 		FROM uploads 
 		WHERE 
 			(" . ($arr_array_input != false ? " up_rel={$arr_array_input['usr_id']} OR " : "") . " (up_rel=0 AND up_user={$app->user->info->id}))
-			AND up_deleted=0 AND (up_pagefile=" . $app->scope->individual->portrait . " OR up_pagefile=" . $app->scope->individual->social_id . ") ORDER BY up_rel DESC, up_date DESC;";
+			AND up_deleted=0 AND (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " OR up_pagefile=" . \System\Attachment\Type::HrID->value . ") ORDER BY up_rel DESC, up_date DESC;";
 
 $r = $app->db->query($q_socialid_uploads_query);
 while ($row_socialid_uploads = $r->fetch_assoc()) {
@@ -101,8 +101,7 @@ $grem->menu();
 
 <input type="hidden" name="EmployeeFormMethod" value="proccessHandler" />
 <input type="hidden" name="Token" value="<?php echo session_id(); ?>" />
-<input type="hidden" name="EmployeeFormID"
-	value="<?php echo $arr_array_input != false ? $arr_array_input['usr_id'] : "0"; ?>">
+<input type="hidden" name="EmployeeFormID" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_id'] : "0"; ?>">
 
 <?php
 if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_input == false && $fs(227)->permission->add)) {
@@ -116,34 +115,29 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<tr>
 					<th>ID</th>
 					<td>
-						<div class="btn-set"><input type="text" class="flex" disabled="disabled"
-								value="<?php echo $arr_array_input['usr_id']; ?>" /></div>
+						<div class="btn-set"><input type="text" class="flex" disabled="disabled" value="<?php echo $arr_array_input['usr_id']; ?>" /></div>
 					</td>
 				</tr>
 			<?php } ?>
 			<tr>
 				<th style="max-width: 100px;width:100px;min-width:100px">First name</th>
 				<td>
-					<div class="btn-set"><input type="text" name="firstname" id="firstname" class="flex"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['usr_firstname'] : ""; ?>" />
+					<div class="btn-set"><input type="text" name="firstname" id="firstname" class="flex" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_firstname'] : ""; ?>" />
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Last name</th>
 				<td>
-					<div class="btn-set"><input type="text" name="lastname" id="lastname" class="flex"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['usr_lastname'] : ""; ?>" />
+					<div class="btn-set"><input type="text" name="lastname" id="lastname" class="flex" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_lastname'] : ""; ?>" />
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Nationality</th>
 				<td>
-					<div class="btn-set"><input type="text" name="nationality" id="slonationality" class="flex"
-							data-slo="COUNTRIES"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['cntry_name'] : ""; ?>"
-							<?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['cntry_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="nationality" id="slonationality" class="flex" data-slo="COUNTRIES"
+							value="<?php echo $arr_array_input != false ? $arr_array_input['cntry_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['cntry_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
@@ -152,10 +146,9 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<td>
 					<div class="btn-set">
 
-						<button type="button" id="js_upload_trigger_1" class="js_upload_trigger"
-							data-db_rel="usr_attrib_s2">Upload</button>
-						<input type="file" id="js_uploader_btn_1" class="js_uploader_btn" multiple="multiple"
-							accept="image/*" />
+						<button type="button" id="js_upload_count_1" class="js_upload_count"><span>0</span> files</button>
+						<button type="button" id="js_upload_trigger_1" class="js_upload_trigger" data-db_rel="usr_attrib_s2">Upload</button>
+						<input type="file" id="js_uploader_btn_1" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 						<span id="js_upload_list_1" class="js_upload_list">
 							<div id="UploadSocialDOMHandler">
 								<?php
@@ -167,12 +160,9 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 								?>
 							</div>
 						</span>
-						<button type="button" id="js_upload_count_1" class="js_upload_count"><span>0</span>
-							files</button>
 						<span>No.</span>
-						<input type="text"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_socialnumber'] : ""; ?>"
-							name="social_number" id="social_number" style="min-width:0px;width:100%">
+						<input type="text" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_socialnumber'] : ""; ?>" name="social_number" id="social_number"
+							style="min-width:0px;width:100%">
 					</div>
 				</td>
 			</tr>
@@ -180,31 +170,27 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<th>Personal photo</th>
 				<td>
 					<div class="btn-set">
-						<button type="button" id="js_upload_trigger" class="js_upload_trigger "
-							style="max-width:100px">Upload</button>
+						<button type="button" id="js_upload_count" class="js_upload_count"><span>0</span> files</button>
+						<button type="button" id="js_upload_trigger" class="js_upload_trigger " style="max-width:100px">Upload</button>
 						<input type="file" id="js_uploader_btn" class="js_uploader_btn" accept="image/*" />
 						<span id="js_upload_list" class="js_upload_list">
 							<div id="UploadPersonalDOMHandler">
 								<?php
-								if (isset($arr_array_uploads[$app->scope->individual->portrait]) && is_array($arr_array_uploads[$app->scope->individual->portrait])) {
-									foreach ($arr_array_uploads[$app->scope->individual->portrait] as $fileIndex => $file) {
+								if (isset($arr_array_uploads[\System\Attachment\Type::HrPerson->value]) && is_array($arr_array_uploads[\System\Attachment\Type::HrPerson->value])) {
+									foreach ($arr_array_uploads[\System\Attachment\Type::HrPerson->value] as $fileIndex => $file) {
 										echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "perosnal_image");
 									}
 								}
 								?>
 							</div>
 						</span>
-						<button type="button" id="js_upload_count" class="js_upload_count"><span>0</span>
-							files</button>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Gender</th>
 				<td>
-					<div class="btn-set"><input type="text" name="gender" class="flex" id="slogender"
-							data-slo="G000"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['gnd_name'] : ""; ?>"
+					<div class="btn-set"><input type="text" name="gender" class="flex" id="slogender" data-slo="G000" value="<?php echo $arr_array_input != false ? $arr_array_input['gnd_name'] : ""; ?>"
 							<?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['gnd_id']}\" " : ""; ?>>
 					</div>
 				</td>
@@ -212,10 +198,8 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th>Birthdate</th>
 				<td>
-					<div class="btn-set"><input type="text" name="birthdate" class="flex" id="slobirthdate"
-							data-slo="BIRTHDATE"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['usr_birthdate_format'] : ""; ?>"
-							<?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['usr_birthdate']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="birthdate" class="flex" id="slobirthdate" data-slo="BIRTHDATE"
+							value="<?php echo $arr_array_input != false ? $arr_array_input['usr_birthdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['usr_birthdate']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
@@ -229,20 +213,16 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th>Residence</th>
 				<td>
-					<div class="btn-set"><input type="text" name="residence" class="flex" id="sloresidence"
-							data-slo="E004"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['ldn_name'] : ""; ?>"
-							<?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['ldn_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="residence" class="flex" id="sloresidence" data-slo="E004"
+							value="<?php echo $arr_array_input != false ? $arr_array_input['ldn_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['ldn_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Transportation</th>
 				<td>
-					<div class="btn-set"><input type="text" name="transportation" class="flex"
-							id="slortransportation" data-slo="TRANSPORTATION"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['trans_name'] : ""; ?>"
-							<?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['trans_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="transportation" class="flex" id="slortransportation" data-slo="TRANSPORTATION"
+							value="<?php echo $arr_array_input != false ? $arr_array_input['trans_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['trans_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
@@ -251,9 +231,9 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 	</table>
 	<?php
 	$grem->getLast()->close();
-}?>
+} ?>
 <br />
-<?php 
+<?php
 if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_input == false && $fs(228)->permission->add)) {
 	$grem->legend()->serve("<span class=\"flex\">Job details</span>");
 	$grem->article()->open();
@@ -264,10 +244,8 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th style="max-width: 100px;width:100px;min-width:100px">Company</th>
 				<td style="width: 100%;">
-					<div class="btn-set"><input type="text" class="flex" name="company" id="slocompany"
-							data-slo="COMPANY_USER"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['comp_name'] : ""; ?>"
-							<?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['comp_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" class="flex" name="company" id="slocompany" data-slo="COMPANY_USER"
+							value="<?php echo $arr_array_input != false ? $arr_array_input['comp_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['comp_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
@@ -295,10 +273,8 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th>Register date</th>
 				<td>
-					<div class="btn-set"><input type="text" name="regdate" class="flex" id="sloregdate"
-							data-slo="DATE"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_registerdate_format'] : ""; ?>"
-							<?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_registerdate']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="regdate" class="flex" id="sloregdate" data-slo="DATE"
+							value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_registerdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_registerdate']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
@@ -306,10 +282,8 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 				<tr>
 					<th>Resign date</th>
 					<td>
-						<div class="btn-set"><input type="text" name="resdate" class="flex" id="sloresdate"
-								data-slo="DATE"
-								value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_resigndate_format'] : ""; ?>"
-								<?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_resigndate']}\" " : ""; ?>>
+						<div class="btn-set"><input type="text" name="resdate" class="flex" id="sloresdate" data-slo="DATE"
+								value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_resigndate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_resigndate']}\" " : ""; ?>>
 						</div>
 					</td>
 				</tr>
@@ -317,18 +291,15 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th>Job title</th>
 				<td>
-					<div class="btn-set"><input type="text" name="jobtitle" class="flex" id="slotype"
-							data-slo="E002A"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lsc_name'] . ", " . $arr_array_input['lty_name'] : ""; ?>"
-							<?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lty_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="jobtitle" class="flex" id="slotype" data-slo="E002A"
+							value="<?php echo $arr_array_input != false ? $arr_array_input['lsc_name'] . ", " . $arr_array_input['lty_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lty_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Working shift</th>
 				<td>
-					<div class="btn-set"><input type="text" name="shift" class="flex" id="sloshift" data-slo="E003"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lsf_name'] : ""; ?>"
+					<div class="btn-set"><input type="text" name="shift" class="flex" id="sloshift" data-slo="E003" value="<?php echo $arr_array_input != false ? $arr_array_input['lsf_name'] : ""; ?>"
 							<?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lsf_id']}\" " : ""; ?>>
 					</div>
 				</td>
@@ -336,29 +307,25 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th>Working Time</th>
 				<td>
-					<div class="btn-set"><input type="text" name="workingtimes" class="flex" id="sloworkingtimes"
-							data-slo="WORKING_TIMES"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lwt_name'] : ""; ?>"
-							<?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lwt_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="workingtimes" class="flex" id="sloworkingtimes" data-slo="WORKING_TIMES"
+							value="<?php echo $arr_array_input != false ? $arr_array_input['lwt_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lwt_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Payment method</th>
 				<td>
-					<div class="btn-set"><input type="text" name="payment" class="flex" id="slopayment"
-							data-slo="SALARY_PAYMENT_METHOD"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_mth_name'] : ""; ?>"
-							<?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_mth_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="payment" class="flex" id="slopayment" data-slo="SALARY_PAYMENT_METHOD"
+							value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_mth_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_mth_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 
 		</tbody>
 	</table>
-	<?php 
+	<?php
 	$grem->getLast()->close();
-}?>
+} ?>
 
 <br />
 
@@ -374,11 +341,9 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 					<div class="btn-set">
 						<input type="text" name="salary_basic" <?= ($arr_array_input && is_null($arr_array_input['lbr_fixedsalary']) ? "disabled=\"disabled\"" : ""); ?>
 							value="<?php echo ($arr_array_input ? (is_null($arr_array_input['lbr_fixedsalary']) ? number_format((float) $arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : number_format((float) $arr_array_input['lbr_fixedsalary'], 2, ".", "")) : "") ?>"
-							data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : ""; ?>"
-							class="flex" />
+							data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : ""; ?>" class="flex" />
 						<label class="btn-checkbox">
-							<input type="checkbox" class="derive_function" data-rel="salary_basic"
-								name="sal_default_salary" <?= $arr_array_input && (is_null($arr_array_input['lbr_fixedsalary']) ? "checked=\"checked\"" : ""); ?> />
+							<input type="checkbox" class="derive_function" data-rel="salary_basic" name="sal_default_salary" <?= $arr_array_input && (is_null($arr_array_input['lbr_fixedsalary']) ? "checked=\"checked\"" : ""); ?> />
 							<span>Default</span>
 						</label>
 					</div>
@@ -391,11 +356,9 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 					<div class="btn-set">
 						<input type="text" name="salary_variable" <?= ($arr_array_input && is_null($arr_array_input['lbr_variable']) ? "disabled=\"disabled\"" : ""); ?>
 							value="<?= ($arr_array_input ? (is_null($arr_array_input['lbr_variable']) ? number_format((float) $arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : number_format((float) $arr_array_input['lbr_variable'], 2, ".", "")) : "") ?>"
-							data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : ""; ?>"
-							class="flex" />
+							data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : ""; ?>" class="flex" />
 						<label class="btn-checkbox">
-							<input type="checkbox" class="derive_function" data-rel="salary_variable"
-								name="sal_default_variable" <?= ($arr_array_input && is_null($arr_array_input['lbr_variable']) ? "checked=\"checked\"" : ""); ?> />
+							<input type="checkbox" class="derive_function" data-rel="salary_variable" name="sal_default_variable" <?= ($arr_array_input && is_null($arr_array_input['lbr_variable']) ? "checked=\"checked\"" : ""); ?> />
 							<span>Default</span>
 						</label>
 					</div>
@@ -408,11 +371,9 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 					<div class="btn-set">
 						<input type="text" name="salary_allowance" <?= ($arr_array_input && is_null($arr_array_input['lbr_allowance']) ? "disabled=\"disabled\"" : ""); ?>
 							value="<?= ($arr_array_input ? (is_null($arr_array_input['lbr_allowance']) ? number_format((float) $arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : number_format((float) $arr_array_input['lbr_allowance'], 2, ".", "")) : "") ?>"
-							data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : ""; ?>"
-							class="flex" />
+							data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : ""; ?>" class="flex" />
 						<label class="btn-checkbox">
-							<input type="checkbox" class="derive_function" data-rel="salary_allowance"
-								name="sal_default_allowance" <?= ($arr_array_input && is_null($arr_array_input['lbr_allowance']) ? "checked=\"checked\"" : ""); ?> />
+							<input type="checkbox" class="derive_function" data-rel="salary_allowance" name="sal_default_allowance" <?= ($arr_array_input && is_null($arr_array_input['lbr_allowance']) ? "checked=\"checked\"" : ""); ?> />
 							<span>Default</span>
 						</label>
 					</div>

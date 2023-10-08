@@ -23,14 +23,14 @@ $glypharray = array('900', '903', '904', '906', '90a', '90d', '915', '91c', '91f
 <style>
 	#glyph>span {
 		font-family: icomoon4;
-		font-size: 23px;
+		font-size: 18px;
 		display: inline-block;
-		padding: 6px;
+		padding:10px;
 		cursor: pointer;
 		border-radius: 3px;
-		min-width: 35px;
+		min-width: 40px;
 		text-align: center;
-		background-color: #fff;
+		background-color: var(--root-modal-background-color);
 	}
 
 	#glyph>span:hover {
@@ -46,7 +46,7 @@ $glypharray = array('900', '903', '904', '906', '90a', '90d', '915', '91c', '91f
 		display: none;
 		position: absolute;
 		z-index: 60;
-		background-color: #fff;
+		background-color: var(--root-modal-background-color);
 	}
 
 	#colorList {
@@ -57,7 +57,7 @@ $glypharray = array('900', '903', '904', '906', '90a', '90d', '915', '91c', '91f
 		display: none;
 		position: absolute;
 		z-index: 60;
-		background-color: #fff;
+		background-color: var(--root-modal-background-color);
 	}
 
 	#colorList>span {
@@ -117,7 +117,7 @@ $glypharray = array('900', '903', '904', '906', '90a', '90d', '915', '91c', '91f
 </div>
 
 <?php
-function inner(File $fs, int $id)
+function inner(Page $fs, int $id)
 {
 	static $cnt = 1;
 	$check = true;

@@ -1,8 +1,8 @@
 .bom-table {
-	border: solid 1px var(--BorderColor);
+	border: solid 1px var(--bomtable-border-color);
 	border-collapse: collapse;
 	width: 100%;
-	--BorderColor: rgb(235, 235, 238);
+
 }
 
 .bom-table>tfoot>tr>th,
@@ -14,7 +14,7 @@
 
 .bom-table>tbody>tr:not(:first-child)>td,
 .bom-table>tfoot>tr:not(:first-child)>td {
-	border-top: solid 1px var(--BorderColor);
+	border-top: solid 1px var(--bomtable-border-color);
 }
 
 .bom-table>tbody>tr>td,
@@ -23,7 +23,8 @@
 .bom-table>tfoot>tr>th {
 	padding: 10px 8px;
 	white-space: nowrap;
-	color: #333;
+	color: var(--root-font-color);
+	background-color: var(--bomtable-background-color);
 }
 
 .bom-table>tbody>tr>td.console {
@@ -34,8 +35,8 @@
 .bom-table>tbody>tr>th,
 .bom-table>tfoot>tr>th {
 	padding: 10px 8px;
-	color: #3C77C3;
-	border-top: solid 1px var(--BorderColor);
+	color: var(--root-link-color);
+	border-top: solid 1px var(--bomtable-border-color);
 	border-bottom: none;
 	border-right: none;
 	border-left: none;
@@ -43,44 +44,45 @@
 }
 
 .bom-table>tbody>tr>th:first-child {
-	border-left: solid 1px var(--BorderColor);
+	border-left: solid 1px var(--bomtable-border-color);
 }
 
 .bom-table>tbody>tr>th:last-child {
-	border-right: solid 1px var(--BorderColor);
+	border-right: solid 1px var(--bomtable-border-color);
 }
 
 .bom-table>thead>tr>td,
 .bom-table>tfoot>tr>td {
-	border: solid 1px var(--BorderColor);
+	border: solid 1px var(--bomtable-border-color);
+	background-color: var(--bomtable-background-color);
 	border-left: none;
 	border-right: none;
 	padding: 10px 8px;
-	color: dodgerblue;
+	color: var(--root-link-color);
 	white-space: nowrap;
 	cursor: default;
 	font-weight: bold;
 }
 
 .bom-table>thead>tr>td {
-	border-bottom: double 3px gainsboro;
+	border-bottom: double 3px var(--bomtable-border-color);
 }
 
 .bom-table>tfoot>tr>td {
-	border-top: double 3px gainsboro;
+	border-top: double 3px var(--bomtable-border-color);
 }
 
 
 .bom-table>thead>tr>td:first-child {
-	border-left: solid 1px var(--BorderColor);
+	border-left: solid 1px var(--bomtable-border-color);
 }
 
 .bom-table>thead>tr>td:last-child {
-	border-right: solid 1px var(--BorderColor);
+	border-right: solid 1px var(--bomtable-border-color);
 }
 
 .bom-table>thead>tr>th {
-	border: solid 1px var(--BorderColor);
+	border: solid 1px var(--bomtable-border-color);
 	height: 25px;
 }
 
@@ -88,57 +90,18 @@
 
 
 
-
-.bom-table>tbody>tr.special>td {
-	background-color: #ffffff;
-}
-
-.bom-table>thead>tr.special>td {
-	background-color: #ffffff;
-	color: #333;
-	font-size: inherit !important;
-	font-weight: bold;
-}
-
-.bom-table>tbody>tr.special>th:first-child,
-.bom-table>tbody>tr.special>td:first-child {
-	background-color: #ffffff;
-	color: #333;
-	font-weight: bold;
-	border-left: solid 3px #f03;
-}
-
-.bom-table>thead>tr.special>td:first-child {
-	border-left: solid 3px #f03;
-}
-
-.bom-table>thead>tr.special>td>h2 {
-	color: #333;
-}
-
-.bom-table>tbody>tr.special.alert>td {
-	color: #f03;
-}
-
-.bom-table>tbody>tr.special.success>td {
-	color: #3d3;
-}
-
-.bom-table>tbody>tr.special.exclamation>td {
-	background-color: #ccc;
-}
-
 .bom-table.strip>tbody>tr:nth-child(2n)>td {
-	background-color: var(--color-faint-white);
+	background-color: var(--bomtable-stripes-color);
 }
 
-.bom-table.strip.hover>tbody>tr:hover:nth-child(2n)>td,.bom-table.hover>tbody>tr:hover>td {
-	background-color: var(--color-soft-gray)
+.bom-table.strip.hover>tbody>tr:hover:nth-child(2n)>td,
+.bom-table.hover>tbody>tr:hover>td {
+	background-color: var(--bomtable-hover-color)
 }
 
-.bom-table>thead.sticky{
-	position:sticky;
-	background-color:#fff;
+.bom-table>thead.sticky {
+	position: sticky;
+	background-color: var(--bomtable-background-color);
 	outline: solid .5px gainsboro;
 }
 
@@ -250,7 +213,7 @@
 }
 
 .bom-table tr>td.op-donwload:hover>* {
-	color: #0066cc;
+	color: var(--root-link-color);
 }
 
 
@@ -284,7 +247,7 @@
 	.bom-table>tbody>tr>th:first-child {
 		min-height: 1px;
 		height: 20px;
-		color: #06c;
+		color: var(--root-link-color);
 		height: 20px;
 		padding: 0px;
 		padding-left: 0px;
@@ -296,7 +259,7 @@
 		background-color: #f7f7fa;
 		border: none;
 		padding: 20px 0px 5px 10px;
-		color: #06c;
+		color: var(--root-link-color);
 		border-bottom: solid 1px #ccc;
 	}
 

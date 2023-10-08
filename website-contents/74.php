@@ -4,9 +4,14 @@ $company_hr = array();
 
 $r = $app->db->query(
 	"SELECT COUNT(1) AS company_count,lbr_company
-	FROM labour_track  JOIN labour ON lbr_id = ltr_usr_id
-	WHERE ltr_otime IS NULL
-	GROUP BY lbr_company
+	FROM 
+		labour 
+		JOIN labour_track ON lbr_id = ltr_usr_id 
+		JOIN user_company ON lbr_company = urc_usr_comp_id AND urc_usr_id = {$app->user->info->id}
+	WHERE 
+		ltr_otime IS NULL
+	GROUP BY 
+		lbr_company
 	"
 );
 
@@ -23,11 +28,13 @@ if ($r && $r->num_rows > 0) {
 $r = $app->db->query(
 	"SELECT COUNT(1) AS company_count,comp_id, comp_name
 	FROM 
-		labour 
-			JOIN companies ON comp_id = lbr_company
-	WHERE lbr_resigndate IS NULL
-	GROUP BY comp_id
-	"
+		companies 
+			JOIN labour ON comp_id = lbr_company
+			JOIN user_company ON comp_id = urc_usr_comp_id AND urc_usr_id = {$app->user->info->id}
+	WHERE 
+		lbr_resigndate IS NULL
+	GROUP BY 
+		comp_id;"
 );
 
 if ($r && $r->num_rows > 0) {

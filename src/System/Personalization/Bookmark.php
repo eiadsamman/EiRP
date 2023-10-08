@@ -11,9 +11,27 @@ class Bookmark
 
 	}
 
-	public function list(): array
+	public function setOrder(array $order_array): bool
 	{
-		$output = [];
+		$stmt = $this->app->db->prepare("UPDATE user_settings SET usrset_value = ? 
+			WHERE 
+				usrset_usr_id= {$this->app->user->info->id} AND 
+				usrset_type = " . Identifiers::SystemUserBookmark->value . " AND 
+				usrset_usr_defind_name = ?
+				");
+		$order = 0;
+		$pageid = 0;
+		$stmt->bind_param("ii", $order, $pageid);
+		foreach ($order_array as $v) {
+			$pageid = (int) $v;
+			$order++;
+			$stmt->execute();
+		}
+		$stmt->close();
+		return true;
+	}
+	public function list(): \Generator
+	{
 		try {
 			$result = $this->app->db->query(
 				"SELECT 
@@ -35,17 +53,16 @@ class Bookmark
 				WHERE 
 					trd_enable = 1 
 				ORDER BY
-					(usrset_value+0) DESC,pfl_value;"
+					(usrset_value+0) ASC, usrset_id;"
 			);
 			if ($result) {
 				while ($row = $result->fetch_assoc()) {
-					$output[] = $row;
+					yield $row;
 				}
 			}
 		} catch (\mysqli_sql_exception $e) {
 			$this->app->errorHandler->logError($e);
 		}
-		return $output;
 	}
 
 	public function isBookmarked(int $page_id): bool

@@ -5,7 +5,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 
 	try {
 		$modify_user->load((int) $_GET['modify-user']);
-	} catch (System\Individual\PersonNotFoundException $e) {
+	} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
 	}
 
 	if ($modify_user->loaded && isset($_POST['invoke'], $_POST['relative']) && $_GET['modify-user'] == $_POST['relative'] && $_POST['invoke'] == "info") {

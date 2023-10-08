@@ -137,7 +137,7 @@ if (isset($_POST['posubmit'])) {
 			echo "<tr>";
 			echo "<td>{$data['info']['id']}</td>";
 			echo "<td>{$data['info']['name']}</td>";
-			echo "<td align=\"right\" style=\"background-image:linear-gradient(0deg,rgba(0,0,0,0) 15%, #fff 15%),linear-gradient(90deg, $colorgradient {$percentage_l}%, #ffffff {$percentage_l}%);\">" . $app->formatTime($data['info']['totalAttendedTime']) . "</td>";
+			echo "<td align=\"right\" style=\"background-image:linear-gradient(0deg,rgba(0,0,0,0) 15%, var(--root-background-color) 15%), linear-gradient(90deg, $colorgradient {$percentage_l}%, transparent {$percentage_l}%);\">" . $app->formatTime($data['info']['totalAttendedTime']) . "</td>";
 			echo "</tr>";
 		}
 		echo "

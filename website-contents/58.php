@@ -36,7 +36,7 @@ if (isset($_POST['serial'])) {
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 			echo $att->info->name;
 		}
-	} catch (System\Individual\PersonNotFoundException $e) {
+	} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
 		header("ATT_RESULT: NOTFOUND");
 		header("ATT_IMAGE_ID: 0");
 	} catch (System\Individual\Attendance\ExceptionCheckedout $e) {

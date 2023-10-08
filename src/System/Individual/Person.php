@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace System\Individual;
 
+
 class Person
 {
 	public bool $loaded = false;
@@ -34,7 +35,7 @@ class Person
 				labour 
 					JOIN users ON usr_id=lbr_id
 					LEFT JOIN permissions ON per_id = usr_privileges
-					LEFT JOIN uploads on lbr_id=up_rel AND up_deleted=0 AND (up_pagefile=" . $this->app->scope->individual->portrait . ")
+					LEFT JOIN uploads on lbr_id=up_rel AND up_deleted=0 AND (up_pagefile=" .\System\Attachment\Type::HrPerson->value . ")
 			WHERE
 				lbr_id='" . (int)$person_id . "';"
 		);
@@ -54,7 +55,7 @@ class Person
 
 			return true;
 		} else {
-			throw new PersonNotFoundException("No matches found for given ID", 21001);
+			throw new \System\Exceptions\HR\PersonNotFoundException("No matches found for given ID", 21001);
 		}
 	}
 }

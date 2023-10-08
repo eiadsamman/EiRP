@@ -6,21 +6,21 @@ if (isset($reportpageid)) {
 	$total = 0;
 	$arrout = array();
 
-	if ($r = $app->db->query("
-	SELECT 
+	if ($r = $app->db->query(
+	"SELECT 
 		COUNT(usr_id) AS cnt,
-		_labourtype.lsc_name,_labourtype.lsc_color
+		_labourtype.lsc_name, _labourtype.lsc_color
 	FROM
 		labour
-			JOIN users ON lbr_id=usr_id
+			JOIN users ON lbr_id = usr_id
 			LEFT JOIN
 				(
 				SELECT
 					lty_id,lsc_name,lsc_color
 				FROM
 					labour_type 
-						JOIN labour_section ON lsc_id=lty_section
-				) AS _labourtype ON _labourtype.lty_id=lbr_type
+						JOIN labour_section ON lsc_id = lty_section
+				) AS _labourtype ON _labourtype.lty_id = lbr_type
 	WHERE
 		lbr_resigndate IS NULL
 	GROUP BY

@@ -43,7 +43,7 @@ function GetEmployeesList(&$app, $fs, $limit_selection, &$grem)
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$app->user->info->id}
 				LEFT JOIN gender ON gnd_id=usr_gender
-				LEFT JOIN uploads ON (up_pagefile=" . $app->scope->individual->portrait . " ) AND up_rel=lbr_id AND up_deleted=0
+				LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " ) AND up_rel=lbr_id AND up_deleted=0
 				JOIN companies ON comp_id=lbr_company AND lbr_company={$app->user->company->id}
 		WHERE
 			( (lbr_role & b'001') > 0 ) AND lbr_resigndate IS NULL " . ($limit_selection ? " AND sel_usremp_emp_id IS NOT NULL " : "") . " 

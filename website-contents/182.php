@@ -53,8 +53,8 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				$arr_socialids[$row_socialid_uploads['up_pagefile']][$row_socialid_uploads['up_id']] = array($row_socialid_uploads['up_name'], $row_socialid_uploads['up_size'], $row_socialid_uploads['up_date'], $row_socialid_uploads['up_id']);
 			}
 			$socialidphotos = "";
-			if (isset($arr_socialids[$app->scope->individual->social_id])) {
-				foreach ($arr_socialids[$app->scope->individual->social_id] as $k_socialid => $v_socialid) {
+			if (isset($arr_socialids[\System\Attachment\Type::HrID->value])) {
+				foreach ($arr_socialids[\System\Attachment\Type::HrID->value] as $k_socialid => $v_socialid) {
 					$socialidphotos .= "<a href=\"download/?id={$k_socialid}\" class=\"jq_frame_image\" data-href=\"download/?id={$k_socialid}&pr=v\">view</a>";
 				}
 			}
@@ -71,10 +71,10 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 					<td style="width:33%;min-width:200px" align="center">';
 				$img = "user.jpg";
 				if (
-					isset($arr_socialids[$app->scope->individual->portrait]) && is_array($arr_socialids[$app->scope->individual->portrait])
-					&& sizeof($arr_socialids[$app->scope->individual->portrait]) > 0
+					isset($arr_socialids[\System\Attachment\Type::HrPerson->value]) && is_array($arr_socialids[\System\Attachment\Type::HrPerson->value])
+					&& sizeof($arr_socialids[\System\Attachment\Type::HrPerson->value]) > 0
 				) {
-					$imgid = reset($arr_socialids[$app->scope->individual->portrait])[3];
+					$imgid = reset($arr_socialids[\System\Attachment\Type::HrPerson->value])[3];
 					$img = "download/?id={$imgid}&pr=t";
 					unset($imgid);
 				}
@@ -243,12 +243,7 @@ $grem->getLast()->close();
 				fn_fetchfile();
 			},
 			ondeselect: function () {
-				clear();
-				history.pushState({
-					'method': '',
-					'id': 0,
-					'name': ''
-				}, "<?= $fs(182)->title ?>", "<?= $fs(182)->dir ?>");
+				
 			},
 			"limit": 10
 		});
@@ -264,7 +259,7 @@ $grem->getLast()->close();
 			$.ajax({
 				data: {
 					'method': 'fetchrecord',
-					'employeeID': SLO_employeeID.hidden[0].val(),
+					'employeeID': SLO_employeeID[0].slo.htmlhidden.val(),
 				},
 				url: "<?php echo $fs()->dir; ?>",
 				type: "POST"

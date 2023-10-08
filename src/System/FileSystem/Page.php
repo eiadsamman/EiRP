@@ -8,6 +8,8 @@ namespace System\FileSystem;
 class Page
 {
 	private array $files = array();
+
+	
 	protected \System\App $app;
 	private Data $inuse;
 	function __construct(\System\App &$app, int $language = 1)

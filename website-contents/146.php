@@ -23,7 +23,7 @@ $database = array(
 		'mat_id' => array(null, 'ID', true, null, 'primary', 'int', true, null, null),
 		'mat_long_id' => array(null, 'Part Number', true, null, 'text', 'string', false, null, null, '<b>char(32)</b> part number'),
 
-		'file_image' => array(null, 'image', true, null, 'file', $app->scope->goods->photo, true, null, null, '<b>file</b> Product images'),
+		'file_image' => array(null, 'image', true, null, 'file', \System\Attachment\Type::Material->value, true, null, null, '<b>file</b> Product images'),
 
 		'mattyp_name' => array(null, 'Type', true, null, 'slo', 'string', false, 'MAT_TYPE', 'mat_mattyp_id', '<b>list</b> type'),
 		'mat_mattyp_id' => array(null, '', false, null, 'sloref', 'int', true, null, null),

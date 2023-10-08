@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace System\Individual;
+namespace System\Exceptions\HR;
+use System\Exceptions\HR\HR;
 
-class PersonNotFoundException extends \Exception
+class PersonNotFoundException extends HR
 {
 	public function errorPlot()
 	{

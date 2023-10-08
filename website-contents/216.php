@@ -6,14 +6,16 @@ echo "
 		<div>";
 if ($app->user->account) {
 	$accounting = new \System\Finance\Accounting($app);
-	$__workingaccount = $accounting->account_information($app->user->account->id);
 }
 if ($app->user->account->role->view) {
-	if ($app->user->account->id && $__workingaccount) {
+	if ($app->user->account) {
 		echo "
-			<div><span style=\"color:#999;\">{$app->user->company->name}<br />{$__workingaccount['group']}</span><br /><span style=\"display:block;font-size:1.3em;padding-top:6px\">{$__workingaccount['name']}</span></div>
-			<div style=\"padding-top:10px;font-size:1.8em;font-weight:bold;color:dodgerblue;\">" . ($__workingaccount['balance'] < 0 ? "(" . number_format(abs($__workingaccount['balance']), 2, ".", ",") . ")" : number_format(abs($__workingaccount['balance']), 2, ".", ",")) . "</div>
-			<div style=\"color:#777;font-size:1em;\">{$__workingaccount['currency']['shortname']}</div>
+			<div><span style=\"color:#999;\">{$app->user->company->name}<br />{$app->user->account->type->name}</span><br /><span style=\"display:block;font-size:1.3em;padding-top:6px\">{$app->user->account->name}</span></div>
+			<div style=\"padding-top:10px;font-size:1.8em;font-weight:bold;color:dodgerblue;\">" .
+
+			($app->user->account->balance < 0 ? "(" . number_format(abs($app->user->account->balance), 2, ".", ",") . ")" : number_format($app->user->account->balance, 2, ".", ",")) .
+			"</div>
+			<div style=\"color:#777;font-size:1em;\">{$app->user->account->currency->shortname}</div>
 		";
 	} else {
 		echo "
@@ -24,9 +26,9 @@ if ($app->user->account->role->view) {
 	}
 } else {
 	echo "
-		<div><span style=\"color:#999;\">{$app->user->company->name}<br />{$__workingaccount['group']}</span><br /><span style=\"display:block;font-size:1.3em;padding-top:6px\">{$__workingaccount['name']}</span></div>
+		<div><span style=\"color:#999;\">{$app->user->company->name}<br />{$app->user->account->type->name}</span><br /><span style=\"display:block;font-size:1.3em;padding-top:6px\">{$app->user->account->name}</span></div>
 		<div style=\"padding-top:10px;font-size:1.8em;font-weight:bold;color:dodgerblue;text\"><cite>[Restricted]</cite></div>
-		<div style=\"color:#777;font-size:1em;\">{$__workingaccount['currency']['shortname']}</div>
+		<div style=\"color:#777;font-size:1em;\">{$app->user->account->currency->shortname}</div>
 	";
 }
 echo "

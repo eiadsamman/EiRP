@@ -1,44 +1,46 @@
 <?php
 
-if (isset($_POST['request']) && $_POST['request'] == "update") {
-	if (is_null($app->currency)) {
-		header("HTTP_X_RESPONSE: SYSTEM");
-		exit;
-	}
-	foreach ($_POST['verb-exchange-sell'] as $cur_id => $cur_value) {
-		if ((float)$cur_value == 0) {
-			header("HTTP_X_RESPONSE: ZERO");
+if ($app->xhttp) {
+	if (isset($_POST['request'], $_POST['verb-exchange-sell']) && $_POST['request'] == "update") {
+		if (is_null($app->currency)) {
+			header("HTTP_RESPONSE: SYSTEM");
 			exit;
 		}
-	}
-
-	$app->db->autocommit(false);
-	$r = true;
-	$r &= $app->db->query("TRUNCATE currency_exchange;");
-	$r &= $app->db->query("INSERT INTO currency_exchange (curexg_from,curexg_to,curexg_value) VALUES ({$app->currency->id} , {$app->currency->id} , 1)  ON DUPLICATE KEY UPDATE curexg_value=1;");
-	if ($r) {
 		foreach ($_POST['verb-exchange-sell'] as $cur_id => $cur_value) {
-			$cur_value = (float)$cur_value;
-			echo $cur_value;
-			$r &= $app->db->query("INSERT INTO currency_exchange (curexg_from,curexg_to,curexg_value) VALUES ({$cur_id} , {$app->currency->id} , {$cur_value})  ON DUPLICATE KEY UPDATE curexg_value={$cur_value};");
+			if ((float) $cur_value == 0) {
+				header("HTTP_RESPONSE: ZERO");
+				exit;
+			}
 		}
+
+		$app->db->autocommit(false);
+		$r = true;
+		$r &= $app->db->query("TRUNCATE currency_exchange;");
+		$r &= $app->db->query("INSERT INTO currency_exchange (curexg_from,curexg_to,curexg_value) VALUES ({$app->currency->id} , {$app->currency->id} , 1)  ON DUPLICATE KEY UPDATE curexg_value=1;");
+		if ($r) {
+			foreach ($_POST['verb-exchange-sell'] as $cur_id => $cur_value) {
+				$cur_value = (float) $cur_value;
+				echo $cur_value;
+				$r &= $app->db->query("INSERT INTO currency_exchange (curexg_from,curexg_to,curexg_value) VALUES ({$cur_id} , {$app->currency->id} , {$cur_value})  ON DUPLICATE KEY UPDATE curexg_value={$cur_value};");
+			}
+		}
+
+		if ($r) {
+			header("HTTP_RESPONSE: SUCCESS");
+			$app->db->commit();
+		} else {
+			header("HTTP_RESPONSE: DBERR");
+			$app->db->rollback();
+		}
+		exit;
 	}
 
-	if ($r) {
-		header("HTTP_X_RESPONSE: SUCCESS");
-		$app->db->commit();
-	} else {
-		header("HTTP_X_RESPONSE: DBERR");
-		$app->db->rollback();
-	}
-	exit;
-}
-
-if ($app->xhttp) {
+	header("HTTP_RESPONSE: BAD_REQUEST");
 	exit;
 }
 
 use System\Template\Gremium;
+
 $grem = new Gremium\Gremium(true);
 
 $grem->header()->serve("<h1>{$fs()->title}</h1>");
@@ -53,63 +55,95 @@ $grem->article()->open();
 ?>
 <form id="js-formDetails">
 	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>System default currency</span><?= $app->currency->name . " [{$app->currency->symbol}]"; ?></div>
-		<div class="btn-set vertical"><span>Latest rates updated date</span><?php echo date("Y-m-d"); ?></div>
+		<div class="btn-set vertical"><span>System default currency</span>
+			<?= $app->currency->name . " [{$app->currency->symbol}]"; ?>
+		</div>
+		<div class="btn-set vertical"><span>Latest rates updated date</span>
+			<?php echo date("Y-m-d"); ?>
+		</div>
 		<div></div>
 	</div>
 </form>
-
-<?php 
+<br />
+<br />
+<?php
 $grem->getLast()->close();
 $grem->legend()->serve("<span class=\"flex\">Exchange rates table</span>");
 
 $grem->article()->open();
-echo "<form id=\"js-form\">
-<input type=\"hidden\" name=\"request\" value=\"update\" />
-<table class=\"bom-table mediabond-table\"><thead style=\"display:none;\"><tr><td>Sell</td><td>Curreny</td></tr></thead><tbody>";
+
+echo <<<HTML
+<form id="js-form">
+	<input type="hidden" name="request" value="update" />
+	<table class="bom-table">
+		<thead style="display:none;">
+			<tr>
+				<td>Sell</td>
+				<td>Curreny</td>
+			</tr>
+		</thead>
+		<tbody>
+HTML;
 
 $r = $app->db->query("SELECT cur_id, cur_name, cur_shortname, curexg_value FROM currencies LEFT JOIN  currency_exchange ON curexg_from = cur_id;");
 if ($r) {
 	while ($row = $r->fetch_assoc()) {
-		if ($row['cur_id'] == $app->currency->id) continue;
-		echo "<tr>";
-		echo "<td class=\"btn-set\">";
-		echo "<input title=\"{$row['cur_name']}\" type=\"text\" class=\"strict-mode flex\" 
-			value=\"" . (is_null($row['curexg_value']) ? "0.00" : $row['curexg_value']) . "\" name=\"verb-exchange-sell[{$row['cur_id']}]\" />";
-		echo "</td>";
-		echo "<td style=\"width:100%;\"> = &nbsp;&nbsp;{$row['cur_name']}</td>";
-		echo "</tr>";
+		if ($row['cur_id'] == $app->currency->id)
+			continue;
+
+		$val = is_null($row['curexg_value']) ? "0.00" : $row['curexg_value'];
+		echo <<<HTML
+		<tr>
+			<td class="btn-set">
+				<span style="min-width:54px">{$row['cur_shortname']}</span>
+				<span>=</span>
+				<input 
+					title = "{$row['cur_name']}" 
+					type = "text" 
+					value = "{$val}"
+					name = "verb-exchange-sell[{$row['cur_id']}]" 
+					class = "strict-mode flex" 
+					/>
+				<span>{$app->currency->shortname}</span>
+			</td>
+		</tr>
+		HTML;
 	}
 }
 
-echo "</tbody>
-</table></form>";
+echo <<<HTML
+	</tbody>
+	</table>
+</form>
+HTML;
 
 $grem->getLast()->close();
 unset($grem);
 
 ?>
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(function () {
 
-		$(".strict-mode").on("input keydown keyup mousedown mouseup select contextmenu drop", function() {
+		$(".strict-mode").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
 			OnlyFloat(this, null, 0);
 		});
 
-		$("#js-form").on("submit", function(e) {
+		$("#js-form").on("submit", function (e) {
 			e.preventDefault;
 			return false;
 		});
-		$("#js-button-update").on("click", function() {
+		$("#js-button-update").on("click", function () {
 			overlay.show();
 			$.ajax({
 				url: "<?php echo $fs()->dir; ?>",
 				type: "POST",
 				data: $("#js-form").serialize()
-			}).done(function(o, textStatus, request) {
-				let response = request.getResponseHeader('HTTP_X_RESPONSE');
+			}).done(function (o, textStatus, request) {
+				let response = request.getResponseHeader('HTTP_RESPONSE');
 				if (response == "ZERO") {
 					messagesys.failure("All currencies rates are required");
+				} else if (response == "BAD_REQUEST") {
+					messagesys.failure("Invalid request");
 				} else if (response == "SUCCESS") {
 					messagesys.success("Exchange rates updated successfully");
 				} else if (response == "SYSTEM") {
@@ -119,7 +153,7 @@ unset($grem);
 				} else {
 					messagesys.failure("Unknonw error");
 				}
-			}).always(function() {
+			}).always(function () {
 				overlay.hide();
 			});
 		});

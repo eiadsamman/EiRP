@@ -19,69 +19,52 @@ class User extends Person
 	public function load(int $userid): bool
 	{
 		if (parent::load($userid)) {
-			$this->load_user_selections();
+			$this->loadSession();
 			return true;
 		}
 		return false;
 	}
 
-	private function load_user_selections(): void
+	private function loadSession(): void
 	{
-		$rcomp = $this->app->db->query(
+		$mysqli_result = $this->app->db->query(
 			"SELECT comp_id,comp_name,up_id
 			FROM 
 				companies 
-					JOIN user_company ON urc_usr_id=" . $this->app->user->info->id . " AND urc_usr_comp_id=comp_id
+					JOIN user_company ON urc_usr_id=" . $this->app->user->info->id . " AND urc_usr_comp_id = comp_id
 					JOIN user_settings ON usrset_usr_id=" . $this->app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemWorkingCompany->value . " AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
-					LEFT JOIN uploads ON up_rel=comp_id AND up_pagefile=" . $this->app->scope->company->logo . "
+					LEFT JOIN uploads ON up_rel=comp_id AND up_pagefile=" . \System\Attachment\Type::CompanyLogo->value . "
 			GROUP BY
 				comp_id
 			;"
 		);
-		if ($rcomp && $rowcomp = $rcomp->fetch_assoc()) {
+
+		if ($mysqli_result && $mysqli_result->num_rows > 0 && $row = $mysqli_result->fetch_assoc()) {
 			$this->company = new Company();
-			$this->company->id = (int) $rowcomp['comp_id'];
-			$this->company->name = $rowcomp['comp_name'];
-			$this->company->logo = (int) $rowcomp['up_id'];
-		}
-		if ($this->company) {
-			if (
-				$racc = $this->app->db->query(
-					"SELECT 
-						prt_id,prt_name,cur_symbol,cur_name,cur_id,cur_shortname,upr_prt_inbound,upr_prt_outbound,upr_prt_fetch,upr_prt_view
-					FROM 
-						`acc_accounts` 
-							JOIN currencies ON cur_id = prt_currency
-							JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . $this->app->user->info->id . " AND upr_prt_fetch=1
-							JOIN user_settings ON usrset_usr_id = " . $this->app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemWorkingAccount->value . " AND usrset_usr_defind_name={$this->company->id} AND usrset_value=prt_id 
-					WHERE
-						prt_company_id=" . $this->app->user->company->id . ";"
-				)
-			) {
-
-				if ($rowacc = $racc->fetch_assoc()) {
-
-					$this->account = new \System\Finance\Account();
-					$this->account->currency = new \System\Finance\Currency();
-					$this->account->role = new \System\Finance\AccountRole();
-
-					$this->account->id = (int) $rowacc['prt_id'];
-					$this->account->name = $rowacc['prt_name'];
-
-					$this->account->currency->id = (int) $rowacc['cur_id'];
-					$this->account->currency->name = $rowacc['cur_name'];
-					$this->account->currency->symbol = $rowacc['cur_symbol'];
-					$this->account->currency->shortname = $rowacc['cur_shortname'];
-
-					$this->account->role->inbound = isset($rowacc['upr_prt_inbound']) && (int) $rowacc['upr_prt_inbound'] == 1 ? true : false;
-					$this->account->role->outbound = isset($rowacc['upr_prt_outbound']) && (int) $rowacc['upr_prt_outbound'] == 1 ? true : false;
-					$this->account->role->access = isset($rowacc['upr_prt_fetch']) && (int) $rowacc['upr_prt_fetch'] == 1 ? true : false;
-					$this->account->role->view = isset($rowacc['upr_prt_view']) && (int) $rowacc['upr_prt_view'] == 1 ? true : false;
-				}
-			}
+			$this->company->id = (int) $row['comp_id'];
+			$this->company->name = $row['comp_name'];
+			$this->company->logo = empty($row['up_id']) ? "" : (int) $row['up_id'];
+			$this->loadSessionAccount();
 		}
 	}
 
+	private function loadSessionAccount(): void
+	{
+		if (
+			$mysqli_result = $this->app->db->query(
+				"SELECT usrset_value
+				FROM user_settings 
+				WHERE
+					usrset_usr_id = " . $this->app->user->info->id . " AND 
+					usrset_type = " . \System\Personalization\Identifiers::SystemWorkingAccount->value . " AND 
+					usrset_usr_defind_name = {$this->company->id};"
+			)
+		) {
+			if ($mysqli_result->num_rows > 0 && $row = $mysqli_result->fetch_row()) {
+				$this->account = new Account($this->app, (int) $row[0]);
+			}
+		}
+	}
 	public function register_company(int $company_id): bool
 	{
 		$r = $this->app->db->query("
@@ -207,7 +190,7 @@ class User extends Person
 			//setcookie("cur", "", time() - 3600);
 			$this->info = new PersonData();
 			$this->company = null;
-			$this->account = new Account();
+			$this->account = null;
 			$this->logged = false;
 		}
 		return true;

@@ -1,8 +1,7 @@
 <?php
+$_v = "?rev=" . uniqid();
 
-use System\App;
 use System\FileSystem\Hierarchy;
-use System\Finance\Accounting;
 use System\Finance\AccountRole;
 use System\Personalization\Bookmark;
 use System\SmartListObject;
@@ -20,11 +19,6 @@ if (isset($fs()->parameters) && preg_match("/side-panel([0-9]+)/", $fs()->parame
 
 $__workingaccount = false;
 
-if ($app->user->account && $app->user->account->id) {
-	$accounting = new Accounting($app);
-	$__workingaccount = $accounting->account_information($app->user->account->id);
-}
-
 $SmartListObject = new SmartListObject($app);
 
 ?>
@@ -35,8 +29,7 @@ $SmartListObject = new SmartListObject($app);
 	<meta charset="utf-8" />
 	<base href="<?php echo "{$app->http_root}"; ?>" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport"
-		content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<meta name="apple-mobile-web-app-title" content="<?= $app->settings->site['title'] ?>" />
@@ -49,30 +42,31 @@ $SmartListObject = new SmartListObject($app);
 		<?= "{$app->settings->site['title']} - " . $fs()->title ?>
 	</title>
 
-	<link media="screen,print" rel="stylesheet" href="static/style/style.main.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.messagesys.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.button.set.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.slo.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.bom-table.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.checkbox.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.popup.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.ios-checkbox.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.template.css" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css" />
+	<link media="screen,print" rel="stylesheet" href="static/style/theme/default.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.main.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.messagesys.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.button.set.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.slo.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.bom-table.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.checkbox.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.popup.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.ios-checkbox.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.template.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css<?= $_v ?>" />
 	<?php
 	if (array_key_exists('css', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['css']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "	<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}\" />\n";
+				echo "	<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}{$_v}\" />\n";
 		}
 	}
 	?>
 	<script type="text/javascript" src="static/jquery/jquery.min-3.7.1.js"></script>
-	<script type="text/javascript" src="static/jquery/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js"></script>
-	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js"></script>
-	<script type="text/javascript" src="static/jquery/slo-1.4.js"></script>
+	<script type="text/javascript" src="static/jquery/jquery-ui.min.js<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/slo-1.4.js<?= $_v ?>"></script>
 	<?php if ($__side_panel && $__side_panel->permission->deny == false) {
 		echo '<script type="text/javascript" src="static/javascript/template.sidepanel.js"></script>';
 	} ?>
@@ -81,15 +75,13 @@ $SmartListObject = new SmartListObject($app);
 		$load = explode(";", $fs()->cdns['js']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "	<script type=\"text/javascript\" src=\"static/{$file}\"></script>\n";
+				echo "	<script type=\"text/javascript\" src=\"static/{$file}{$_v}\"></script>\n";
 		}
 	}
 	?>
 </head>
 
-<body>
-
-	
+<body class="theme-default <?= $themeDarkMode->mode; ?>" data-mode="<?= $themeDarkMode->mode; ?>">
 	<span class="header-ribbon noprint">
 		<div>
 			<div class="btnheader-set" style="white-space:nowrap">
@@ -107,14 +99,15 @@ $SmartListObject = new SmartListObject($app);
 
 					echo "<span class=\"gap\" style=\"text-align:right;\"></span>";
 					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=company\" tabindex=\"-1\" title=\"Running Company\" id=\"jqroot_com\">" . ($app->user->company->name ? $app->user->company->name : "N/A") . "</a>";
-					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($__workingaccount['name']) ? "<span id=\"jqroot_accgrp\">" . $__workingaccount['group'] . ": </span>" . $__workingaccount['name'] : "N/A") . "</a>";
-					if ($__workingaccount && $__workingaccount['balance'] != false) {
-						echo "<span id=\"jqroot_bal\">" . ($__workingaccount['balance'] < 0 ? "(" . number_format(abs($__workingaccount['balance']), 2, ".", ",") . ")" : number_format(abs($__workingaccount['balance']), 2, ".", ","));
-						echo " {$__workingaccount['currency']['shortname']}</span>";
+					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($app->user->account) ? "<span id=\"jqroot_accgrp\"></span><span class=\"mediabond-hide\">" . $app->user->account->type->name . ": </span>" . $app->user->account->name : "N/A") . "</a>";
+					if ($app->user->account && $app->user->account->role->view) {
+						echo "<span id=\"jqroot_bal\">" . ($app->user->account->balance < 0 ? "(" . number_format(abs($app->user->account->balance), 2, ".", ",") . ")" : number_format(abs($app->user->account->balance), 2, ".", ","));
+						echo " {$app->user->account->currency->shortname}</span>";
 					} else {
-						echo "<span>{$__workingaccount['currency']['shortname']}</span>";
+						echo "<span>{$app->user->account->currency->shortname}</span>";
 					}
 					//<cite>1</cite>
+					echo "<a tabindex=\"-1\" class=\"mediabond-hide js-input_darkmode-toggle\"><span style=\"font-family:icomoon4;\" title=\"Toggle Dark Mode\">&#xe9d4;</span></a>";
 					echo "<a href=\"user-account/\" tabindex=\"-1\" id=\"header-menu-useraccount-button\"><span style=\"font-family:icomoon4;\" title=\"User Settings\">&#xe971;</span></a>";
 					echo "<a href=\"{$fs()->dir}/?logout\" tabindex=\"-1\" id=\"header-menu-logout\"><span style=\"font-family:icomoon4;\" title=\"Logout\">&#xe9b6;</span></a>";
 				}
@@ -171,8 +164,7 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<header>
 						<span class="btn-set">
-							<input type="text" class="flex" id="account-menu-slo" data-url="<?= $fs()->dir ?>"
-								data-list="accounts-list" data-slo=":LIST">
+							<input type="text" class="flex" id="account-menu-slo" data-url="<?= $fs()->dir ?>" data-list="accounts-list" data-slo=":LIST">
 						</span>
 						<datalist id="accounts-list">
 							<?php
@@ -247,8 +239,7 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<header>
 						<span class="btn-set">
-							<input type="text" class="flex" id="company-menu-slo" data-url="<?= $fs()->dir ?>"
-								data-slo="COMPANY_USER">
+							<input type="text" class="flex" id="company-menu-slo" data-url="<?= $fs()->dir ?>" data-slo="COMPANY_USER">
 						</span>
 					</header>
 					<div style="white-space:nowrap;" class="menu-items">
@@ -282,8 +273,10 @@ $SmartListObject = new SmartListObject($app);
 						$bookmarked = $bookmark->isBookmarked($fs()->id);
 
 						echo "<div>" . $app->user->info->name . "</div>";
-						echo "<a href=\"user-account/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"User Settings\">&#xe971;</span><span>Password & Security</span></a>";
-						echo "<a href=\"{$fs(263)->dir}\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"User Settings\">&#xe971;</span><span>Bookmarks management</span></a>";
+						echo "<a href=\"user-account/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Preferences & Security\">&#xe971;</span><span>Preferences & Security</span></a>";
+						echo "<a href=\"\" class=\"js-input_darkmode-toggle\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Toggle Dark Mode\">&#xe9d4;</span><span>Toggle Dark Mode</span></a>";
+						echo "<a href=\"{$fs(263)->dir}\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Bookmarks\">&#xe9d9;</span><span>Bookmarks</span></a>"; //e9d7
+						echo "<a href=\"{$fs(17)->dir}\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Settings\">&#xe994;</span><span>Settings</span></a>";
 						echo "<a href=\"{$fs()->dir}/?logout\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Logout\">&#xe9b6;</span><span>Logout</span></a>";
 						echo "<div><span class=\"btn-set \"><span class=\"flex\" style=\"padding:10px 0px 0px 0px;background:none;border:none\">Bookmarks</span>";
 						if (!$bookmarked) {
@@ -315,8 +308,7 @@ $SmartListObject = new SmartListObject($app);
 				<div style="position:relative;">
 					<?php if ($__side_panel && !$__side_panel->permission->deny && is_file("website-contents/" . $__side_panel->id . ".php")) { ?>
 						<span style="position: absolute;right:0px;top:45px;width:310px">
-							<span
-								style="position: fixed;display: block;z-index: 999;font-size: 0.7em;padding-left: 4px;color:#ccc">
+							<span style="position: fixed;display: block;z-index: 999;font-size: 0.7em;padding-left: 4px;color:#ccc">
 								<?= $__side_panel->id; ?>
 							</span>
 							<span id="template-sidePanel" data-template_url="<?= $__side_panel->dir ?>">
@@ -327,3 +319,5 @@ $SmartListObject = new SmartListObject($app);
 						</span>
 					<?php } ?>
 					<div <?= ($__side_panel && $__side_panel->permission->deny == false) ? "class=\"template-enableSidePanel\"" : ""; ?> id="body-content">
+
+						<?php unset($SmartListObject); ?>

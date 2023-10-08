@@ -14,26 +14,18 @@ class AttachLib
 	public function delete($attach_id)
 	{
 		$up_id = (int)$attach_id;
-		$this->app->db->autocommit(false);
 		$r = $this->app->db->query("DELETE FROM uploads WHERE up_id=$up_id;");
 		if ($r) {
-			$dr = true;
 			try {
-				if (file_exists($app->root . "uploads/" . $up_id))
-					$dr &= @unlink($app->root . "uploads/" . $up_id);
-				if (file_exists($app->root . "uploads/" . $up_id . "_v"))
-					$dr &= @unlink($app->root . "uploads/" . $up_id . "_v");
-				if (file_exists($app->root . "uploads/" . $up_id . "_t"))
-					$dr &= @unlink($app->root . "uploads/" . $up_id . "_t");
+				if (file_exists($this->app->root . "uploads/" . $up_id))
+					unlink($this->app->root . "uploads/" . $up_id);
+				if (file_exists($this->app->root . "uploads/" . $up_id . "_v"))
+					unlink($this->app->root . "uploads/" . $up_id . "_v");
+				if (file_exists($this->app->root . "uploads/" . $up_id . "_t"))
+					unlink($this->app->root . "uploads/" . $up_id . "_t");
 			} catch (\Exception $e) {
 			}
-			if ($dr) {
-				$this->app->db->commit();
-				return true;
-			} else {
-				$this->app->db->rollback();
-				return false;
-			}
+			return true;
 		} else {
 			return false;
 		}

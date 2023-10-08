@@ -1,5 +1,4 @@
 .btn-set {
-	--color-mid-gray: rgb(200, 200, 210);
 	flex-wrap: nowrap;
 	-webkit-display: flex;
 	display: flex;
@@ -15,8 +14,8 @@
 .btn-set>* {
 	padding: 7px 12px 13px 12px;
 	outline: none;
-	background-color: #fff;
-	border: solid 1px var(--color-mid-gray);
+	background-color: var(--btnset-static-background-color);
+	border: solid 1px var(--btnset-static-border-color);
 	height: 32px;
 	position: relative;
 	margin-left: -.5px;
@@ -28,8 +27,7 @@
 
 .btn-set>span {
 	white-space: nowrap;
-	color: #333;
-	background-color: var(--color-faint-gray);
+	color: var(--color-font);
 	/* background-color: var(--color-faint-white); */
 }
 
@@ -37,31 +35,22 @@
 .btn-set>div,
 .btn-set>span {
 	padding: 8.5px 12px 11.5px 12px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.btn-set>textarea {
+	padding: 7px 6px;
 }
 
 .btn-set>div {
 	background-color: #666;
 	border-color: #000;
 	color: #fff;
-
-}
-
-.btn-set>button {
-	font-size: 1em;
-	color: #333;
-	font-weight: normal;
-	cursor: pointer;
-}
-
-.btn-set>input[type=text],
-.btn-set>input[type=number],
-.btn-set>input[type=date],
-.btn-set>input[type=password],
-.btn-set>textarea {
-	font-size: 1em;
-	max-width: 100%;
-	border-radius: 0px;
-	border: solid 1px var(--color-mid-gray);
 }
 
 .btn-set>span.gap {
@@ -71,29 +60,54 @@
 	box-shadow: none;
 }
 
+
+
+
+.btn-set>input,
+.btn-set>textarea {
+	font-size: 1em;
+	max-width: 100%;
+	border-radius: 0px;
+	border: solid 1px var(--btnset-input-border-color);
+	background-color: var(--btnset-input-background-color);
+}
+
 .btn-set>button,
-.btn-set>a,
-.btn-set>label.checkbox,
-.btn-set>span.menu {
-	background-color: #fff;
-	user-select: none;
-	/* background-image: linear-gradient(180deg, white 90%, rgb(240, 241, 247) 90%); */
-	background-color: white;
+.btn-set>a {
+	font-size: 1em;
+	background-color: var(--btnset-botton-background-color);
+	color: var(--root-font-color);
+	font-weight: normal;
+	cursor: pointer;
+	border-color: var(--btnset-botton-border-color);
 }
 
 .btn-set>input:hover,
 .btn-set>label:hover,
 .btn-set>button:hover,
+.btn-set>textarea:focus,
 .btn-set>a:hover {
-	border-color: #999;
+	border-color: var(--btnset-inputhover-border-color);
 	text-decoration: none;
-	z-index: 10;
+	z-index: 12;
+}
+
+.btn-set>input:focus,
+.btn-set>label:hover,
+.btn-set>button:focus,
+.btn-set>textarea:focus,
+.btn-set>a:focus {
+	border-color: rgba(82, 168, 236, .75);
+	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	z-index: 13;
 }
 
 .btn-set>button:hover,
 .btn-set>a:hover {
 	/* background-image: linear-gradient(180deg, white 90%, rgb(220, 220, 230) 90%); */
-	background-color: var(--color-faint-gray);
+	background-color: var(--btnset-bottonhover-background-color);
 }
 
 
@@ -112,22 +126,14 @@
 .btn-set input[disabled],
 .btn-set textarea[disabled],
 .btn-set button[disabled] {
-	color: #bbb !important;
-	background-color: var(--color-faint-gray);
+	color: rgba(200, 200, 200, .3) !important;
+	background-color: var(--btnset-bottondisabled-background-color);
 	pointer-events: none;
+	border-color: var(--btnset-static-border-color);
 }
 
 
-.btn-set>input[type=text]:focus,
-.btn-set>input[type=date]:focus,
-.btn-set>input[type=number]:focus,
-.btn-set>textarea:focus,
-.btn-set>button:focus,
-.btn-set>a:focus {
-	border-color: rgba(82, 168, 236, .75);
-	box-shadow: 0 0 3px 0px rgba(82, 168, 236, .3);
-	z-index: 10;
-}
+
 
 
 
@@ -135,15 +141,16 @@
 .btn-set>button:focus,
 .btn-set>a:focus {
 	/* background-image: linear-gradient(180deg, var(--color-faint-white) 90%, rgba(82, 168, 236, .5) 90%); */
-	background-color: var(--color-faint-gray);
+	background-color: var(--btnset-bottonfocus-background-color);
 
 }
 
 
 .btn-set>button:active,
 .btn-set>a:active {
-	box-shadow: 0 0 4px 1px rgba(82, 168, 236, .3), inset 1px 2px 3px 0px rgba(50,50,50,0.3);
-	background-color: rgba(243, 247, 255, 1);
+	box-shadow: 0 0 4px 1px rgba(82, 168, 236, .3);
+	/* , inset 1px 2px 4px 0px rgba(0, 0, 0, 0.4); */
+	background-color: var(--btnset-bottonactive-background-color);
 	padding: 8px 11px 11px 13px;
 
 }
@@ -682,7 +689,7 @@
 }
 
 .btn-set.normal>span.slo-wrap>input[type=text],
-.btn-set.normal>span.slo-wrap>input[type=date], 
+.btn-set.normal>span.slo-wrap>input[type=date],
 .btn-set.normal>span.slo-wrap>input[type=number] {
 	padding: 3px 19px 3px 6px;
 	height: 24px;

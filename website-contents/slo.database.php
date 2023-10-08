@@ -662,17 +662,6 @@ $rl["ACC_EDITORS"] = array(
 	"group" => "",
 );
 
-$rl["ACC_TYPES"] = array(
-	"from" => " acc_transtypes ",
-	"return_id" => array("acctyp_type" => "acctyp_type"),
-	"return_value" => array("acctyp_name" => "acctyp_name"),
-	"select" => array("acctyp_name" => "acctyp_name"),
-	"minselect" => array(),
-	"search" => array("acctyp_name" => "acctyp_name"),
-	"where" => "",
-	"group" => "",
-	"order" => array("acctyp_type")
-);
 
 
 

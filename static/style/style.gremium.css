@@ -1,8 +1,7 @@
 .gremium {
-	--testColor: #fff;
-	/*  rgba(210, 200, 225, 0.5); */
 	--gremium-width: 800px;
 	--gremium-header-toggle: 0px;
+	--gremium-header-height: 70px;
 }
 
 .gremium.limit-width {
@@ -17,18 +16,16 @@
 
 .gremium>header {
 	padding: 20px 10px 0px 10px;
-	height: var(--gremium--header-height);
-	color: #333;
+	color: var(--root-font-color);
 	z-index: 30;
 	display: flex;
 	justify-content: space-between;
 	cursor: default;
 	user-select: none;
 	white-space: nowrap;
-	background-color: var(--color-background);
+	background-color: var(--root-background-color);
 	display: flex;
 	justify-content: flex-start;
-	z-index: 30;
 	height: 70px;
 }
 
@@ -95,19 +92,19 @@
 	display: inline-block;
 	font-family: "icomoon";
 	text-align: center;
-	color: #333;
+	color: var(--root-ribbon-font-color);
 	content: "\e618";
-	padding: 15px 0px 15px 10px;
-	-webkit-transition: padding 0.3s ease;
-	transition: padding 0.3s ease;
+	padding: 15px 7px 15px 13px;
+	-webkit-transition: padding 0.2s ease;
+	transition: padding 0.2s ease;
 }
 
 .gremium>header>a.previous:hover::before,
 .gremium>header>a.previous:active::before,
 .gremium>header>a.previous:focus::before,
 .gremium>header>a.previous:target::before {
-	color: #06c;
-	padding: 15px 10px 15px 0px
+	color: var(--root-link-color);
+	padding: 15px 13px 15px 7px
 }
 
 
@@ -172,8 +169,8 @@
 .gremium>menu {
 	padding: 5px 10px 10px 10px;
 	margin: 0;
-	color: #333;
-	background-color: #fff;
+	color: var(--root-font-color);
+	background-color: var(--root-background-color);
 	z-index: 40;
 }
 
@@ -182,12 +179,11 @@
 }
 
 .gremium>menu>* {
-	color: #333
+	color: var(--root-font-color);
 }
 
 .gremium>menu.glue {
 	position: sticky;
-	top: calc(var(--gremium--header-height) + var(--root--menubar-height));
 }
 
 /* #endregion Gremium Menu */
@@ -200,7 +196,7 @@
 .gremium>legend {
 	padding: 0px 10px 10px 10px;
 	user-select: none;
-	background-color: #fff;
+	background-color: var(--root-background-color);
 	z-index: 20;
 	width: 100%;
 	margin-right: 0px;
@@ -208,7 +204,7 @@
 }
 
 .gremium>article {
-	padding: 0px 10px;
+	padding:  0px 10px; 
 }
 
 

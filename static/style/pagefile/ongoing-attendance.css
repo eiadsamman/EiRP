@@ -42,10 +42,9 @@ td.employee-photo>div {
 	min-width: 100px;
 	margin: 10px;
 	padding: 20px;
-	box-shadow: 1px 1px 3px rgba(230, 230, 240, 0.6);
-	border: solid 1px #e8e8ea;
-	background: #fff
-		/* background: linear-gradient(180deg, rgba(255, 255, 255, 1) 80%, rgba(245, 245, 253, .4) 100%); */
+	border: solid 1px var(--root-ribbon-menu-background-color);
+	background-color: var(--btnset-static-background-color);
+	/* background: linear-gradient(180deg, rgba(255, 255, 255, 1) 80%, rgba(245, 245, 253, .4) 100%); */
 }
 
 .bom-table.local-force>tbody>tr>td {
@@ -54,6 +53,8 @@ td.employee-photo>div {
 	padding: 2px;
 	min-height: auto;
 	text-align: center;
+	background-color: var(--btnset-static-background-color);
+
 }
 
 .bom-table.local-force>tbody>tr>td:nth-child(4) {
@@ -117,13 +118,8 @@ td.employee-photo>div {
 	.bom-table.local-mediabond-table>tbody>tr {
 		display: inline-block;
 		min-width: 100px;
-		border: solid 1px #e4e4e4;
 		margin: 5px;
 		padding: 14px;
-		box-shadow: 0px 0px 5px rgba(100, 100, 100, 0.2);
-		border: solid 1px #ddd;
-		background: rgb(255, 255, 255);
-		background: linear-gradient(180deg, rgba(255, 255, 255, 1) 52%, rgba(247, 247, 250, 1) 100%);
 	}
 
 	.bom-table.local-mediabond-table>tbody>tr>td {

@@ -129,7 +129,6 @@ $initial_values = array(
 
 
 
-$SmartListObject = new SmartListObject($app);
 $grem = new Gremium\Gremium(false);
 
 $grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
@@ -195,7 +194,7 @@ unset($grem);
 	}
 
 	td.value-number.final {
-		font-weight: bold;
+		/* font-weight: bold; */
 	}
 
 	td.value-number.final.negative {}
@@ -228,21 +227,16 @@ unset($grem);
 	.statment-view>td.blank {
 		display: none;
 	}
+
 	@media only screen and (max-width: 800px) {
 		.table-head {
 			position: relative;
-			top:0 !important
+			top: 0 !important
 		}
 
 	}
 
 	@media only screen and (max-width: 768px) {
-
-		table.bom-table.statment-view>thead>tr>td:nth-child(4),
-		table.bom-table.statment-view>tbody>tr>td:nth-child(4),
-		table.bom-table.statment-view>tfoot>tr>td:nth-child(4) {
-			/* display: none; */
-		}
 
 		table.bom-table.statment-view>thead,
 		table.bom-table.statment-view>tfoot {
@@ -254,7 +248,7 @@ unset($grem);
 		}
 
 		table.bom-table.statment-view>tbody>tr {
-			border-bottom: solid 1px var(--color-soft-gray);
+			border-bottom: solid 1px var(--bomtable-border-color);
 			display: flex;
 			flex-wrap: wrap;
 
@@ -289,20 +283,13 @@ unset($grem);
 			flex: 1
 		}
 
-
-		table.bom-table.statment-view>tbody>tr>td:nth-child(5),
-		table.bom-table.statment-view>tbody>tr>td:nth-child(6),
-		table.bom-table.statment-view>tbody>tr>td:nth-child(7) {
-			/* border-right: solid 1px rgb(230, 230, 235); */
-
-		}
-
 		table.bom-table.statment-view>tbody>tr>td:nth-child(6) {
-			color: darkcyan
 		}
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(7) {
-			color: crimson
+		}
+		table.bom-table.statment-view>tbody>tr>td:nth-child(8) {
+			font-weight: bold;
 		}
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(n+6) {
@@ -340,7 +327,7 @@ unset($grem);
 <script type="text/javascript">
 	$(document).ready(function (e) {
 		nav = new Navigator({
-			"page": <?php echo $initial_values['page']; ?>,
+			"page": <?= (int) $initial_values['page']; ?>,
 			"from": "",
 			"to": "",
 		}, "<?= $fs()->dir ?>");
@@ -398,14 +385,23 @@ unset($grem);
 
 				nav.setProperty("page", fn_current);
 				slo_page_current.set(fn_current, fn_current);
-
-				slo_page_current.input[0][0].dataset.rangeend = total_pages;
-				slo_page_current.handlersInit();
-
-				if (total_pages == 1) {
+				try {
+					if (slo_page_current[0].slo.handler instanceof NumberHandler) {
+						slo_page_current[0].slo.handler.rangeEnd(parseInt(total_pages));
+					}
+				} catch (e) {
+					slo_page_current.clear();
+				}
+				if (total_pages == 0) {
 					js_input_cmd_next.attr("disabled", true);
 					js_input_cmd_prev.attr("disabled", true);
-					slo_page_current.disable()
+					js_output_page_total.attr("disabled", true);
+					slo_page_current.disable();
+				}else if (total_pages == 1) {
+					js_input_cmd_next.attr("disabled", true);
+					js_input_cmd_prev.attr("disabled", true);
+					js_output_page_total.attr("disabled", false);
+					slo_page_current.disable();
 				} else if (total_pages > 1) {
 					slo_page_current.enable()
 					if (nav.getProperty("page") == 0) {
@@ -415,6 +411,7 @@ unset($grem);
 					} else {
 						js_input_cmd_next.attr("disabled", false);
 					}
+					js_output_page_total.attr("disabled", false);
 				}
 
 				js_output_statements_count.html(fn_count);
@@ -483,9 +480,11 @@ unset($grem);
 			nav.setProperty("page", 0);
 			js_input_cmd_prev.attr("disabled", true);
 			nav.pushState();
-			slo_page_current.input[0][0].dataset.rangeend = 1;
-			slo_page_current.handlersInit();
-
+			try {
+				if (slo_page_current[0].slo.handler instanceof NumberHandler) {
+					slo_page_current[0].slo.handler.rangeEnd(1);
+				}
+			} catch (e) { }
 			xhttp_request(nav, false);
 		});
 		xhttp_request(nav, false);

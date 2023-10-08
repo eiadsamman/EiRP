@@ -10,11 +10,7 @@ $debug = false;
 $debug_level = "fatal";
 $accounts_comparition_style = " OR ";
 $accounting = new Accounting($app);
-$__defaultaccount = $accounting->account_information($app->user->account->id);
 $__systemdefaultcurrency = $accounting->system_default_currency();
-if ($__defaultaccount) {
-	$__defaultcurrency = $accounting->account_default_currency($__defaultaccount['id']);
-}
 
 include("99.prepare.php");
 
@@ -134,7 +130,7 @@ if ($r) {
 		foreach ($array_output as $main) {
 			fputcsv($output, array(
 				$main['info']['id'],
-				$accounting->get_transaction_type($main['info']['transaction_type']),
+				\System\Finance\Transaction\Nature::tryFrom((int)$main['info']['transaction_type'])->value,
 				$main['details']['creditor']['raw_value'],
 				$main['details']['creditor']['currency'],
 				$main['details']['creditor']['account'],
@@ -148,7 +144,7 @@ if ($r) {
 
 			fputcsv($output, array(
 				$main['info']['id'],
-				$accounting->get_transaction_type($main['info']['transaction_type']),
+				\System\Finance\Transaction\Nature::tryFrom((int)$main['info']['transaction_type'])->value,
 				$main['details']['debitor']['raw_value'],
 				$main['details']['debitor']['currency'],
 				$main['details']['debitor']['account'],

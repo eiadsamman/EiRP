@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace System;
 
-use System\Attachment\Scope;
 use System\Exceptions\HR\InactiveAccountException;
 use System\Exceptions\HR\InvalidLoginException;
 
 
-/* 
-\$sXql->fetch_assoc\((.*?)\)
-$1->fXetch_assoc()
- *///$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);
+//$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);
 class App
 {
 	public \mysqli $db;
@@ -37,7 +33,6 @@ class App
 
 	public Settings $settings;
 
-	public Scope $scope;
 
 	protected array $permissions_array = array();
 	private string|null $route = null;
@@ -86,8 +81,12 @@ class App
 		$this->user = new Individual\User($this);
 
 		/* Page requested with XHTTP  */
-		$this->xhttp = isset($_SERVER['HTTP_X_REQUESTED_WITH']) ? true : false;
 
+		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) || isset($_SERVER['HTTP_APPLICATION_FROM'])) {
+			$this->xhttp = true;
+		} else {
+			$this->xhttp = false;
+		}
 		$this->permissions_array = array();
 
 
@@ -97,7 +96,6 @@ class App
 		header("Cache-Control: " . ($chache ? "public" : "no-cache, no-store, must-revalidate"));
 		header("Pragma: " . ($chache ? "public" : "no-cache"));
 
-		$this->scope = new Scope();
 	}
 
 
@@ -108,7 +106,6 @@ class App
 		}
 		return false;
 	}
-
 
 	public function initializeSystemCurrency(): bool
 	{
@@ -124,6 +121,9 @@ class App
 		}
 		return false;
 	}
+
+
+
 	public function initializePermissions(): void
 	{
 		$stmt = $this->db->prepare("SELECT per_id,per_title,per_order FROM permissions");
@@ -262,7 +262,7 @@ class App
 					}
 				} catch (\mysqli_sql_exception $e) {
 					return 9;
-				} catch (Individual\PersonNotFoundException $e) {
+				} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
 					return 4;
 				}
 			}

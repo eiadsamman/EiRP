@@ -231,7 +231,7 @@ class Registration extends \System\Individual\Employee
 							
 							LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 							LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
-							LEFT JOIN uploads ON (up_pagefile=" . $this->app->scope->individual->portrait . ") AND up_rel=lbr_id AND up_deleted=0
+							LEFT JOIN uploads ON (up_pagefile=" .  \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted=0
 							
 					) AS personDetails ON personDetails.lbr_id = joiner.ltr_usr_id
 							
@@ -279,7 +279,7 @@ class Registration extends \System\Individual\Employee
 					FROM 
 						labour 
 							JOIN users ON lbr_id = usr_id
-							LEFT JOIN uploads ON (up_pagefile=" . $this->app->scope->individual->portrait . ") AND up_rel=lbr_id AND up_deleted=0
+							LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted=0
 					WHERE
 						lbr_company = {$parameters['company']}
 
@@ -377,7 +377,7 @@ class Registration extends \System\Individual\Employee
 							
 							LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 							LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
-							LEFT JOIN uploads ON (up_pagefile=" . $this->app->scope->individual->portrait . ") AND up_rel=lbr_id AND up_deleted=0
+							LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted=0
 						WHERE
 							lbr_company = {$parameters['company']}
 							" . (isset($parameters['paymethod']) && (int)$parameters['paymethod'] != 0 ? " AND lbr_payment_method=" . ($parameters['paymethod']) : "") . " 

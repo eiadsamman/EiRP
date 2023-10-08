@@ -6,7 +6,7 @@
 
 	.uploads-image-list>a {
 		display: inline-block;
-		border: solid 1px #fff;
+		border: solid 1px var(--root-ribbon-border-color);
 		margin: 2px;
 		width: 205px;
 		background-repeat: no-repeat;
@@ -14,21 +14,22 @@
 		background-size: 193px 193px;
 		padding-top: 210px;
 		padding-bottom: 10px;
-		color: #333;
+		color: var(--root-link-color);
 
 	}
 
 	.uploads-image-list>a:hover {
-		background-color: #e5f3ff;
+		background-color: var(--root-ribbon-menu-itemhover-background-color);
 		text-decoration: none;
-		border: solid 1px #99d1ff;
+		border: solid 1px var(--root-ribbon-border-color);
 	}
 
 	.uploads-image-list>a>span {
 		display: block;
 		text-align: center;
 		white-space: nowrap;
-		overflow-x: hidden;
+		overflow: hidden;
+		height:20px;
 		text-overflow: ellipsis;
 		padding: 0px 15px;
 	}
@@ -36,7 +37,7 @@
 	.uploads-image-list>a>span.acc-imglist-d {
 		font-size: 0.9em;
 		margin-top: 5px;
-		color: #999;
+		color: var(--root-font-color);
 	}
 </style>
 <div>

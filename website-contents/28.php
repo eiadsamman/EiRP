@@ -132,7 +132,7 @@ $printverified = isset($_POST['verified']) && $_POST['verified'] == '1' ? true :
 	FROM
 		labour 
 			JOIN users ON usr_id=lbr_id
-			LEFT JOIN uploads ON (up_pagefile=" . $app->scope->individual->portrait . " ) AND up_rel=lbr_id AND up_deleted=0
+			LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " ) AND up_rel=lbr_id AND up_deleted=0
 			LEFT JOIN 
 				(SELECT lty_id,lty_name,lsc_name,lsc_color FROM labour_type JOIN labour_section ON lty_section=lsc_id) AS _labour_type ON _labour_type.lty_id=lbr_type
 			LEFT JOIN labour_shifts ON lsf_id=lbr_shift

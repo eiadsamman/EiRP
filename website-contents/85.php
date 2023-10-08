@@ -31,7 +31,6 @@ $database = array(
 				) AS _cats ON _cats.acccat_id=accdef_category
 
 		LEFT JOIN companies ON companies.comp_id = accdef_company 
-		JOIN acc_transtypes ON acctyp_type = accdef_operation
 		',
 	'tablename' => 'Default accounting settings',
 
@@ -44,10 +43,7 @@ $database = array(
 		'comp_name' => array(null, 'Company', true, null, 'slo', 'string', false, 'COMPANIES', 'accdef_company', '<b>list</b> Company name', null, null, "<i>[All companies]</i>"),
 		'accdef_company' => array(null, '', false, null, 'sloref', 'int', true, null, null),
 
-
-		'acctyp_name' => array(null, 'Type', true, null, 'slo', 'string', false, 'ACC_TYPES', 'accdef_operation', '<b>list</b> Transaction', null, null, null),
-		'accdef_operation' => array(null, 'Type', false, null, 'sloref', 'int', true, null, null, '<b>int(1-4)</b> transaction type'),
-
+		'accdef_operation' => array(null, 'Type', false, null, 'text', 'int', true, null, null, '<b>int(1-4)</b> transaction type [1: income, 2: payment]'),
 
 		'accdef_name' => array(null, 'Name', true, null, 'text', 'string', true, null, null, '<b>char(32)</b> operation name, NOTICE: editing or deleteing any <br />entry in this page may cause fatal errors in the system', null, null),
 

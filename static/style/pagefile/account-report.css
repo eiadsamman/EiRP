@@ -1,95 +1,114 @@
 /* CSS Document */
 
-table.bom-table > tbody > tr.tran-deleted > td{
-	background-color:#f7f7f7;
-	color:#999;
+.payment_type {
+	padding: 6px 0px;
+}
+
+.payment_type.crd {
+	color: var(--root-font-color);
+}
+
+.payment_type.dbt {
+	color: var(--root-ribbon-border-color);
+}
+
+table.bom-table>tbody>tr.tran-deleted>td {
+	background-color: var(--bomtable-stripes-color);
 	/*text-decoration:line-through;*/
 }
 
-.payment_type{
-	padding: 6px 0px;
-}
-.payment_type.crd{
-	color:#333;
-}
-.payment_type.dbt{
-	color:#777;
+table.bom-table>tbody>tr.tran-deleted>td,
+table.bom-table>tbody>tr.tran-deleted>td>div.payment_type {
+	color: rgba(120,120,120,0.6);
+	/*text-decoration:line-through;*/
 }
 
 
-#jQtracer{
-	position:relative;
-}
-.detailed_comments{
-	width:100%;
-}
-.detailed_comments > span{
-	position:absolute;
-	background-color:#FFC;
-	padding:5px 12px;
-	margin-left:-12px;
-	margin-top:-5px;
-	box-shadow:2px 2px 3px 1px rgba(0,0,0,0.2);
-	display:block;
-	display:none;
-	pointer-events:none;
-	border-radius:7px;
-	min-width:200px;
-}
-.detailed_comments:hover > span{
-	display:block;
-}
 
-.upload-list{
-	
-}
-.upload-list > div{
+
+
+#jQtracer {
 	position: relative;
 }
-.upload-list > div > span{
+
+.detailed_comments {
+	width: 100%;
+}
+
+.detailed_comments>span {
+	position: absolute;
+	background-color: #FFC;
+	padding: 5px 12px;
+	margin-left: -12px;
+	margin-top: -5px;
+	box-shadow: 2px 2px 3px 1px rgba(0, 0, 0, 0.2);
+	display: block;
+	display: none;
+	pointer-events: none;
+	border-radius: 7px;
+	min-width: 200px;
+}
+
+.detailed_comments:hover>span {
+	display: block;
+}
+
+.upload-list {}
+
+.upload-list>div {
+	position: relative;
+}
+
+.upload-list>div>span {
 	display: inline-block;
 	position: relative;
 	padding: 7px 12px;
 	border-radius: 6px;
-	background-color: #fff;
+	background-color: var(--root-ribbon-background-color);
 	padding-left: 30px;
-	border:solid 1px #ccc;
+	border: solid 1px var(--root-ribbon-border-color);
 	cursor: default;
-	
+
 }
-.upload-list > div > span:hover{
-	color: #06c
+
+.upload-list>div>span:hover {
+	color: var(--root-link-color);
 }
-.upload-list > div > div{
-	border:solid 1px #ccc;
-	padding:10px 0px;
-	background-color: #fff;
+
+.upload-list>div>div {
+	border: solid 1px #ccc;
+	padding: 10px 0px;
+	background-color: var(--root-modal-background-color);
 	border-radius: 6px;
 	position: absolute;
-	right:0px;
+	right: 0px;
 	display: none;
 }
-.upload-list > div > div > a{
+
+.upload-list>div>div>a {
 	display: block;
 	padding: 3px 15px;
 }
-.upload-list > div > div > a > span:first-child{
+
+.upload-list>div>div>a>span:first-child {
 	display: inline-block;
-	width:20px;
-	color:#999;
+	width: 20px;
+	color: #999;
 }
-.upload-list > div > div > a > span:last-child{
+
+.upload-list>div>div>a>span:last-child {
 	display: inline-block;
 	padding-left: 10px;
-	color:#999;
+	color: #999;
 }
-.upload-list > div > span:before{
-	content:"\e9cd";
+
+.upload-list>div>span:before {
+	content: "\e9cd";
 	position: absolute;
-	font-family:icomoon4;
-	display:inline-block;
-	left:10px;
-	text-align:center;
+	font-family: icomoon4;
+	display: inline-block;
+	left: 10px;
+	text-align: center;
 }
 
 
@@ -99,102 +118,116 @@ table.bom-table > tbody > tr.tran-deleted > td{
 
 
 
-#jQtracer > div.overlay{
-	position:absolute;
-	top:0px;left:0px;
-	bottom:0px;right:0px;
-	z-index:40;
-	background-color:rgba(255,255,255,0.5);
-	text-align:center;
-	background:url('static/images/q-loading.gif') rgba(255,255,255,0.6) no-repeat 50% 20px;
-	display:none;
-}
-#jQoutput > table > tr > td{
-	line-height:1.8em;
-}
-
-div.btn-set.list > span,div.btn-set.list > input {
-	-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;
+#jQtracer>div.overlay {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	z-index: 40;
+	background-color: rgba(255, 255, 255, 0.5);
+	text-align: center;
+	background: url('static/images/q-loading.gif') rgba(255, 255, 255, 0.6) no-repeat 50% 20px;
+	display: none;
 }
 
-.slo_list{
-	border:solid 1px #ccc;
-	margin-top:5px;
-	min-height:90px;
-	max-height:90px;
-	overflow:auto;
+#jQoutput>table>tr>td {
+	line-height: 1.8em;
 }
-.slo_list > span{
-	padding:4px 6px 4px 0px;
-	display:block;
-	margin:1px;
-	border:solid 1px transparent;
-	position:relative;
+
+div.btn-set.list>span,
+div.btn-set.list>input {
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	-webkit-flex: 1;
+	-ms-flex: 1;
+	flex: 1;
+}
+
+.slo_list {
+	border: solid 1px var(--bomtable-border-color);
+	margin-top: 5px;
+	min-height: 97px;
+	max-height: 97px;
+	overflow: auto;
+}
+
+.slo_list>span {
+	padding: 9px;
+	padding-left: 2px;
+	display: block;
+	position: relative;
 	-webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    cursor:default;
-}
-.slo_list > span:hover{
-	text-shadow: 1px 1px 0 #fff;
-	background-color: rgba(82,168,236,.1);
-	border-color:	rgba(82,168,236,.75);
-	text-decoration:none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
 }
 
-.slo_list > span > b{
-	display:inline-block;
-	font-family:icomoon4;
-	padding:0px 8px;
-	cursor:pointer;
-	font-size:0.6em;
-	position:relative;
-	top:0px;
-	color:#444;
+.slo_list>span:hover {
+	background-color: var(--root-ribbon-menu-itemhover-background-color);
+	border-color: rgba(82, 168, 236, .75);
+	text-decoration: none;
 }
-.slo_list > span > b:hover{
-	color:#f03;
+
+.slo_list>span>b {
+	display: inline-block;
+	font-family: icomoon4;
+	padding: 0px 8px;
+	cursor: pointer;
+	font-size: 0.6em;
+	position: relative;
+	top: 0px;
+	color: #444;
 }
-.slo_list > span > span:nth-child(2){
-	display:inline-block;
-	vertical-align:bottom;
+
+.slo_list>span>b:hover {
+	color: #f03;
+}
+
+.slo_list>span>span:nth-child(2) {
+	display: inline-block;
+	vertical-align: bottom;
 }
 
 
-.slo_list > span > label{
-	position:absolute;
-	right:10px;
-	top:4px;
-	padding-left:20px;
-	color:#777;
+.slo_list>span>label {
+	position: absolute;
+	right: 10px;
+	top: 4px;
+	padding-left: 20px;
+	color: #777;
 }
-.slo_list > span > label > input[type=checkbox]{
-	display:none;
+
+.slo_list>span>label>input[type=checkbox] {
+	display: none;
 }
-.slo_list > span > label > input[type=checkbox] ~ span:before{
-	display:inline-block;
-	content:"\e644";
-	font-family:"icomoon";
-	font-size:1em;
-	width:21px;
-	text-align:center;
-	font-weight:normal;
-	vertical-align:middle;
-	position:absolute;
-	top:0px;
-	left:-0px;
-	z-index:1;
+
+.slo_list>span>label>input[type=checkbox]~span:before {
+	display: inline-block;
+	content: "\e644";
+	font-family: "icomoon";
+	font-size: 1em;
+	width: 21px;
+	text-align: center;
+	font-weight: normal;
+	vertical-align: middle;
+	position: absolute;
+	top: 0px;
+	left: -0px;
+	z-index: 1;
 }
-.slo_list > span > label > input[type=checkbox]:checked ~ span:before{
-	color:#06c;
-	content:"\e644";
+
+.slo_list>span>label>input[type=checkbox]:checked~span:before {
+	color: #06c;
+	content: "\e644";
 }
-.slo_list > span > label > input[type=checkbox]:not(:checked) ~ span:before{
-	color:#f03;
-	content:"";
+
+.slo_list>span>label>input[type=checkbox]:not(:checked)~span:before {
+	color: #f03;
+	content: "";
 }
 
 
@@ -218,122 +251,132 @@ div.btn-set.list > span,div.btn-set.list > input {
 }
 */
 
-#jQgroupable_list{
-	min-height:176px;
-	max-height:176px;
-	overflow:auto;
+#jQgroupable_list {
+	overflow: auto;
 }
-#jQgroupable_list > div{
-	display:block;
-	cursor:default;
-	background-color:#fff;
-	overflow:hidden;
-	border:solid 1px #ddd;
-	border-right:none;
-	margin:-1px 0 0 -1px;
+
+#jQgroupable_list>div {
+	display: block;
+	cursor: default;
+	overflow: hidden;
+	border: solid 1px var(--bomtable-border-color);
+	border-right: none;
+	margin: -1px 0 0 -1px;
 }
-#jQgroupable_list > div:last-child{
-	border-bottom:none;
+
+#jQgroupable_list>div:last-child {
+	border-bottom: none;
 }
-#jQgroupable_list > div > label{
-	display:block;
-	
+
+#jQgroupable_list>div>label {
+	display: block;
+
 }
-#jQgroupable_list > div > label > input[type=checkbox]{
-	display:none;
+
+#jQgroupable_list>div>label>input[type=checkbox] {
+	display: none;
 }
 
 
-#jQgroupable_list > div > label > span{
-	display:block;
-	position:relative;
-	padding:4px 6px 4px 27px;
-}
-#jQgroupable_list > div > label > span:hover{
-	background-color:rgba(230,230,230,0.7);
+#jQgroupable_list>div>label>span {
+	display: block;
+	position: relative;
+	padding: 4px 6px 4px 27px;
 }
 
-#jQgroupable_list > div > label > span:before{
-	font-family:"icomoon";
-	position:absolute;
-}
-#jQgroupable_list > div > label > input[type=checkbox]:checked ~ span:before{
-	color:#06c;
-	content:"\e644";
-	display:inline-block;
-	left:8px;
+#jQgroupable_list>div>label>span:hover {
+	background-color: rgba(230, 230, 230, 0.7);
 }
 
-
-
-#jQgroupable_list > div > div{
-	display:block;
-	cursor:default;
-}
-#jQgroupable_list > div > div > label{
-	display:block;
-	background-color:#fff;
-	
-}
-#jQgroupable_list > div > div > label > input[type=checkbox]{
-	display:none;
-}
-#jQgroupable_list > div > div > label > span{
-	display:block;
-	padding:4px 6px 4px 48px;
-	position:relative;
-}
-#jQgroupable_list > div > div > label > span:hover{
-	background-color:rgba(230,230,230,0.7);
-}
-#jQgroupable_list > div > div > label > span:before{
-	font-family:"icomoon";
-	position:absolute;
-}
-#jQgroupable_list > div > div > label > input[type=checkbox]:checked ~ span:before{
-	color:#06c;
-	content:"\e644";
-	display:inline-block;
-	left:27px;
+#jQgroupable_list>div>label>span:before {
+	font-family: "icomoon";
+	position: absolute;
 }
 
-.bom-table.group-list > tbody > tr > td{
-	border:solid 1px #ccc;
+#jQgroupable_list>div>label>input[type=checkbox]:checked~span:before {
+	color: #06c;
+	content: "\e644";
+	display: inline-block;
+	left: 8px;
 }
 
 
-.menu_screen{
-	position:relative;
-	width:0px;
-	padding:0px;
-	border:none;
-	margin:0px;
+
+#jQgroupable_list>div>div {
+	display: block;
+	cursor: default;
 }
-.menu_screen > div{
-	display:none;
-	border:solid 1px #ccc;
-	font-weight:normal;
-	position:absolute;
-	z-index:11;
-	white-space:normal;
-	top:31px;
-	width:130px;
-	padding:0px;
-	height:auto;
-	background-color:#fff;
-	left:-1px;
-	max-height:212px;
-	overflow:auto;
+
+#jQgroupable_list>div>div>label {
+	display: block;
+
 }
-.menu_screen > div > span{
-	cursor:default;
-	display:block;
-	padding:5px 10px;
-	border:solid 1px transparent;
+
+#jQgroupable_list>div>div>label>input[type=checkbox] {
+	display: none;
 }
-.menu_screen > div > span:hover{
-	text-shadow: 1px 1px 0 #fff;
-	background-color: rgba(82,168,236,.1);
-	border-color:	rgba(82,168,236,.75);
-	text-decoration:none;
+
+#jQgroupable_list>div>div>label>span {
+	display: block;
+	padding: 4px 6px 4px 48px;
+	position: relative;
+}
+
+#jQgroupable_list>div>div>label>span:hover {
+	background-color: rgba(230, 230, 230, 0.7);
+}
+
+#jQgroupable_list>div>div>label>span:before {
+	font-family: "icomoon";
+	position: absolute;
+}
+
+#jQgroupable_list>div>div>label>input[type=checkbox]:checked~span:before {
+	color: #06c;
+	content: "\e644";
+	display: inline-block;
+	left: 27px;
+}
+
+.bom-table.group-list>tbody>tr>td {
+	border: solid 1px var(--bomtable-border-color);
+}
+
+
+.menu_screen {
+	position: relative;
+	width: 0px;
+	padding: 0px;
+	border: none;
+	margin: 0px;
+}
+
+.menu_screen>div {
+	display: none;
+	border: solid 1px var(--bomtable-border-color);
+	font-weight: normal;
+	position: absolute;
+	z-index: 11;
+	white-space: normal;
+	top: 31px;
+	width: 130px;
+	padding: 0px;
+	height: auto;
+	background-color: #fff;
+	left: -1px;
+	max-height: 212px;
+	overflow: auto;
+}
+
+.menu_screen>div>span {
+	cursor: default;
+	display: block;
+	padding: 5px 10px;
+	border: solid 1px transparent;
+}
+
+.menu_screen>div>span:hover {
+	background-color: rgba(82, 168, 236, .1);
+	border-color: rgba(82, 168, 236, .75);
+	text-decoration: none;
 }

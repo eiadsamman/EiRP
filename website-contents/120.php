@@ -11,11 +11,7 @@ $debug						= false;
 $debug_level				= "fatal";
 $accounts_comparition_style	= " OR ";
 $accounting					= new Accounting($app);
-$__defaultaccount			= $accounting->account_information($app->user->account->id);
 $__systemdefaultcurrency	= $accounting->system_default_currency();
-if ($__defaultaccount) {
-	$__defaultcurrency = $accounting->account_default_currency($__defaultaccount['id']);
-}
 
 
 $arrheader = array("ID", "Type", "Value", "Currency", "Company", "Account", "Date", "Beneficial", "System ID", "Category Family", "Category", "Editor", "Statement");
@@ -140,7 +136,7 @@ if ($r) {
 
 	foreach ($array_output as $main) {
 		$output .= $main['info']['id'] . "\t";
-		$output .= $accounting->get_transaction_type($main['info']['transaction_type']) . "\t";
+		$output .= \System\Finance\Transaction\Nature::tryFrom((int)$main['info']['transaction_type'])->value . "\t";
 		$output .= $main['details']['creditor']['raw_value'] . "\t";
 		$output .= $main['details']['creditor']['currency'] . "\t";
 		$output .= $main['details']['creditor']['company'] . "\t";
@@ -154,7 +150,7 @@ if ($r) {
 		$output .= preg_replace('#\s+#', ' ', trim($main['info']['comments']));
 		$output .= "\n";
 		$output .= $main['info']['id'] . "\t";
-		$output .= $accounting->get_transaction_type($main['info']['transaction_type']) . "\t";
+		$output .= \System\Finance\Transaction\Nature::tryFrom((int)$main['info']['transaction_type'])->value. "\t";
 		$output .= $main['details']['debitor']['raw_value'] . "\t";
 		$output .= $main['details']['debitor']['currency'] . "\t";
 		$output .= $main['details']['debitor']['company'] . "\t";

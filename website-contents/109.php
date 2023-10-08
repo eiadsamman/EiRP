@@ -10,59 +10,49 @@ function getAttendanceReport(&$app, $dateFrom, $dateTo, $employeeID)
 	$attendance->getAttendaceList($employeeID, $dateFrom, $dateTo, true, false);
 	$attendance->PrintTable();
 }
-function CustomCheckdate($input, $state)
-{
-	if (preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $input, $match)) {
-		if (checkdate($match[2], $match[3], $match[1])) {
-			if ($state == 0) {
-				return mktime(00, 00, 00, $match[2], $match[3], $match[1]);
+
+if ($app->xhttp) {
+	if (isset($_POST['method'], $_POST['dateTo'], $_POST['dateFrom'], $_POST['employeeID']) && $_POST['method'] == 'fetchattendance') {
+		$employeeID = (int) $_POST['employeeID'];
+		$dateFrom = $app->date_validate($_POST['dateFrom'], false) ?? time();
+		$dateTo = $app->date_validate($_POST['dateTo'], true) ?? time();
+		if ($dateFrom <= $dateTo) {
+			getAttendanceReport($app, $dateFrom, $dateTo, $employeeID);
+		} else {
+			echo "<div class=\"btn-set\"><span>Attendace date range is not valid !</span></div>";
+		}
+		exit;
+	}
+
+
+
+	if (isset($_POST['method'], $_POST['employeeID'], $_POST['dateFrom'], $_POST['dateTo']) && $_POST['method'] == "fetchrecord") {
+		$employeeID = (int) $_POST['employeeID'];
+		$dateFrom = $app->date_validate($_POST['dateFrom'], false) ?? time();
+		$dateTo = $app->date_validate($_POST['dateTo'], true) ?? time();
+
+
+		if ($dateTo - $dateFrom > 86400 * 62) {
+			echo "<div class=\"btn-set\"><span>Date range is too large, maximum allowed range is 60 days</span></div>";
+			exit;
+		}
+		$r = $app->db->query("SELECT usr_id,CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id=$employeeID;");
+		if ($r && $row = $r->fetch_assoc()) {
+			if ($dateFrom <= $dateTo) {
+				echo "<div id=\"jQattendaceReportOutput\">";
+				getAttendanceReport($app, (int) $dateFrom, (int) $dateTo, $employeeID);
+				echo "</div>";
 			} else {
-				return mktime(23, 59, 59, $match[2], $match[3], $match[1]);
+				echo "<div class=\"btn-set\"><span>Invalid date range, maximum allowed range is 60 days</span></div>";
 			}
+			exit;
+		} else {
+			exit;
 		}
 	}
-	return false;
-}
 
-if (isset($_POST['method'], $_POST['dateTo'], $_POST['dateFrom'], $_POST['employeeID']) && $_POST['method'] == 'fetchattendance') {
-	$employeeID = (int) $_POST['employeeID'];
-	$dateFrom = CustomCheckdate($_POST['dateFrom'], 0) ?? time();
-	$dateTo = CustomCheckdate($_POST['dateTo'], 1) ?? time();
-	if ($dateFrom <= $dateTo) {
-		getAttendanceReport($app, $dateFrom, $dateTo, $employeeID);
-	} else {
-		echo "<div class=\"btn-set\"><span>Attendace date range is not valid !</span></div>";
-	}
 	exit;
 }
-
-
-
-if (isset($_POST['method'], $_POST['employeeID'], $_POST['dateFrom'], $_POST['dateTo']) && $_POST['method'] == "fetchrecord") {
-	$employeeID = (int) $_POST['employeeID'];
-	$dateFrom = CustomCheckdate($_POST['dateFrom'], 0) ?? time();
-	$dateTo = CustomCheckdate($_POST['dateTo'], 1) ?? time();
-
-
-	if ($dateTo - $dateFrom > 86400 * 62) {
-		echo "<div class=\"btn-set\"><span>Date range is too large, maximum allowed range is 60 days</span></div>";
-		exit;
-	}
-	$r = $app->db->query("SELECT usr_id,CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id=$employeeID;");
-	if ($r && $row = $r->fetch_assoc()) {
-		if ($dateFrom <= $dateTo) {
-			echo "<div id=\"jQattendaceReportOutput\">";
-			getAttendanceReport($app, (int) $dateFrom, (int) $dateTo, $employeeID);
-			echo "</div>";
-		} else {
-			echo "<div class=\"btn-set\"><span>Invalid date range, maximum allowed range is 60 days</span></div>";
-		}
-		exit;
-	} else {
-		exit;
-	}
-}
-
 $SmartListObject = new SmartListObject($app);
 ?>
 <style>
@@ -164,17 +154,17 @@ $grem->terminate();
 				$("div[data-clsid=" + idint + "]").css({
 					'background-color': 'rgba(' + $this.attr('data-clscolor') + ',0.7)'
 				});
-				
+
 				$div.html(
 					"<div><div><h1>" + $this.attr("data-clsprt") + "</h1></div>" +
 					"<div><span>In:</span>" + $this.attr("data-clsstr") + "<br/><span>Out:</span>" + $this.attr("data-clsfin") + "</div>" +
 					"<div><span>Time:</span>" + $this.attr("data-actual") + " / " + $this.attr("data-clstot") + "</div></div>"
 				);
-				
+
 				let elementPosition = $("div[data-clsid=" + idint + "]").first().offset();
 				elementPosition.top += $("div[data-clsid=" + idint + "]").height() - 50;
 				elementPosition.left -= 200;
-				
+
 				$div.css(elementPosition);
 				$div.show();
 			}
@@ -191,7 +181,7 @@ $grem->terminate();
 			}
 		});
 		<?php if ($fs()->permission->edit) { ?>
-				$("#jQoutput").on('clickx', '.css_attendanceBlocks > div', function () {				var idint = $(this).attr("data-clsid");				if (idint == 0) {					return				}				if ($ajax != null) {					$ajax.abort();				}				$ajax = $.ajax({					data: {						'method': 'edit',						'id': idint					},					url: "<?= $fs(78)->dir ?>",					type: "POST"				}).done(function (data) {					if (data != "") {						popup.show(data);					} else {						popup.hide();						messagesys.failure("Failed to retreive editing information")					}				}).fail(function () {					popup.hide();				});			});
+			$("#jQoutput").on('clickx', '.css_attendanceBlocks > div', function () { var idint = $(this).attr("data-clsid"); if (idint == 0) { return } if ($ajax != null) { $ajax.abort(); } $ajax = $.ajax({ data: { 'method': 'edit', 'id': idint }, url: "<?= $fs(78)->dir ?>", type: "POST" }).done(function (data) { if (data != "") { popup.show(data); } else { popup.hide(); messagesys.failure("Failed to retreive editing information") } }).fail(function () { popup.hide(); }); });
 		<?php } ?>
 
 		var fn_timetable = function () {
@@ -199,11 +189,11 @@ $grem->terminate();
 			$.ajax({
 				data: {
 					'method': 'fetchrecord',
-					'employeeID': SLO_employeeID.hidden[0].val(),
-					'dateFrom': SLO_dateFrom.hidden[0].val(),
-					'dateTo': SLO_dateTo.hidden[0].val(),
+					'employeeID': SLO_employeeID[0].slo.htmlhidden.val(),
+					'dateFrom': SLO_dateFrom[0].slo.htmlhidden.val(),
+					'dateTo': SLO_dateTo[0].slo.htmlhidden.val(),
 				},
-				url: "<?php echo $fs()->dir; ?>",
+				url: "<?= $fs()->dir; ?>",
 				type: "POST"
 			}).done(function (data) {
 				$("#jQoutput").html(data);

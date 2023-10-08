@@ -15,6 +15,8 @@ spl_autoload_register(function ($class) {
 
 
 
+
+
 use System\App;
 
 $app = new App(__DIR__, "cpanel3.settings.xml", false);
@@ -26,6 +28,7 @@ $app->set_timezone($app->settings->site['timezone']);
 $app->initializePermissions();
 $app->initializeSystemCurrency();
 $app->register($_SERVER['REQUEST_URI']);
+
 $access_error = $app->user_init();
 $fs = new System\FileSystem\Page($app);
 $dir = $fs->dir($app->resolve());
@@ -90,46 +93,61 @@ if ($fs()->id == $app::PERMA_ID['slo']) {
 }
 
 
-$frequent_visit = new System\Personalization\FrequentVisit($app);
-$frequent_visit->registerVisit($fs()->id);
+$frequentVisit = new System\Personalization\FrequentVisit($app);
+$themeDarkMode = new System\Personalization\ThemeDarkMode($app);
+$frequentVisit->registerVisit($fs()->id);
 $app->build_prefix_list();
 
 
 /* SECTOR REGISTER */
-if ($app->user->info && isset($_GET['--sys_sel-change'], $_GET['i']) && $_GET['--sys_sel-change'] == 'account_commit') {
-	if ($app->user->register_account((int) $_GET['i'])) {
-		header("Location: " . $app->http_root . $fs()->dir . "/");
+if ($app->user->info) {
+	if ($app->xhttp) {
+		if (isset($_POST['--toggle-theme-mode'])) {
+			$mode = $_POST['--toggle-theme-mode'] === "dark" ? 1 : 0;
+			$themeDarkMode->registerMode($mode);
+
+			exit;
+		}
+	}
+
+	if (isset($_GET['--sys_sel-change'])) {
+		if (isset($_GET['i']) && $_GET['--sys_sel-change'] == 'account_commit') {
+			if ($app->user->register_account((int) $_GET['i'])) {
+				header("Location: " . $app->http_root . $fs()->dir . "/");
+			}
+		}
+
+		/* COMPANY REGISTER */
+		if (isset($_GET['i']) && $_GET['--sys_sel-change'] == 'company_commit') {
+			if ($app->user->register_company((int) $_GET['i'])) {
+				header("Location: " . $app->http_root . $fs()->dir . "/");
+			}
+		}
+
+		/* Company selection page */
+		if ($_GET['--sys_sel-change'] == "company" && $fs()->id != 3) {
+			$r = $app->db->query("SELECT comp_name,comp_id FROM companies JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . $app->user->info->id . ";");
+			if ($r) {
+				require_once($app->root . "/admin/forms/upper.php");
+				require_once($app->root . "website-contents/207.php");
+				require_once($app->root . "/admin/forms/lower.php");
+				exit;
+			}
+		}
+		/* Account selection page */
+		if ($_GET['--sys_sel-change'] == "account" && $fs()->id != 3) {
+			$r = $app->db->query("SELECT prt_name,prt_id,cur_symbol,cur_name,cur_id,cur_shortname FROM `acc_accounts` LEFT JOIN currencies ON cur_id=prt_currency JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . $app->user->info->id . ";");
+			if ($r) {
+				require_once($app->root . "/admin/forms/upper.php");
+				require_once($app->root . "website-contents/33.php");
+				require_once($app->root . "/admin/forms/lower.php");
+				exit;
+			}
+		}
 	}
 }
 
 
-/* COMPANY REGISTER */
-if ($app->user->info && isset($_GET['--sys_sel-change'], $_GET['i']) && $_GET['--sys_sel-change'] == 'company_commit') {
-	if ($app->user->register_company((int) $_GET['i'])) {
-		header("Location: " . $app->http_root . $fs()->dir . "/");
-	}
-}
-
-/* Company selection page */
-if ($app->user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel-change'] == "company" && $fs()->id != 3) {
-	$r = $app->db->query("SELECT comp_name,comp_id FROM companies JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . $app->user->info->id . ";");
-	if ($r) {
-		require_once($app->root . "/admin/forms/upper.php");
-		require_once($app->root . "website-contents/207.php");
-		require_once($app->root . "/admin/forms/lower.php");
-		exit;
-	}
-}
-/* Account selection page */
-if ($app->user->info && isset($_GET['--sys_sel-change']) && $_GET['--sys_sel-change'] == "account" && $fs()->id != 3) {
-	$r = $app->db->query("SELECT prt_name,prt_id,cur_symbol,cur_name,cur_id,cur_shortname FROM `acc_accounts` LEFT JOIN currencies ON cur_id=prt_currency JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . $app->user->info->id . ";");
-	if ($r) {
-		require_once($app->root . "/admin/forms/upper.php");
-		require_once($app->root . "website-contents/33.php");
-		require_once($app->root . "/admin/forms/lower.php");
-		exit;
-	}
-}
 
 
 if ($app->xhttp) {

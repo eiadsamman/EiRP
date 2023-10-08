@@ -1,0 +1,113 @@
+.theme-default {
+	--root-background-color: white;
+	--root-font-color: black;
+	--root-link-color: dodgerblue;
+	--root-ribbon-background-color: #e3e3ee;
+	--root-ribbon-border-color: #ccc;
+	--root-ribbon-font-color: black;
+	--root-ribbon-menu-background-color: rgba(255, 255, 255, .95);
+	--root-ribbon-menu-header-background-color: rgba(255, 255, 255, .95);
+	--root-ribbon-menu-itemhover-background-color: rgb(233, 235, 248);
+	
+	--root-input-border-color: white;
+	--root-button-border-color: white;
+	--root-input-background-color: white;
+	--root-button-background-color: white;
+	
+	--root-modal-background-color: rgba(238, 238, 245, .6);
+
+	--bomtable-border-color: #ebebee;
+	--bomtable-background-color: #fff;
+	--bomtable-hover-color: #f0f0f6;
+	--bomtable-stripes-color: #fafafc;
+
+
+
+	--btnset-input-font-color: black;
+	--btnset-input-background-color: white;
+	--btnset-input-border-color: #ccc;
+	--btnset-inputhover-border-color: rgb(153, 153, 157);
+	--btnset-static-background-color: #fbfbfe;
+	--btnset-static-border-color: var(--btnset-input-border-color);
+	--btnset-statichover-border-color: var(--bomtable-border-color);
+
+
+	--btnset-botton-background-color: white;
+	--btnset-botton-border-color: #ccc;
+	--btnset-bottondisabled-background-color: var(--btnset-static-background-color);
+	--btnset-bottonhover-background-color: rgb(243, 245, 253);
+	--btnset-bottonfocus-background-color: var(--root-ribbon-menu-itemhover-background-color);
+	--btnset-bottonactive-background-color: var(--root-ribbon-menu-itemhover-background-color);
+
+	--slo-menu-background-color: white;
+	--slo-menu-itemhover-background-color: rgb(243, 245, 253);
+	--slo-menu-itemactive-background-color: var(--root-ribbon-menu-itemhover-background-color);
+}
+
+.theme-default.dark {
+	--root-background-color: #121212;
+	--root-font-color: #eee;
+	--root-link-color: lightskyblue;
+	--root-ribbon-background-color: #38383f;
+	--root-ribbon-border-color: #5c5c67;
+	--root-ribbon-font-color: white;
+	--root-ribbon-menu-background-color: rgba(56, 56, 67, 0.969);
+	--root-ribbon-menu-header-background-color: #38383f;
+	--root-ribbon-menu-itemhover-background-color: rgb(80, 80, 100);
+	--root-input-background-color: white;
+	--root-input-border-color: white;
+	--root-button-background-color: white;
+	--root-button-border-color: white;
+	
+	--root-modal-background-color: rgba(18, 18, 18, 0.8);
+
+	--bomtable-border-color: #323239;
+	--bomtable-background-color: #121212;
+	--bomtable-hover-color: rgb(50, 50, 63);
+	--bomtable-stripes-color: #18181b;
+
+
+
+
+	--btnset-input-font-color: black;
+	--btnset-input-background-color: rgb(25, 25, 30);
+	--btnset-input-border-color: rgb(60, 60, 75);
+	--btnset-inputhover-border-color: rgb(153, 153, 157);
+
+	--btnset-static-background-color: rgb(33, 33, 40);
+	--btnset-static-border-color: var(--btnset-input-border-color);
+	--btnset-statichover-border-color: var(--bomtable-border-color);
+
+
+	--btnset-botton-background-color: rgb(25, 25, 30);
+	--btnset-botton-border-color: var(--btnset-input-border-color);
+	--btnset-bottondisabled-background-color: var(--btnset-static-background-color);
+	--btnset-bottonhover-background-color: hsl(210, 90%, 20%);
+	--btnset-bottonfocus-background-color: hsl(210, 90%, 30%);
+	--btnset-bottonactive-background-color: hsl(210, 90%, 40%);
+
+
+	--slo-menu-background-color: rgb(40, 40, 49);
+	--slo-menu-itemhover-background-color: rgb(60, 60, 74);
+	--slo-menu-itemactive-background-color: var(--root-ribbon-menu-itemhover-background-color);
+}
+@media (prefers-color-scheme: dark) {
+	
+}
+
+/* #664B86 #BB86FC */
+/* 
+
+--color-background: #1A1A1B;
+--color-font: rgb(220, 220, 220);
+--color-ribbon_font: white;
+--color-controls: #333F44;
+--color-controls_border: #333F44;
+--color-faint-gray: rgb(251, 251, 254);
+--color-soft-gray: #333F44;
+--color-faint-white: rgb(252, 252, 254);
+--color-table-borders: #333F44;
+--color-link: lightblue;
+
+
+*/

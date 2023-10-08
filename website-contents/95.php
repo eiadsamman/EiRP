@@ -1,21 +1,16 @@
 <?php
+use System\Finance\Account;
 use System\Template\Gremium;
 use System\Finance\PredefinedRules;
 use System\SmartListObject;
 
 
 $predefined = new PredefinedRules($app);
-$SmartListObject = new SmartListObject($app);
 $defines = $predefined->paymentRules();
 
-
-
 $accounting = new \System\Finance\Accounting($app);
-define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
-$__workingaccount = $accounting->account_information($app->user->account->id);
-if ($__workingaccount)
-	$__workingcurrency = $accounting->account_default_currency($__workingaccount['id']);
+
 
 function _JSON_output($result, $message, $focus = null, $extra = null)
 {
@@ -33,17 +28,12 @@ function _JSON_output($result, $message, $focus = null, $extra = null)
 }
 
 if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
-	if (!$__workingaccount) {
-		_JSON_output(false, $app->user->account->name . " is not a valid account");
-	} elseif ($__workingcurrency === false) {
-		_JSON_output(false, "No currency provided for selected account");
-	}
+
 	if (!$app->user->account->role->outbound) {
-		_JSON_output(false, "Outbound rules are not allowed on `{$app->user->account->name}`");
+		_JSON_output(false, "Outbound rules is not allowed on `{$app->user->account->name}`");
 	}
 
-
-	$creditor = $_POST['creditor'];
+	$versus_account = new Account($app, (int) $_POST['creditor']);
 	$category = $_POST['category'];
 	$value = (float) trim(str_replace(",", "", $_POST['value']));
 	$comments = isset($_POST['comments']) && trim($_POST['comments']) != "" ? addslashes($_POST['comments']) : null;
@@ -54,54 +44,32 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 
 
 
-	if (
-		$r = $app->db->query("
-		SELECT prt_id 
-		FROM `acc_accounts` 
-			JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_inbound=1
-		WHERE prt_id=" . ((int) $creditor) . ";")
-	) {
-		if ($r->num_rows == 0) {
-			_JSON_output(false, "Select a valid debitor account with inbound rules", "jQcreditor");
-		}
+
+	if (!$versus_account->role->inbound) {
+		_JSON_output(false, "Invalid account", "jQcreditor");
 	}
-
-
-	if ($creditor == $__workingaccount['id']) {
+	if ($versus_account->id == $app->user->account->id) {
 		_JSON_output(false, "Debitor account can't be as same as Creditor account", "jQcreditor");
 	}
-	if ($r = $app->db->query("SELECT acccat_id FROM acc_categories WHERE acccat_id=$category;")) {
-		if ($r->num_rows == 0) {
-			_JSON_output(false, "Select the statement category", "jQcategory");
-		}
+	$date = $app->date_validate($_POST['trandate'] ?? "");
+	if ($date === false) {
+		_JSON_output(false, "Select the statement date", "jQdate");
 	}
 	if (trim($benificial) == "") {
-		_JSON_output(false, "Benificiary name is required", "jQbeneficial");
+		_JSON_output(false, "Benificial name is required", "jQbeneficial");
 	}
 	if ((float) $value <= 0) {
 		_JSON_output(false, "Enter a valid float value", "jQvalue");
 	}
 
 
-	$creditor_currency = $accounting->account_default_currency($creditor);
-	if ($creditor_currency === false) {
-		_JSON_output(false, "No currency provided for the debitor account");
-	}
-	if ((int) $_POST['currency'] == 0) {
-		_JSON_output(false, "Enter a valid currency", "jQcurrenyident");
-	}
 
-
-
-	$date = null;
-	if (isset($_POST['trandate']) && preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $_POST['trandate'], $match)) {
-		if (checkdate($match[2], $match[3], $match[1])) {
-			$date = mktime(0, 0, 0, $match[2], $match[3], $match[1]);
+	if ($r = $app->db->query("SELECT acccat_id FROM acc_categories WHERE acccat_id=$category;")) {
+		if ($r->num_rows == 0) {
+			_JSON_output(false, "Select the statement category", "jQcategory");
 		}
 	}
-	if ($date == null) {
-		_JSON_output(false, "Invalid transaction date", "jQdate");
-	}
+
 
 	$month = false;
 	if (isset($_POST['month']) && preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $_POST['month'], $match)) {
@@ -119,33 +87,18 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		}
 	}
 
-
 	$value_from = $value;
 	$value_to = $value;
 	$exchangerate_crd = 1;
 	$exchangerate_dbt = 1;
-	if ($creditor_currency['id'] != $_POST['currency']) {
-		$exchangerate = $accounting->currency_exchange($creditor_currency['id'], $_POST['currency']);
+	if ($versus_account->currency->id != $app->user->account->currency->id) {
+		$exchangerate = $accounting->currency_exchange($versus_account->currency->id, $app->user->account->currency->id);
 		if ($exchangerate === false) {
 			_JSON_output(false, "Unable to exchange currencies with debitor account");
 		}
 		$value_to = $exchangerate * $value_to;
 		$exchangerate_crd = $exchangerate;
 	}
-	if ($_POST['currency'] != $__workingcurrency['id']) {
-		$exchangerate = $accounting->currency_exchange($_POST['currency'], $__workingcurrency['id']);
-		if ($exchangerate === false) {
-			_JSON_output(false, "Unable to exchange currencies with debitor account");
-		}
-		$value_from = $exchangerate * $value_from;
-		$exchangerate_dbt = $exchangerate;
-	}
-
-	/*
-	  $balance=null;
-	  if($r=$app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE acm_rejected=0 AND atm_account_id={$__workingaccount['id']};")){if($row=$r->fetch_assoc()){$balance=$row['zsum'];}}
-	  if($balance==null || $balance<=0 || $balance<$value_from){_JSON_output(false,"Insufficient balance","jQvalue");}
-	  */
 
 	$result = true;
 	$app->db->autocommit(false);
@@ -171,7 +124,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		) VALUES (
 		%1\$s,
 		%2\$d,
-		%4\$s,%15\$s,
+		%4\$s,
+		%15\$s,
 		%5\$d,
 		'%6\$s',
 		%7\$d,
@@ -189,13 +143,13 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		$app->user->info->id,
 		"NULL",
 		"'" . date("Y-m-d", $date) . "'",
-		2,
+		\System\Finance\Transaction\Nature::Payment->value,
 		$benificial,
 		(int) $category,
 		($comments != null ? "'" . $comments . "'" : "NULL"),
 		($reference != null ? "'" . $reference . "'" : "NULL"),
 		$value,
-		(int) $_POST['currency'],
+		$app->user->account->currency->id,
 		$exchangerate_crd,
 		$exchangerate_dbt,
 		($month ? "FROM_UNIXTIME(" . $month . ")" : "NULL"),
@@ -214,11 +168,11 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 	$mainid = (int) $app->db->insert_id;
 
 	//INSERT creditor statement
-	$qacc_release = sprintf("INSERT INTO acc_temp (atm_account_id,atm_value,atm_dir,atm_main) VALUES (%1\$d,%2\$f,%3\$d,%4\$d);", $__workingaccount['id'], -1 * $value_from, 0, $mainid);
+	$qacc_release = sprintf("INSERT INTO acc_temp (atm_account_id,atm_value,atm_dir,atm_main) VALUES (%1\$d,%2\$f,%3\$d,%4\$d);", $app->user->account->id, -1 * $value_from, 0, $mainid);
 	$result &= $app->db->query($qacc_release);
 
 	//INSERT debitor statement
-	$qacc_insert = sprintf("INSERT INTO acc_temp (atm_account_id,atm_value,atm_dir,atm_main) VALUES (%1\$d,%2\$f,%3\$d,%4\$d);", $creditor, $value_to, 1, $mainid);
+	$qacc_insert = sprintf("INSERT INTO acc_temp (atm_account_id,atm_value,atm_dir,atm_main) VALUES (%1\$d,%2\$f,%3\$d,%4\$d);", $versus_account->id, $value_to, 1, $mainid);
 	$result &= $app->db->query($qacc_insert);
 
 	//Attach uploaded files to the transaction
@@ -231,14 +185,26 @@ if (isset($_POST['method']) && $_POST['method'] == 'addstatement') {
 		$app->db->commit();
 		$balance = 0;
 		$app->db->query("INSERT INTO user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) 
-				VALUES ({$app->user->info->id}," . \System\Personalization\Identifiers::SystemCountAccountOperation->value . ",'$creditor','1',NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
+				VALUES ({$app->user->info->id}," . \System\Personalization\Identifiers::SystemCountAccountOperation->value . ", {$versus_account->id}, 1, NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
 
-		if ($r = $app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE atm_account_id={$__workingaccount['id']} AND acm_rejected=0;")) {
-			if ($row = $r->fetch_assoc()) {
-				$balance = $row['zsum'];
+		$balance = 0;
+		if ($app->user->account->role->view) {
+			if ($r = $app->db->query("SELECT SUM(atm_value) AS zsum FROM acc_temp JOIN acc_main ON acm_id=atm_main WHERE atm_account_id={$app->user->account->id} AND acm_rejected=0;")) {
+				if ($row = $r->fetch_assoc()) {
+					$balance = $row['zsum'];
+				}
 			}
 		}
-		_JSON_output(true, "Statement submited successfully", null, array("newbalance" => number_format((float) $balance, 2, ".", ","), "id" => $mainid, "value" => number_format((float) $value, 2, ".", "")));
+		_JSON_output(
+			true,
+			"Statement submited successfully",
+			null,
+			array(
+				"newbalance" => number_format((float) $balance, 2, ".", ","),
+				"id" => $mainid,
+				"value" => number_format((float) $value, 2, ".", "")
+			)
+		);
 	} else {
 		$app->db->rollback();
 		_JSON_output(false, "Statement insertion failed");
@@ -255,10 +221,8 @@ if ($app->xhttp) {
 $SmartListObject = new SmartListObject($app);
 
 
-if (!$__workingaccount) {
+if (!$app->user->account->id) {
 	echo "<div class=\"btn-set\"><button>{$app->user->account->name}</button><span>Is not a valid account</span></div>";
-} elseif ($__workingcurrency === false) {
-	echo "<div class=\"btn-set\"><span class=\"bnt-error\">&nbsp;No currency provided for selected account</span></div>";
 } elseif (!$app->user->account->role->outbound) {
 
 	$grem = new Gremium\Gremium();
@@ -303,9 +267,9 @@ if (!$__workingaccount) {
 				<td width="100%">
 					<?php
 					echo "<div class=\"btn-set\">
-							<span tabindex=\"-1\">{$__workingaccount['name']}</span>
-							<input type=\"text\" readonly=\"readonly\" class=\"flex\" style=\"text-align:right\" tabindex=\"-1\" id=\"jQbalanceTitle\" value=\"" . number_format($__workingaccount['balance'], 2, ".", ",") . "\" />
-							<span style=\"text-align:center\">{$__workingcurrency['shortname']}</span>
+							<span tabindex=\"-1\">{$app->user->account->type->name}: {$app->user->account->name}</span>
+							<input type=\"text\" readonly=\"readonly\" class=\"flex\" style=\"text-align:right\" tabindex=\"-1\" id=\"jQbalanceTitle\" value=\"" . number_format($app->user->account->balance, 2, ".", ",") . "\" />
+							<span style=\"text-align:center\">{$app->user->account->currency->shortname}</span>
 						</div>";
 					?>
 				</td>
@@ -314,29 +278,25 @@ if (!$__workingaccount) {
 				<th>Date</th>
 				<td>
 					<div class="btn-set">
-						<input type="text" class="flex" data-slo=":DATE" value="<?php echo date("Y-m-d"); ?>"
-							data-rangeend="<?php echo date("Y-m-d"); ?>" tabindex="1" id="jQdate" />
+						<input type="text" class="flex" data-slo=":DATE" value="<?php echo date("Y-m-d"); ?>" data-rangeend="<?php echo date("Y-m-d"); ?>" tabindex="1" id="jQdate" />
 						<!-- <span>Month reference</span> -->
-						<input id="jQmonth" tabindex="-1" value="" data-slo="MONTH" type="text"
-							style="width:100px;display:none;" />
+						<input id="jQmonth" tabindex="-1" value="" data-slo="MONTH" type="text" style="width:100px;display:none;" />
 					</div>
 				</td>
 			</tr>
 			<tr class="predefined">
 				<th>Debitor</th>
 				<td>
-					<div class="btn-set"><input tabindex="2" type="text" data-slo=":LIST" data-list="jQcreditorList"
-							class="flex" id="jQcreditor" /></div>
+					<div class="btn-set"><input tabindex="2" type="text" data-slo=":LIST" data-list="jQcreditorList" class="flex" id="jQcreditor" /></div>
 					<datalist id="jQcreditorList" style="display: none;">
-						<?= $SmartListObject->userAccountsInbound(); ?>
+						<?= $SmartListObject->userAccountsInbound(null, [$app->user->account->id]); ?>
 					</datalist>
 				</td>
 			</tr>
 			<tr class="predefined">
 				<th>Category</th>
 				<td>
-					<div class="btn-set"><input type="text" data-slo=":LIST" data-list="jQcategoryList" tabindex="3"
-							class="flex" id="jQcategory" /></div>
+					<div class="btn-set"><input type="text" data-slo=":LIST" data-list="jQcategoryList" tabindex="3" class="flex" id="jQcategory" /></div>
 					<datalist id="jQcategoryList">
 						<?= $SmartListObject->financialCategories(); ?>
 					</datalist>
@@ -346,8 +306,7 @@ if (!$__workingaccount) {
 				<th>Beneficiary</th>
 				<td width="100%">
 					<div class="btn-set">
-						<input type="text" class="flex" tabindex="4" data-slo=":LIST" data-list="jQbeneficialList"
-							id="jQbeneficial" />
+						<input type="text" class="flex" tabindex="4" data-slo=":LIST" data-list="jQbeneficialList" id="jQbeneficial" />
 						<input type="text" tabindex="-1" data-slo="B00S" id="jQemployee" />
 					</div>
 					<datalist id="jQbeneficialList">
@@ -358,10 +317,9 @@ if (!$__workingaccount) {
 			<tr>
 				<th>Value</th>
 				<td>
-					<div class="btn-set"><input type="number" tabindex="5" class="flex" id="jQvalue" pattern="\d*" min="0"
-							inputmode="decimal" /><input value="<?php echo $__workingcurrency['shortname']; ?>"
-							tabindex="-1" data-slodefaultid="<?php echo $__workingcurrency['id']; ?>" type="text"
-							data-slo="CURRENCY_SYMBOL" id="jQcurrenyident" style="width:100px;" /></div>
+					<div class="btn-set">
+						<input type="number" tabindex="5" class="flex" id="jQvalue" pattern="\d*" min="0" inputmode="decimal" />
+					</div>
 				</td>
 			</tr>
 			<tr>
@@ -369,8 +327,7 @@ if (!$__workingaccount) {
 				<td>
 					<div class="btn-set" style="justify-content:left">
 						<button id="js_upload_trigger" class="js_upload_trigger">Upload</button>
-						<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple"
-							accept="image/*" />
+						<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 						<span id="js_upload_list" class="js_upload_list"></span>
 						<button id="js_upload_count" class="js_upload_count"><span>0 / 0</span> files</button>
 						<!--<label class="btn-checkbox"><input type="checkbox" id="jQprodmode"><span>Prouductive mode</span></label>-->
@@ -380,17 +337,14 @@ if (!$__workingaccount) {
 			<tr>
 				<th>Reference</th>
 				<td>
-					<div class="btn-set"><input type="text" data-slo="ACC_REFERENCE" tabindex="6" id="jQreference"
-							class="flex" /><input type="text" id="jQrel" style="max-width:100px;min-width:100px;"
+					<div class="btn-set"><input type="text" data-slo="ACC_REFERENCE" tabindex="6" id="jQreference" class="flex" /><input type="text" id="jQrel" style="max-width:100px;min-width:100px;"
 							tabindex="-1" placeholder="Related ID" /></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Comments</th>
 				<td>
-					<div class="btn-set"><textarea type="text" tabindex="8"
-							style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
-							id="jQcomments" rows="7"></textarea></div>
+					<div class="btn-set"><textarea type="text" tabindex="8" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" id="jQcomments" rows="7"></textarea></div>
 				</td>
 			</tr>
 		</tbody>
@@ -446,14 +400,14 @@ if (!$__workingaccount) {
 				emptymessage: "[No files uploaded]",
 				delete_method: 'permanent',
 				upload_url: "<?= $fs(186)->dir ?>",
-				relatedpagefile: <?php echo TRANSACTION_ATTACHMENT_PAGEFILE; ?>,
+				relatedpagefile: <?= \System\Attachment\Type::FinanceRecord->value ?>,
 				multiple: true,
 				inputname: "attachments"
 			});
 			<?php
 			$empty = true;
 			$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
-			$r_release = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . TRANSACTION_ATTACHMENT_PAGEFILE . " AND up_rel=0 AND up_deleted=0;");
+			$r_release = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0;");
 			if ($r_release) {
 				while ($row_release = $r_release->fetch_assoc()) {
 					$empty = false;
@@ -468,7 +422,6 @@ if (!$__workingaccount) {
 					console.log(e)
 				}
 			}),
-				$jQcurrency = $("#jQcurrenyident").slo(),
 				$jQbeneficial = $("#jQbeneficial").slo({
 					'limit': 7,
 				}),
@@ -494,20 +447,16 @@ if (!$__workingaccount) {
 
 			$("#jQvalue").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
 				OnlyFloat(this, null, 0);
-				/* let val = (Number(this.value.replace(/[^\d\.]/g, "")).numberFormat(4, ".", ","))
-				domDivValueformat.innerHTML = $jQcurrency.get()[0].value + " " + (val.toString()) */
 			});
 			var addStatement = function () {
 				var $creditor = $("#jQcreditor_1"),
 					$category = $("#jQcategory_1"),
-					$currency = $("#jQcurrenyident_1"),
 					$date = $("#jQdate_1"),
 					$dateSLO = $("#jQdate"),
 					$monthSLO = $("#jQmonth"),
 					$month = $("#jQmonth_1"),
 					$creditorSLO = $("#jQcreditor"),
 					$categorySLO = $("#jQcategory"),
-					$currencySLO = $("#jQcurrenyident"),
 					$benificialSLO = $("#jQbeneficial"),
 					$employeeSLO = $("#jQemployee"),
 					$employee = $("#jQemployee_1"),
@@ -521,7 +470,6 @@ if (!$__workingaccount) {
 					$creditorSLO.prop("disabled", status);
 					$categorySLO.prop("disabled", status);
 					$value.prop("disabled", status);
-					$currencySLO.prop("disabled", status);
 					$benificialSLO.prop("disabled", status);
 					$comments.prop("disabled", status);
 					$reference.prop("disabled", status);
@@ -563,20 +511,13 @@ if (!$__workingaccount) {
 					return false;
 				}
 
-				if ($currency.val() == "" || parseInt($currency.val()) == "0") {
-					messagesys.failure("Select the transaction currency");
-					$currencySLO.focus().select();
-					return false;
-				}
-
-
+				
 				waitingState(true);
 				var preparePOST = $("#js_upload_list :input").serialize() + '&' + $.param({
 					method: 'addstatement',
 					creditor: $creditor.val(),
 					category: $category.val(),
 					benificial: $benificialSLO.val(),
-					currency: $currency.val(),
 					value: $value.val(),
 					trandate: $date.val(),
 					comments: $comments.val(),
@@ -606,7 +547,7 @@ if (!$__workingaccount) {
 							"<tr data-transactionid=\"" + _data.id + "\">" +
 							"<td>" + _data.id + "</td>" +
 							"<td align=\"right\">" + _data.value + "</td>" +
-							"<td>" + $currencySLO.val() + "</td>" +
+							"<td></td>" +
 							"<td>" + $benificialSLO.val() + "</td>" +
 							"</tr>"
 						);

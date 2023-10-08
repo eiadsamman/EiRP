@@ -6,20 +6,28 @@ use System\Template\Gremium;
 
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
+if (0) {
+	echo "<pre>";
+	$res = $app->db->query("SELECT * FROM acc_main WHERE acm_id = 7157");
+	$row = $res->fetch_assoc();
+	print_r($row);
+	exit;
+}
+
+
+
+
+
+
 $ajax_debug = false;
 $debug_level = 3;
 $accounts_comparition_style = " AND ";
 $accounting = new Accounting($app);
-$__defaultaccount = $accounting->account_information($app->user->account->id);
 $__systemdefaultcurrency = $accounting->system_default_currency();
 $currency_list = $accounting->get_currency_list();
 $default_perpage = 25;
 $arr_overview = array("total" => 0, "sum" => 0);
 $pre_load_variables = true;
-
-if ($__defaultaccount) {
-	$__defaultcurrency = $accounting->account_default_currency($__defaultaccount['id']);
-}
 
 if ($ajax_debug) {
 	ini_set('xdebug.var_display_max_depth', 5);
@@ -111,7 +119,8 @@ function layout_extrusion($array, $map, $keys, $max_depth, $current_depth, $firs
 
 				//Loop through given names of current array branch
 				foreach ($v as $field) {
-					echo "<td" . ($recursive_tree_depth > 1 ? " rowspan=\"$recursive_tree_depth\"" : "") . ">" . (trim($field) == "" ? "<i>[null]</i>" : $field) . "</td>";
+
+					echo "<td" . ($recursive_tree_depth > 1 ? " rowspan=\"$recursive_tree_depth\"" : "") . ">" . (trim($field ?? "") == "" ? "<i>[null]</i>" : $field) . "</td>";
 				}
 				//Cycle back through array branch children
 				$first_item = -1;
@@ -132,9 +141,7 @@ function layout_extrusion($array, $map, $keys, $max_depth, $current_depth, $firs
 				$keys[] = $k;
 				/*Add current depth in array*/
 				$current_depth++;
-				/*recursive function 
-																				Re call
-																			*/
+				/*recursive function Re call*/
 				layout_extrusion($v, $map, $keys, $max_depth, $current_depth, $first_item);
 				$current_depth--;
 				array_pop($keys);
@@ -180,8 +187,9 @@ function Group_list_limit_active($source, $array)
 {
 	$temp = array();
 	foreach ($source as $source_k => $source_v) {
-		if ($array[$source_k]['active'])
+		if ($array[$source_k]['active']) {
 			$temp[$source_k] = $array[$source_k];
+		}
 	}
 	return $temp;
 }
@@ -384,8 +392,6 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				LEFT JOIN
 					(SELECT acccat_name,accgrp_name,acccat_id,accgrp_id FROM acc_categories JOIN acc_categorygroups ON accgrp_id=acccat_group) 
 						AS _category ON _category.acccat_id=acm_category
-				JOIN 
-					acc_transtypes ON acctyp_type = acm_type
 		WHERE
 			1
 			AND NOT (_credit.atm_main IS  NULL AND _debit.atm_main IS  NULL)
@@ -431,7 +437,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 	if ($start_grouping == false) {
 		$query =
 			"SELECT
-				acm_id,UNIX_TIMESTAMP(acm_ctime) AS acm_ctime,acm_beneficial,acm_comments,acm_type,acm_rejected,acm_usr_id,acm_reference,UNIX_TIMESTAMP(acm_month) AS acm_month,acm_rel,
+				acm_id, acm_ctime,acm_beneficial,acm_comments,acm_type,acm_rejected,acm_usr_id,acm_reference,acm_month,acm_rel,
 				acccat_name,accgrp_name,
 				CONCAT_WS(' ',COALESCE(_editor.usr_firstname,''),IF(NULLIF(_editor.usr_lastname, '') IS NULL, NULL, _editor.usr_lastname)) AS _editor_name
 			FROM
@@ -548,8 +554,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				$array_output[$row['acm_id']]["info"]["transaction_type"] = $row['acm_type'];
 				$array_output[$row['acm_id']]["info"]["type"] = $row['acm_type'];
 				$array_output[$row['acm_id']]["info"]["id"] = $row['acm_id'];
-				$array_output[$row['acm_id']]["info"]["date"] = date("Y-m-d", $row['acm_ctime']);
-				$array_output[$row['acm_id']]["info"]["month"] = !is_null($row['acm_month']) && $row['acm_month'] != 0 ? date("Y-m", $row['acm_month']) : "";
+				$array_output[$row['acm_id']]["info"]["date"] = $row['acm_ctime'];
+				$array_output[$row['acm_id']]["info"]["month"] = $row['acm_month'];
 				$array_output[$row['acm_id']]["info"]["beneficial"] = $row['acm_beneficial'];
 				$array_output[$row['acm_id']]["info"]["usr_id"] = $row['acm_usr_id'];
 				$array_output[$row['acm_id']]["info"]["reference"] = $row['acm_reference'];
@@ -597,7 +603,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				if (isset($main['details']['creditor']['currency'], $main['details']['debitor']['currency'])) {
 					echo "<tr" . ($main['info']['rejected'] == 1 ? " class=\"tran-deleted\"" : "") . ">";
 					echo "<td>" . $main['info']['id'] . (isset($main['info']['rel']) && !is_null($main['info']['rel']) ? " @<a href=\"\">{$main['info']['rel']}</a>" : "") . "<br />{$main['info']['date']}<br />{$main['info']['editor']}</td>";
-					//echo "<td>".$accounting->get_transaction_type($main['info']['transaction_type'])."<br />".$main['info']['editor']."</td>";
+
+
 
 
 					if ($main['details']['creditor']['currency'] == $main['details']['debitor']['currency']) {
@@ -667,7 +674,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				" . (isset($arr_group['month']) && $arr_group['month']['active'] ? " MONTH(acm_ctime) AS group_month, DATE_FORMAT(acm_ctime,'%M') AS group_month_name, " : "") . "
 				" . (isset($arr_group['category_family']) && $arr_group['category_family']['active'] ? " accgrp_id,accgrp_name, " : "") . "
 				" . (isset($arr_group['category']) && $arr_group['category']['active'] ? " acccat_id,acccat_name, " : "") . "
-				" . (isset($arr_group['type']) && $arr_group['type']['active'] ? " acm_type,acctyp_name, " : "") . "
+				" . (isset($arr_group['type']) && $arr_group['type']['active'] ? " acm_type, " : "") . "
 				" . (isset($arr_group['account']) && $arr_group['account']['active'] ? " account_id, CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", account_name) AS account_name, " : "") . "
 				" . (isset($arr_group['benifical']) && $arr_group['benifical']['active'] ? " acm_usr_id,CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,''))  AS benifical, " : "") . "
 				" . (isset($arr_group['benifical_t']) && $arr_group['benifical_t']['active'] ? " acm_beneficial, " : "") . "
@@ -713,8 +720,6 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 						FROM
 							acc_categories JOIN acc_categorygroups ON accgrp_id=acccat_group
 						) AS _category ON _category.acccat_id=acm_category
-					JOIN 
-						acc_transtypes ON acctyp_type = acm_type
 			WHERE
 				1 AND acm_rejected=0 AND NOT (_credit.atm_main IS  NULL AND _debit.atm_main IS NULL)"
 
@@ -774,8 +779,14 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				foreach ($arr_group as $group_k => $group_v) {
 					$arr_keys[] = $row[$group_v['field']];
 					$name = array();
-					foreach ($group_v['reference'] as $ref_v) {
-						$name[] = $row[$ref_v];
+					if ($group_v['cols'] == "Type") {
+						foreach ($group_v['reference'] as $ref_v) {
+							$name[] = (\System\Finance\Transaction\Nature::tryFrom((int) $row[$ref_v])->toString());
+						}
+					} else {
+						foreach ($group_v['reference'] as $ref_v) {
+							$name[] = $row[$ref_v];
+						}
 					}
 					$arr_output = insert_using_keys($arr_output, array_merge($arr_keys, ["name"]), $name);
 				}
@@ -806,7 +817,6 @@ if ($app->xhttp) {
 }
 
 
-
 $SmartListObject = new SmartListObject($app);
 $grem = new Gremium\Gremium();
 
@@ -816,7 +826,6 @@ unset($grem);
 ?><br />
 <iframe style="display:none;" name="iframe" id="iframe"></iframe>
 <form id="jQfilterform">
-
 	<table class="bom-table" style="margin-bottom:10px">
 		<tbody>
 			<tr>
@@ -826,36 +835,32 @@ unset($grem);
 				<th style="width:25%">Category type</th>
 			</tr>
 			<tr>
-				<td valign="top" style="border:solid 1px #bbb">
-					<div class="btn-set normal list"><input type="text" data-list_object="true"
-							data-rel="creditor_account" data-slo="ACC_VIEW" /></div>
+				<td valign="top" style="border:solid 1px var(--bomtable-border-color)">
+					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="creditor_account" data-slo="ACC_VIEW" /></div>
 					<div class="slo_list" data-role="creditor_account">
 						<?php
-						echo $pre_load_variables && $__defaultaccount && $__defaultcurrency ? "<span 
-							data-id=\"{$__defaultaccount['id']}\"><b>&#xea0f;</b><span>[{$__defaultcurrency['shortname']}] {$__defaultaccount['company']}: {$__defaultaccount['group']}: {$__defaultaccount['name']}</span><input type=\"hidden\" 
-							name=\"creditor_account[1]\" value=\"{$__defaultaccount['id']}\" /><label style=\"background-color:#fff\">Exclude<input name=\"creditor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
+						echo $pre_load_variables ? "<span 
+							data-id=\"{$app->user->account->id}\"><b>&#xea0f;</b><span>[{$app->user->account->currency->shortname}] {$app->user->company->name}: {$app->user->account->type->name}: {$app->user->account->name}</span><input type=\"hidden\" 
+							name=\"creditor_account[1]\" value=\"{$app->user->account->id}\" /><label style=\"background-color:#fff\">Exclude<input name=\"creditor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
 						?>
 					</div>
 				</td>
-				<td valign="top" style="border:solid 1px #bbb">
-					<div class="btn-set normal list"><input type="text" data-list_object="true"
-							data-rel="debitor_account" data-slo="ACC_VIEW" /></div>
+				<td valign="top" style="border:solid 1px var(--bomtable-border-color)">
+					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="debitor_account" data-slo="ACC_VIEW" /></div>
 					<div class="slo_list" data-role="debitor_account">
 						<?php
-						echo $pre_load_variables && $__defaultaccount && $__defaultcurrency ? "<span data-id=\"{$__defaultaccount['id']}\"><b>&#xea0f;</b><span>[{$__defaultcurrency['shortname']}] {$__defaultaccount['company']}: {$__defaultaccount['group']}: {$__defaultaccount['name']}</span><input type=\"hidden\" name=\"debitor_account[1]\" value=\"{$__defaultaccount['id']}\" /><label style=\"background-color:#fff\">Exclude<input name=\"debitor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
+						echo $pre_load_variables ? "<span data-id=\"{$app->user->account->id}\"><b>&#xea0f;</b><span>[{$app->user->account->currency->shortname}] {$app->user->company->name}: {$app->user->account->type->name}: {$app->user->account->name}</span><input type=\"hidden\" name=\"debitor_account[1]\" value=\"{$app->user->account->id}\" /><label style=\"background-color:#fff\">Exclude<input name=\"debitor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
 						?>
 					</div>
 				</td>
 
-				<td valign="top" style="border:solid 1px #bbb">
-					<div class="btn-set normal list"><input type="text" data-list_object="true"
-							data-rel="category_family" data-slo="ACC_CATGRP" /></div>
+				<td valign="top" style="border:solid 1px var(--bomtable-border-color)">
+					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="category_family" data-slo="ACC_CATGRP" /></div>
 					<div class="slo_list" data-role="category_family">
 					</div>
 				</td>
-				<td valign="top" style="border:solid 1px #bbb">
-					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="category"
-							data-slo="ACC_CAT" /></div>
+				<td valign="top" style="border:solid 1px var(--bomtable-border-color)">
+					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="category" data-slo="ACC_CAT" /></div>
 					<div class="slo_list" data-role="category">
 					</div>
 				</td>
@@ -871,11 +876,10 @@ unset($grem);
 				</td>
 				<th style="min-width:100px;">Editor</th>
 				<td style="width:25%;" valign="top">
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="editor"
-							data-slo="ACC_EDITORS" /></div>
+					<div class="btn-set normal list"><input type="text" data-input_object="true" name="editor" data-slo="ACC_EDITORS" /></div>
 				</td>
-				<th style="min-width:100px;border-left: solid 1px #ccc;" rowspan="4">Group By</th>
-				<td style="width:25%;padding:0px;" valign="top" rowspan="4">
+				<th style="min-width: 100px;border-left: solid 1px #ccc;" rowspan="4">Group By</th>
+				<td style="width: 25%;padding: 0px;" valign="top" rowspan="4">
 					<div id="jQgroupable_list">
 						<div><label><input type="checkbox" name="group[account]" value="1"><span>Account</span></label>
 						</div>
@@ -890,59 +894,55 @@ unset($grem);
 							<label><input type="checkbox" name="group[category_family]" value="1"><span>Category
 									Family</span></label>
 							<div>
-								<label><input type="checkbox" name="group[category]"
-										value="1"><span>Category</span></label>
+								<label><input type="checkbox" name="group[category]" value="1"><span>Category</span></label>
 							</div>
 						</div>
 						<div><label><input type="checkbox" name="group[benifical]" value="1"><span>Benifical
 									ID</span></label></div>
 						<div><label><input type="checkbox" name="group[benifical_t]" value="1"><span>Benifical
 									Name</span></label></div>
-						<div><label><input type="checkbox" name="group[reference]"
-									value="1"><span>Reference</span></label></div>
+						<div><label><input type="checkbox" name="group[reference]" value="1"><span>Reference</span></label></div>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Type</th>
 				<td>
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="type"
-							data-slo="ACC_TYPES" /></div>
+					<div class="btn-set normal list">
+						<input type="text" data-input_object="true" name="type" data-slo=":SELECT" data-list="js-statement-type" />
+					</div>
+					<datalist id="js-statement-type">
+						<?= $SmartListObject->financialTransactionNature(); ?>
+					</datalist>
 				</td>
 				<th>Reference</th>
 				<td>
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="reference"
-							data-slo="ACC_REFERENCE" /></div>
+					<div class="btn-set normal list"><input type="text" data-input_object="true" name="reference" data-slo="ACC_REFERENCE" /></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Benifical</th>
 				<td>
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="benifical"
-							data-slo=":LIST" data-list="beneficialList" /></div>
+					<div class="btn-set normal list"><input type="text" data-input_object="true" name="benifical" data-slo=":LIST" data-list="beneficialList" /></div>
 					<datalist id="beneficialList">
 						<?= $SmartListObject->financialBeneficiary(); ?>
 					</datalist>
 				</td>
 				<th>Employee</th>
 				<td>
-					<div class="btn-set normal list"><input type="text" data-input_object="true" name="employee"
-							data-slo="B00S" /></div>
+					<div class="btn-set normal list"><input type="text" data-input_object="true" name="employee" data-slo="B00S" /></div>
 				</td>
 			</tr>
 			<tr>
 				<th>Date range</th>
 				<td>
 					<div class="btn-set normal list"><!--
-				--><input type="text" name="fromdate" data-input_object="true"
-							value="<?php echo $pre_load_variables ? date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) : ""; ?>"
-							<?php echo $pre_load_variables ? " data-slodefaultid=\"" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "\"" : ""; ?> data-slo="DATE" /><!--
+				--><input type="text" name="fromdate" data-input_object="true" value="<?php echo $pre_load_variables ? date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) : ""; ?>" <?php echo $pre_load_variables ? " data-slodefaultid=\"" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "\"" : ""; ?> data-slo="DATE" /><!--
 				--><input type="text" name="todate" data-input_object="true" data-slo="DATE" /></div>
 				</td>
 				<th>Month reference</th>
 				<td>
-					<div class="btn-set normal list"><input name="month-reference" data-input_object="true"
-							data-slo="MONTH" type="text" /></div>
+					<div class="btn-set normal list"><input name="month-reference" data-input_object="true" data-slo="MONTH" type="text" /></div>
 				</td>
 			</tr>
 		</tbody>
@@ -951,10 +951,8 @@ unset($grem);
 		<tbody>
 			<tr>
 				<td>
-					<div class="btn-set" style="justify-content:center"><label class="btn-checkbox"><input
-								type="checkbox" name="strict_filter" /> <span>&nbsp;Strict accounts
-								filter&nbsp;</span></label><button id="jQfetch" type="submit">Submit</button><button
-							id="jQclear" type="button">Clear</button><button id="jQsave"
+					<div class="btn-set" style="justify-content:center"><label class="btn-checkbox"><input type="checkbox" name="strict_filter" /> <span>&nbsp;Strict accounts
+								filter&nbsp;</span></label><button id="jQfetch" type="submit">Submit</button><button id="jQclear" type="button">Clear</button><button id="jQsave"
 							type="button">Save</button><button id="jQload" type="button">Load</button></div>
 				</td>
 			</tr>
@@ -963,26 +961,22 @@ unset($grem);
 
 	<div id="jQtracer">
 		<div class="overlay"></div>
-		<table style="margin:15px 0px 5px 0px" border="0" width="100%">
+		<table style="margin:15px 0px 5px 0px" width="100%">
 			<tbody>
 				<tr>
 					<td width="50%">
 						<div class="btn-set">
 							<span id="jQnavRec">0</span>
-							<input type="text" readonly id="jQresult_value" style="text-align:right;width:130px"
-								value="0.00" /><input type="text" id="jQcurrency" name="filtercurrency"
+							<input type="text" readonly id="jQresult_value" style="text-align:right;width:130px" value="0.00" /><input type="text" id="jQcurrency" name="filtercurrency"
 								data-slo="CURRENCY_SYMBOL" style="width:70px" <?php echo $__systemdefaultcurrency ? " value=\"{$__systemdefaultcurrency['shortname']}\"" : ""; ?> <?php echo $__systemdefaultcurrency ? " data-slodefaultid=\"{$__systemdefaultcurrency['id']}\"" : ""; ?> />
 							<span id="jQbalance_status">N\A</span>
 							<span class="gap"></span>
-							<label class="btn-checkbox" style="white-space: nowrap;"><input type="checkbox"
-									name="display_altered" /> <span>&nbsp;Show deleted&nbsp;</span></label>
+							<label class="btn-checkbox" style="white-space: nowrap;"><input type="checkbox" name="display_altered" /> <span>&nbsp;Show deleted&nbsp;</span></label>
 
 							<b id="jQperpage" class="menu_screen">
-								<div><span data-per="25">25</span><span data-per="50">50</span><span
-										data-per="75">75</span><span data-per="100">100</span></div>
+								<div><span data-per="25">25</span><span data-per="50">50</span><span data-per="75">75</span><span data-per="100">100</span></div>
 							</b>
-							<input type="text" style="text-align:center;width:130px;" readonly id="jQperpage_btn"
-								value="<?php echo $per_page; ?> Perpage" />
+							<input type="text" style="text-align:center;width:130px;" readonly id="jQperpage_btn" value="<?php echo $per_page; ?> Perpage" />
 
 							<button disabled id="jQnavFirst" type="button">First</button>
 							<button disabled id="jQnavPrev" type="button">Previous</button>
@@ -990,8 +984,7 @@ unset($grem);
 							<b id="jQpageination" class="menu_screen">
 								<div></div>
 							</b>
-							<input type="text" style="text-align:center;width:80px;" readonly id="jQnavTitle"
-								value="No results" />
+							<input type="text" style="text-align:center;width:80px;" readonly id="jQnavTitle" value="No results" />
 							<button disabled id="jQnavNext" type="button">Next</button>
 							<button id="jQexport" type="button">Export</button>
 						</div>

@@ -125,24 +125,24 @@ if (!$defaultcurrency) {
 					</tr>";
 						}
 						echo "<tr>
-				<td style=\"background-color:#f5f5f5;\" colspan=\"3\">" . ($typev['balance'] < 0 ? "Debitor" : "Creditor") . "</td>
-				<td style=\"background-color:#f5f5f5;text-align:right;\">" . ($typev['balance'] < 0 ? "(" . number_format(abs($typev['balance']), 2, ".", ",") . ")" : number_format(abs($typev['balance']), 2, ".", ",")) . "</td>
-				<td style=\"background-color:#f5f5f5;\">{$defaultcurrency['shortname']}</td>
-				<td colspan=\"3\" style=\"background-color:#f5f5f5;font-weight:bold\"></td>
+				<td style=\"background-color:rgba(120,120,120,.1);\" colspan=\"3\">" . ($typev['balance'] < 0 ? "Debitor" : "Creditor") . "</td>
+				<td style=\"background-color:rgba(120,120,120,.1);text-align:right;\">" . ($typev['balance'] < 0 ? "(" . number_format(abs($typev['balance']), 2, ".", ",") . ")" : number_format(abs($typev['balance']), 2, ".", ",")) . "</td>
+				<td style=\"background-color:rgba(120,120,120,.1);\">{$defaultcurrency['shortname']}</td>
+				<td colspan=\"3\" style=\"background-color:rgba(120,120,120,.1);font-weight:bold\"></td>
 				</tr>";
 					}
 					echo "<tr>
-			<td style=\"background-color:#eee;font-weight:bold\" colspan=\"4\">" . ($companyv['balance'] < 0 ? "Debitor" : "Creditor") . "</td>
-			<td style=\"background-color:#eee;font-weight:bold;text-align:right;\">" . ($companyv['balance'] < 0 ? "(" . number_format(abs($companyv['balance']), 2, ".", ",") . ")" : number_format(abs($companyv['balance']), 2, ".", ",")) . "</td>
-			<td style=\"background-color:#eee;font-weight:bold\">{$defaultcurrency['shortname']}</td>
-			<td colspan=\"3\" style=\"background-color:#eee;font-weight:bold\"></td>
+			<td style=\"background-color:rgba(120,120,120,.25);font-weight:bold\" colspan=\"4\">" . ($companyv['balance'] < 0 ? "Debitor" : "Creditor") . "</td>
+			<td style=\"background-color:rgba(120,120,120,.25);font-weight:bold;text-align:right;\">" . ($companyv['balance'] < 0 ? "(" . number_format(abs($companyv['balance']), 2, ".", ",") . ")" : number_format(abs($companyv['balance']), 2, ".", ",")) . "</td>
+			<td style=\"background-color:rgba(120,120,120,.25);font-weight:bold\">{$defaultcurrency['shortname']}</td>
+			<td colspan=\"3\" style=\"background-color:rgba(120,120,120,.25);font-weight:bold\"></td>
 			</tr>";
 				}
 				echo "<tr>
-		<td style=\"background-color:#ddd;font-weight:bold\" colspan=\"5\">" . ($totalbalance < 0 ? "Debitor" : "Creditor") . "</td>
-		<td style=\"background-color:#ddd;font-weight:bold;text-align:right;\">" . ($totalbalance < 0 ? "(" . number_format(abs($totalbalance), 2, ".", ",") . ")" : number_format(abs($totalbalance), 2, ".", ",")) . "</td>
-		<td style=\"background-color:#ddd;font-weight:bold\">{$defaultcurrency['shortname']}</td>
-		<td colspan=\"3\" style=\"background-color:#ddd;font-weight:bold\"></td>
+		<td style=\"background-color:rgba(120,120,120,.4);font-weight:bold\" colspan=\"5\">" . ($totalbalance < 0 ? "Debitor" : "Creditor") . "</td>
+		<td style=\"background-color:rgba(120,120,120,.4);font-weight:bold;text-align:right;\">" . ($totalbalance < 0 ? "(" . number_format(abs($totalbalance), 2, ".", ",") . ")" : number_format(abs($totalbalance), 2, ".", ",")) . "</td>
+		<td style=\"background-color:rgba(120,120,120,.4);font-weight:bold\">{$defaultcurrency['shortname']}</td>
+		<td colspan=\"3\" style=\"background-color:rgba(120,120,120,.4);font-weight:bold\"></td>
 		</tr>";
 			}
 			echo $app->db->error;

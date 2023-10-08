@@ -8,6 +8,7 @@ enum Identifiers: int
 	case SystemWorkingAccount = 102;
 	case SystemWorkingCompany = 103;
 	case SystemUserBookmark = 104;
+	case SystemDarkMode = 110;
 
 	case SystemCountAccountSelection = 105;
 	case SystemCountCompanySelection = 106;

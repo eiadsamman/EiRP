@@ -13,7 +13,7 @@ class DefinedRule
 }
 class PredefinedRules
 {
-	public function __construct(protected \System\App $app)
+	public function __construct(protected \System\App &$app)
 	{
 
 	}

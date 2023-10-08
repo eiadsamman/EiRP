@@ -550,14 +550,13 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 	.editor_miniuploads {
 		display: block;
 		cursor: pointer;
-		background-color: #fff;
+		background-color: var(--root-background-color);
 		background-size: auto 100%;
 		background-repeat: no-repeat;
 		height: 30px;
 		padding-left: 30px;
 		padding-right: 3px;
 		padding-top: 3px;
-		text-shadow: 1px 1px 0px #fff;
 	}
 
 	.editor_miniuploads>span {
@@ -566,11 +565,11 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		padding: 4px 7px 6px 7px;
 		height: 24px;
 		border-radius: 3px;
-		background-color: rgba(255, 255, 255, 0.8);
+		background-color: rgba(255, 255, 255, 0.5);
 	}
 
 	.editor_miniuploads:hover>span {
-		background-color: rgba(255, 255, 255, 0.95);
+		background-color: rgba(255, 255, 255, 0.5);
 		border-color: #333;
 	}
 
@@ -593,7 +592,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		width: 130px;
 		padding: 0px;
 		height: auto;
-		background-color: #fff;
+		background-color: var(--root-background-color);
 		left: -1px;
 		max-height: 212px;
 		overflow: auto;
@@ -607,14 +606,13 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 	}
 
 	.menu_screen>div>span:hover {
-		text-shadow: 1px 1px 0 #fff;
 		background-color: rgba(82, 168, 236, .1);
 		border-color: rgba(82, 168, 236, .75);
 		text-decoration: none;
 	}
 </style>
 
-<div style="padding:20px 0px 20px 0px;min-width:800px;background-color: #fff;position: sticky;top:42px;z-index: 20;">
+<div style="padding:20px 0px 20px 0px;min-width:800px;background-color: var(--root-background-color);position: sticky;top:50px;z-index: 20;">
 	<div class="btn-set flex" id="jQnavigator">
 		<?php
 		if (!isset($database['readonly']) || (isset($database['readonly']) && !$database['readonly'])) {
@@ -637,7 +635,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 
 	<div style="position: relative;margin-top: 10px;">
 		<span style="padding: 0;width:0px;border:none;">
-			<div style="display:none;position: absolute;background-color: #fff;top:100%;left:0px;padding: 10px;border:solid 1px #ccc;border-radius: 4px; box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);margin-top: 5px;" id="jQDivSearchWindow">
+			<div style="display:none;position: absolute;background-color: var(--root-background-color);top:100%;left:0px;padding: 10px;border:solid 1px #ccc;border-radius: 4px; box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);margin-top: 5px;" id="jQDivSearchWindow">
 				<form id="jQFromSearch">
 					<table class="bom-table">
 						<thead>

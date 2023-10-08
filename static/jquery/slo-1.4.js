@@ -175,6 +175,18 @@ class NumberHandler extends SmartListObjectHandler {
 		}
 		return buffer;
 	}
+	rangeEnd(val = null) {
+		if (val != null) {
+			this.range.end = val;
+		}
+		return this.range.end;
+	}
+	rangeStart(val = null) {
+		if (val != null) {
+			this.range.start = val;
+		}
+		return this.range.start;
+	}
 	toString(leading_zero = true) {
 		if (this.output === false) return "";
 		return [this.output, this.output];
@@ -351,7 +363,6 @@ const slomerge = function (a, b) {
 };
 
 class SmartListObject {
-
 	constructor(object) {
 		this.object = object;
 		this.htmltext = $(object);
@@ -367,12 +378,12 @@ class SmartListObject {
 		this.stamped = null;
 		this.disabled = false;
 		this.xhttp = null;
-		this.handler = this.objectHandler();
+		this.is_selectobject = false;
 		this.state = state.idle;
+		this.hadfocus = false;
+		this.handler = this.objectHandler();
 		this.events = { onselect: function () { }, ondeselect: function () { } }
 		this.parameters = this.htmltext.attr('data-sloparam');
-		this.focusfix = false;
-		this.is_selectobject = false;
 		this.init();
 
 
@@ -383,12 +394,10 @@ class SmartListObject {
 			this.populate = this.populateByAJAX;
 		}
 	}
-
 	populateByHandler() {
 		if (this.handler !== null) {
 			let validate = this.handler.validate(this.htmltext.val());
 			if (validate) {
-				this.state = state.up;
 				this.selection_win.html(this.handler.generate());
 				this.selection = this.selection_win.find(">div:first-child");
 				this.selection.addClass("active");
@@ -407,21 +416,18 @@ class SmartListObject {
 			data: slomerge({ 'role': this.role, 'query': this.htmltext.val(), 'limit': this.items_limit }, this.parameters)
 		}).done((data) => {
 			if (data != "") {
-				this.state = state.up;
 				this.selection_win.css({ "visibility": "hidden", "display": "block", "position": "fixed" });
 				this.selection_win.html(data);
 				this.selection = this.selection_win.find(">div:first-child");
 				this.selection.addClass("active");
 				this.show();
 			} else {
-				this.state = state.idle;
 				this.hide();
 			}
 		}).fail((a, b, c) => {
 			this.state = state.idle;
 		});
 	}
-
 	init() {
 		this.htmltext.attr("autocomplete", "off");
 		this.selection_win.addClass("slo-container");
@@ -510,6 +516,7 @@ class SmartListObject {
 		if (this.disabled) {
 			return;
 		}
+		this.state = state.up;
 		var _dh = $(document).height();
 		this.selection_win.css({ "visibility": "hidden", "display": "block", "position": "fixed" });
 		if (_dh < this.selection_win.height() + this.htmltext.offset().top + this.htmltext.height()) {
@@ -528,6 +535,7 @@ class SmartListObject {
 		this.selection_win.css({ "visibility": "visible", "position": "absolute" });
 	}
 	hide() {
+		this.state = state.idle;
 		this.selection_win.css({ "visibility": "hidden", "display": "none" });
 		this.htmltext.removeClass("listvisible", "listvisibletop");
 		if (this.xhttp != null)
@@ -582,9 +590,9 @@ class SmartListObject {
 	clear(raise_events) {
 		this.hide();
 		this.state = state.idle;
-		this.stamp(stamp.unvalid);
-		this.htmlhidden.val("");
-		this.htmltext.val("");
+		this.stamp(stamp.idle);
+		this.htmlhidden.removeAttr('value');
+		this.htmltext.val('');
 
 		if (raise_events) {
 			this.call_ondeselect();
@@ -620,8 +628,9 @@ class SmartListObject {
 		this.focusfix = true;
 		this.focus(false);
 		this.htmltext.focus();
-		if (!this.is_selectobject)
+		if (!this.is_selectobject) {
 			this.htmltext.select();
+		}
 		if (enter_key_event) { return; }
 		this.call_onselect();
 	}
@@ -644,11 +653,6 @@ class SmartListObject {
 		this.hidden = [];
 
 		//#region - Controlers
-		this.self = function () {
-			const output = [];
-			$jq.each(function () { output.push(this); });
-			return output;
-		};
 		this.change = function (role) {
 			$jq.each(function () { this.slo.role = role; });
 			return $jq;
@@ -692,7 +696,7 @@ class SmartListObject {
 			return $jq;
 		};
 		this.focus = function () {
-			$jq.each(function () { this.slo.focusfix = true; this.slo.htmltext.focus(); if (!this.slo.is_selectobject) { this.slo.htmltext.select(); } });
+			$jq.each(function () { this.slo.hadfocus = true; this.slo.htmltext.focus(); if (!this.slo.is_selectobject) { this.slo.htmltext.select(); } });
 			return $jq;
 		};
 		//#endregion
@@ -703,15 +707,13 @@ class SmartListObject {
 			$jq.each(function () {
 				//#region - Initialize
 				this.slo = new SmartListObject(this);
+
 				this.enter_key_event = false;
 				this.slo.events.ondeselect = slosettings.ondeselect;
 				this.slo.events.onselect = slosettings.onselect;
 				this.slo.items_limit = slosettings.limit != undefined && !isNaN(slosettings.limit) ? parseInt(slosettings.limit) : 5;
-				
-				const slo = this.slo;
 
-				_parent.hidden.push(this.slo.htmlhidden);
-				_parent.input.push(this.slo.htmltext);
+				const slo = this.slo;
 
 				if (slosettings.align != undefined) {
 					this.slo.selection_win.css("left", "0px");
@@ -728,24 +730,22 @@ class SmartListObject {
 						this.slo.call_ondeselect();
 						this.slo.populate();
 					}
+				}).on('blur', (e) => {
+					slo.hadfocus = false;
 				}).on('focus', (e) => {
-					if (this.slo.focusfix == true) {
-						this.slo.focusfix = false;
-						return false;
-					}
+					slo.hadfocus = true;
 					this.slo.focus(this.slo.stamped != stamp.valid ? true : false);
-					return;
 				}).on('keydown', (e) => {
 					if (e.code === "Escape") {
-						e.preventDefault();
 						if (this.slo.htmltext.val() == "") {
 							this.slo.stamp(stamp.empty);
 							this.slo.hide();
-							return;
+							return true;
 						}
+						e.preventDefault();
 						this.slo.clear(true);
 						this.slo.populate();
-						return;
+						return false;
 					}
 					if (e.code === "Tab") {
 						this.slo.state = state.idle;
@@ -759,6 +759,7 @@ class SmartListObject {
 						return false;
 					}
 					if (e.code === "ArrowDown" || e.code === "ArrowUp") {
+						e.preventDefault();
 						if (this.slo.state == state.up) {
 							e.preventDefault();
 							this.slo.selection = this.slo.selection_win.find(">div.active");
@@ -776,15 +777,23 @@ class SmartListObject {
 							this.slo.focusfix == true;
 							this.slo.focus(true);
 						}
+						return false;
 					}
 
 				}).on('click', function (e) {
-					if ($(this).is(":focus")) {
-						slo.focusfix == true;
-						slo.focus(true);
+					if (slo.is_selectobject) {
+						if (slo.state == state.idle) {
+							slo.focus(true);
+						} else if (slo.state == state.up && !slo.hadfocus) {
+							slo.hide();
+						}
 					} else {
-						return false;
+						if (slo.state == state.idle) {
+							slo.focus(true);
+						}
 					}
+					slo.hadfocus = false;
+					return;
 				}).on('keyup', (e) => {
 					if (e.code === "Enter" && this.enter_key_event) {
 						this.slo.stamp(stamp.valid);
