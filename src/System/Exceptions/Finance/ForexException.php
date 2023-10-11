@@ -7,7 +7,6 @@ namespace System\Exceptions\Finance;
 use System\Exceptions\Finance\Finance;
 
 
-
-class TransactionPrepareException extends Finance
+class ForexException extends Finance
 {
 }

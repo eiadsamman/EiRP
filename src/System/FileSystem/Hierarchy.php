@@ -18,7 +18,7 @@ class Hierarchy
 		foreach ($this->parentList[$parent] as $k => $v) {
 			$hadChildren = isset($this->parentList[$k]);
 			echo "<b " . ($hadChildren ? "class=\"nested\"" : "") . " style=\"padding-left:" . ($nest * 33) . "px;\">" .
-				($v['trd_attrib4'] == null ? "" : "<span " . ($v['trd_attrib5'] != null ? "style=\"color:#{$v['trd_attrib5']}\"" : "") . ">&#xe{$v['trd_attrib4']};</span>") .
+				($v['trd_attrib4'] == null ? "" : "<span " . ($v['trd_attrib5'] != null ? "style=\"color:var(--btnset-inputhover-border-color)\"" : "") . ">&#xe{$v['trd_attrib4']};</span>") .
 				"<a class=\"alink\" href=\"{$v['trd_directory']}\">{$v['pfl_value']}</a></b>";
 			if ($hadChildren) {
 				$this->Iterate($k, $nest + 1);
@@ -29,11 +29,11 @@ class Hierarchy
 	public function __construct(&$app, $permissions = null)
 	{
 		$this->app = $app;
-		$output = array();
+		$output    = array();
 		if ($permissions == null) {
 			$this->_permissions = 0;
 		} else {
-			$this->_permissions = (int)$permissions;
+			$this->_permissions = (int) $permissions;
 		}
 		$r = $this->app->db->query(
 			"SELECT 
@@ -56,7 +56,7 @@ class Hierarchy
 		}
 		if (isset($this->parentList[0]) && is_array($this->parentList[0])) {
 			foreach ($this->parentList[0] as $k => $v) {
-				echo "<b>" . ($v['trd_attrib4'] == null ? "" : "<span " . ($v['trd_attrib5'] != null ? "style=\"color:#{$v['trd_attrib5']}\"" : "") . ">&#xe{$v['trd_attrib4']};</span>") . "<a class=\"alink\" href=\"{$v['trd_directory']}\">{$v['pfl_value']}</a></b>";
+				echo "<b>" . ($v['trd_attrib4'] == null ? "" : "<span " . ($v['trd_attrib5'] != null ? " style=\"color:var(--btnset-inputhover-border-color);\" " : "") . ">&#xe{$v['trd_attrib4']};</span>") . "<a class=\"alink\" href=\"{$v['trd_directory']}\">{$v['pfl_value']}</a></b>"; // color:#{$v['trd_attrib5']}
 				if (isset($this->parentList[$k])) {
 					$this->Iterate($k);
 				}

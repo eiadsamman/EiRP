@@ -7,7 +7,7 @@ use System\Personalization\Bookmark;
 use System\SmartListObject;
 
 
-$__helper = false;
+$__helper     = false;
 $__side_panel = false;
 if (isset($fs()->parameters) && preg_match("/help([0-9]+)/", $fs()->parameters, $match)) {
 	$__helper = $fs((int) $match[1]);
@@ -106,9 +106,9 @@ $SmartListObject = new SmartListObject($app);
 					} else {
 						echo "<span>{$app->user->account->currency->shortname}</span>";
 					}
-					//<cite>1</cite>
+
 					echo "<a tabindex=\"-1\" class=\"mediabond-hide js-input_darkmode-toggle\"><span style=\"font-family:icomoon4;\" title=\"Toggle Dark Mode\">&#xe9d4;</span></a>";
-					echo "<a href=\"user-account/\" tabindex=\"-1\" id=\"header-menu-useraccount-button\"><span style=\"font-family:icomoon4;\" title=\"User Settings\">&#xe971;</span></a>";
+					echo "<a href=\"user-account/\" tabindex=\"-1\" id=\"header-menu-useraccount-button\"><span style=\"font-family:icomoon4;\" title=\"User Settings\">&#xe971;</span></a>"; //<cite>1</cite>
 					echo "<a href=\"{$fs()->dir}/?logout\" tabindex=\"-1\" id=\"header-menu-logout\"><span style=\"font-family:icomoon4;\" title=\"Logout\">&#xe9b6;</span></a>";
 				}
 				?>
@@ -126,23 +126,26 @@ $SmartListObject = new SmartListObject($app);
 							<input type="text" class="flex" id="PFSelector" data-slo=":LIST" data-list="PFSelectorList" />
 							<datalist id="PFSelectorList" style="display: none;">
 								<?php
-								$q = "SELECT 
+								$ident = \System\Personalization\Identifiers::SystemFrequentVisit->value;
+								$q     = <<<SQL
+								SELECT 
 									trd_directory, CONCAT(trd_id,': ', pfl_value) AS pagefile_title, trd_id
 								FROM 
 									pagefile 
-									JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1 
+									JOIN pagefile_language ON pfl_trd_id = trd_id AND pfl_lng_id = 1 
 									JOIN 
-										pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id=" . $app->user->info->permissions . "
-											LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemFrequentVisit->value . "	
+										pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id = {$app->user->info->permissions}
+											LEFT JOIN user_settings ON usrset_usr_defind_name = trd_id AND usrset_usr_id = {$app->user->info->id} 
+											AND usrset_type = {$ident}
 								WHERE 
 									trd_enable = 1 AND trd_visible = 1
 								ORDER BY
-									(usrset_value+0) DESC,pfl_value
-								";
-
+									(usrset_value + 0) DESC, pfl_value
+								SQL;
+								
 								if ($r = $app->db->query($q)) {
 									while ($row = $r->fetch_assoc()) {
-										echo "<option data-id=\"{$row['trd_directory']}\">{$row['pagefile_title']}</option>"; // data-keywords=\"{$row['trd_id']}\"
+										echo "<option data-id=\"{$row['trd_directory']}\">{$row['pagefile_title']}</option>";
 									}
 								}
 								?>
@@ -269,7 +272,7 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<div style="white-space:nowrap;" class="menu-items">
 						<?php
-						$bookmark = new Bookmark($app);
+						$bookmark   = new Bookmark($app);
 						$bookmarked = $bookmark->isBookmarked($fs()->id);
 
 						echo "<div>" . $app->user->info->name . "</div>";

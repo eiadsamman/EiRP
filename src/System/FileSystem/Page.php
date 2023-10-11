@@ -21,11 +21,11 @@ class Page
 		if (
 			$r = $this->app->db->query(
 				"SELECT 
-				trd_id, trd_directory,pfl_value,trd_parent,trd_enable, trd_visible,
-				trd_keywords, trd_description, trd_header, trd_param, trd_attrib4, trd_attrib5, pfp_value,trd_loader
+				trd_id, trd_directory, pfl_value, trd_parent, trd_enable, trd_visible,
+				trd_keywords, trd_description, trd_header, trd_param, trd_attrib4, trd_attrib5, pfp_value, trd_loader
 			FROM 
 				pagefile 
-					LEFT JOIN pagefile_language ON pfl_trd_id = trd_id AND pfl_lng_id={$language}
+					LEFT JOIN pagefile_language ON pfl_trd_id = trd_id AND pfl_lng_id = {$language}
 					LEFT JOIN pagefile_permissions ON pfp_trd_id = trd_id AND pfp_per_id = " . ($this->app->user->logged ? $this->app->user->info->permissions : $this->app->base_permission) . " 
 			ORDER BY
 				trd_parent, trd_zorder
@@ -51,7 +51,7 @@ class Page
 			}
 		}
 
-		if (false && $rper = $this->app->db->query("SELECT per_id,pfp_value FROM permissions LEFT JOIN pagefile_permissions ON per_id=pfp_per_id AND pfp_trd_id={$row['id']};")) {
+		if (false && $rper = $this->app->db->query("SELECT per_id, pfp_value FROM permissions LEFT JOIN pagefile_permissions ON per_id=pfp_per_id AND pfp_trd_id={$row['id']};")) {
 		}
 	}
 	function setUse(int $id): bool

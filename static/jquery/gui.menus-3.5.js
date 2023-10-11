@@ -169,13 +169,14 @@ $(document).ready(function (e) {
 	var jqroot_bal = $("#jqroot_bal"),
 		jqroot_sec = $("#jqroot_sec"),
 		jqroot_com = $("#jqroot_com");
-	BALANCE_UPDATE = function () {
+
+
+	const BALANCE_UPDATE = function () {
 		$.ajax({
 			data: {},
 			url: "acc/report/balupd",
 			type: "POST"
 		}).done(function (data) {
-
 			try { var json = JSON.parse(data); } catch (err) { return; }
 			if (json.currency != undefined && json.currency != undefined && json.currency != false && json.value != false) {
 				jqroot_bal.show();
@@ -195,6 +196,8 @@ $(document).ready(function (e) {
 			}
 		});
 	}
+
+
 	/*setInterval(function(){BALANCE_UPDATE();},5000);*/
 
 	$.fn.serialize = function (options) {
@@ -255,7 +258,7 @@ $(document).ready(function (e) {
 			console.group(data);
 			let response = request.getResponseHeader('QUERY_RESULT');
 			if (parseInt(response) == 1) {
-				
+
 			}
 		});
 

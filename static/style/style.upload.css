@@ -25,7 +25,7 @@
 	height: 0;
 }
 
-.js_upload_list>div {
+.js_upload_list > div {
 	display: none;
 	border: solid 1px #aaa;
 	margin-left: 0px;
@@ -41,14 +41,15 @@
 
 	border: solid 1px var(--root-ribbon-border-color);
 	border-color: rgba(82, 168, 236, 1);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .5);
-	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
-	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
 
-	box-shadow: 0px 0px 18px 0px rgba(0, 0, 0, 0.3);
+	border-color: rgba(82, 168, 236, .75);
+	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+
 }
 
-.js_upload_list>div>span span.upload_record_pointer {
+.js_upload_list > div > span span.upload_record_pointer {
 	display: inline-block;
 	padding: 0px;
 	width: 87px;
@@ -56,7 +57,7 @@
 	text-align: left;
 }
 
-.js_upload_list>div>span span.upload_file_details {
+.js_upload_list > div > span span.upload_file_details {
 	display: inline-block;
 	vertical-align: middle;
 	padding: 0px;
@@ -65,8 +66,8 @@
 	text-align: left;
 }
 
-.js_upload_list>div>span span.upload_file_details>a,
-.js_upload_list>div>span span.upload_file_details>b {
+.js_upload_list > div > span span.upload_file_details > a,
+.js_upload_list > div > span span.upload_file_details > b {
 	font-weight: normal;
 	display: inline-block;
 	color: var(--root-ribbon-font-color);
@@ -78,27 +79,27 @@
 	height: 13px;
 }
 
-.js_upload_list>div>span span.upload_record_pointer>span.btn-set>span,
-.js_upload_list>div>span span.upload_record_pointer>span.btn-set>button {
+.js_upload_list > div > span span.upload_record_pointer > span.btn-set > span,
+.js_upload_list > div > span span.upload_record_pointer > span.btn-set > button {
 	text-align: center;
 }
 
-.js_upload_list>div>span span.js_up_failure {
+.js_upload_list > div > span span.js_up_failure {
 	color: #f03;
 	cursor: pointer;
 }
 
-.js_upload_list>div>span {
+.js_upload_list > div > span {
 	padding: 11px 8px;
 
 }
 
-.js_upload_list>div>span:hover {
-	background-color:var(--root-ribbon-menu-itemhover-background-color);
+.js_upload_list > div > span:hover {
+	background-color: var(--root-ribbon-menu-itemhover-background-color);
 }
 
-.js_upload_list>div>span,
-.js_upload_list>div>b {
+.js_upload_list > div > span,
+.js_upload_list > div > b {
 	display: block;
 	text-align: left;
 	padding: 0px;
@@ -107,8 +108,10 @@
 	white-space: nowrap;
 }
 
-.js_upload_list>div>b {
+.js_upload_list > div > b {
 	font-weight: normal;
+	padding: 10px;
+	color: var(--root-font-color);
 }
 
 

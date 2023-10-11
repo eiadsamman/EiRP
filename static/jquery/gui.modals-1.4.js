@@ -159,6 +159,13 @@
 				settings.backgroundObject.removeClass("blur");
 				return output;
 			},
+			'state': function (state) {
+				if (state) {
+					this.show();
+				} else {
+					this.hide();
+				}
+			},
 			'init': function () {
 				container.addClass(settings.className);
 				container.append(content);

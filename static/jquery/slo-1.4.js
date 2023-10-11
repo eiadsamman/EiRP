@@ -364,6 +364,7 @@ const slomerge = function (a, b) {
 
 class SmartListObject {
 	constructor(object) {
+		this.id = null;
 		this.object = object;
 		this.htmltext = $(object);
 		this.role = this.htmltext.attr('data-slo');
@@ -447,6 +448,7 @@ class SmartListObject {
 		}
 
 		if (this.htmltext.attr("id") != undefined) {
+			this.id = this.htmltext.attr("id");
 			this.htmlhidden.attr("id", this.htmltext.attr("id") + "_1");
 		}
 		if (this.htmltext.attr('class') != undefined) {
@@ -543,6 +545,11 @@ class SmartListObject {
 	}
 	focus(display_win = false) {
 		if (this.disabled) return;
+		this.hadfocus = true;
+		this.htmltext.focus();
+		if (!this.is_selectobject) {
+			this.htmltext.select();
+		}
 		if (display_win) {
 			this.populate();
 		}
@@ -661,6 +668,15 @@ class SmartListObject {
 			$jq.each(function () { this.slo.disable(); });
 			return $jq;
 		};
+		this.getElementById = function (id) {
+			let output = false;
+			$jq.each(function () {
+				if (this.id == id) {
+					output = this;
+				}
+			});
+			return output;
+		};
 		this.enable = function () {
 			$jq.each(function () { this.slo.enable(); });
 			return $jq;
@@ -733,7 +749,7 @@ class SmartListObject {
 				}).on('blur', (e) => {
 					slo.hadfocus = false;
 				}).on('focus', (e) => {
-					slo.hadfocus = true;
+					if (slo.hadfocus) return true;
 					this.slo.focus(this.slo.stamped != stamp.valid ? true : false);
 				}).on('keydown', (e) => {
 					if (e.code === "Escape") {

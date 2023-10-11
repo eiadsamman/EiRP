@@ -23,9 +23,9 @@ class App
 	public bool $xhttp = false;
 	public \System\Log\ErrorHandler $errorHandler;
 	public const PERMA_ID = array(
-		"index" => 19,
-		"login" => 20,
-		"slo" => 3,
+		"index"    => 19,
+		"login"    => 20,
+		"slo"      => 3,
 		"download" => 187,
 	);
 	public string $root;
@@ -37,14 +37,21 @@ class App
 	protected array $permissions_array = array();
 	private string|null $route = null;
 
+
+	private function prepareURI(string $uri): string
+	{
+		$uri = explode("?", $uri)[0];
+		$uri = ltrim($uri, "/");
+		if (substr($uri, 0, strlen($this->subdomain)) == $this->subdomain) {
+			$uri = substr($uri, strlen($this->subdomain));
+		}
+		$uri = trim($uri, "/ ");
+		return $uri;
+	}
+
 	public function register(string $route): bool
 	{
-		$route = explode("?", $route)[0];
-		$route = ltrim($route, "/");
-		if (substr($route, 0, strlen($this->subdomain)) == $this->subdomain) {
-			$route = substr($route, strlen($this->subdomain));
-		}
-		$route = trim($route, "/ ");
+		$route       = $this->prepareURI($route);
 		$this->route = $route == "" ? $this->settings->site['index'] : $route;
 
 		return true;
@@ -112,16 +119,15 @@ class App
 		$stmt = $this->db->prepare("SELECT cur_id,cur_name,cur_shortname,cur_symbol FROM currencies WHERE cur_default=1;");
 		if ($stmt->execute() && $rec = $stmt->get_result()) {
 			if ($rec->num_rows > 0 && $row = $rec->fetch_assoc()) {
-				$this->currency = new Finance\Currency();
-				$this->currency->id = (int) $row['cur_id'];
-				$this->currency->name = $row['cur_name'];
+				$this->currency            = new Finance\Currency();
+				$this->currency->id        = (int) $row['cur_id'];
+				$this->currency->name      = $row['cur_name'];
 				$this->currency->shortname = $row['cur_shortname'];
-				$this->currency->symbol = $row['cur_symbol'];
+				$this->currency->symbol    = $row['cur_symbol'];
 			}
 		}
 		return false;
 	}
-
 
 
 	public function initializePermissions(): void
@@ -129,9 +135,9 @@ class App
 		$stmt = $this->db->prepare("SELECT per_id,per_title,per_order FROM permissions");
 		if ($stmt->execute() && $rec = $stmt->get_result()) {
 			while ($row = $rec->fetch_assoc()) {
-				$this->permissions_array[$row['per_id']] = new Permission();
-				$this->permissions_array[$row['per_id']]->id = $row['per_id'];
-				$this->permissions_array[$row['per_id']]->name = $row['per_title'];
+				$this->permissions_array[$row['per_id']]        = new Permission();
+				$this->permissions_array[$row['per_id']]->id    = $row['per_id'];
+				$this->permissions_array[$row['per_id']]->name  = $row['per_title'];
 				$this->permissions_array[$row['per_id']]->level = $row['per_order'];
 			}
 		}
@@ -177,7 +183,7 @@ class App
 	public function build_prefix_list(): bool
 	{
 		$this->prefixList = array();
-		$r = $this->db->query("SELECT prx_id, prx_value, prx_placeholder FROM system_prefix;");
+		$r                = $this->db->query("SELECT prx_id, prx_value, prx_placeholder FROM system_prefix;");
 		if ($r) {
 			while ($row = $r->fetch_assoc()) {
 				$this->prefixList[$row['prx_id']] = array($row['prx_value'], (int) $row['prx_placeholder']);
@@ -209,11 +215,10 @@ class App
 		return (string) $number;
 	}
 
-
 	public function formatTime(int $time, ?bool $include_seconds = true): string
 	{
-		$neg = $time < 0;
-		$time = abs($time);
+		$neg    = $time < 0;
+		$time   = abs($time);
 		$output = ($neg ? "(" : "") .
 			sprintf('%02d', floor($time / 60 / 60)) .
 			":" .
@@ -224,7 +229,6 @@ class App
 			$output .= ":" . str_pad((string) floor((int) ($time) % 60), 2, "0", STR_PAD_LEFT);
 		return $output;
 	}
-
 
 	public function date_validate(string $query, ?bool $end_of_day = false): int|bool
 	{
@@ -288,7 +292,7 @@ class App
 		/* Cookies Login */
 		if (!$this->user->logged && isset($_COOKIE) && is_array($_COOKIE) && isset($_COOKIE['cur'])) {
 			if ($this->user->cookies_handler($_COOKIE['cur'])) {
-				header("Location: " . $this->http_root);
+				header("Location: " . $this->http_root . $this->prepareURI($_SERVER['REQUEST_URI']));
 				exit;
 			}
 		}

@@ -290,7 +290,7 @@ $SmartListObject = new SmartListObject($app);
 					<input tabindex="1" type="text" data-slo=":SELECT" class="flex" id="jQtype" data-list="js-statement-type" />
 				</div>
 				<datalist id="js-statement-type">
-					<?= $SmartListObject->financialStatementType((int) $arr_transaction['acm_type']); ?>
+					<?= $SmartListObject->financialTransactionNature((int) $arr_transaction['acm_type']); ?>
 				</datalist>
 			</td>
 			<th>Status</th>

@@ -1,4 +1,10 @@
 <?php
+function replaceARABIC($str){
+	$str=str_replace(["أ","إ","آ"],"[أإاآ]+",$str);
+	$str=str_replace(["ة","ه"],"[ةه]+",$str);
+	$str=str_replace(["ى","ي"],"[يى]+",$str);
+	return $str;
+}
 
 if (!isset($_POST['limit']) || !isset($_POST['role'])) {
 	exit;

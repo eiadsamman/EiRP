@@ -126,8 +126,8 @@
 .btn-set input[disabled],
 .btn-set textarea[disabled],
 .btn-set button[disabled] {
-	color: rgba(200, 200, 200, .3) !important;
-	background-color: var(--btnset-bottondisabled-background-color);
+	color: rgba(125, 125, 125, .8) !important;
+	background-color: var(--btnset-bottondisabled-background-color) !important;
 	pointer-events: none;
 	border-color: var(--btnset-static-border-color);
 }

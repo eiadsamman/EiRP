@@ -52,9 +52,17 @@ class SmartListObject
 
 
 
-	public function userAccounts(?\System\Finance\AccountRole &$role = null, ?int $company_id = null, mixed $select = null, ?array $exclude = null): string
-	{
+	public function userAccounts(
+		?\System\Finance\AccountRole &$role = null,
+		?int $company_id = null,
+		mixed $select = null,
+		?array $exclude = null,
+		?int $identity = null
+	): string {
 		$output = "";
+		if($identity==null){
+			$identity = \System\Personalization\Identifiers::SystemCountAccountSelection->value;
+		}
 		try {
 			if (
 				$r = $this->app->db->query(
@@ -63,10 +71,10 @@ class SmartListObject
 			FROM
 				view_financial_accounts
 				JOIN user_partition ON prt_id = upr_prt_id AND upr_usr_id=" . $this->app->user->info->id . (!is_null($role) ? " AND " . $role->sqlClause() : "") . "
-					LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id=" . $this->app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemCountAccountSelection->value . "
+					LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id=" . $this->app->user->info->id . " AND usrset_type = " . $identity . "
 				" .
 					(!is_null($company_id) ? "WHERE comp_id = " . $this->app->user->company->id . " " : "")
-					. "ORDER BY(usrset_value + 0) DESC"
+					. "ORDER BY(usrset_value + 0) DESC, prt_id "
 				)
 			) {
 				while ($row = $r->fetch_assoc()) {
@@ -101,17 +109,17 @@ class SmartListObject
 
 
 
-	public function userAccountsInbound(mixed $select = null, ?array $exclude = null): string
+	public function userAccountsInbound(mixed $select = null, ?array $exclude = null, ?int $identity = null): string
 	{
-		$role = new \System\Finance\AccountRole();
+		$role          = new \System\Finance\AccountRole();
 		$role->inbound = true;
-		return $this->userAccounts($role, null, $select, $exclude);
+		return $this->userAccounts($role, null, $select, $exclude, $identity);
 	}
-	public function userAccountsOutbound(mixed $select = null, ?array $exclude = null): string
+	public function userAccountsOutbound(mixed $select = null, ?array $exclude = null, ?int $identity = null): string
 	{
-		$role = new \System\Finance\AccountRole();
+		$role           = new \System\Finance\AccountRole();
 		$role->outbound = true;
-		return $this->userAccounts($role, null, $select, $exclude);
+		return $this->userAccounts($role, null, $select, $exclude, $identity);
 	}
 
 
@@ -209,7 +217,7 @@ class SmartListObject
 	public function financialTransactionNature(mixed $select = null): string
 	{
 		$output = "";
-		foreach ( \System\Finance\Transaction\Nature::array() as $k => $v) {
+		foreach (\System\Finance\Transaction\Nature::array() as $k => $v) {
 			$output .= $this->template((string) $k, $v, null, (int) $k == (int) $select);
 		}
 

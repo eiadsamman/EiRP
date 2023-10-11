@@ -1,4 +1,10 @@
 <?php
+function replaceARABIC($str){
+	$str=str_replace(["أ","إ","آ"],"[أإاآ]+",$str);
+	$str=str_replace(["ة","ه"],"[ةه]+",$str);
+	$str=str_replace(["ى","ي"],"[يى]+",$str);
+	return $str;
+}
 
 $perpage = 50;
 $arr_feild = array(
@@ -452,47 +458,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		margin: 0;
 	}
 
-	.checkbox>label {
-		display: inline-block;
-		width: 30px;
-		height: 32px;
-		position: relative;
-	}
-
-	.checkbox>label:before {
-		display: block;
-		position: absolute;
-		content: " ";
-	}
-
-	.checkbox>label>input {
-		visibility: hidden;
-	}
-
-	.checkbox>label>input[type=checkbox]:hover~span:before {
-		border-color: #888;
-	}
-
-	.checkbox>label>input[type=checkbox]~span:before {
-		content: " ";
-		position: absolute;
-		display: block;
-		top: 6px;
-		left: 9px;
-		border: solid 1px #eee;
-		border-radius: 3px;
-		padding: 3px 2px;
-		width: 14px;
-		height: 12px;
-		background-color: #fff;
-	}
-
-	.checkbox>label>input[type=checkbox]:checked~span:before {
-		font-family: icomoon2;
-		content: "\f00c";
-		color: #06c;
-		font-size: 14px;
-	}
+	
 
 	.permanent:after {
 		font-family: icomoon;

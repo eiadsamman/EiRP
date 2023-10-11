@@ -14,7 +14,12 @@ if (0) {
 	exit;
 }
 
-
+function replaceARABIC($str){
+	$str=str_replace(["أ","إ","آ"],"[أإاآ]+",$str);
+	$str=str_replace(["ة","ه"],"[ةه]+",$str);
+	$str=str_replace(["ى","ي"],"[يى]+",$str);
+	return $str;
+}
 
 
 

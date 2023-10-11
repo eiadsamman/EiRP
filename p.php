@@ -16,7 +16,6 @@ spl_autoload_register(function ($class) {
 
 
 
-
 use System\App;
 
 $app = new App(__DIR__, "cpanel3.settings.xml", false);
@@ -40,7 +39,6 @@ if ($fs()->enabled == false) {
 	$app->responseStatus->Forbidden->response();
 }
 
-include("admin/methods.php");
 
 /* Deny access if pagefile request a permission & display the login form */
 if ($fs()->permission->deny == true && $fs()->id == $app::PERMA_ID['index']) {

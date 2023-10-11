@@ -12,7 +12,7 @@ $grem->menu()->serve("<a href=\"okok\">My button is beautiful</a><span class=\"g
 
 
 
-for ($i = 0; $i < 30; $i++) {
+for ($i = 0, $j = 30; $i < $j; $i++) {
 	$grem->legend()->serve("<span class=\"flex\">Header</span>");
 	$grem->article()->serve("Data <br />Data <br />Data <br />Data <br />Data <br />Data <br />Data <br />Data <br />Data <br />");
 }

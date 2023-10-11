@@ -1,5 +1,20 @@
 <?php
-include_once("admin/class/json.php");
+
+
+class JSON {
+	public function output($result,$message,$focus=null,$extra=null){
+		echo "{";
+		echo "\"result\":".($result==true?"true":"false")."";
+		echo ",\"message\":\"".addslashes($message)."\"";
+		echo $focus!=null?",\"focus\":\"$focus\"":",\"focus\":false";
+		if($extra !=null && is_array($extra)){
+			foreach($extra as $k=>$v){echo ",\"$k\":\"$v\"";}
+		}
+		echo "}";
+		exit;
+	}
+}
+
 if (isset($_POST['new-child']) && isset($_POST['parent'])) {
 	$parent = (int)$_POST['parent'];
 	if ($parent == 0) {

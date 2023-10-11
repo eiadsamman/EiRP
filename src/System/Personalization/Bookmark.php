@@ -40,7 +40,7 @@ class Bookmark
 					pagefile 
 					JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1 
 					JOIN 
-						pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id=" . $this->app->user->info->permissions . "
+						pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$this->app->user->info->permissions} AND (pfp_value & b'1000') > 0
 							LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . $this->app->user->info->id . " AND usrset_type='" . Identifiers::SystemUserBookmark->value . "'	
 					JOIN (
 						SELECT

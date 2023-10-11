@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace System\Finance;
 
-use System\Exceptions\Finance\ForexCurrencyNotFound;
+use System\Exceptions\Finance\ForexException;
 
 class Forex
 {
@@ -41,7 +41,7 @@ class Forex
 				return $this->rates[$from] / $this->rates[$to] * $value;
 			}
 		} else {
-			throw new ForexCurrencyNotFound();
+			throw new ForexException();
 		}
 	}
 

@@ -9,13 +9,13 @@ use System\Finance\Account;
 
 
 
-class Receipt extends Transaction
+class Payment extends Transaction
 {
 
 	public function __construct(protected \System\App &$app)
 	{
 		parent::__construct($app);
-		$this->nature_id = Nature::Income->value;
+		$this->nature_id = Nature::Payment->value;
 	}
 	protected function releaseStatementPairs(int $ownerID): bool
 	{
@@ -37,16 +37,16 @@ class Receipt extends Transaction
 
 		/* First step */
 		$account = $this->issuer_account->id;
-		$dir     = 1;
-		$value   = 1 * $this->value;
+		$dir     = 0;
+		$value   = -1 * $this->value;
 		if (!$stmt->execute()) {
 			return false;
 		}
 
 		/* First step */
 		$account = $this->target_account->id;
-		$dir     = 0;
-		$value   = -1 *
+		$dir     = 1;
+		$value   = 1 *
 			($this->issuer_account->currency->id == $this->target_account->currency->id ?
 				$this->value :
 				$this->forex->exchange(
@@ -65,8 +65,8 @@ class Receipt extends Transaction
 
 	public final function issuerAccount(Account $account): self
 	{
-		if (!$account->role->inbound) {
-			throw new TransactionException("Account isn't set for inbound operations", 201);
+		if (!$account->role->outbound) {
+			throw new TransactionException("Account isn't set for outbound operations", 201);
 		}
 		$this->issuer_account = $account;
 		$this->accountConflict();
@@ -74,8 +74,8 @@ class Receipt extends Transaction
 	}
 	public final function targetAccount(Account $account): self
 	{
-		if (!$account->role->outbound) {
-			throw new TransactionException("Account isn't set for outbound operations", 202);
+		if (!$account->role->inbound) {
+			throw new TransactionException("Account isn't set for inbound operations", 202);
 		}
 		$this->target_account = $account;
 		$this->accountConflict();

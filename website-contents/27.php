@@ -43,7 +43,7 @@ if ($r && $row = $r->fetch_assoc()) {
 	$grem = new Gremium\Gremium(true);
 
 	$grem->header()->serve("<h1>My Account</h1>");
-	$grem->menu()->serve("<a class=\"\" href=\"{$fs(263)->dir}\">{$fs(263)->title}</a><span class=\"gap\"></span>");
+	$grem->menu()->serve("<a href=\"{$fs(17)->dir}\">{$fs(17)->title}</a><a href=\"{$fs(263)->dir}\">{$fs(263)->title}</a><span class=\"gap\"></span>");
 	$grem->legend()->serve("<span class=\"flex\">Account information</span>");
 
 	$grem->article()->serve('

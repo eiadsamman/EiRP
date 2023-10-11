@@ -1,22 +1,29 @@
 <?php
 
+use System\Personalization\DashboardReports;
 use System\Template\Gremium;
 
-$grem = new Gremium\Gremium(false);
-$grem->header()->sticky(false)->serve("<h1><span id=\"xxx\" style=\"\">Welcome </span> {$app->user->info->name}</h1>");
+$dashboard = new DashboardReports($app);
+$grem      = new Gremium\Gremium(false);
+
+
+$grem->header()->sticky(false)->serve("<h1><span style=\"color:var(--btnset-inputhover-border-color)\">Welcome </span> {$app->user->info->name}</h1>");
 $grem->article()->open();
+$atleastone = false;
 echo "<div class=\"homepageWidget\">";
-if (
-	$rlocal = $app->db->query("SELECT trd_id 
-		FROM pagefile JOIN pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$app->user->info->permissions}
-		WHERE trd_parent = 73 AND trd_enable = 1  ORDER BY trd_zorder")
-) {
-	while ($rowlocal = $rlocal->fetch_assoc()) {
-		$reportpageid = $rowlocal['trd_id'];
-		if (file_exists($app->root . "website-contents/{$rowlocal['trd_id']}.php")) {
-			include($app->root . "website-contents/{$rowlocal['trd_id']}.php");
-		}
+foreach ($dashboard->list(true) as $dashboard) {
+	$atleastone   = true;
+	$reportpageid = $dashboard['trd_id'];
+	if (file_exists($app->root . "website-contents/{$dashboard['trd_id']}.php")) {
+		include($app->root . "website-contents/{$dashboard['trd_id']}.php");
 	}
 }
 echo "</div>";
+if(!$atleastone){
+echo <<<HTML
+<ul>
+<li>Dashboard reports is empty, goto `<a href="{$fs(17)->dir}">Settings</a>` and select required reports</li>
+</ul>
+HTML;
+}
 $grem->getLast()->close();
