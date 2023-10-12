@@ -315,10 +315,7 @@ if ($app->xhttp) {
 		;
 	}
 </style>
-
 <?php
-
-
 $grem = new Gremium\Gremium(false);
 
 $grem->header()->serve("<h1>{$fs()->title}</h1>");
@@ -329,7 +326,7 @@ echo "<button id=\"jQexport\" disabled=\"disabled\" type=\"button\">Export</butt
 echo "<span class=\"gap\"></span>";
 $grem->getLast()->close();
 
-$grem->legend()->serve("<span class=\"flex\">Filter query</span>");
+$grem->title()->serve("<span class=\"flex\">Filter query</span>");
 $grem->article()->open();
 
 $slo = new SmartListObject($app);
@@ -368,7 +365,8 @@ $slo = new SmartListObject($app);
 </form><br />
 <?php
 $grem->getLast()->close();
-$grem->legend()->serve("<span class=\"flex\">Query Result</span>");
+
+$grem->title()->serve("<span class=\"flex\">Query Result</span>");
 $grem->article()->serve("<div id=\"jQoutput\"></div>");
 unset($grem);
 ?>

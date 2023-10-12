@@ -60,7 +60,7 @@ class SmartListObject
 		?int $identity = null
 	): string {
 		$output = "";
-		if($identity==null){
+		if ($identity == null) {
 			$identity = \System\Personalization\Identifiers::SystemCountAccountSelection->value;
 		}
 		try {
@@ -96,6 +96,51 @@ class SmartListObject
 
 		return $output;
 	}
+
+
+	public function userCompanies(
+		mixed $select = null,
+		?array $exclude = null,
+		?int $identity = null
+	): string {
+		$output = "";
+		if ($identity == null) {
+			$identity = \System\Personalization\Identifiers::SystemCountCompanySelection->value;
+		}
+		try {
+			if (
+				$r = $this->app->db->query(
+					"SELECT 
+						comp_id, comp_name
+					FROM
+						companies
+							JOIN user_company ON comp_id = urc_usr_comp_id AND urc_usr_id = {$this->app->user->info->id} 
+							LEFT JOIN user_settings ON usrset_usr_defind_name = comp_id AND usrset_usr_id = {$this->app->user->info->id} AND usrset_type = {$identity}
+					ORDER BY 
+						(usrset_value + 0) DESC, comp_id "
+				)
+			) {
+				while ($row = $r->fetch_assoc()) {
+					if ($exclude != null && in_array((int) $row['comp_id'], $exclude)) {
+						continue;
+					}
+					$output .= $this->template(
+						$row['comp_id'],
+						$row['comp_name'],
+						"",
+						$select == $row['comp_id']
+					);
+				}
+			}
+		} catch (\mysqli_sql_exception $e) {
+			$this->app->errorHandler->logError($e);
+			return "<option>" . $e->getCode() . " Server error!</option>";
+		}
+
+		return $output;
+	}
+
+
 	/**
 	 * Returns SmartList Accounts List for logged user and user selected company
 	 * Filter accounts by (in bound, out bound, accessiblity, and balance viewable)
@@ -106,8 +151,6 @@ class SmartListObject
 	 * @param bool $viewable Specifiy if the account is viewable by the user and if account balance is viewable
 	 * @return string HTML string `<option />` tags based on `System\SmartListObject\template` function
 	 */
-
-
 
 	public function userAccountsInbound(mixed $select = null, ?array $exclude = null, ?int $identity = null): string
 	{

@@ -56,6 +56,7 @@ if ($r && $row = $r->fetch_assoc()) {
 	<div class="template-gridLayout role-input">
 		<div class="btn-set vertical" ><span>Register date</span><input type="text" tabindex="-1" value="' . $curinfo['usr_regdate'] . '" readonly="readonly" /></div>
 	</div>
+	<br /><br /><br />
 	');
 
 

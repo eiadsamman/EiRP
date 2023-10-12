@@ -1,13 +1,24 @@
 <?php
 use System\Personalization\DashboardReports;
+use System\Personalization\Personalization;
 use System\Template\Gremium;
 
+$salt      = date("YmdHm") . session_id() . "(08#F(&Go7g32f";
 $dashboard = new DashboardReports($app);
 if ($app->xhttp) {
 	if (isset($_POST['update'])) {
 		$dashboard->update($_POST['update']);
 		exit;
 	}
+
+
+	if (isset($_POST[md5($salt)])) {
+		if (Personalization::purgeAllPreferences($app)) {
+			echo "1";
+		}
+		exit;
+	}
+
 	exit;
 }
 
@@ -16,15 +27,17 @@ $grem->header()->prev($fs(27)->dir)->serve("<h1>Settings</h1>");
 
 $grem->title()->serve("<span>System settings:</span>");
 $grem->article()->open();
+
+$darkmode_checked = $themeDarkMode->mode == "light" ? "" : " checked=\"checked\" ";
 echo <<<HTML
 <table class="bom-table hover row-selector"></body>
 	<tr>
-		<th class="btn-set"><button>Clear</button></th>
-		<td width="100%"><span style="white-space:wrap">Clear all activity history from the system</span></td>
+		<th class="btn-set" id="purgeReferences"><button>Clear</button></th>
+		<td width="100%"><span style="white-space:wrap">Clear all activities history from the system, including company and selections<Br/>This process can't be undone</span></td>
 	</tr>
 	<tr>
-		<td class="checkbox"><label><input type="checkbox" /></label></td>
-		<td width="100%"><span style="white-space:wrap">Dark Mode</span></td>
+		<td class="checkbox"><label><input id="toggle-darkmode" type="checkbox" $darkmode_checked /></label></td>
+		<td width="100%"><span style="white-space:wrap">Toggle Dark Mode</span></td>
 	</tr>
 </body></table>
 <br />
@@ -39,7 +52,7 @@ $grem->article()->open();
 $firstocc = false;
 foreach ($dashboard->list() as $dashboard) {
 	if (!$firstocc) {
-		echo "<table class=\"bom-table hover\" id=\"dash-table\" style=\"position:relative;\"><tbody>";
+		echo "<table class=\"bom-table hover row-selector\" id=\"dash-table\" style=\"position:relative;\"><tbody>";
 		$firstocc = true;
 	}
 	echo "<tr data-pageid=\"{$dashboard['trd_id']}\">";
@@ -100,7 +113,7 @@ unset($grem);
 <script>
 	$(document).ready(function (e) {
 
-		const fnUpdate = function () {
+		const saveDashboard = function () {
 			const leaseObj = [];
 			$("#dash-table > tbody").find("tr").each(function (index, element) {
 				leaseObj.push([$(this).attr("data-pageid"), $(this).find("input[type=checkbox]").prop("checked") ? "1" : "0"]);
@@ -112,7 +125,7 @@ unset($grem);
 			});
 		}
 		$("#dash-table input[type=checkbox]").change(function (e) {
-			fnUpdate();
+			saveDashboard();
 		});
 
 		$("#dash-table > tbody").sortable({
@@ -132,25 +145,50 @@ unset($grem);
 			},
 			update: function (event, ui) {
 				ui.item.removeClass("ui-sortable-start");
-				fnUpdate();
+				saveDashboard();
 			}
 		});
+
+		
 
 		$(".row-selector > tbody > tr > td:not(:first-child)").click(function () {
-
-			let o = $(this).parent().find("input[type=radio]").prop("checked", true);
+			let o = $(this).parent().find("input[type=radio]").prop("checked", true).change();
 			o = $(this).parent().find("input[type=checkbox]");
 			if (o.length > 0) {
-				o.prop("checked", !o.prop("checked"));
-			}
-		});
-		$("#dash-table > tbody > tr > td:not(:first-child)").click(function () {
-			let o = $(this).parent().find("input[type=checkbox]");
-			if (o.length > 0) {
-				o.prop("checked", !o.prop("checked"));
-				fnUpdate();
+				o.prop("checked", !o.prop("checked")).change();
 			}
 		});
 
+
+
+		$("#toggle-darkmode").on("change", function () {
+			toggleThemeMode()
+		});
+		document.addEventListener("darkmode", function (e) {
+			if (e.mode == "light") {
+				$("#toggle-darkmode").prop("checked", false);
+			} else {
+				$("#toggle-darkmode").prop("checked", true);
+			}
+		});
+
+
+
+		$("#purgeReferences").click(function () {
+			let conf = confirm("Are you sure you want to delete all references related to your account, this action can't be undone");
+			if (conf) {
+				$.ajax({
+					url: "<?= $fs()->dir; ?>",
+					data: { "<?= md5($salt); ?>": "challenge" },
+					type: "POST"
+				}).done(function (o) {
+					if (o == "1") {
+						messagesys.success("All references deleted from the system");
+					} else {
+						messagesys.failure("Operation failed");
+					}
+				});
+			}
+		});
 	});
 </script>

@@ -10,3 +10,10 @@
 [2023-10-12 11:56:28 (EET)] Warning: Attempt to read property "user" on null in C:\xampp\htdocs\eiad\src\System\Personalization\Personalization.php on line 16
 [2023-10-12 11:56:28 (EET)] Warning: Attempt to read property "info" on null in C:\xampp\htdocs\eiad\src\System\Personalization\Personalization.php on line 16
 [2023-10-12 11:56:28 (EET)] Warning: Attempt to read property "id" on null in C:\xampp\htdocs\eiad\src\System\Personalization\Personalization.php on line 16
+[2023-10-13 00:40:58 (EET)] Warning: Attempt to read property "role" on null in C:\xampp\htdocs\eiad\website-contents\216.php on line 10
+[2023-10-13 00:40:58 (EET)] Warning: Attempt to read property "view" on null in C:\xampp\htdocs\eiad\website-contents\216.php on line 10
+[2023-10-13 00:40:58 (EET)] Warning: Attempt to read property "type" on null in C:\xampp\htdocs\eiad\website-contents\216.php on line 30
+[2023-10-13 00:40:58 (EET)] Warning: Attempt to read property "name" on null in C:\xampp\htdocs\eiad\website-contents\216.php on line 30
+[2023-10-13 00:40:58 (EET)] Warning: Attempt to read property "name" on null in C:\xampp\htdocs\eiad\website-contents\216.php on line 31
+[2023-10-13 00:40:58 (EET)] Warning: Attempt to read property "currency" on null in C:\xampp\htdocs\eiad\website-contents\216.php on line 33
+[2023-10-13 00:40:58 (EET)] Warning: Attempt to read property "shortname" on null in C:\xampp\htdocs\eiad\website-contents\216.php on line 33

@@ -28,10 +28,10 @@ abstract class Personalization
 		return new \Generator;
 	}
 
-	public function purgeAllPreferences(): void
+	public static function purgeAllPreferences($app): bool
 	{
-		echo "Are you sure?";
-		//$this->app->db->query("");
+		$result = $app->db->query("DELETE FROM user_settings WHERE usrset_usr_id = {$app->user->info->id}");
+		return $result ? true : false;
 	}
 
 }

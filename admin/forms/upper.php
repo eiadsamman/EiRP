@@ -1,5 +1,5 @@
 <?php
-$_v = "?rev=" . uniqid();
+$_v = "?rev=1013" ;//. uniqid();
 
 use System\FileSystem\Hierarchy;
 use System\Finance\AccountRole;
@@ -123,7 +123,7 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<header>
 						<span class="btn-set">
-							<input type="text" class="flex" id="PFSelector" data-slo=":LIST" data-list="PFSelectorList" />
+							<input type="text" class="flex" id="PFSelector" data-slo=":LIST" data-list="PFSelectorList" placeholder="Goto page..." />
 							<datalist id="PFSelectorList" style="display: none;">
 								<?php
 								$ident = \System\Personalization\Identifiers::SystemFrequentVisit->value;
@@ -167,13 +167,14 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<header>
 						<span class="btn-set">
-							<input type="text" class="flex" id="account-menu-slo" data-url="<?= $fs()->dir ?>" data-list="accounts-list" data-slo=":LIST">
+							<input type="text" class="flex" id="account-menu-slo" data-url="<?= $fs()->dir ?>" data-list="accounts-list" data-slo=":LIST" placeholder="Select an account...">
 						</span>
 						<datalist id="accounts-list">
 							<?php
 							if ($app->user->company) {
 								$role = new AccountRole();
 								echo $SmartListObject->userAccounts($role, $app->user->company->id);
+								unset($role);
 							}
 							?>
 						</datalist>
@@ -244,8 +245,11 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<header>
 						<span class="btn-set">
-							<input type="text" class="flex" id="company-menu-slo" data-url="<?= $fs()->dir ?>" data-slo="COMPANY_USER">
+							<input type="text" class="flex" id="company-menu-slo" data-url="<?= $fs()->dir ?>" data-slo=":LIST" data-list="company-list" placeholder="Select a company...">
 						</span>
+						<datalist id="company-list">
+							<?= $SmartListObject->userCompanies(); ?>
+						</datalist>
 					</header>
 					<div style="white-space:nowrap;" class="menu-items">
 						<?php
@@ -324,5 +328,4 @@ $SmartListObject = new SmartListObject($app);
 						</span>
 					<?php } ?>
 					<div <?= ($__side_panel && $__side_panel->permission->deny == false) ? "class=\"template-enableSidePanel\"" : ""; ?> id="body-content">
-
 						<?php unset($SmartListObject); ?>

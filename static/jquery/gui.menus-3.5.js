@@ -239,30 +239,7 @@ $(document).ready(function (e) {
 
 
 
-	function toggleThemeMode() {
-		if (document.body.dataset.mode == undefined) {
-			document.body.classList.add("dark");
-			document.body.dataset.mode = "dark";
-		} else if (document.body.dataset.mode == "dark") {
-			document.body.classList.remove("dark");
-			document.body.dataset.mode = "light";
-		} else {
-			document.body.classList.add("dark");
-			document.body.dataset.mode = "dark";
-		}
-		$.ajax({
-			data: { "--toggle-theme-mode": document.body.dataset.mode },
-			url: "",
-			type: "POST"
-		}).done(function (data, textStatus, request) {
-			console.group(data);
-			let response = request.getResponseHeader('QUERY_RESULT');
-			if (parseInt(response) == 1) {
 
-			}
-		});
-
-	}
 
 
 
@@ -273,10 +250,44 @@ $(document).ready(function (e) {
 			return false;
 		});
 	});
-
-
-
 });
+
+
+
+let darkmodeevent = null;
+
+document.addEventListener("DOMContentLoaded", function () {
+	darkmodeevent = new CustomEvent("darkmode", { "mode": "light" });
+	if (document.body.dataset.mode == undefined) {
+		darkmodeevent.mode = "light";
+	} else if (document.body.dataset.mode == "dark") {
+		darkmodeevent.mode = "dark";
+	} else {
+		darkmodeevent.mode = "light";
+	}
+});
+
+function toggleThemeMode() {
+	if (document.body.dataset.mode == undefined) {
+		document.body.classList.add("dark");
+		document.body.dataset.mode = "dark";
+	} else if (document.body.dataset.mode == "dark") {
+		document.body.classList.remove("dark");
+		document.body.dataset.mode = "light";
+	} else {
+		document.body.classList.add("dark");
+		document.body.dataset.mode = "dark";
+	}
+	darkmodeevent.mode = document.body.dataset.mode;
+	document.dispatchEvent(darkmodeevent);
+	$.ajax({
+		data: { "--toggle-theme-mode": document.body.dataset.mode },
+		url: "",
+		type: "POST"
+	});
+}
+
+
 
 Number.prototype.numberFormat = function (decimals, dec_point, thousands_sep) {
 	dec_point = typeof dec_point !== 'undefined' ? dec_point : '.';
