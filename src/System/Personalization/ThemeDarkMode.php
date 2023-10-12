@@ -1,21 +1,25 @@
 <?php
 namespace System\Personalization;
 
-class ThemeDarkMode
+class ThemeDarkMode extends Personalization
 {
+
+	protected int $identifier = Identifiers::SystemDarkMode->value;
 
 	public string $mode = "light";
 	public function __construct(protected \System\App $app)
 	{
 		$this->getMode();
 	}
-	public function registerMode(int $id)
+	public function register(int $id): bool
 	{
-		$this->app->db->query("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value, usrset_time) 
-			VALUES (" . $this->app->user->info->id . "," . Identifiers::SystemDarkMode->value . ", 0 , $id ,NOW()) 
+		$this->app->db->query("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value) 
+			VALUES ({$this->app->user->info->id}, {$this->identifier}, 0 , $id) 
 			ON DUPLICATE KEY UPDATE usrset_value = $id;");
 		$this->mode = $id == 0 ? "light" : "dark";
+		return true;
 	}
+
 
 	public function getMode(): string
 	{
@@ -26,7 +30,7 @@ class ThemeDarkMode
 					user_settings 
 				WHERE
 					usrset_usr_id = {$this->app->user->info->id} AND 
-					usrset_type = " . Identifiers::SystemDarkMode->value . " AND
+					usrset_type = {$this->identifier} AND
 					usrset_usr_defind_name = 0 ;"
 		);
 		if ($result && $result->num_rows > 0 && $row = $result->fetch_row()) {

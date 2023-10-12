@@ -3,20 +3,20 @@
 namespace System\Personalization;
 
 
-class Bookmark
+class Bookmark extends Personalization
 {
+	protected int $identifier = Identifiers::SystemUserBookmark->value;
 
 	public function __construct(protected \System\App $app)
 	{
-
 	}
 
-	public function setOrder(array $order_array): bool
+	public function update(array $order_array): bool
 	{
 		$stmt = $this->app->db->prepare("UPDATE user_settings SET usrset_value = ? 
 			WHERE 
 				usrset_usr_id= {$this->app->user->info->id} AND 
-				usrset_type = " . Identifiers::SystemUserBookmark->value . " AND 
+				usrset_type = {$this->identifier} AND 
 				usrset_usr_defind_name = ?
 				");
 		$order = 0;
@@ -35,25 +35,25 @@ class Bookmark
 		try {
 			$result = $this->app->db->query(
 				"SELECT 
-					trd_directory, pfl_value, trd_id, trd_attrib4, trd_attrib5, bookmark_id
+					trd_directory, pfl_value, trd_id, trd_attrib4, trd_attrib5
 				FROM 
 					pagefile 
 					JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1 
 					JOIN 
 						pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$this->app->user->info->permissions} AND (pfp_value & b'1000') > 0
-							LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . $this->app->user->info->id . " AND usrset_type='" . Identifiers::SystemUserBookmark->value . "'	
+							LEFT JOIN user_settings ON usrset_usr_defind_name=trd_id AND usrset_usr_id=" . $this->app->user->info->id . " AND usrset_type = {$this->identifier}
 					JOIN (
 						SELECT
-							usrset_usr_defind_name AS bookmark_page_id, usrset_id AS bookmark_id
+							usrset_usr_defind_name AS bookmark_page_id
 						FROM 
 							user_settings
 						WHERE 
-							usrset_usr_id= " . $this->app->user->info->id . " AND usrset_type = " . Identifiers::SystemUserBookmark->value . "
+							usrset_usr_id= " . $this->app->user->info->id . " AND usrset_type = {$this->identifier}
 						) AS bookmarks  ON bookmarks.bookmark_page_id = trd_id
 				WHERE 
 					trd_enable = 1 
 				ORDER BY
-					(usrset_value+0) ASC, usrset_id;"
+					(usrset_value + 0) ASC;"
 			);
 			if ($result) {
 				while ($row = $result->fetch_assoc()) {
@@ -67,7 +67,7 @@ class Bookmark
 
 	public function isBookmarked(int $page_id): bool
 	{
-		$result = $this->app->db->query("SELECT usrset_id AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . $this->app->user->info->id . " AND usrset_type=" . Identifiers::SystemUserBookmark->value . " AND usrset_usr_defind_name=$page_id;");
+		$result = $this->app->db->query("SELECT usrset_type AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . $this->app->user->info->id . " AND usrset_type = {$this->identifier} AND usrset_usr_defind_name = $page_id;");
 		if ($result && $result->num_rows > 0) {
 			return true;
 		}
@@ -76,7 +76,7 @@ class Bookmark
 	public function remove(int $page_id): bool
 	{
 		try {
-			$result = $this->app->db->query("DELETE FROM user_settings WHERE usrset_usr_id= " . $this->app->user->info->id . " AND usrset_type=" . Identifiers::SystemUserBookmark->value . " AND usrset_usr_defind_name=$page_id;");
+			$result = $this->app->db->query("DELETE FROM user_settings WHERE usrset_usr_id= " . $this->app->user->info->id . " AND usrset_type = {$this->identifier} AND usrset_usr_defind_name=$page_id;");
 			if ($result && $row = $this->app->db->affected_rows > 0) {
 				return true;
 			}
@@ -86,15 +86,14 @@ class Bookmark
 		return false;
 	}
 
-	public function add(int $page_id): bool|null
+	public function register(int $page_id): bool|null
 	{
 		try {
-			$result = $this->app->db->query("SELECT usrset_id AS bookmarks_count FROM user_settings WHERE usrset_usr_id= " . $this->app->user->info->id . " AND usrset_type=" . Identifiers::SystemUserBookmark->value . " AND usrset_usr_defind_name=$page_id;");
+			$result = $this->app->db->query("SELECT usrset_type AS bookmarks_count FROM user_settings WHERE usrset_usr_id = " . $this->app->user->info->id . " AND usrset_type = {$this->identifier} AND usrset_usr_defind_name=$page_id;");
 			if ($result && $result->num_rows > 0) {
 				return null;
 			}
-
-			$stmt = $this->app->db->prepare("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name) VALUES (" . $this->app->user->info->id . ", " . Identifiers::SystemUserBookmark->value . " , ?);");
+			$stmt = $this->app->db->prepare("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name) VALUES (" . $this->app->user->info->id . ", {$this->identifier} , ?);");
 			if ($stmt) {
 				$stmt->bind_param("i", $page_id);
 				if ($stmt->execute()) {
@@ -108,7 +107,6 @@ class Bookmark
 		}
 		return false;
 	}
-
 
 
 }

@@ -9,10 +9,10 @@
 .bom-table > thead > tr > th,
 .bom-table > tbody > tr > th {
 	font-weight: normal;
-	border: solid 1px transparent;
 }
 
 .bom-table > tbody > tr:not(:first-child) > td,
+.bom-table > tbody > tr:not(:first-child) > th,
 .bom-table > tfoot > tr:not(:first-child) > td {
 	border-top: solid 1px var(--bomtable-border-color);
 }
@@ -36,20 +36,12 @@
 .bom-table > tfoot > tr > th {
 	padding: 10px 8px;
 	color: var(--root-link-color);
-	border-top: solid 1px var(--bomtable-border-color);
 	border-bottom: none;
 	border-right: none;
 	border-left: none;
 	cursor: default;
 }
 
-.bom-table > tbody > tr > th:first-child {
-	border-left: solid 1px var(--bomtable-border-color);
-}
-
-.bom-table > tbody > tr > th:last-child {
-	border-right: solid 1px var(--bomtable-border-color);
-}
 
 .bom-table > thead > tr > td,
 .bom-table > tfoot > tr > td {
@@ -241,14 +233,15 @@
 	top: 8px;
 	left: 8px;
 	border: solid 1px var(--btnset-input-border-color);
-	border-radius:10px;
+	border-radius: 10px;
 	width: 14px;
 	height: 14px;
 	background-color: transparent;
 }
+
 .bom-table > tbody > tr > td.checkbox > label:hover::before {
 
-border-color: var(--btnset-inputhover-border-color);
+	border-color: var(--btnset-inputhover-border-color);
 }
 
 .bom-table > tbody > tr > td.checkbox > label > input {
@@ -263,7 +256,8 @@ border-color: var(--btnset-inputhover-border-color);
 }
 
 
-.bom-table > tbody > tr > td.checkbox > label > input[type=checkbox]::before {
+.bom-table > tbody > tr > td.checkbox > label > input[type=checkbox]::before,
+.bom-table > tbody > tr > td.checkbox > label > input[type=radio]::before {
 	display: block;
 	position: relative;
 	content: " ";
@@ -271,16 +265,23 @@ border-color: var(--btnset-inputhover-border-color);
 	top: 7px;
 	left: 6px;
 	background-color: var(--root-link-color);
-	width:12px;
+	width: 12px;
 	height: 12px;
 	transform: scale(0);
 	transition: transform ease .1s;
 }
 
-.bom-table > tbody > tr > td.checkbox > label > input[type=checkbox]:checked::before {
+.bom-table > tbody > tr > td.checkbox > label > input[type=radio]::before {
+	left: 5px;
+
+}
+
+.bom-table > tbody > tr > td.checkbox > label > input[type=checkbox]:checked::before,
+.bom-table > tbody > tr > td.checkbox > label > input[type=radio]:checked::before {
 	transform: scale(.9);
 
 }
+
 /* #endregion Table Checkbox*/
 
 

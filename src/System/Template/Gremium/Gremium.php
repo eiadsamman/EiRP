@@ -205,6 +205,23 @@ class Legend extends Blocks
 	}
 }
 
+
+class Title extends Blocks
+{
+	protected string $id = "h2";
+	public int $height = 42;
+
+	public function open(): self
+	{
+		if (!$this->opened) {
+			echo "<{$this->id} " . ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top} - var(--gremium-header-toggle));\" " : "") . ">\n";
+			$this->opened = true;
+		}
+		return $this;
+	}
+}
+
+
 class Article extends Blocks
 {
 	protected string $id = "article";
@@ -269,7 +286,7 @@ class Gremium
 	public function __construct(bool $limit_width = true, ?bool $legends_stackable = true, ?bool $omit_html = false, ?string $html_id = null)
 	{
 		$this->legends_stackable = $legends_stackable;
-		$this->stack = array();
+		$this->stack             = array();
 		if (!$omit_html)
 			echo "<div " . (!is_null($html_id) ? " id=\"$html_id\" " : "") . " class=\"gremium " . ($limit_width ? "limit-width" : "") . "\">\n\n\n\n";
 	}
@@ -290,7 +307,7 @@ class Gremium
 		foreach ($this->stack as $stackblock) {
 			if ($stackblock->sticky() && $stackblock->stackable) {
 
-				if (($stackblock instanceof Legend) && !$this->legends_stackable) {
+				if (($stackblock instanceof Legend || $stackblock instanceof Title) && !$this->legends_stackable) {
 					$topcalc += 0;
 				} else {
 					$topcalc += $stackblock->height;
@@ -327,6 +344,10 @@ class Gremium
 	public function legend(): Legend
 	{
 		return $this->add(new Legend());
+	}
+	public function title(): Title
+	{
+		return $this->add(new Title());
 	}
 	/**
 	 * Add a new article

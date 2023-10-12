@@ -1,6 +1,8 @@
 .theme-default {
+	color:cornflowerblue;
 	--root-background-color: white;
 	--root-font-color: black;
+	--root-font-lightcolor: cornflowerblue;
 	--root-link-color: dodgerblue;
 	--root-ribbon-background-color: #e3e3ee;
 	--root-ribbon-border-color: #ccc;
@@ -47,6 +49,7 @@
 .theme-default.dark {
 	--root-background-color: #121212;
 	--root-font-color: #eee;
+	--root-font-lightcolor: cornflowerblue;
 	--root-link-color: lightskyblue;
 	--root-ribbon-background-color: #38383f;
 	--root-ribbon-border-color: #5c5c67;

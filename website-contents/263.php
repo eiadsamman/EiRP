@@ -8,12 +8,12 @@ $bookmark = new Bookmark($app);
 if ($app->xhttp) {
 	if (isset($_POST['order'])) {
 
-		$bookmark->setOrder($_POST['order']);
+		$bookmark->update($_POST['order']);
 		exit;
 	}
 
 	if (isset($_POST['add'])) {
-		$bookmark_add = $bookmark->add((int) $_POST['add']);
+		$bookmark_add = $bookmark->register((int) $_POST['add']);
 		if ($bookmark_add == true) {
 			header("QUERY_RESULT: 1");
 			echo json_encode(
@@ -42,7 +42,6 @@ if ($app->xhttp) {
 
 $grem = new Gremium\Gremium(true);
 $grem->header()->prev($fs(27)->dir)->serve("<h1>Bookmarks</h1>");
-$grem->legend()->serve("<span class=\"flex\">Account information</span>");
 $grem->article()->open();
 
 $firstocc = false;

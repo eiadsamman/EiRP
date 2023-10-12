@@ -278,7 +278,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'load_query') {
 		exit;
 	}
 
-	$r = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_id={$_POST['query_id']} AND usrset_usr_id='{$app->user->info->id}'");
+	$r = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_usr_defind_name='{$_POST['query_id']}' AND usrset_usr_id='{$app->user->info->id}'");
 	if ($r) {
 		if ($row = $r->fetch_assoc()) {
 			$arr_output['result'] = true;
@@ -345,7 +345,7 @@ if (isset($_POST['method']) && $_POST['method'] == "delete_query") {
 	if (!isset($_POST['query_id'])) {
 		echo "0";
 	}
-	$r = $app->db->query("DELETE FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_id=" . ((int) $_POST['query_id']) . "");
+	$r = $app->db->query("DELETE FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_usr_defind_name = '{$_POST['query_id']}'");
 	if ($r) {
 		echo "1";
 	} else {
@@ -844,7 +844,7 @@ unset($grem);
 					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="creditor_account" data-slo="ACC_VIEW" /></div>
 					<div class="slo_list" data-role="creditor_account">
 						<?php
-						echo $pre_load_variables ? "<span 
+						echo $app->user->account && $pre_load_variables ? "<span 
 							data-id=\"{$app->user->account->id}\"><b>&#xea0f;</b><span>[{$app->user->account->currency->shortname}] {$app->user->company->name}: {$app->user->account->type->name}: {$app->user->account->name}</span><input type=\"hidden\" 
 							name=\"creditor_account[1]\" value=\"{$app->user->account->id}\" /><label style=\"background-color:#fff\">Exclude<input name=\"creditor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
 						?>
@@ -854,7 +854,7 @@ unset($grem);
 					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="debitor_account" data-slo="ACC_VIEW" /></div>
 					<div class="slo_list" data-role="debitor_account">
 						<?php
-						echo $pre_load_variables ? "<span data-id=\"{$app->user->account->id}\"><b>&#xea0f;</b><span>[{$app->user->account->currency->shortname}] {$app->user->company->name}: {$app->user->account->type->name}: {$app->user->account->name}</span><input type=\"hidden\" name=\"debitor_account[1]\" value=\"{$app->user->account->id}\" /><label style=\"background-color:#fff\">Exclude<input name=\"debitor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
+						echo $app->user->account && $pre_load_variables ? "<span data-id=\"{$app->user->account->id}\"><b>&#xea0f;</b><span>[{$app->user->account->currency->shortname}] {$app->user->company->name}: {$app->user->account->type->name}: {$app->user->account->name}</span><input type=\"hidden\" name=\"debitor_account[1]\" value=\"{$app->user->account->id}\" /><label style=\"background-color:#fff\">Exclude<input name=\"debitor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
 						?>
 					</div>
 				</td>

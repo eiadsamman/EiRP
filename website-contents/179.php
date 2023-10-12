@@ -5,11 +5,24 @@ use System\Template\Gremium;
 use System\Template\Gremium\Status;
 
 
-if (!$app->user->account->role->view) {
+if (is_null($app->user->account)) {
+	$grem = new Gremium\Gremium(true);
+	$grem->header()->status(Status::Exclamation)->serve("<h1>No account selected!</h1>");
+	$grem->legend()->serve("<span class=\"flex\">Access to this page requires registering a valid account:</span>");
+	$article          = $grem->article();
+	$article->message .= '<ul style="margin:0">
+		<li>Select an account from Account Selection Menu</li>
+		<li>Contact system administrator</li>
+		<li>Permission denied or not enough privileges to proceed with this document</li>
+		<ul>';
+	$article->serve();
+	unset($grem);
+	exit;
+} elseif (!$app->user->account->role->view) {
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->status(Status::Exclamation)->serve("<h1>Access restricted!</h1>");
 	$grem->legend()->serve("<span class=\"flex\">Loading journal for `{$app->user->account->name}` account failed:</span>");
-	$article = $grem->article();
+	$article          = $grem->article();
 	$article->message .= '<ul style="margin:0">
 		<li>Session has expired, loing in again to your account</li>
 		<li>Database query failed, contact system administrator</li>
@@ -27,8 +40,8 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 
 	/* Date input processing */
-	$date_start = isset($_POST['from']) ? $app->date_validate($_POST['from']) : false;
-	$date_end = isset($_POST['to']) ? $app->date_validate($_POST['to'], true) : false;
+	$date_start   = isset($_POST['from']) ? $app->date_validate($_POST['from']) : false;
+	$date_end     = isset($_POST['to']) ? $app->date_validate($_POST['to'], true) : false;
 	$user_current = abs((int) $_POST['page']);
 	if (($date_start && $date_end) && $date_start > $date_end) {
 		header("VENDOR_RESULT: DATE_CONFLICT");
@@ -43,7 +56,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 
 	$count = $sum = $pages = 0;
 	$controller->summary($count, $sum);
-	$sum = is_null($sum) ? 0 : $sum;
+	$sum   = is_null($sum) ? 0 : $sum;
 	$count = is_null($count) ? 0 : $count;
 	$pages = ceil($count / $controller->criteria->getRecordsPerPage());
 
@@ -123,7 +136,7 @@ if ($app->xhttp) {
 }
 $initial_values = array(
 	'from' => isset($_GET['from']) && $app->date_validate($_GET['from']) ? date("Y-m-d", $app->date_validate($_GET['from'])) : "",
-	'to' => isset($_GET['to']) && $app->date_validate($_GET['to']) ? date("Y-m-d", $app->date_validate($_GET['to'])) : "",
+	'to'   => isset($_GET['to']) && $app->date_validate($_GET['to']) ? date("Y-m-d", $app->date_validate($_GET['to'])) : "",
 	"page" => isset($_GET['page']) ? abs((int) $_GET['page']) : 0
 );
 
@@ -283,11 +296,10 @@ unset($grem);
 			flex: 1
 		}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(6) {
-		}
+		table.bom-table.statment-view>tbody>tr>td:nth-child(6) {}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(7) {
-		}
+		table.bom-table.statment-view>tbody>tr>td:nth-child(7) {}
+
 		table.bom-table.statment-view>tbody>tr>td:nth-child(8) {
 			font-weight: bold;
 		}
@@ -397,7 +409,7 @@ unset($grem);
 					js_input_cmd_prev.attr("disabled", true);
 					js_output_page_total.attr("disabled", true);
 					slo_page_current.disable();
-				}else if (total_pages == 1) {
+				} else if (total_pages == 1) {
 					js_input_cmd_next.attr("disabled", true);
 					js_input_cmd_prev.attr("disabled", true);
 					js_output_page_total.attr("disabled", false);

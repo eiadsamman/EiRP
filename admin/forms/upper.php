@@ -98,12 +98,12 @@ $SmartListObject = new SmartListObject($app);
 					}
 
 					echo "<span class=\"gap\" style=\"text-align:right;\"></span>";
-					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=company\" tabindex=\"-1\" title=\"Running Company\" id=\"jqroot_com\">" . ($app->user->company->name ? $app->user->company->name : "N/A") . "</a>";
+					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=company\" tabindex=\"-1\" title=\"Running Company\" id=\"jqroot_com\">" . ($app->user->company ? $app->user->company->name : "N/A") . "</a>";
 					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($app->user->account) ? "<span id=\"jqroot_accgrp\"></span><span class=\"mediabond-hide\">" . $app->user->account->type->name . ": </span>" . $app->user->account->name : "N/A") . "</a>";
 					if ($app->user->account && $app->user->account->role->view) {
 						echo "<span id=\"jqroot_bal\">" . ($app->user->account->balance < 0 ? "(" . number_format(abs($app->user->account->balance), 2, ".", ",") . ")" : number_format(abs($app->user->account->balance), 2, ".", ","));
 						echo " {$app->user->account->currency->shortname}</span>";
-					} else {
+					} elseif ($app->user->account) {
 						echo "<span>{$app->user->account->currency->shortname}</span>";
 					}
 
@@ -142,7 +142,7 @@ $SmartListObject = new SmartListObject($app);
 								ORDER BY
 									(usrset_value + 0) DESC, pfl_value
 								SQL;
-								
+
 								if ($r = $app->db->query($q)) {
 									while ($row = $r->fetch_assoc()) {
 										echo "<option data-id=\"{$row['trd_directory']}\">{$row['pagefile_title']}</option>";
@@ -171,8 +171,10 @@ $SmartListObject = new SmartListObject($app);
 						</span>
 						<datalist id="accounts-list">
 							<?php
-							$role = new AccountRole();
-							echo $SmartListObject->userAccounts($role, $app->user->company->id);
+							if ($app->user->company) {
+								$role = new AccountRole();
+								echo $SmartListObject->userAccounts($role, $app->user->company->id);
+							}
 							?>
 						</datalist>
 					</header>

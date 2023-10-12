@@ -3,22 +3,22 @@
 namespace System\Personalization;
 
 
-class DashboardReports
+class DashboardReports extends Personalization
 {
+	protected int $identifier = Identifiers::SystemDashboard->value;
 
 	public function __construct(protected \System\App $app)
 	{
 	}
 
-	public function setOrder(array $order_array): bool
+	public function update(array $order_array): bool
 	{
-		$ident = Identifiers::SystemDashboard->value;
 		$stmt  = $this->app->db->prepare(
 			"INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value, usrset_time) 
-			VALUES ({$this->app->user->info->id}, {$ident}, ? , ?, ?) 
+			VALUES ({$this->app->user->info->id}, {$this->identifier}, ? , ?, ?) 
 			ON DUPLICATE KEY UPDATE usrset_value = ? , usrset_time = ?;"
 		);
-		$order = $pageid = $cnt = $state = 0;
+		$order = $pageid = $state = 0;
 		$stmt->bind_param("iiiii", $pageid, $order, $state, $order, $state);
 		foreach ($order_array as $v) {
 			$pageid = (int) $v[0];
@@ -29,10 +29,14 @@ class DashboardReports
 		$stmt->close();
 		return true;
 	}
+	public function register(int $id): bool
+	{
+		return true;
+	}
+
 
 	public function list(bool $only_selected = null): \Generator
 	{
-		$ident = Identifiers::SystemDashboard->value;
 		try {
 			$result = $this->app->db->query(
 				"SELECT 
@@ -41,7 +45,7 @@ class DashboardReports
 					pagefile 
 					JOIN pagefile_language ON pfl_trd_id = trd_id AND pfl_lng_id = 1
 					JOIN pagefile_permissions ON pfp_trd_id = trd_id AND pfp_per_id = {$this->app->user->info->permissions} AND (pfp_value & b'1000') > 0
-					LEFT JOIN user_settings ON usrset_usr_defind_name = trd_id AND usrset_usr_id = {$this->app->user->info->id} AND usrset_type = {$ident}
+					LEFT JOIN user_settings ON usrset_usr_defind_name = trd_id AND usrset_usr_id = {$this->app->user->info->id} AND usrset_type = {$this->identifier}
 					
 				WHERE 
 					trd_enable = 1 AND trd_parent = 73

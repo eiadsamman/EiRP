@@ -68,11 +68,12 @@ if ($app->xhttp) {
 
 $SmartListObject = new SmartListObject($app);
 
-if (!$app->user->account->role->inbound) {
+if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 	$grem = new Gremium\Gremium();
 	$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>Invalid inbound account!</h1>");
 	$grem->legend()->serve("<span class=\"flex\">Selected account is not valid for inbound operations:</span>");
-	$grem->article()->serve('
+	$grem->article()->serve(
+		<<<HTML
 		<ul>
 			<li>Receipts require an account with inbound rules, chose a valid account and try again</li>
 			<li>Contact system adminstration for further assistance</li>
@@ -83,7 +84,8 @@ if (!$app->user->account->role->inbound) {
 			<li>Goto <a href="{$fs(99)->dir}">Ledger report</a></li>
 			<li>Goto <a href="{$fs(95)->dir}">New Payment</a></li>
 		</ul>
-	');
+		HTML
+	);
 	unset($grem);
 	exit;
 

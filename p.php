@@ -29,8 +29,8 @@ $app->initializeSystemCurrency();
 $app->register($_SERVER['REQUEST_URI']);
 
 $access_error = $app->user_init();
-$fs = new System\FileSystem\Page($app);
-$dir = $fs->dir($app->resolve());
+$fs           = new System\FileSystem\Page($app);
+$dir          = $fs->dir($app->resolve());
 if (!$dir) {
 	$app->responseStatus->NotFound->response();
 }
@@ -93,7 +93,7 @@ if ($fs()->id == $app::PERMA_ID['slo']) {
 
 $frequentVisit = new System\Personalization\FrequentVisit($app);
 $themeDarkMode = new System\Personalization\ThemeDarkMode($app);
-$frequentVisit->registerVisit($fs()->id);
+$frequentVisit->register($fs()->id);
 $app->build_prefix_list();
 
 
@@ -102,7 +102,7 @@ if ($app->user->info) {
 	if ($app->xhttp) {
 		if (isset($_POST['--toggle-theme-mode'])) {
 			$mode = $_POST['--toggle-theme-mode'] === "dark" ? 1 : 0;
-			$themeDarkMode->registerMode($mode);
+			$themeDarkMode->register($mode);
 
 			exit;
 		}

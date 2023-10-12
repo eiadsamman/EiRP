@@ -2,7 +2,7 @@
 
 use System\FileSystem\Page;
 
-include("admin/class/json.php");
+exit;
 if ($fs()->permission->delete && isset($_POST['delete-absenece-request'])) {
 	$_POST['id'] = (int)$_POST['id'];
 	if ($app->db->query("DELETE FROM labour_absence_request WHERE lbr_abs_id={$_POST['id']}")) {

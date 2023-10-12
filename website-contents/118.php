@@ -47,9 +47,9 @@ if (isset($_POST['serial'])) {
 }
 
 if (isset($_POST['populate'])) {
-	$att = new Registration($app);
+	$att    = new Registration($app);
 	$sector = (int) $_POST['populate'];
-	$r = $att->ReportOngoingBySector(["company" => $app->user->company->id, "sector" => $sector]);
+	$r      = $att->ReportOngoingBySector(["company" => $app->user->company->id, "sector" => $sector]);
 	if ($r) {
 		while ($row = $r->fetch_assoc()) {
 
@@ -66,7 +66,7 @@ $grem->header()->serve("<h1>{$fs()->title}</h1>");
 
 $grem->menu()->open();
 
-echo "<button data-id=\"{$app->user->account->id}\" class=\"JQLocSelection\" style=\"width:130px;margin-right:10px;\">{$app->user->account->name}</button>";
+echo $app->user->account ? "<button data-id=\"{$app->user->account->id}\" class=\"JQLocSelection\" style=\"width:130px;margin-right:10px;\">{$app->user->account->name}</button>" : "";
 foreach ($loc as $lock => $locv) {
 	echo "<button style=\"width:130px;\" class=\"JQLocSelection\" data-id=\"{$locv[0]}\">{$locv[1]}</button>";
 }

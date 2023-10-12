@@ -21,6 +21,11 @@ class PredefinedRules
 
 	private function getRules(int $type): array
 	{
+		if(is_null($this->app->user->account)){
+			return [];
+		}
+
+			
 		$output = array();
 		$stmt = $this->app->db->prepare(
 			"SELECT 

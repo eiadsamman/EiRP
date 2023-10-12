@@ -7,6 +7,8 @@ namespace System\Individual;
 use Exception;
 use System\Company;
 use System\Finance\Account;
+use System\Personalization\FrequentAccountSelection;
+use System\Personalization\FrequentCompanySelection;
 
 class User extends Person
 {
@@ -40,8 +42,8 @@ class User extends Person
 		);
 
 		if ($mysqli_result && $mysqli_result->num_rows > 0 && $row = $mysqli_result->fetch_assoc()) {
-			$this->company = new Company();
-			$this->company->id = (int) $row['comp_id'];
+			$this->company       = new Company();
+			$this->company->id   = (int) $row['comp_id'];
 			$this->company->name = $row['comp_name'];
 			$this->company->logo = empty($row['up_id']) ? "" : (int) $row['up_id'];
 			$this->loadSessionAccount();
@@ -67,44 +69,53 @@ class User extends Person
 	}
 	public function register_company(int $company_id): bool
 	{
-		$r = $this->app->db->query("
-					SELECT  comp_id,comp_name FROM companies
-						JOIN user_company ON comp_id=urc_usr_comp_id AND urc_usr_id=" . $this->app->user->info->id . " AND comp_id={$company_id};");
+		$r = $this->app->db->query(
+			"SELECT comp_id FROM companies
+				JOIN user_company ON comp_id = urc_usr_comp_id AND urc_usr_id={$this->app->user->info->id} AND comp_id={$company_id};");
 		if ($r->num_rows > 0) {
-			if ($row = $r->fetch_assoc()) {
-				$r = $this->app->db->query("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value, usrset_time) 
-									VALUES (" . $this->app->user->info->id . ",	" . \System\Personalization\Identifiers::SystemWorkingCompany->value . ",'UNIQUE','{$row['comp_id']}',NOW()	) 
-										ON DUPLICATE KEY UPDATE usrset_value='{$row['comp_id']}';");
+			$r = $this->app->db->query("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value) 
+								VALUES (" . $this->app->user->info->id . ",	" . \System\Personalization\Identifiers::SystemWorkingCompany->value . ",'UNIQUE', $company_id) 
+									ON DUPLICATE KEY UPDATE usrset_value = $company_id;");
 
-				$this->app->db->query("INSERT INTO user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) 
-									VALUES (" . $this->app->user->info->id . "," . \System\Personalization\Identifiers::SystemCountCompanySelection->value . ",'{$row['comp_id']}','1',NOW()) 
-										ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
-				if ($r) {
-					return true;
-				} else {
-					throw new \System\Exceptions\HR\CompanyRegisteringException();
-				}
+			new FrequentCompanySelection($this->app, $company_id);
+
+			if ($r) {
+				return true;
+			} else {
+				throw new \System\Exceptions\HR\CompanyRegisteringException();
 			}
 		}
-
 		return false;
 	}
 
 	public function register_account(int $account_id): bool
 	{
-		$r = $this->app->db->query("
-					SELECT prt_id,prt_name,cur_symbol,cur_name,cur_id,cur_shortname ,comp_id, upr_prt_inbound, upr_prt_outbound, upr_prt_fetch, upr_prt_view FROM 
-						`acc_accounts`
-							JOIN companies ON comp_id = prt_company_id
-							LEFT JOIN currencies ON cur_id = prt_currency
-							JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id={$this->app->user->info->id} AND upr_prt_id={$account_id} AND upr_prt_fetch=1;");
+		$iden = \System\Personalization\Identifiers::SystemWorkingAccount->value;
+		$r = $this->app->db->query(
+			"SELECT 
+				prt_id,prt_name,cur_symbol,cur_name,cur_id,cur_shortname ,comp_id, upr_prt_inbound, upr_prt_outbound, upr_prt_fetch, upr_prt_view 
+			FROM
+				acc_accounts
+					JOIN companies ON comp_id = prt_company_id
+					LEFT JOIN currencies ON cur_id = prt_currency
+					JOIN user_partition ON upr_prt_id = prt_id AND upr_usr_id = {$this->app->user->info->id} AND upr_prt_id = {$account_id} AND upr_prt_fetch = 1;"
+		);
 		if ($r->num_rows > 0) {
 			if ($row = $r->fetch_assoc()) {
-				$r = $this->app->db->query("INSERT INTO user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) 
-									VALUES (" . $this->app->user->info->id . ", " . \System\Personalization\Identifiers::SystemWorkingAccount->value . ",'{$row['comp_id']}','{$row['prt_id']}',NOW()) ON DUPLICATE KEY UPDATE usrset_value='{$row['prt_id']}';");
+				$r = $this->app->db->query(
+					"INSERT INTO 
+						user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value) 
+					VALUES 
+					(
+						{$this->app->user->info->id}, 
+						$iden, 
+						{$row['comp_id']}, 
+						{$row['prt_id']}
+					) 
+					ON DUPLICATE KEY UPDATE usrset_value = $account_id;");
 
-				$this->app->db->query("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value, usrset_time) 
-								VALUES (" . $this->app->user->info->id . "," . \System\Personalization\Identifiers::SystemCountAccountSelection->value . ",'{$row['prt_id']}','1',NOW()) ON DUPLICATE KEY UPDATE usrset_value=usrset_value+1;");
+				new FrequentAccountSelection($this->app, $account_id);
+
 				if ($r) {
 					return true;
 				} else {
@@ -137,7 +148,7 @@ class User extends Person
 				if ($row['usr_activate'] == '1') {
 					$this->set_login_session(md5(uniqid()), (int) $row['usr_id']);
 					if ($rememberuser) {
-						$uni = md5(uniqid());
+						$uni       = md5(uniqid());
 						$cookieage = time() + $this->rememberloginage;
 						setcookie("cur", $uni, $cookieage, "/" . ($this->app->subdomain ? $this->app->subdomain . "/" : ""));
 						$this->app->db->query("INSERT INTO cookies SET id='$uni', access='" . time() . "', expires='$cookieage', data='{$row['usr_id']}' ON DUPLICATE KEY UPDATE 
@@ -188,10 +199,10 @@ class User extends Person
 				unset($uni);
 			}
 			//setcookie("cur", "", time() - 3600);
-			$this->info = new PersonData();
+			$this->info    = new PersonData();
 			$this->company = null;
 			$this->account = null;
-			$this->logged = false;
+			$this->logged  = false;
 		}
 		return true;
 	}

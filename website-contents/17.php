@@ -5,7 +5,7 @@ use System\Template\Gremium;
 $dashboard = new DashboardReports($app);
 if ($app->xhttp) {
 	if (isset($_POST['update'])) {
-		$dashboard->setOrder($_POST['update']);
+		$dashboard->update($_POST['update']);
 		exit;
 	}
 	exit;
@@ -13,9 +13,29 @@ if ($app->xhttp) {
 
 $grem = new Gremium\Gremium(true);
 $grem->header()->prev($fs(27)->dir)->serve("<h1>Settings</h1>");
-$grem->legend()->serve("<span class=\"flex\">Dashboard reports</span>");
-$grem->article()->open();
 
+$grem->title()->serve("<span>System settings:</span>");
+$grem->article()->open();
+echo <<<HTML
+<table class="bom-table hover row-selector"></body>
+	<tr>
+		<th class="btn-set"><button>Clear</button></th>
+		<td width="100%"><span style="white-space:wrap">Clear all activity history from the system</span></td>
+	</tr>
+	<tr>
+		<td class="checkbox"><label><input type="checkbox" /></label></td>
+		<td width="100%"><span style="white-space:wrap">Dark Mode</span></td>
+	</tr>
+</body></table>
+<br />
+<br />
+HTML;
+$grem->getLast()->close();
+
+
+
+$grem->title()->serve("<span>Dashboard reports:</span>");
+$grem->article()->open();
 $firstocc = false;
 foreach ($dashboard->list() as $dashboard) {
 	if (!$firstocc) {
@@ -33,8 +53,26 @@ if ($firstocc) {
 } else {
 	echo ('<ul><li>No dashboard reports available for your account</li><ul>');
 }
-
+echo "<br /><br />";
 $grem->getLast()->close();
+
+
+
+
+$grem->title()->serve("<span>System theme:</span>");
+$grem->article()->open();
+echo <<<HTML
+<table class="bom-table hover row-selector"><tbody>
+	<tr>
+		<td class="checkbox"><label><input id="theme-default" name="theme" type="radio" checked /></label></td>
+		<td>Default theme</td>
+	</tr>
+</tbody></table>
+HTML;
+$grem->getLast()->close();
+
+
+
 unset($grem);
 
 ?>
@@ -43,6 +81,10 @@ unset($grem);
 		background-color: var(--color-soft-gray);
 		position: relative;
 		margin-left: -1px;
+	}
+
+	.bom-table>tbody>tr>td {
+		cursor: default;
 	}
 
 	#dash-table>tbody>tr>td.move-handle {
@@ -69,7 +111,7 @@ unset($grem);
 				type: "POST"
 			});
 		}
-		$("#dash-table input[type=checkbox]").on('click', function (e) {
+		$("#dash-table input[type=checkbox]").change(function (e) {
 			fnUpdate();
 		});
 
@@ -90,6 +132,22 @@ unset($grem);
 			},
 			update: function (event, ui) {
 				ui.item.removeClass("ui-sortable-start");
+				fnUpdate();
+			}
+		});
+
+		$(".row-selector > tbody > tr > td:not(:first-child)").click(function () {
+
+			let o = $(this).parent().find("input[type=radio]").prop("checked", true);
+			o = $(this).parent().find("input[type=checkbox]");
+			if (o.length > 0) {
+				o.prop("checked", !o.prop("checked"));
+			}
+		});
+		$("#dash-table > tbody > tr > td:not(:first-child)").click(function () {
+			let o = $(this).parent().find("input[type=checkbox]");
+			if (o.length > 0) {
+				o.prop("checked", !o.prop("checked"));
 				fnUpdate();
 			}
 		});
