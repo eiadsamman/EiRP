@@ -71,7 +71,8 @@ class User extends Person
 	{
 		$r = $this->app->db->query(
 			"SELECT comp_id FROM companies
-				JOIN user_company ON comp_id = urc_usr_comp_id AND urc_usr_id={$this->app->user->info->id} AND comp_id={$company_id};");
+				JOIN user_company ON comp_id = urc_usr_comp_id AND urc_usr_id={$this->app->user->info->id} AND comp_id={$company_id};"
+		);
 		if ($r->num_rows > 0) {
 			$r = $this->app->db->query("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value) 
 								VALUES (" . $this->app->user->info->id . ",	" . \System\Personalization\Identifiers::SystemWorkingCompany->value . ",'UNIQUE', $company_id) 
@@ -91,7 +92,7 @@ class User extends Person
 	public function register_account(int $account_id): bool
 	{
 		$iden = \System\Personalization\Identifiers::SystemWorkingAccount->value;
-		$r = $this->app->db->query(
+		$r    = $this->app->db->query(
 			"SELECT 
 				prt_id,prt_name,cur_symbol,cur_name,cur_id,cur_shortname ,comp_id, upr_prt_inbound, upr_prt_outbound, upr_prt_fetch, upr_prt_view 
 			FROM
@@ -112,7 +113,8 @@ class User extends Person
 						{$row['comp_id']}, 
 						{$row['prt_id']}
 					) 
-					ON DUPLICATE KEY UPDATE usrset_value = $account_id;");
+					ON DUPLICATE KEY UPDATE usrset_value = $account_id;"
+				);
 
 				new FrequentAccountSelection($this->app, $account_id);
 
@@ -139,11 +141,11 @@ class User extends Person
 
 	public function login(string $username, string $password, bool $rememberuser = false): bool
 	{
-		$stmt = $this->app->db->prepare("SELECT usr_id,usr_username,usr_password,usr_activate FROM users WHERE usr_username=?;");
+		$stmt = $this->app->db->prepare("SELECT usr_id, usr_username, usr_password, usr_activate FROM users WHERE usr_username = ?;");
 		$stmt->execute([$username]);
 		$rec = $stmt->get_result();
 		if ($rec && $rec->num_rows == 1 && $row = $rec->fetch_assoc()) {
-			if ($row['usr_password'] == $password) {
+			if (password_verify($password, $row['usr_password'])) {
 				$this->load((int) $row['usr_id']);
 				if ($row['usr_activate'] == '1') {
 					$this->set_login_session(md5(uniqid()), (int) $row['usr_id']);

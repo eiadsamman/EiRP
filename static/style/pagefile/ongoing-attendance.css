@@ -43,7 +43,7 @@ td.employee-photo>div {
 	margin: 10px;
 	padding: 20px;
 	border: solid 1px var(--root-ribbon-menu-background-color);
-	background-color: var(--btnset-static-background-color);
+	background-color: var(--static-bgcolor);
 	/* background: linear-gradient(180deg, rgba(255, 255, 255, 1) 80%, rgba(245, 245, 253, .4) 100%); */
 }
 
@@ -53,7 +53,7 @@ td.employee-photo>div {
 	padding: 2px;
 	min-height: auto;
 	text-align: center;
-	background-color: var(--btnset-static-background-color);
+	background-color: var(--static-bgcolor);
 
 }
 

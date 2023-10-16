@@ -7,7 +7,7 @@ $dashboard = new DashboardReports($app);
 $grem      = new Gremium\Gremium(false);
 
 
-$grem->header()->sticky(false)->serve("<h1><span style=\"color:var(--btnset-inputhover-border-color)\">Welcome </span> {$app->user->info->name}</h1>");
+$grem->header()->sticky(false)->serve("<h1><span style=\"color:var(--input_hover-border)\">Welcome </span> {$app->user->info->name}</h1>");
 $grem->article()->open();
 $atleastone = false;
 echo "<div class=\"homepageWidget\">";

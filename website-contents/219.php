@@ -145,9 +145,8 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<th>Social ID Card</th>
 				<td>
 					<div class="btn-set">
-
-						<button type="button" id="js_upload_count_1" class="js_upload_count"><span>0</span> files</button>
-						<button type="button" id="js_upload_trigger_1" class="js_upload_trigger" data-db_rel="usr_attrib_s2">Upload</button>
+						<span id="js_upload_count_1" class="js_upload_count"><span>0</span> files</span>
+						<input type="button"  id="js_upload_trigger_1" class="js_upload_trigger" data-db_rel="usr_attrib_s2" value="Upload" />
 						<input type="file" id="js_uploader_btn_1" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 						<span id="js_upload_list_1" class="js_upload_list">
 							<div id="UploadSocialDOMHandler">
@@ -161,8 +160,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 							</div>
 						</span>
 						<span>No.</span>
-						<input type="text" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_socialnumber'] : ""; ?>" name="social_number" id="social_number"
-							style="min-width:0px;width:100%">
+						<input type="text" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_socialnumber'] : ""; ?>" name="social_number" id="social_number" class="flex">
 					</div>
 				</td>
 			</tr>
@@ -170,8 +168,8 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<th>Personal photo</th>
 				<td>
 					<div class="btn-set">
-						<button type="button" id="js_upload_count" class="js_upload_count"><span>0</span> files</button>
-						<button type="button" id="js_upload_trigger" class="js_upload_trigger " style="max-width:100px">Upload</button>
+						<span id="js_upload_count" class="js_upload_count"><span>0</span> files</span>
+						<input type="button" id="js_upload_trigger" class="js_upload_trigger " style="max-width:100px" value="Upload" />
 						<input type="file" id="js_uploader_btn" class="js_uploader_btn" accept="image/*" />
 						<span id="js_upload_list" class="js_upload_list">
 							<div id="UploadPersonalDOMHandler">

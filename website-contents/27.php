@@ -11,7 +11,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 				if ($_POST['newpass'] != $_POST['conpass']) {
 					echo "{\"result\":false,\"message\":\"Password confirmation does not match\",\"focus\":\"conpass\"}";
 				} else {
-					if ($app->db->query(sprintf("UPDATE users SET usr_password='%s' WHERE usr_id={$app->user->info->id};", $_POST['newpass']))) {
+					$pass = password_hash($_POST['newpass'], PASSWORD_BCRYPT, ["cost" => "12"]);
+					if ($app->db->query(sprintf("UPDATE users SET usr_password='%s' WHERE usr_id={$app->user->info->id};", $pass))) {
 						echo "{\"result\":true,\"message\":\"Password changed successfully\",\"focus\":\"oldpass\"}";
 					} else {
 						echo "{\"result\":false,\"message\":\"Unable to change password\",\"focus\":false}";
@@ -30,7 +31,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 
 
 $curinfo = false;
-$r = $app->db->query("SELECT usr_regdate, usr_birthdate, usr_login_date FROM users WHERE usr_id={$app->user->info->id}");
+$r       = $app->db->query("SELECT usr_regdate, usr_birthdate, usr_login_date FROM users WHERE usr_id={$app->user->info->id}");
 if ($r && $row = $r->fetch_assoc()) {
 	$curinfo = $row;
 }
@@ -72,12 +73,11 @@ if ($r && $row = $r->fetch_assoc()) {
 		</div>
 	</div>
 	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Password confirmation</span><input type="password" name="conpass"
-				id="conpass" />
+		<div class="btn-set vertical"><span>Password confirmation</span><input type="password" name="conpass" id="conpass" />
 		</div>
 	</div>
 	<div class="template-gridLayout role-input">
-		
+
 		<div class="btn-set" style="justify-content:end"><button type="submit">Update Password</button></div>
 	</div>
 </form>

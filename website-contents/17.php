@@ -56,8 +56,8 @@ foreach ($dashboard->list() as $dashboard) {
 		$firstocc = true;
 	}
 	echo "<tr data-pageid=\"{$dashboard['trd_id']}\">";
-	echo "<td style=\"min-width:34px;\" class=\"move-handle\">:::</td>";
 	echo "<td class=\"checkbox\"><label><input " . ($dashboard['usrset_time'] == null ? " " : " checked=\"checked\" ") . " data-pageif=\"{$dashboard['trd_id']}\" type=\"checkbox\" /></label></td>";
+	echo "<td style=\"min-width:34px;\" class=\"move-handle\">:::</td>";
 	echo "<td style=\"width:100%\">{$dashboard['pfl_value']}</td>";
 	echo "</tr>";
 }
@@ -77,7 +77,7 @@ $grem->article()->open();
 echo <<<HTML
 <table class="bom-table hover row-selector"><tbody>
 	<tr>
-		<td class="checkbox"><label><input id="theme-default" name="theme" type="radio" checked /></label></td>
+		<td class="checkbox" style="min-width:67px"><label><input id="theme-default" name="theme" type="radio" checked /></label></td>
 		<td>Default theme</td>
 	</tr>
 </tbody></table>
@@ -149,9 +149,10 @@ unset($grem);
 			}
 		});
 
-		
 
-		$(".row-selector > tbody > tr > td:not(:first-child)").click(function () {
+
+		$(".row-selector > tbody > tr > td:not(:first-child)").click(function (e) {
+			if (e.target.tagName == "INPUT" || e.target.tagName == "LABEL") return true;
 			let o = $(this).parent().find("input[type=radio]").prop("checked", true).change();
 			o = $(this).parent().find("input[type=checkbox]");
 			if (o.length > 0) {

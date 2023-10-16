@@ -13,7 +13,7 @@
 			"_queries/": true,
 			"_backs": true,
 			"admin/class/barcode": true,
-			"cpanel3/": true,
+			/* "cpanel3/": true, */
 			"*.xlsx":true,
 		},
 		"workbench.tree.indent": 15

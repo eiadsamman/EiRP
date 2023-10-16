@@ -1,4 +1,31 @@
 <?php
+//$sql = new \mysqli("azure-system.mysql.database.azure.com", "sappdbmaster","1a)a1_uNpN&b");
+
+exit;
+$res = $app->db->query("SELECT usr_password, usr_id FROM users;");
+
+$newpass = $userid = 0;
+$stmt = $app->db->prepare("UPDATE users SET usr_password = ? WHERE usr_id = ?");
+if ($res) {
+	while ($row = $res->fetch_assoc()) {
+		if (!is_null($row['usr_password']) && strlen($row['usr_password']) > 1) {
+			$newpass = password_hash($row['usr_password'], PASSWORD_BCRYPT, ["cost" => "12"]);;
+			$userid  = $row['usr_id'];
+			$stmt->bind_param("si", $newpass, $userid);
+			$stmt->execute();
+		}
+	}
+}
+
+$stmt->close();
+
+
+
+
+
+
+
+exit;
 
 use System\SmartListObject;
 
@@ -7,9 +34,9 @@ $SmartListObject = new SmartListObject($app);
 
 ?>
 <div class="btn-set page" style="margin-top:50px;margin-left:10px">
-<input type="text" />
-<input type="button" value="Button" />
-<button>Test</button>
+	<input type="text" />
+	<input type="button" value="Button" />
+	<button>Test</button>
 
 	<input type="text" class="list" data-slo=":SELECT" data-list="zlist" />
 	<input type="text" class="list" data-slo="ACC_REFERENCE" />
@@ -57,7 +84,7 @@ class Animal
 {
 	public function __construct()
 	{
-		$arguments = func_get_args();
+		$arguments         = func_get_args();
 		$numberOfArguments = func_num_args();
 
 		if ($numberOfArguments == 1) {

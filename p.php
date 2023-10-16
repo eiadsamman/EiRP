@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+use System\MySQL;
+use System\App;
+
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
@@ -13,14 +16,10 @@ spl_autoload_register(function ($class) {
 });
 
 
-
-
-
-use System\App;
-
-$app = new App(__DIR__, "cpanel3.settings.xml", false);
+$app = new App(__DIR__, "settings.json", false);
 
 $performance = new System\Log\Performance($app->root . "admin/performance.log");
+
 $app->database_connect($app->settings->database['host'], $app->settings->database['username'], $app->settings->database['password'], $app->settings->database['name']);
 $app->get_base_permission();
 $app->set_timezone($app->settings->site['timezone']);

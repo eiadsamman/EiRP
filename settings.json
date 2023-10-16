@@ -1,0 +1,23 @@
+{
+	"cpanel": {
+		"username": "admin",
+		"password": ""
+	},
+	"database": {
+		"host": "localhost",
+		"username": "root",
+		"password": "",
+		"name": "eiad"
+	},
+	"site": {
+		"version": "4.2.7",
+		"subdomain": "eiad",
+		"forcehttps": "true",
+		"index": "index",
+		"auther": "Eiad",
+		"title": "Eiad",
+		"keywords": "",
+		"description": "",
+		"timezone": "Africa/Cairo"
+	}
+}

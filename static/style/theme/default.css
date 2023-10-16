@@ -25,21 +25,25 @@
 
 
 
-	--btnset-input-font-color: black;
-	--btnset-input-background-color: white;
-	--btnset-input-border-color: #ccc;
-	--btnset-inputhover-border-color: rgb(153, 153, 157);
-	--btnset-static-background-color: #fbfbfe;
-	--btnset-static-border-color: var(--btnset-input-border-color);
-	--btnset-statichover-border-color: var(--bomtable-border-color);
+	--input-font-color: black;
+	--input-bgcolor: white;
+	--input-border: #ccc;
+	--input_hover-border: rgb(153, 153, 157);
+
+	--static-bgcolor: #fbfbfe;
+	--static-border: var(--input-border);
+	--static_hover-border: var(--bomtable-border-color);
+
+	--button-font-color: white;
+	--button-border: hsl(206, 100%, 46%);
+	--button-bgcolor: hsl(206, 100%, 46%);
+	--button_hover-bgcolor: hsl(206, 100%, 41%);
+	--button_focus-bgcolor: hsl(206, 100%, 42%);
+	--button_active-bgcolor: hsl(206, 100%, 37%);
+	--button_disabled-bgcolor: var(--static-bgcolor);
 
 
-	--btnset-botton-background-color: white;
-	--btnset-botton-border-color: #ccc;
-	--btnset-bottondisabled-background-color: var(--btnset-static-background-color);
-	--btnset-bottonhover-background-color: rgb(243, 245, 253);
-	--btnset-bottonfocus-background-color: var(--root-ribbon-menu-itemhover-background-color);
-	--btnset-bottonactive-background-color: var(--root-ribbon-menu-itemhover-background-color);
+
 
 	--slo-menu-background-color: white;
 	--slo-menu-itemhover-background-color: rgb(243, 245, 253);
@@ -50,7 +54,7 @@
 	--root-background-color: #121212;
 	--root-font-color: #eee;
 	--root-font-lightcolor: rgb(200, 200, 200);
-	--root-link-color: lightskyblue;
+	--root-link-color: hsl(206, 100%, 65%);
 	--root-ribbon-background-color: #38383f;
 	--root-ribbon-border-color: #5c5c67;
 	--root-ribbon-font-color: white;
@@ -72,22 +76,25 @@
 
 
 
-	--btnset-input-font-color: black;
-	--btnset-input-background-color: rgb(25, 25, 30);
-	--btnset-input-border-color: rgb(60, 60, 75);
-	--btnset-inputhover-border-color: rgb(153, 153, 157);
+	--input-font-color: black;
+	--input-bgcolor: rgb(25, 25, 30);
+	--input-border: rgb(60, 60, 75);
+	--input_hover-border: rgb(153, 153, 157);
 
-	--btnset-static-background-color: rgb(33, 33, 40);
-	--btnset-static-border-color: var(--btnset-input-border-color);
-	--btnset-statichover-border-color: var(--bomtable-border-color);
+	--static-bgcolor: rgb(33, 33, 40);
+	--static-border: var(--input-border);
+	--static_hover-border: var(--bomtable-border-color);
+
+	--button-font-color: white;
+	--button-border: hsl(206, 100%, 46%);
+	--button-bgcolor: hsl(206, 100%, 46%);
+	--button_hover-bgcolor: hsl(206, 100%, 41%);
+	--button_focus-bgcolor: hsl(206, 100%, 42%);
+	--button_active-bgcolor: hsl(206, 100%, 37%);
+	--button_disabled-bgcolor: var(--static-bgcolor);
 
 
-	--btnset-botton-background-color: rgb(25, 25, 30);
-	--btnset-botton-border-color: var(--btnset-input-border-color);
-	--btnset-bottondisabled-background-color: var(--btnset-static-background-color);
-	--btnset-bottonhover-background-color: hsl(210, 90%, 20%);
-	--btnset-bottonfocus-background-color: hsl(210, 90%, 30%);
-	--btnset-bottonactive-background-color: hsl(210, 90%, 40%);
+
 
 
 	--slo-menu-background-color: rgb(40, 40, 49);

@@ -1,5 +1,7 @@
 <?php
-$_v = "?rev=1013" ;//. uniqid();
+ob_start();
+ob_implicit_flush(true);
+$_v = "?rev=1013"; //. uniqid();
 
 use System\FileSystem\Hierarchy;
 use System\Finance\AccountRole;
@@ -18,9 +20,7 @@ if (isset($fs()->parameters) && preg_match("/side-panel([0-9]+)/", $fs()->parame
 
 
 $__workingaccount = false;
-
-$SmartListObject = new SmartListObject($app);
-
+$SmartListObject  = new SmartListObject($app);
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
@@ -39,9 +39,8 @@ $SmartListObject = new SmartListObject($app);
 	<meta http-equiv="copyright" content="&copy; <?php echo date("Y") . " {$app->settings->site['auther']}"; ?>" />
 	<meta http-equiv="author" content="<?php echo "{$app->settings->site['auther']}"; ?>" />
 	<title>
-		<?= "{$app->settings->site['title']} - " . $fs()->title ?>
+		<?= "{$app->settings->site['title']} - {$fs()->title}" ?>
 	</title>
-
 	<link media="screen,print" rel="stylesheet" href="static/style/theme/default.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.main.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.messagesys.css<?= $_v ?>" />
@@ -58,7 +57,7 @@ $SmartListObject = new SmartListObject($app);
 		$load = explode(";", $fs()->cdns['css']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "	<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}{$_v}\" />\n";
+				echo "<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}{$_v}\" />\n";
 		}
 	}
 	?>
@@ -75,13 +74,14 @@ $SmartListObject = new SmartListObject($app);
 		$load = explode(";", $fs()->cdns['js']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "	<script type=\"text/javascript\" src=\"static/{$file}{$_v}\"></script>\n";
+				echo "<script type=\"text/javascript\" src=\"static/{$file}{$_v}\"></script>\n";
 		}
 	}
 	?>
 </head>
+<?php ob_end_flush(); ?>
 
-<body class="theme-default <?= $themeDarkMode->mode; ?>" data-mode="<?= $themeDarkMode->mode; ?>">
+<body class="theme-default <?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>" data-mode="<?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>">
 	<span class="header-ribbon noprint">
 		<div>
 			<div class="btnheader-set" style="white-space:nowrap">

@@ -232,7 +232,7 @@
 	content: " ";
 	top: 8px;
 	left: 8px;
-	border: solid 1px var(--btnset-input-border-color);
+	border: solid 1px var(--input-border);
 	border-radius: 10px;
 	width: 14px;
 	height: 14px;
@@ -241,7 +241,7 @@
 
 .bom-table > tbody > tr > td.checkbox > label:hover::before {
 
-	border-color: var(--btnset-inputhover-border-color);
+	border-color: var(--input_hover-border);
 }
 
 .bom-table > tbody > tr > td.checkbox > label > input {

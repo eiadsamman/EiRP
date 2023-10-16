@@ -139,33 +139,13 @@ button,
 input[type=button] {
 	outline: none;
 	padding: 1px 6px 3px 6px;
-
 	color: var(--root-font-color);
 	border: solid 1px var(--root-button-border-color);
 	background-color: var(--root-button-background-color);
-
 }
 
-input[type=text]:hover,
-input[type=number]:hover,
-input[type=password]:hover,
-textarea:hover,
-button:hover,
-select:hover {
-	border-color: #999;
-}
 
-input[type=text]:focus,
-input[type=number]:focus,
-input[type=password]:focus,
-textarea:focus,
-button:focus,
-select:focus {
-	border-color: rgba(82, 168, 236, .75);
-	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-}
+
 
 input[type=text]:disabled,
 input[type=number]:disabled {
@@ -376,6 +356,7 @@ span.header-menu.lefthand > div > div > div.menu-items b {
 	display: block;
 	padding: 14px;
 	position: relative;
+	color: var(--input_hover-border);
 }
 
 span.header-menu.lefthand > div > div > div.menu-items b.nested:before {

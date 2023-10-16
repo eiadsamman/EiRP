@@ -1,4 +1,5 @@
 <?php
+$ss = microtime(true);
 $ident = \System\Personalization\Identifiers::SystemCountAccountSelection->value;
 $r     = $app->db->query(
 	"SELECT
@@ -30,12 +31,8 @@ if ($r) {
 	echo "<div class=\"widgetWQU\"><div><div>";
 	while ($row = $r->fetch_assoc()) {
 		echo "<div><div class=\"btn-set\" style=\"flex-wrap: nowrap; \">";
-		$account_title = "[{$row['cur_shortname']}] {$row['comp_name']}: {$row['prt_name']}"; 
-		if ((int) $row['upr_prt_fetch'] == 1 && $row['comp_id'] == $app->user->company->id) {
-			echo "<a class=\"flex\" href=\"?--sys_sel-change=account_commit&i={$row['prt_id']}\" title=\"\">$account_title</a>";
-		} else {
-			echo "<span class=\"nofetch flex\">$account_title</span>";
-		}
+		$account_title = "[{$row['cur_shortname']}] {$row['comp_name']}: {$row['prt_name']}";
+		echo "<span class=\"nofetch flex\">$account_title</span>";
 		echo "<input type=\"text\" style=\"min-width:80px;text-align:right;\" readonly=\"readonly\" tabindex=\"-1\" value=\"" . ($row['total_accountgroup'] < 0 ? "(" . number_format(abs($row['total_accountgroup']), 2, ".", ",") . ")" : number_format(abs($row['total_accountgroup']), 2, ".", ",")) . "\" />";
 		echo "</div></div>";
 	}

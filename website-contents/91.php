@@ -158,10 +158,10 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 					<th>Attachments</th>
 					<td>
 						<div class="btn-set" style="justify-content:left">
-							<button id="js_upload_trigger" class="js_upload_trigger" type="button">Upload</button>
+							<input type="button" id="js_upload_trigger" class="js_upload_trigger" value="Upload" />
 							<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 							<span id="js_upload_list" class="js_upload_list"></span>
-							<button id="js_upload_count" class="js_upload_count" type="button"><span>0 / 0</span> files</button>
+							<span id="js_upload_count" class="js_upload_count" ><span>0 / 0</span> files</span>
 						</div>
 					</td>
 				</tr>

@@ -11,7 +11,7 @@ use System\Exceptions\HR\InvalidLoginException;
 //$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);
 class App
 {
-	public \mysqli $db;
+	public MySQL $db;
 	public Individual\User $user;
 
 	public Finance\Currency|null $currency;
@@ -37,6 +37,59 @@ class App
 	protected array $permissions_array = array();
 	private string|null $route = null;
 
+	function __construct(string $root, string $settings_file, ?bool $cache = true)
+	{
+
+		/* Set file system root */
+		$this->root = $root . DIRECTORY_SEPARATOR;
+
+		/* Create HTTP response status code instance */
+		$this->responseStatus = new ResponseStatus();
+		$this->errorHandler = new \System\Log\ErrorHandler( $this->root . "/admin/error.log");
+
+
+		/* Get System settings */
+		$this->settings = new Settings($this->root . $settings_file);
+		if (!$this->settings->read()) {
+			$this->errorHandler->customError("Reading setting file failed");
+			$this->responseStatus->InternalServerError->response();
+		}
+
+		/* Set http root */
+		$this->http_root =
+			(
+				$this->settings->site['forcehttps'] === true ?
+				"https" :
+				"http"
+			) .
+			"://{$_SERVER['SERVER_NAME']}/" . trim($this->settings->site['subdomain']) . "/";
+
+		$this->subdomain = ltrim(trim($this->settings->site['subdomain']), "/");
+		
+		/* Start session */
+		session_start();
+
+		/* Application session User */
+		$this->user = new Individual\User($this);
+
+		/* Page requested with XHTTP  */
+
+		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) || isset($_SERVER['HTTP_APPLICATION_FROM'])) {
+			$this->xhttp = true;
+		} else {
+			$this->xhttp = false;
+		}
+		$this->permissions_array = array();
+
+
+		/* Handle cache */
+		header('Content-Type: text/html; charset=utf-8', true);
+		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + ($cache ? 604800 : 0)) . ' GMT');
+		header("Cache-Control: " . ($cache ? "public" : "no-cache, no-store, must-revalidate"));
+		header("Pragma: " . ($cache ? "public" : "no-cache"));
+
+	}
+
 
 	private function prepareURI(string $uri): string
 	{
@@ -61,49 +114,7 @@ class App
 	{
 		return $this->route;
 	}
-	function __construct(string $root, string $settings_file, ?bool $chache = true)
-	{
 
-		/* Set file system root */
-		$this->root = $root . DIRECTORY_SEPARATOR;
-
-		/* Create HTTP response status code instance */
-		$this->responseStatus = new ResponseStatus();
-
-
-		/* Get System settings */
-		$this->settings = new Settings($this->root . $settings_file);
-		if (!$this->settings->read()) {
-			$this->responseStatus->InternalServerError->response();
-		}
-
-		$this->errorHandler = new \System\Log\ErrorHandler($this->settings->site['errorlog'], $this->root . "admin/error.log");
-		/* Set http root */
-		$this->http_root = (isset($this->settings->site['forcehttps']) && $this->settings->site['forcehttps'] === true ? "https" : "http") . "://{$_SERVER['SERVER_NAME']}/" . (isset($this->settings->site['subdomain']) && trim($this->settings->site['subdomain']) != "" ? $this->settings->site['subdomain'] . "/" : "");
-		$this->subdomain = isset($this->settings->site['subdomain']) ? ltrim(trim($this->settings->site['subdomain']), "/") : "";
-		/* Start session */
-		session_start();
-
-		/* Application session User */
-		$this->user = new Individual\User($this);
-
-		/* Page requested with XHTTP  */
-
-		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) || isset($_SERVER['HTTP_APPLICATION_FROM'])) {
-			$this->xhttp = true;
-		} else {
-			$this->xhttp = false;
-		}
-		$this->permissions_array = array();
-
-
-		/* Handle cache */
-		header('Content-Type: text/html; charset=utf-8', true);
-		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + ($chache ? 604800 : 0)) . ' GMT');
-		header("Cache-Control: " . ($chache ? "public" : "no-cache, no-store, must-revalidate"));
-		header("Pragma: " . ($chache ? "public" : "no-cache"));
-
-	}
 
 
 	public function permission(int $id): Permission|bool
@@ -145,15 +156,18 @@ class App
 	public function database_connect(string $host, string $user, string $pass, string $database)
 	{
 		try {
-			$this->db = new \mysqli($host, $user, $pass, $database);
+			$this->db = new MySQL($host, $user, $pass, $database);
 			if ($this->db->connect_errno) {
+				$this->errorHandler->customError("Connection to the database filed");
 				$this->responseStatus->NotFound->response();
 			} else {
 				$this->db->set_charset('utf8');
 			}
 		} catch (\TypeError $e) {
+			$this->errorHandler->logError($e);
 			$this->responseStatus->NotFound->response();
 		} catch (\mysqli_sql_exception $e) {
+			$this->errorHandler->logError($e);
 			$this->responseStatus->NotFound->response();
 		}
 	}
@@ -174,6 +188,7 @@ class App
 		}
 
 		if ($this->base_permission == 0) {
+			$this->errorHandler->customError("Failed to fetch system base permission");
 			$this->responseStatus->NotFound->response();
 		} else {
 			return true;
@@ -265,8 +280,10 @@ class App
 						$stmt->close();
 					}
 				} catch (\mysqli_sql_exception $e) {
+					$this->errorHandler->logError($e);
 					return 9;
 				} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
+					$this->errorHandler->logError($e);
 					return 4;
 				}
 			}
@@ -283,8 +300,10 @@ class App
 					}
 				}
 			} catch (InvalidLoginException $e) {
+				$this->errorHandler->logError($e);
 				return 2;
 			} catch (InactiveAccountException $e) {
+				$this->errorHandler->logError($e);
 				return 3;
 			}
 		}
