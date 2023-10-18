@@ -42,12 +42,11 @@
 	border-collapse: collapse;
 
 	border: solid 1px var(--root-ribbon-border-color);
-	border-color: rgba(82, 168, 236, 1);
 
-	border-color: rgba(82, 168, 236, .75);
+	/* border-color: rgba(82, 168, 236, .75);
 	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	box-shadow: 0 0 4px rgba(82, 168, 236, .7); */
 
 }
 
@@ -96,9 +95,6 @@
 
 }
 
-.js_upload_list > div > span:hover {
-	background-color: var(--root-ribbon-menu-itemhover-background-color);
-}
 
 .js_upload_list > div > span,
 .js_upload_list > div > b {

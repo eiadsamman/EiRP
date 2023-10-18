@@ -358,7 +358,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 						<th style=\"min-width:130px\">{$fieldv[1]}</th>
 						<td style=\"min-width:400px\">
 							<div class=\"btn-set\" style=\"justify-content:left\">
-								<button id=\"up_trigger{$fieldk}\" class=\"js_upload_trigger\" type=\"button\">Upload</button>
+								<input id=\"up_trigger{$fieldk}\" class=\"js_upload_trigger\" type=\"button\" value=\"Upload\" />
 								<input type=\"file\" id=\"up_btn{$fieldk}\" class=\"js_uploader_btn\" multiple=\"multiple\" />
 								<span id=\"up_list{$fieldk}\" class=\"js_upload_list\">
 									<div id=\"up_handler{$fieldk}\">";
@@ -374,7 +374,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 			echo "
 									</div>
 								</span>
-								<button id=\"up_count{$fieldk}\" class=\"js_upload_count\" type=\"button\"><span>0 / 0</span> files</button>
+								<span id=\"up_count{$fieldk}\" class=\"js_upload_count\"><span>0 / 0</span> files</span>
 							</div>
 						</td>
 						<td class=\"css_fieldDesc\"><span>" . (isset($fieldv[9]) ? $fieldv[9] : "") . "</span></td></tr>";
@@ -383,7 +383,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 
 	echo "
 		<tr><td align=\"left\" colspan=\"3\" id=\"jQcommands\">
-			<div class=\"btn-set\" style=\"justify-content:center\"><button type=\"submit\" id=\"jQsubmit\">" . ((int)$_POST['id'] == 0 ? "Add" : "Modify") . "</button><button type=\"button\" id=\"jQcancel\">Cancel</button></div>
+			<div class=\"btn-set\" style=\"justify-content:center\"><button type=\"submit\" id=\"jQsubmit\">" . ((int)$_POST['id'] == 0 ? "Add" : "Modify") . "</button><input type=\"button\" id=\"jQcancel\" value=\"Cancel\" /></div>
 		</td></tr>
 	</tbody>
 	</table>
@@ -620,16 +620,16 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		}
 		?>
 
-		<button type="button" id="jQbtnRefresh">Refresh</button>
+		<input type="button" id="jQbtnRefresh" value="Refresh" />
 		<input type="text" style="text-align:center;width:80px;" readonly id="jQnavTotal" value="0" />
-		<button disabled="disabled" id="jQnavFirst" type="button">First</button>
-		<button disabled="disabled" id="jQnavPrev" type="button">Previous</button>
+		<input disabled="disabled" id="jQnavFirst" type="button" value="First" />
+		<input disabled="disabled" id="jQnavPrev" type="button" value="Previous" />
 		<input type="hidden" name="offset" id="jQoffset" />
 		<b id="jQpageination" class="menu_screen">
 			<div>0/0</div>
 		</b>
 		<input type="text" style="text-align:center;width:80px;" readonly id="jQnavTitle" value="0/0" />
-		<button disabled="disabled" id="jQnavNext" type="button">Next</button>
+		<input disabled="disabled" id="jQnavNext" type="button" value="Next" />
 
 	</div>
 
@@ -691,7 +691,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 
 		<div class="btn-set">
 			<button id="jQButtonSearch" type="button">Search</button>
-			<button id="jQButtonSearchClear" type="button">Clear</button>
+			<input id="jQButtonSearchClear" type="button" value="Clear" />
 			<span id="jQInputSearchOccurrence" style="max-width: 150px;width:150px;">Search criterias: 0</span>
 
 		</div>

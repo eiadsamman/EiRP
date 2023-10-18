@@ -29,9 +29,11 @@
 	--input-bgcolor: white;
 	--input-border: #ccc;
 	--input_hover-border: rgb(153, 153, 157);
+	--input_active-border: rgba(82, 168, 236, .75);
+
 
 	--static-bgcolor: #fbfbfe;
-	--static-border: var(--input-border);
+	--static-border: #ccc;
 	--static_hover-border: var(--bomtable-border-color);
 
 	--button-font-color: white;
@@ -80,6 +82,7 @@
 	--input-bgcolor: rgb(25, 25, 30);
 	--input-border: rgb(60, 60, 75);
 	--input_hover-border: rgb(153, 153, 157);
+	--input_active-border: rgba(82, 168, 236, .75);
 
 	--static-bgcolor: rgb(33, 33, 40);
 	--static-border: var(--input-border);

@@ -104,90 +104,104 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 			echo "<input placeholder=\"Actions...\" type=\"text\" id=\"js-defines\" data-slo=\":LIST\" tabindex=\"-1\" data-list=\"defines\" />";
 			$grem->getLast()->close();
 		}
+		$grem->title()->serve("<span class=\"flex\">Transaction details</span>");
 		$grem->article()->open();
+		$curreny_date = new DateTime();
+		$curreny_date = $curreny_date->format("Y-m-d");
 		?>
-		<table class="bom-table mediabond-table" id="js-ref_table-main">
-			<tbody>
-				<tr class="predefined">
-					<th>Creditor</th>
-					<td class="btn-set">
-						<?php
-						if ($app->user->account->role->view) {
-							echo "<input id=\"issuer-account-balance\" type=\"text\" readonly=\"readonly\" class=\"flex\" tabindex=\"-1\" value=\"" . number_format($app->user->account->balance, 2, ".", ",") . "\" />";
-						}
-						echo "<span>{$app->user->account->currency->shortname}</span>";
-						echo "<span>{$app->user->account->type->name}: {$app->user->account->name}</span>";
-						?>
-					</td>
-				</tr>
-				<tr class="predefined">
-					<th>Date</th>
-					<td class="btn-set">
-						<input type="text" class="flex" data-required data-slo=":DATE" data-touch="107" title="Transaction date" value="<?php echo date("Y-m-d"); ?>"
-							data-rangeend="<?php echo date("Y-m-d"); ?>" tabindex="1" name="date" />
-					</td>
-				</tr>
-				<tr class="predefined">
-					<th>Debitor</th>
-					<td class="btn-set">
-						<input tabindex="2" data-required title="Debitor account" data-touch="200" type="text" data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account"
-							id="target-account" />
-					</td>
-				</tr>
 
-				<tr class="predefined">
-					<th>Category</th>
-					<td class="btn-set">
-						<input type="text" data-required data-slo=":LIST" data-touch="105" title="Category" data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
-					</td>
-				</tr>
-				<tr>
-					<th>Beneficiary</th>
-					<td class="btn-set">
-						<input type="text" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary"
-							id="beneficiary" />
-						<input type="text" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
-					</td>
-				</tr>
-				<tr>
-					<th>Value</th>
-					<td class="btn-set">
-						<input type="number" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
-					</td>
-				</tr>
-				<tr>
-					<th>Attachments</th>
-					<td>
-						<div class="btn-set" style="justify-content:left">
-							<input type="button" id="js_upload_trigger" class="js_upload_trigger" value="Upload" />
-							<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
-							<span id="js_upload_list" class="js_upload_list"></span>
-							<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span> files</span>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<th>Reference</th>
-					<td class="btn-set">
-						<input type="text" data-slo="ACC_REFERENCE" title="Reference" tabindex="6" name="reference" class="flex" />
-						<input type="text" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" placeholder="Related ID" name="relation" />
-					</td>
-				</tr>
-				<tr>
-					<th>Description</th>
-					<td class="btn-set">
-						<textarea type="text" data-required tabindex="8" title="Statement Description" data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
-							name="description" id="description" rows="7"></textarea>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div class="form predefined">
+			<section style="min-width:300px">
+				<h1>Creditor</h1>
+				<div class="btn-set">
+					<?php
+					if ($app->user->account->role->view) {
+						echo "<input id=\"issuer-account-balance\" type=\"text\" readonly=\"readonly\" class=\"flex\" tabindex=\"-1\" value=\"" . number_format($app->user->account->balance, 2, ".", ",") . "\" />";
+					}
+					echo "<span>{$app->user->account->currency->shortname}</span>";
+					echo "<span>{$app->user->account->type->name}: {$app->user->account->name}</span>";
+					?>
+				</div>
+			</section>
+			<section>
+				<h1>Debitor</h1>
+				<div class="btn-set">
+					<input tabindex="2" data-required title="Debitor account" data-touch="200" type="text" data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account"
+						id="target-account" />
+				</div>
+			</section>
+
+		</div>
+		<div class="form predefined">
+			<section style="min-width:150px">
+				<h1>Date</h1>
+				<div class="btn-set">
+					<input type="text" class="flex" data-required data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2"
+						name="date" />
+				</div>
+			</section>
+			<section style="min-width:300px">
+				<h1>Category</h1>
+				<div class="btn-set">
+					<input type="text" data-required data-slo=":LIST" data-touch="105" title="Category" data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
+				</div>
+			</section>
+		</div>
+
+
+		<div class="form">
+			<section style="flex-basis:0%">
+				<h1>Beneficiary</h1>
+				<div class="btn-set">
+					<input type="text" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary"
+						id="beneficiary" />
+					<input type="text" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
+				</div>
+			</section>
+		</div>
+
+		<div class="form">
+			<section>
+				<h1>Value</h1>
+				<div class="btn-set">
+					<input type="number" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
+				</div>
+			</section>
+		</div>
+
+		<div class="form">
+			<section style="flex:0">
+				<h1>Attachments</h1>
+				<div class="btn-set">
+					<input type="button" id="js_upload_trigger" class="js_upload_trigger" value="Upload" />
+					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
+					<span id="js_upload_list" class="js_upload_list"></span>
+					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span> files</span>
+				</div>
+			</section>
+			<section style="min-width:300px">
+				<h1>Reference</h1>
+				<div class="btn-set">
+					<input type="text" data-slo="ACC_REFERENCE" title="Reference" tabindex="6" name="reference" class="flex" />
+					<input type="text" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" placeholder="Related ID" name="relation" />
+				</div>
+			</section>
+		</div>
+
+		<div class="form">
+			<section>
+				<h1>Description</h1>
+				<div class="btn-set">
+					<textarea type="text" data-required tabindex="8" title="Statement Description" data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
+						name="description" id="description" rows="7"></textarea>
+				</div>
+			</section>
+		</div>
+
 	</form>
-	<br />
 	<?php
 	$grem->getLast()->close();
-
-	$grem->legend()->serve("<span class=\"flex\">Session Payments</span>");
+	$grem->title()->serve("<span class=\"flex\">Session transactions</span>");
 	$grem->article()->open();
 	?>
 	<table class="bom-table hover">

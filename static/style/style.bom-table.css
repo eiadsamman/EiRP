@@ -222,13 +222,17 @@
 	display: block;
 	position: absolute;
 	inset: 0 0 0 0;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	user-select: none;
 }
 
 .bom-table > tbody > tr > td.checkbox > label::before {
 	display: block;
 	position: absolute;
-	user-select: none;
 	content: " ";
 	top: 8px;
 	left: 8px;
@@ -237,6 +241,12 @@
 	width: 14px;
 	height: 14px;
 	background-color: transparent;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .bom-table > tbody > tr > td.checkbox > label:hover::before {
@@ -289,45 +299,6 @@
 
 
 @media only screen and (max-width: 480px) {
-	.bom-table.mediabond-table {
-		border: none;
-	}
-
-	.bom-table.mediabond-table > tbody > tr {
-		display: block;
-		border: none;
-	}
-
-	.bom-table.mediabond-table > tbody > tr > td,
-	.bom-table.mediabond-table > tbody > tr > th {
-		display: block;
-		border: none;
-		padding: 0px;
-	}
-
-	.bom-table.mediabond-table > tbody > tr:not(:first-child) > td,
-	.bom-table.mediabond-table > tfoot > tr:not(:first-child) > td {
-		border-top: none;
-	}
-
-	.bom-table.mediabond-table > tbody > tr > td:first-child,
-	.bom-table > tbody > tr > th:first-child {
-		min-height: 1px;
-		height: 20px;
-		color: var(--root-link-color);
-		height: 20px;
-		padding: 0px;
-		padding-left: 0px;
-		padding-top: 20px;
-		border: none;
-	}
-
-	.bom-table.mediabond-table > tbody > tr.special > th:first-child {
-		background-color: #f7f7fa;
-		border: none;
-		padding: 20px 0px 5px 10px;
-		color: var(--root-link-color);
-		border-bottom: solid 1px #ccc;
-	}
+	
 
 }

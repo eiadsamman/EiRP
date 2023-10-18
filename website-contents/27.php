@@ -36,34 +36,34 @@ if ($r && $row = $r->fetch_assoc()) {
 	$curinfo = $row;
 }
 
-?>
-<form action="<?php echo $fs()->dir; ?>" method="post" id="passForm">
+
+echo <<<HTML
+	<form action="{$fs()->dir}" method="post" id="passForm">
 	<input type="hidden" name="method" value="changepassword" />
-
-	<?php
-	$grem = new Gremium\Gremium(true);
-
-	$grem->header()->serve("<h1>My Account</h1>");
-	$grem->menu()->serve("<a href=\"{$fs(17)->dir}\">{$fs(17)->title}</a><a href=\"{$fs(263)->dir}\">{$fs(263)->title}</a><span class=\"gap\"></span>");
-	$grem->title()->serve("<span class=\"flex\">Account information</span>");
-
-	$grem->article()->serve('
+HTML;
+$grem = new Gremium\Gremium(true);
+$grem->header()->serve("<h1>My Account</h1>");
+$grem->menu()->serve("<a href=\"{$fs(17)->dir}\">{$fs(17)->title}</a><a href=\"{$fs(263)->dir}\">{$fs(263)->title}</a><span class=\"gap\"></span>");
+$grem->title()->serve("<span class=\"flex\">Account information</span>");
+$grem->article()->serve(
+	<<<HTML
 	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical" ><span>Name</span><input type="text" tabindex="-1" value="' . $app->user->info->name . '" readonly="readonly" /></div>
+		<div class="btn-set vertical"><span>Name</span><input type="text" tabindex="-1" value="{$app->user->info->name}" readonly="readonly" /></div>
 	</div>
 	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical" ><span>Username</span><input type="text" tabindex="-1" value="' . $app->user->info->username . '" readonly="readonly" /></div>
+		<div class="btn-set vertical"><span>Username</span><input type="text" tabindex="-1" value="{$app->user->info->username}" readonly="readonly" /></div>
 	</div>
 	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical" ><span>Register date</span><input type="text" tabindex="-1" value="' . $curinfo['usr_regdate'] . '" readonly="readonly" /></div>
+		<div class="btn-set vertical"><span>Registration date</span><input type="text" tabindex="-1" value="{$curinfo['usr_regdate']}" readonly="readonly" /></div>
 	</div>
 	<br /><br /><br />
-	');
+	HTML
+);
 
 
-	$grem->title()->serve("<span class=\"flex\">Security management</span>");
-	$grem->article()->open();
-	?>
+$grem->title()->serve("<span class=\"flex\">Security management</span>");
+$grem->article()->open();
+echo <<<HTML
 	<div class="template-gridLayout role-input">
 		<div class="btn-set vertical"><span>Current password</span><input type="password" name="oldpass" id="oldpass" />
 		</div>
@@ -81,8 +81,9 @@ if ($r && $row = $r->fetch_assoc()) {
 		<div class="btn-set" style="justify-content:end"><button type="submit">Update Password</button></div>
 	</div>
 </form>
+HTML;
 
-<?php
+
 $grem->getLast()->close();
 unset($grem);
 ?>

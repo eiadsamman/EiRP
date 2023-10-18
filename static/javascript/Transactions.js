@@ -1,6 +1,6 @@
 $(document).ready(function (e) {
 	const form_main = document.getElementById("js-ref_form-main");
-	const slo_objects = $("#js-ref_table-main [data-slo]").slo();
+	const slo_objects = $("#js-ref_form-main [data-slo]").not("#js-defines").slo();
 	const value_field = document.getElementById('value');
 	const description_field = document.getElementById('description');
 
@@ -42,14 +42,16 @@ $(document).ready(function (e) {
 				slo_objects.clear();
 				clearFields();
 				document.querySelectorAll(".predefined").forEach(element => {
-					element.style.display = "table-row";
+					element.style.display = "flex";
 				});
 			}
 		});
+
+
 		slo_objects.getElementById("target-account").slo.focus();
 	}
 	const disableForm = (state) => {
-		$("#js-ref_table-main input, #js-ref_table-main textarea, #js-ref_table-main button").prop('disabled', state);
+		$("#js-ref_form-main input, #js-ref_form-main textarea, #js-ref_form-main button").prop('disabled', state);
 		overlay.state(state);
 	}
 

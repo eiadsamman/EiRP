@@ -1,5 +1,4 @@
 .slo-container {
-	display: block;
 	position: absolute;
 	min-width: 100%;
 	display: none;
@@ -9,7 +8,6 @@
 	color: var(--root-font-color);
 	z-index: 99 !important;
 	border: solid 1px var(--root-ribbon-border-color);
-
 	border-color: rgba(82, 168, 236, 1);
 	box-shadow: 0 0 4px rgba(82, 168, 236, .5);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
