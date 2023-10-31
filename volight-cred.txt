@@ -1,4 +1,0 @@
-sql
-vmrbn_appdb
-vmrbn_appadmin
-1a)a1_uNpN&b
