@@ -768,7 +768,7 @@ class SmartListObject {
 						this.slo.hide();
 						return;
 					}
-					if (e.code === "Enter" && this.slo.state === state.up) {
+					if ((e.code === "Enter" || e.code === "NumpadEnter") && this.slo.state === state.up) {
 						e.preventDefault();
 						this.enter_key_event = true;
 						this.slo.commit(true);
