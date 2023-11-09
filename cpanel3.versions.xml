@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+	<versions>
+		<version number="2008001" date="2022-08-30">
+			<review>Update system initiated</review>
+			<sql>CREATE TABLE `updateserver` ( `verid` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT , `vernumber` INT UNSIGNED NOT NULL , `verdate` DATE NOT NULL , PRIMARY KEY (`verid`)) ENGINE = InnoDB;</sql>
+			<file>hr/list/card, fixed an issue not showing images</file>
+		</version>
+		
+		<version number="2008002" date="2022-09-01">
+			<sql>UPDATE `pagefile` SET trd_parent = 218 WHERE trd_id = 183;</sql>
+			<sql>UPDATE `pagefile` SET trd_directory = "hr/att/day" WHERE trd_id = 183;</sql>
+			<sql>UPDATE `pagefile` SET trd_param = "no-padding" WHERE trd_id = 183;</sql>
+			
+		</version>
+		
+		
+		<version number="2008003" date="2022-11-13">
+			<sql>ALTER TABLE `partitions` ADD `prt_ale` TINYINT UNSIGNED NULL DEFAULT NULL AFTER `prt_company_id`;</sql>
+			<sql>ALTER TABLE `acc_main` ADD `acm_party` MEDIUMINT UNSIGNED NOT NULL AFTER `acm_type`;</sql>
+			<sql>CREATE TABLE `acc_termgroup` ( `trmgrp_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT , `trmgrp_name` VARCHAR(64) NOT NULL , `trmgrp_order` SMALLINT NOT NULL DEFAULT '0' , PRIMARY KEY (`trmgrp_id`)) ENGINE = InnoDB;</sql>
+			<sql>RENAME TABLE `partitions` TO `acc_accounts`; </sql>
+			<sql>RENAME TABLE `partitiontype` TO `acc_accounttype`;</sql>
+			<sql>ALTER TABLE `acc_accounttype` ADD `ptp_termgroup_id` TINYINT UNSIGNED NOT NULL AFTER `ptp_name`; </sql>
+			<sql>ALTER TABLE `acc_accounts` ADD `prt_current` BIT(1) NULL DEFAULT NULL COMMENT 'current | non-current account' AFTER `prt_remarks`; </sql>
+		</version>
+		
+		<version number="2009007" date="2023-09-07">
+
+		</version>
+	</versions>
+</settings>
+
+<!-- cpanel3/m_update -->

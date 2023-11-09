@@ -1,0 +1,31 @@
+SetEnvIf ^X-Requested-With$ "(.+)" HTTP_X_REQUESTED_WITH=$1
+
+<FilesMatch "^cpanel3\.settings\.xml$">
+    Order Deny,Allow
+    Deny from all
+    Satisfy All
+</FilesMatch>
+
+Options +FollowSymlinks
+RewriteEngine on 
+RewriteBase /
+RewriteRule ^$ /eiad/index/ [L,NC,NS]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ /eiad/p.php [L,NC,NS]
+
+
+#<FilesMatch "\.(html|htm|js|css)$">
+#  FileETag None
+#  <IfModule mod_headers.c>
+#    Header unset ETag
+#    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+#    Header set Pragma "no-cache"
+#    Header set Expires "Wed, 12 Jan 1980 05:00:00 GMT"
+#  </IfModule>
+#</FilesMatch>
+
+
+<FilesMatch "\.(ttf|otf|eot|woff|swf)$">
+	Header set Access-Control-Allow-Origin: *
+</FilesMatch>
