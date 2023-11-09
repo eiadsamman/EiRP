@@ -31,7 +31,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 
 
 $curinfo = false;
-$r       = $app->db->query("SELECT usr_regdate, usr_birthdate, usr_login_date FROM users WHERE usr_id={$app->user->info->id}");
+$r = $app->db->query("SELECT usr_regdate, usr_birthdate, usr_login_date FROM users WHERE usr_id={$app->user->info->id}");
 if ($r && $row = $r->fetch_assoc()) {
 	$curinfo = $row;
 }
@@ -47,14 +47,29 @@ $grem->menu()->serve("<a href=\"{$fs(17)->dir}\">{$fs(17)->title}</a><a href=\"{
 $grem->title()->serve("<span class=\"flex\">Account information</span>");
 $grem->article()->serve(
 	<<<HTML
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Name</span><input type="text" tabindex="-1" value="{$app->user->info->name}" readonly="readonly" /></div>
+	<div class="form">
+		<label style="flex:.5">
+			<h1>Name</h1>
+			<div class="btn-set">
+				<input type="text" class="flex" tabindex="-1" value="{$app->user->info->name}" readonly="readonly" />
+			</div>
+		</label>
 	</div>
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Username</span><input type="text" tabindex="-1" value="{$app->user->info->username}" readonly="readonly" /></div>
+	<div class="form">
+		<label style="flex:.5">
+			<h1>Username</h1>
+			<div class="btn-set">
+				<input type="text" class="flex" tabindex="-1" value="{$app->user->info->username}" readonly="readonly" />
+			</div>
+		</label>
 	</div>
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Registration date</span><input type="text" tabindex="-1" value="{$curinfo['usr_regdate']}" readonly="readonly" /></div>
+	<div class="form">
+		<label style="flex:.5">
+			<h1>Registration date</h1>
+			<div class="btn-set">
+				<input type="text" class="flex" tabindex="-1" value="{$curinfo['usr_regdate']}" readonly="readonly" />
+			</div>
+		</label>
 	</div>
 	<br /><br /><br />
 	HTML
@@ -64,22 +79,41 @@ $grem->article()->serve(
 $grem->title()->serve("<span class=\"flex\">Security management</span>");
 $grem->article()->open();
 echo <<<HTML
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Current password</span><input type="password" name="oldpass" id="oldpass" />
-		</div>
-	</div>
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>New password</span><input type="password" name="newpass" id="newpass" />
-		</div>
-	</div>
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Password confirmation</span><input type="password" name="conpass" id="conpass" />
-		</div>
-	</div>
-	<div class="template-gridLayout role-input">
 
-		<div class="btn-set" style="justify-content:end"><button type="submit">Update Password</button></div>
+	<div class="form">
+		<label style="flex:.5">
+			<h1>Current password</h1>
+			<div class="btn-set">
+				<input type="password" class="flex" name="oldpass" id="oldpass" />	
+			</div>
+		</label>
 	</div>
+	<div class="form">
+		<label style="flex:.5">
+			<h1>New password</h1>
+			<div class="btn-set">
+				<input type="password" class="flex" name="newpass" id="newpass" />
+			</div>
+		</label>
+	</div>
+	<div class="form">
+		<label style="flex:.5">
+			<h1>Password confirmation</h1>
+			<div class="btn-set">
+				<input type="password" class="flex" name="conpass" id="conpass" />
+			</div>
+		</label>
+	</div>
+
+	<div class="form">
+		<label style="flex:.5">
+			<div class="btn-set">
+				<button type="submit">Update Password</button>
+			</div>
+		</label>
+	</div>
+
+
 </form>
 HTML;
 

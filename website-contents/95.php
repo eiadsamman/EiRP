@@ -6,14 +6,14 @@ use System\Finance\Account;
 use System\SmartListObject;
 
 $predefined = new \System\Finance\PredefinedRules($app);
-$defines    = $predefined->paymentRules();
+$defines = $predefined->paymentRules();
 $accounting = new \System\Finance\Accounting($app);
 
 if ($app->xhttp) {
 	$result = array(
-		"result"    => false,
-		"errno"     => 0,
-		"error"     => '',
+		"result" => false,
+		"errno" => 0,
+		"error" => '',
 		'insert_id' => 0
 	);
 	if (isset($_POST['objective']) && $_POST['objective'] == 'transaction') {
@@ -31,10 +31,10 @@ if ($app->xhttp) {
 			}
 
 			if ($transaction->post()) {
-				$result['result']    = true;
+				$result['result'] = true;
 				$result['insert_id'] = $transaction->insert_id;
-				$result['balance']   = number_format($app->user->account->getBalance(), 2);
-				$result['currency']  = $app->user->account->currency->shortname;
+				$result['balance'] = number_format($app->user->account->getBalance(), 2);
+				$result['currency'] = $app->user->account->currency->shortname;
 				new FrequentAccountUse($app, (int) $_POST['target-account'][1]);
 			} else {
 				$result['errno'] = 300;
@@ -111,7 +111,7 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 		?>
 
 		<div class="form predefined">
-			<section style="min-width:300px">
+			<label style="min-width:300px">
 				<h1>Creditor</h1>
 				<div class="btn-set">
 					<?php
@@ -122,55 +122,58 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 					echo "<span>{$app->user->account->type->name}: {$app->user->account->name}</span>";
 					?>
 				</div>
-			</section>
-			<section>
+			</label>
+			<label>
 				<h1>Debitor</h1>
 				<div class="btn-set">
-					<input tabindex="2" data-required title="Debitor account" data-touch="200" type="text" data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account"
-						id="target-account" />
+					<input tabindex="2" data-required title="Debitor account" data-touch="200" type="text" data-slo=":LIST"
+						data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
 				</div>
-			</section>
+			</label>
 
 		</div>
 		<div class="form predefined">
-			<section style="min-width:150px">
+			<label style="min-width:150px">
 				<h1>Date</h1>
 				<div class="btn-set">
-					<input type="text" class="flex" data-required data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2"
-						name="date" />
+					<input type="text" class="flex" data-required data-slo=":DATE" data-touch="107" title="Transaction date"
+						value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2" name="date" />
 				</div>
-			</section>
-			<section style="min-width:300px">
+			</label>
+			<label style="min-width:300px">
 				<h1>Category</h1>
 				<div class="btn-set">
-					<input type="text" data-required data-slo=":LIST" data-touch="105" title="Category" data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
+					<input type="text" data-required data-slo=":LIST" data-touch="105" title="Category"
+						data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
 				</div>
-			</section>
+			</label>
 		</div>
 
 
 		<div class="form">
-			<section style="flex-basis:0%">
+			<label style="flex-basis:0%">
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
-					<input type="text" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary"
-						id="beneficiary" />
-					<input type="text" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
+					<input type="text" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4"
+						data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
+					<input type="text" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual"
+						id="individual" />
 				</div>
-			</section>
+			</label>
 		</div>
 
 		<div class="form">
-			<section>
+			<label>
 				<h1>Value</h1>
 				<div class="btn-set">
-					<input type="number" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
+					<input type="number" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value"
+						pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
 				</div>
-			</section>
+			</label>
 		</div>
 
 		<div class="form">
-			<section style="flex:0">
+			<label style="flex:0">
 				<h1>Attachments</h1>
 				<div class="btn-set">
 					<input type="button" id="js_upload_trigger" class="js_upload_trigger" value="Upload" />
@@ -178,24 +181,27 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 					<span id="js_upload_list" class="js_upload_list"></span>
 					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span> files</span>
 				</div>
-			</section>
-			<section style="min-width:300px">
+			</label>
+			<label style="min-width:300px">
 				<h1>Reference</h1>
 				<div class="btn-set">
-					<input type="text" data-slo="ACC_REFERENCE" title="Reference" tabindex="6" name="reference" class="flex" />
-					<input type="text" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" placeholder="Related ID" name="relation" />
+					<input type="text" data-slo="ACC_REFERENCE" title="Reference" tabindex="6" name="reference"
+						class="flex" />
+					<input type="text" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1"
+						placeholder="Related ID" name="relation" />
 				</div>
-			</section>
+			</label>
 		</div>
 
 		<div class="form">
-			<section>
+			<label>
 				<h1>Description</h1>
 				<div class="btn-set">
-					<textarea type="text" data-required tabindex="8" title="Statement Description" data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
+					<textarea type="text" data-required tabindex="8" title="Statement Description" data-touch="103"
+						style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
 						name="description" id="description" rows="7"></textarea>
 				</div>
-			</section>
+			</label>
 		</div>
 
 	</form>
@@ -254,7 +260,7 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 			});
 			<?php
 			$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
-			$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
+			$r_release = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
 			if ($r_release) {
 				while ($row_release = $r_release->fetch_assoc()) {
 					echo "Upload.AddListItem({$row_release['up_id']},'{$row_release['up_name']}',false,false,'" . (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document") . "');";

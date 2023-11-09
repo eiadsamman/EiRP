@@ -1,3 +1,4 @@
+<div draggable="true" style="padding:20px;border:solid 2px red;display:inline-block;">ASF</div>
 <?php
 //$sql = new \mysqli("azure-system.mysql.database.azure.com", "sappdbmaster","1a)a1_uNpN&b");
 
@@ -9,8 +10,9 @@ $stmt = $app->db->prepare("UPDATE users SET usr_password = ? WHERE usr_id = ?");
 if ($res) {
 	while ($row = $res->fetch_assoc()) {
 		if (!is_null($row['usr_password']) && strlen($row['usr_password']) > 1) {
-			$newpass = password_hash($row['usr_password'], PASSWORD_BCRYPT, ["cost" => "12"]);;
-			$userid  = $row['usr_id'];
+			$newpass = password_hash($row['usr_password'], PASSWORD_BCRYPT, ["cost" => "12"]);
+			;
+			$userid = $row['usr_id'];
 			$stmt->bind_param("si", $newpass, $userid);
 			$stmt->execute();
 		}
@@ -84,7 +86,7 @@ class Animal
 {
 	public function __construct()
 	{
-		$arguments         = func_get_args();
+		$arguments = func_get_args();
 		$numberOfArguments = func_num_args();
 
 		if ($numberOfArguments == 1) {
