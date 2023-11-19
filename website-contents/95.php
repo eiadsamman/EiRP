@@ -173,13 +173,13 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 		</div>
 
 		<div class="form">
-			<label style="flex:0">
+			<label style="flex:0" for="">
 				<h1>Attachments</h1>
 				<div class="btn-set">
 					<input type="button" id="js_upload_trigger" class="js_upload_trigger" value="Upload" />
 					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 					<span id="js_upload_list" class="js_upload_list"></span>
-					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span> files</span>
+					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
 				</div>
 			</label>
 			<label style="min-width:300px">

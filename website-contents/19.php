@@ -8,7 +8,9 @@ $grem      = new Gremium\Gremium(false);
 
 
 $grem->header()->sticky(false)->serve("<h1><span style=\"color:var(--input_hover-border)\">Welcome </span> {$app->user->info->name}</h1>");
-$grem->article()->open();
+
+unset($grem);
+
 $atleastone = false;
 echo "<div class=\"homepageWidget\">";
 foreach ($dashboard->list(true) as $dashboard) {
@@ -26,4 +28,3 @@ echo <<<HTML
 </ul>
 HTML;
 }
-$grem->getLast()->close();

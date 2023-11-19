@@ -7,7 +7,7 @@ if (isset($_POST['bulk'])) {
 	$lines = explode("\n", $_POST['bulk']);
 	$unique = array();
 	foreach ($lines as $line) {
-		$_id = (int)$line;
+		$_id = (int) $line;
 		if ($_id != 0) {
 			if (in_array($_id, $unique)) {
 				continue;
@@ -25,7 +25,7 @@ if (isset($_POST['serial'])) {
 
 	try {
 		$att->load($_POST['serial']);
-		$ratt 	= $att->CheckOut();
+		$ratt = $att->CheckOut();
 
 		if ($ratt) {
 			header("ATT_RESULT: OK");
@@ -51,15 +51,15 @@ if (isset($_POST['serial'])) {
 $grem = new Gremium\Gremium(true);
 $grem->header()->serve("<h1>{$fs()->title}</h1>");
 $grem->menu()->serve('<input type="number" id="jQserialAdd" autocomplete="off" class="flex" placeholder="Serial Number" /><button type="button" style="min-width:100px;" id="jQserialSubmit">Submit</button>');
-$grem->legend()->serve("<span class=\"flex\">Attendance records</span>");
-$grem->article()->serve( "<div id=\"jqOutput\" class=\"att-submitionlist\"></div>");
-unset ($grem);
+$grem->title()->serve("<span class=\"flex\">Attendance records</span>");
+$grem->article()->serve("<div id=\"jqOutput\" data-empty class=\"att-submitionlist\">No records requested...</div>");
+unset($grem);
 
 ?>
 
 
 <script>
-	$(function() {
+	$(function () {
 		let _jqOutput = $("#jqOutput"),
 			_jqInput = $("#jQserialAdd");
 		var ticket = `<div>
@@ -68,12 +68,16 @@ unset ($grem);
 				<span class="content"><div class="employee-sid"></div><div class="employee-name">Loading...</div></span>
 			</div>`;
 
-		var submitserial = function() {
+		var submitserial = function () {
 			let inputid = _jqInput.val().trim();
 			if (inputid != "") {
 
 				let new_ticket = $(ticket);
 				new_ticket.find(".employee-sid").html(inputid);
+				if (_jqOutput.attr("data-empty") !== undefined) {
+					_jqOutput.removeAttr("data-empty");
+					_jqOutput.html("")
+				}
 				_jqOutput.prepend(new_ticket);
 				_jqInput.val("");
 
@@ -83,7 +87,7 @@ unset ($grem);
 					data: {
 						'serial': inputid
 					}
-				}).done(function(o, textStatus, request) {
+				}).done(function (o, textStatus, request) {
 					let response = request.getResponseHeader('ATT_RESULT');
 
 					let responseimage = request.getResponseHeader('ATT_IMAGE_ID');
@@ -105,21 +109,21 @@ unset ($grem);
 						}
 					}
 
-				}).fail(function(a, b, c) {
+				}).fail(function (a, b, c) {
 					messagesys.failure(b + " " + c);
-				}).always(function() {
+				}).always(function () {
 					_jqInput.focus().select();
 				});
 			}
 		}
 
-		_jqInput.on('keydown', function(e) {
+		_jqInput.on('keydown', function (e) {
 			if ((e.keyCode ? e.keyCode : e.which) == 13) {
 				submitserial();
 			}
 		});
 
-		$("#jQserialSubmit").on("click", function(e) {
+		$("#jQserialSubmit").on("click", function (e) {
 			submitserial();
 		});
 

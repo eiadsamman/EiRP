@@ -64,9 +64,9 @@ if (!$defaultaccount) {
 $grem = new Gremium\Gremium(true);
 $grem->header()->serve("<h1>{$fs()->title}</h1>");
 $grem->menu()->serve('<input type="number" id="jQserialAdd" autocomplete="off" class="flex" placeholder="Serial Number" /><button type="button" style="min-width:100px;" id="jQserialSubmit">Submit</button>');
-$grem->legend()->serve("<span class=\"flex\">Attendance records</span>");
-$grem->article()->serve( "<div id=\"jqOutput\" class=\"att-submitionlist\"></div>");
-unset ($grem);
+$grem->title()->serve("<span class=\"flex\">Attendance records</span>");
+$grem->article()->serve("<div id=\"jqOutput\" data-empty class=\"att-submitionlist\">No records requested...</div>");
+unset($grem);
 
 ?>
 <script>
@@ -85,6 +85,10 @@ unset ($grem);
 
 				let new_ticket = $(ticket);
 				new_ticket.find(".employee-sid").html(inputid);
+				if (_jqOutput.attr("data-empty") !== undefined) {
+					_jqOutput.removeAttr("data-empty");
+					_jqOutput.html("")
+				}
 				_jqOutput.prepend(new_ticket);
 				_jqInput.val("");
 

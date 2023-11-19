@@ -47,9 +47,9 @@ if (isset($_POST['serial'])) {
 }
 
 if (isset($_POST['populate'])) {
-	$att    = new Registration($app);
+	$att = new Registration($app);
 	$sector = (int) $_POST['populate'];
-	$r      = $att->ReportOngoingBySector(["company" => $app->user->company->id, "sector" => $sector]);
+	$r = $att->ReportOngoingBySector(["company" => $app->user->company->id, "sector" => $sector]);
 	if ($r) {
 		while ($row = $r->fetch_assoc()) {
 
@@ -77,11 +77,13 @@ $grem->menu()->serve('<input type="number" id="jQserialAdd" autocomplete="off" c
 
 
 
-$grem->legend()->serve("<span class=\"flex\">Attendance records</span>");
-$grem->article()->serve("<div id=\"jqOutputOutput\" class=\"att-submitionlist\"></div><br />");
+$grem->title()->serve("<span class=\"flex\">Attendance records</span>");
+$grem->article()->serve("<div id=\"jqOutputOutput\" data-empty class=\"att-submitionlist\">No records requested...</div>");
 
-$grem->legend()->serve("<span class=\"flex\">Current attendance</span>");
-$grem->article()->serve("<div id=\"jqOutputCurrent\" class=\"att-submitionlist\"></div>");
+
+echo "<br />";
+$grem->title()->serve("<span class=\"flex\">Current attendance</span>");
+$grem->article()->serve("<div id=\"jqOutputCurrent\" data-empty class=\"att-submitionlist\">No records found...</div>");
 ?>
 <script type="text/javascript">
 	$(function () {
@@ -104,8 +106,13 @@ $grem->article()->serve("<div id=\"jqOutputCurrent\" class=\"att-submitionlist\"
 				method: 'POST',
 				data: { 'populate': CurrentSelection }
 			}).done(function (o, textStatus, request) {
-				$("#jqOutputCurrent").html($(o));
-				_jqOutput.html("");
+				if(o==""){
+					$("#jqOutputCurrent").html("No records found...");
+				}else{
+					$("#jqOutputCurrent").html($(o));
+				}
+				_jqOutput.html("No records requested...");
+				_jqOutput.attr("data-empty", "");
 			}).fail(function (a, b, c) {
 				messagesys.failure(b + " " + c);
 			}).always(function () {
@@ -120,6 +127,10 @@ $grem->article()->serve("<div id=\"jqOutputCurrent\" class=\"att-submitionlist\"
 
 				let new_ticket = $(ticket);
 				new_ticket.find(".employee-sid").html(inputid);
+				if (_jqOutput.attr("data-empty") !== undefined) {
+					_jqOutput.removeAttr("data-empty");
+					_jqOutput.html("")
+				}
 				_jqOutput.prepend(new_ticket);
 				_jqInput.val("");
 

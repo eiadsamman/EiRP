@@ -388,7 +388,7 @@ $SmartListObject = new SmartListObject($app);
 					<button id="js_upload_trigger" class="js_upload_trigger">Attachments</button>
 					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 					<span id="js_upload_list" class="js_upload_list"></span>
-					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span> files</span>
+					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
 
 					<button id="jQsubmit" tabindex="11">Edit</button>
 					<?php echo isset($_GET['ajax']) ? "<button id=\"jQpopupCancel\">Cancel</button>" : ""; ?>

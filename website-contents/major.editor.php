@@ -374,7 +374,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 			echo "
 									</div>
 								</span>
-								<span id=\"up_count{$fieldk}\" class=\"js_upload_count\"><span>0 / 0</span> files</span>
+								<span id=\"up_count{$fieldk}\" class=\"js_upload_count\"><span>0 / 0</span></span>
 							</div>
 						</td>
 						<td class=\"css_fieldDesc\"><span>" . (isset($fieldv[9]) ? $fieldv[9] : "") . "</span></td></tr>";

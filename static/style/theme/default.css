@@ -1,7 +1,7 @@
 .theme-default {
-	color: cornflowerblue;
-	--root-background-color: white;
-	--root-font-color: black;
+
+	--root-background-color: rgb(250, 251, 255);
+	--root-font-color: rgb(33, 37, 41);
 	--root-font-lightcolor: rgb(100, 100, 100);
 	--root-link-color: dodgerblue;
 	--root-ribbon-background-color: #e3e3ee;
@@ -24,16 +24,16 @@
 	--bomtable-stripes-color: #fafafc;
 
 
-
-	--input-font-color: black;
+	--input-border-radius: 5px;
+	--input-font-color: rgb(33, 37, 41);
 	--input-bgcolor: white;
-	--input-border: #ccc;
+	--input-border: #ddd;
 	--input_hover-border: rgb(153, 153, 157);
 	--input_active-border: rgba(82, 168, 236, .75);
 
 
 	--static-bgcolor: #fbfbfe;
-	--static-border: #ccc;
+	--static-border: #ddd;
 	--static_hover-border: var(--bomtable-border-color);
 
 	--button-font-color: white;
@@ -63,6 +63,7 @@
 	--root-ribbon-menu-background-color: rgba(56, 56, 67, 0.969);
 	--root-ribbon-menu-header-background-color: #38383f;
 	--root-ribbon-menu-itemhover-background-color: rgb(80, 80, 100);
+	
 	--root-input-background-color: white;
 	--root-input-border-color: white;
 	--root-button-background-color: white;
@@ -77,7 +78,7 @@
 
 
 
-
+	--input-border-radius: 5px;
 	--input-font-color: black;
 	--input-bgcolor: rgb(25, 25, 30);
 	--input-border: rgb(60, 60, 75);
@@ -95,8 +96,6 @@
 	--button_focus-bgcolor: hsl(206, 100%, 42%);
 	--button_active-bgcolor: hsl(206, 100%, 37%);
 	--button_disabled-bgcolor: var(--static-bgcolor);
-
-
 
 
 

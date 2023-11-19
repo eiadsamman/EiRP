@@ -19,11 +19,10 @@ if ($app->xhttp) {
 		if ($dateFrom <= $dateTo) {
 			getAttendanceReport($app, $dateFrom, $dateTo, $employeeID);
 		} else {
-			echo "<div class=\"btn-set\"><span>Attendace date range is not valid !</span></div>";
+			echo "Attendace date range is not valid !";
 		}
 		exit;
 	}
-
 
 
 	if (isset($_POST['method'], $_POST['employeeID'], $_POST['dateFrom'], $_POST['dateTo']) && $_POST['method'] == "fetchrecord") {
@@ -33,7 +32,7 @@ if ($app->xhttp) {
 
 
 		if ($dateTo - $dateFrom > 86400 * 62) {
-			echo "<div class=\"btn-set\"><span>Date range is too large, maximum allowed range is 60 days</span></div>";
+			echo "Date range is too large, maximum allowed range is 60 days";
 			exit;
 		}
 		$r = $app->db->query("SELECT usr_id,CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id=$employeeID;");
@@ -43,7 +42,7 @@ if ($app->xhttp) {
 				getAttendanceReport($app, (int) $dateFrom, (int) $dateTo, $employeeID);
 				echo "</div>";
 			} else {
-				echo "<div class=\"btn-set\"><span>Invalid date range, maximum allowed range is 60 days</span></div>";
+				echo "Invalid date range, maximum allowed range is 60 days";
 			}
 			exit;
 		} else {
@@ -106,7 +105,8 @@ $grem->article()->serve("
 </table>
 ");
 
-$grem->article()->serve("<div id=\"jQoutput\"></div>");
+echo "<br />";
+$grem->article()->serve("<div id=\"jQoutput\">No queries applied!<br /><br />To start chose an employee from the list above and set the desired attendance date range</div>");
 $grem->terminate();
 
 ?>
@@ -127,7 +127,7 @@ $grem->terminate();
 				fn_timetable();
 			},
 			ondeselect: function () {
-				$("#jQattendaceReportOutput").html("");
+				$("#jQoutput").html("No queries applied!<br /><br />To start chose an employee from the list above and set the desired attendance date range");
 			},
 			"limit": 5,
 		});

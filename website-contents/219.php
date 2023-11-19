@@ -106,7 +106,7 @@ $grem->menu();
 <?php
 if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_input == false && $fs(227)->permission->add)) {
 
-	$grem->legend()->serve("<span class=\"flex\">Personal Information</span>");
+	$grem->title()->serve("<span class=\"flex\">Personal Information</span>");
 	$grem->article()->open();
 	?>
 	<table class="bom-table mediabond-table">
@@ -142,10 +142,10 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				</td>
 			</tr>
 			<tr>
-				<th>Social ID Card</th>
+				<th>Identification</th>
 				<td>
 					<div class="btn-set">
-						<span id="js_upload_count_1" class="js_upload_count"><span>0</span> files</span>
+						<span id="js_upload_count_1" class="js_upload_count"><span>0</span></span>
 						<input type="button"  id="js_upload_trigger_1" class="js_upload_trigger" data-db_rel="usr_attrib_s2" value="Upload" />
 						<input type="file" id="js_uploader_btn_1" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 						<span id="js_upload_list_1" class="js_upload_list">
@@ -159,8 +159,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 								?>
 							</div>
 						</span>
-						<span>No.</span>
-						<input type="text" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_socialnumber'] : ""; ?>" name="social_number" id="social_number" class="flex">
+						<input type="text" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_socialnumber'] : ""; ?>" name="social_number" id="social_number" class="flex" placeholder="ID Number">
 					</div>
 				</td>
 			</tr>
@@ -168,7 +167,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<th>Personal photo</th>
 				<td>
 					<div class="btn-set">
-						<span id="js_upload_count" class="js_upload_count"><span>0</span> files</span>
+						<span id="js_upload_count" class="js_upload_count"><span>0</span></span>
 						<input type="button" id="js_upload_trigger" class="js_upload_trigger " style="max-width:100px" value="Upload" />
 						<input type="file" id="js_uploader_btn" class="js_uploader_btn" accept="image/*" />
 						<span id="js_upload_list" class="js_upload_list">
@@ -233,7 +232,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 <br />
 <?php
 if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_input == false && $fs(228)->permission->add)) {
-	$grem->legend()->serve("<span class=\"flex\">Job details</span>");
+	$grem->title()->serve("<span class=\"flex\">Job details</span>");
 	$grem->article()->open();
 	?>
 	<table class="bom-table mediabond-table">
@@ -328,7 +327,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 <br />
 
 <?php if (($arr_array_input != false && $fs(229)->permission->edit) || ($arr_array_input == false && $fs(229)->permission->add)) {
-	$grem->legend()->serve("<span class=\"flex\">Salary details</span>");
+	$grem->title()->serve("<span class=\"flex\">Salary details</span>");
 	$grem->article()->open();
 	?>
 	<table class="bom-table mediabond-table">

@@ -11,50 +11,55 @@
 	justify-content: center;
 }
 
-.btn-set > * {
-	padding: 7px 12px 13px 12px;
+.btn-set>* {
 	outline: none;
 	background-color: var(--static-bgcolor);
 	border: solid 1px var(--static-border);
-	height: 32px;
+	height: 38px;
 	position: relative;
 	margin-left: -.5px;
 	margin-right: -.5px;
 	white-space: nowrap;
+
+}
+
+.btn-set>*:first-child {
+	border-top-left-radius: var(--input-border-radius);
+	border-bottom-left-radius: var(--input-border-radius);
+}
+
+.btn-set>*:last-child {
+	border-top-right-radius: var(--input-border-radius);
+	border-bottom-right-radius: var(--input-border-radius);
 }
 
 /* #region - Components*/
 
-.btn-set > span {
+.btn-set>span {
 	white-space: nowrap;
 	color: var(--color-font);
 	/* background-color: var(--color-faint-white); */
 }
 
-.btn-set > a,
-.btn-set > div,
-.btn-set > span {
-	padding: 8.5px 12px 11.5px 12px;
+.btn-set>a,
+.btn-set>span {
+	display: flex;
+	align-items: center;
+	padding: 0px 12px;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	color:var(--root-font-color);
+	color: var(--root-font-color);
 }
 
-.btn-set > textarea {
+.btn-set>textarea {
 	padding: 7px 6px;
 }
 
-.btn-set > div {
-	background-color: #666;
-	border-color: #000;
-	color: #fff;
-}
-
-.btn-set > span.gap {
+.btn-set>span.gap {
 	background-color: transparent;
 	border: none;
 	flex: 1;
@@ -62,27 +67,24 @@
 }
 
 
-
-
-.btn-set > input,
-.btn-set > textarea {
+.btn-set>input,
+.btn-set>textarea {
 	font-size: 1em;
 	max-width: 100%;
-	border-radius: 0px;
 	border: solid 1px var(--input-border);
 	background-color: var(--input-bgcolor);
 }
 
-.btn-set > input:hover,
-.btn-set > label:hover,
-.btn-set > textarea:focus {
+.btn-set>input:hover,
+.btn-set>label:hover,
+.btn-set>textarea:focus {
 	border-color: var(--input_hover-border);
 	z-index: 12;
 }
 
-.btn-set > input:focus,
-.btn-set > label:focus,
-.btn-set > textarea:focus {
+.btn-set>input:focus,
+.btn-set>label:focus,
+.btn-set>textarea:focus {
 	border-color: rgba(82, 168, 236, .75);
 	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
@@ -95,33 +97,31 @@
 
 
 
-.btn-set > button,
-.btn-set > a {
+.btn-set>button,
+.btn-set>a {
 	font-size: 1em;
 	background-color: var(--button-bgcolor);
 	color: var(--button-font-color) !important;
 	font-weight: normal;
 	cursor: pointer;
 	border-color: transparent;
-	padding: 0px 12px;
 	transition: background-color .2s;
 	z-index: 15;
+	padding: 0px 20px;
 }
 
-.btn-set > a {
-	padding: 10px 12px;
-}
 
-.btn-set > button:hover,
-.btn-set > a:hover {
+
+.btn-set>button:hover,
+.btn-set>a:hover {
 	background-color: var(--button_hover-bgcolor);
 	text-decoration: none;
 	z-index: 15;
 	transition: background-color .2s;
 }
 
-.btn-set > button:focus,
-.btn-set > a:focus {
+.btn-set>button:focus,
+.btn-set>a:focus {
 	background-color: var(--button_focus-bgcolor);
 	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
@@ -130,27 +130,23 @@
 	z-index: 15;
 }
 
-.btn-set > button:active {
+.btn-set>button:active {
 	background-color: var(--button_active-bgcolor);
-	padding: 1px 11px 0px 13px;
 	transition: background-color .2s;
 }
 
-.btn-set > a:active {
-	padding: 10.5px 11px 9.5px 13px;
+.btn-set>a:active {
 	transition: background-color .2s;
 }
 
 
-.btn-set > input[type=button] {
+.btn-set>input[type=button] {
+	padding: 0px 15px;
 	font-size: 1em;
 	cursor: pointer;
-	padding: 0px 12px;
 }
 
-.btn-set > input[type=button]:active {
-	padding: 1px 11px 0px 13px;
-}
+.btn-set>input[type=button]:active {}
 
 
 
@@ -158,12 +154,12 @@
 
 
 
-.btn-set > input.flex,
-.btn-set > button.flex,
-.btn-set > a.flex,
-.btn-set > label.flex,
-.btn-set > span.flex,
-.btn-set > textarea.flex {
+.btn-set>input.flex,
+.btn-set>button.flex,
+.btn-set>a.flex,
+.btn-set>label.flex,
+.btn-set>span.flex,
+.btn-set>textarea.flex {
 	flex: 1;
 }
 
@@ -206,44 +202,44 @@
 
 
 
-.btn-set > *.clr-red {
+.btn-set>*.clr-red {
 	color: rgba(180, 30, 40, 1);
 	border-color: rgba(230, 80, 100, .3)
 }
 
-.btn-set > *.clr-red:hover {
+.btn-set>*.clr-red:hover {
 	border-color: rgba(180, 42, 50, .4);
 	background-color: rgba(255, 180, 200, .05);
 }
 
-.btn-set > *.clr-red:focus {
+.btn-set>*.clr-red:focus {
 	border-color: rgba(180, 42, 50, .4);
 	box-shadow: 0 0 3px 0px rgba(220, 70, 100, 0.4);
 	background-color: rgba(255, 180, 200, .05);
 }
 
-.btn-set > *.clr-red:active {
+.btn-set>*.clr-red:active {
 	box-shadow: 0 0 4px 1px rgba(220, 70, 100, 0.4);
 	background-color: rgba(255, 180, 200, .1);
 }
 
-.btn-set > *.clr-green {
+.btn-set>*.clr-green {
 	color: rgba(10, 140, 20, 1);
 	border-color: rgba(30, 150, 30, .3)
 }
 
-.btn-set > *.clr-green:hover {
+.btn-set>*.clr-green:hover {
 	border-color: rgba(42, 180, 50, .4);
 	background-color: rgba(180, 255, 200, .05);
 }
 
-.btn-set > *.clr-green:focus {
+.btn-set>*.clr-green:focus {
 	border-color: rgba(42, 180, 50, .4);
 	box-shadow: 0 0 3px 0px rgba(70, 220, 100, 0.4);
 	background-color: rgba(180, 255, 200, .05);
 }
 
-.btn-set > *.clr-green:active {
+.btn-set>*.clr-green:active {
 	box-shadow: 0 0 4px 1px rgba(70, 220, 100, 0.4);
 	background-color: rgba(180, 255, 200, .1);
 }
@@ -264,35 +260,35 @@
 	align-items: flex-start;
 }
 
-.btn-set.vertical > * {
+.btn-set.vertical>* {
 	align-self: stretch;
 }
 
-.btn-set.vertical > span {
+.btn-set.vertical>span {
 	padding: 10px 0px 0px 0px;
 	border: none;
 	background-color: transparent;
 }
 
-.btn-set.vertical > div {
+.btn-set.vertical>div {
 	padding: 5px 0px 0px 0px;
 	background-color: transparent;
 	border: none;
 	color: #333;
 }
 
-.btn-set.vertical > input[type=text],
-.btn-set.vertical > input[type=date],
-.btn-set.vertical > input[type=password],
-.btn-set.vertical > input[type=number] {
+.btn-set.vertical>input[type=text],
+.btn-set.vertical>input[type=date],
+.btn-set.vertical>input[type=password],
+.btn-set.vertical>input[type=number] {
 	height: 30px;
 }
 
-.btn-set.vertical > input[type=text],
-.btn-set.vertical > input[type=date],
-.btn-set.vertical > input[type=password],
-.btn-set.vertical > input[type=number],
-.btn-set.vertical > textarea {
+.btn-set.vertical>input[type=text],
+.btn-set.vertical>input[type=date],
+.btn-set.vertical>input[type=password],
+.btn-set.vertical>input[type=number],
+.btn-set.vertical>textarea {
 	margin-bottom: 5px;
 	padding: 6px 6px;
 }
@@ -312,7 +308,7 @@
 
 
 /* #region - Checkbox*/
-.btn-set > label.btn-checkbox {
+.btn-set>label.btn-checkbox {
 	padding: 7px 10px;
 	height: 16px;
 	cursor: default;
@@ -325,7 +321,7 @@
 	padding-left: 30px;
 }
 
-.btn-set.normal > label.btn-checkbox {
+.btn-set.normal>label.btn-checkbox {
 	padding: 1px 7px;
 	height: 16px;
 	cursor: default;
@@ -339,7 +335,7 @@
 
 }
 
-.btn-set.small > label.btn-checkbox {
+.btn-set.small>label.btn-checkbox {
 	padding: 2px 10px;
 	height: 17px;
 	width: 18px;
@@ -348,37 +344,37 @@
 	background: none;
 }
 
-.btn-set > label.btn-checkbox.disabled {
+.btn-set>label.btn-checkbox.disabled {
 	background-color: #fff;
 	pointer-events: none;
 }
 
-.btn-set.small > label.btn-checkbox.disabled {
+.btn-set.small>label.btn-checkbox.disabled {
 	background-color: none;
 	background: none;
 	opacity: 0.4;
 }
 
 
-.btn-set > label.btn-checkbox.disabled > span {
+.btn-set>label.btn-checkbox.disabled>span {
 	color: #999;
 }
 
-.btn-set > label.btn-checkbox > input[type=checkbox] {
+.btn-set>label.btn-checkbox>input[type=checkbox] {
 	display: none;
 }
 
-.btn-set > label.btn-checkbox > span {
+.btn-set>label.btn-checkbox>span {
 	display: inline-block;
 	padding-top: 2px;
 }
 
-.btn-set.normal > label.btn-checkbox > span {
+.btn-set.normal>label.btn-checkbox>span {
 	display: inline-block;
 	padding-top: 1px;
 }
 
-.btn-set > label.btn-checkbox > input[type=checkbox] ~ span:before {
+.btn-set>label.btn-checkbox>input[type=checkbox]~span:before {
 	display: inline-block;
 	font-family: "icomoon";
 	font-size: 1em;
@@ -389,12 +385,12 @@
 	font-weight: normal;
 }
 
-.btn-set.small > label.btn-checkbox > input[type=checkbox] ~ span:before {
+.btn-set.small>label.btn-checkbox>input[type=checkbox]~span:before {
 	top: 1px;
 }
 
 
-.btn-set > label.btn-checkbox > input[type=checkbox]:checked ~ span:before {
+.btn-set>label.btn-checkbox>input[type=checkbox]:checked~span:before {
 	color: #06c;
 	content: "\e644";
 	display: inline-block;
@@ -403,7 +399,7 @@
 	left: 14px;
 }
 
-.btn-set.normal > label.btn-checkbox > input[type=checkbox]:checked ~ span:before {
+.btn-set.normal>label.btn-checkbox>input[type=checkbox]:checked~span:before {
 	color: #06c;
 	content: "\e644";
 	display: inline-block;
@@ -413,7 +409,7 @@
 
 }
 
-.btn-set.small > label.btn-checkbox > input[type=checkbox]:checked ~ span:before {
+.btn-set.small>label.btn-checkbox>input[type=checkbox]:checked~span:before {
 	color: #06c;
 	content: "\e644";
 	display: inline-block;
@@ -423,7 +419,7 @@
 
 }
 
-.btn-set > label.btn-checkbox > input[type=checkbox]:not(:checked) ~ span:before {
+.btn-set>label.btn-checkbox>input[type=checkbox]:not(:checked)~span:before {
 	content: " ";
 	display: inline-block;
 	position: absolute;
@@ -435,7 +431,7 @@
 	border-radius: 2px;
 }
 
-.btn-set.normal > label.btn-checkbox > input[type=checkbox]:not(:checked) ~ span:before {
+.btn-set.normal>label.btn-checkbox>input[type=checkbox]:not(:checked)~span:before {
 	content: " ";
 	display: inline-block;
 	position: absolute;
@@ -447,7 +443,7 @@
 	border-radius: 2px;
 }
 
-.btn-set.small > label.btn-checkbox > input[type=checkbox]:not(:checked) ~ span:before {
+.btn-set.small>label.btn-checkbox>input[type=checkbox]:not(:checked)~span:before {
 	content: " ";
 	display: inline-block;
 	position: absolute;
@@ -462,40 +458,40 @@
 /* #endregion - Checkbox*/
 
 /* #region - Sizing*/
-.btn-set.small > input,
-.btn-set.small > textarea,
-.btn-set.small > button {
+.btn-set.small>input,
+.btn-set.small>textarea,
+.btn-set.small>button {
 	padding: 0px 10px 0px 10px;
 	height: 25px !important;
 }
 
-.btn-set.small > span,
-.btn-set.small > div,
-.btn-set.small > a {
+.btn-set.small>span,
+.btn-set.small>div,
+.btn-set.small>a {
 	padding: 3px 10px 0px 10px;
 	height: 25px !important;
 	vertical-align: middle;
 }
 
-.btn-set.small > input {
+.btn-set.small>input {
 	padding: 0px 3px
 }
 
-.btn-set.normal > input,
-.btn-set.normal > button,
-.btn-set.normal > textarea {
+.btn-set.normal>input,
+.btn-set.normal>button,
+.btn-set.normal>textarea {
 	padding: 3px 6px;
 	height: 24px;
 }
 
-.btn-set.normal > div,
-.btn-set.normal > a {
+.btn-set.normal>div,
+.btn-set.normal>a {
 	padding: 3px 6px;
 	vertical-align: middle;
 	height: 24px;
 }
 
-.btn-set.normal > span {
+.btn-set.normal>span {
 	padding: 2px 6px;
 	vertical-align: middle;
 	height: 24px;
@@ -584,51 +580,51 @@
 /* #endregion - Special Marks*/
 
 /* #region - Special Buttons*/
-.btn-set > input.btn-add:before,
-.btn-set > button.btn-add:before {
+.btn-set>input.btn-add:before,
+.btn-set>button.btn-add:before {
 	display: inline-block;
 	font-family: "icomoon";
 	text-align: center;
 	content: "\e630";
 }
 
-.btn-set > input.btn-add:hover,
-.btn-set > button.btn-add:hover {
+.btn-set>input.btn-add:hover,
+.btn-set>button.btn-add:hover {
 	color: #06c;
 }
 
-.btn-set > input.bnt-edit:before,
-.btn-set > button.bnt-edit:before {
+.btn-set>input.bnt-edit:before,
+.btn-set>button.bnt-edit:before {
 	display: inline-block;
 	content: "\e62a";
 	font-family: "icomoon";
 	text-align: center;
 }
 
-.btn-set > input.bnt-edit:hover,
-.btn-set > button.bnt-edit:hover {
+.btn-set>input.bnt-edit:hover,
+.btn-set>button.bnt-edit:hover {
 	color: #06c;
 }
 
-.btn-set > input.bnt-remove:before,
-.btn-set > button.bnt-remove:before,
-.btn-set > span.bnt-remove:before,
-.btn-set > span.bnt-remove:before {
+.btn-set>input.bnt-remove:before,
+.btn-set>button.bnt-remove:before,
+.btn-set>span.bnt-remove:before,
+.btn-set>span.bnt-remove:before {
 	display: inline-block;
 	content: "\e62b";
 	font-family: "icomoon";
 	text-align: center;
 }
 
-.btn-set > input.bnt-remove:hover,
-.btn-set > button.bnt-remove:hover {
+.btn-set>input.bnt-remove:hover,
+.btn-set>button.bnt-remove:hover {
 	color: #f03;
 }
 
-.btn-set > input.bnt-error:before,
-.btn-set > button.bnt-error:before,
-.btn-set > span.bnt-error:before,
-.btn-set > span.bnt-error:before {
+.btn-set>input.bnt-error:before,
+.btn-set>button.bnt-error:before,
+.btn-set>span.bnt-error:before,
+.btn-set>span.bnt-error:before {
 	display: inline-block;
 	content: "\f00d";
 	font-family: "icomoon2";
@@ -638,10 +634,10 @@
 	color: #f03;
 }
 
-.btn-set > input.bnt-remove:before,
-.btn-set > button.bnt-donwload:before,
-.btn-set > span.bnt-remove:before,
-.btn-set > span.bnt-donwload:before {
+.btn-set>input.bnt-remove:before,
+.btn-set>button.bnt-donwload:before,
+.btn-set>span.bnt-remove:before,
+.btn-set>span.bnt-donwload:before {
 	display: inline-block;
 	content: "\e60c";
 	font-family: "icomoon";
@@ -649,18 +645,18 @@
 }
 
 
-.btn-set > input.bnt-forward:before,
-.btn-set > button.bnt-forward:before,
-.btn-set > a.bnt-forward:before {
+.btn-set>input.bnt-forward:before,
+.btn-set>button.bnt-forward:before,
+.btn-set>a.bnt-forward:before {
 	content: "\e61b";
 	font-family: "icomoon";
 	display: inline-block;
 	position: relative;
 }
 
-.btn-set > input.bnt-back:before,
-.btn-set > button.bnt-back:before,
-.btn-set > a.bnt-back:before {
+.btn-set>input.bnt-back:before,
+.btn-set>button.bnt-back:before,
+.btn-set>a.bnt-back:before {
 	content: "\e618";
 	font-family: "icomoon";
 	display: inline-block;
@@ -670,91 +666,63 @@
 /* #endregion - Special Buttons*/
 
 /* #region - Smart List Object buttons */
-.btn-set.vertical > * {
+.btn-set.vertical>* {
 	align-self: stretch;
 }
 
-.btn-set > span.slo-wrap {
+.btn-set>span.slo-wrap {
 	background-color: transparent;
 	padding: 0px;
 	border: none;
 }
 
-.btn-set.vertical > span.slo-wrap {
+.btn-set.vertical>span.slo-wrap {
 	color: #333;
 }
 
-.btn-set.vertical > span.slo-wrap > input[type=text],
-.btn-set.vertical > span.slo-wrap > input[type=date],
-.btn-set.vertical > span.slo-wrap > input[type=number] {
+.btn-set.vertical>span.slo-wrap>input[type=text],
+.btn-set.vertical>span.slo-wrap>input[type=date],
+.btn-set.vertical>span.slo-wrap>input[type=number] {
 	padding: 6px 6px;
-	border-radius: 0px;
-	-webkit-border-radius: 0px;
-	-moz-border-radius: 0px;
 }
 
-.btn-set > span.slo-wrap > input[type=text],
-.btn-set > span.slo-wrap > input[type=date],
-.btn-set > span.slo-wrap > input[type=number] {
-	height: 100%;
-	border-radius: 0px;
-	-webkit-border-radius: 0px;
-	-moz-border-radius: 0px;
-}
 
-.btn-set > span.slo-wrap.valid:after,
-.btn-set > span.slo-wrap.unvalid:after {
-	top: 9px;
-	right: 8px;
-}
-
-.btn-set.normal > span.slo-wrap.valid:after,
-.btn-set.normal > span.slo-wrap.unvalid:after {
+.btn-set.normal>span.slo-wrap.valid:after,
+.btn-set.normal>span.slo-wrap.unvalid:after {
 	top: 6px;
 	right: 6px;
 }
 
-.btn-set.normal > span.slo-wrap {
+.btn-set.normal>span.slo-wrap {
 	padding: 0px;
 	height: 24px;
 }
 
-.btn-set.normal > span.slo-wrap > input[type=text],
-.btn-set.normal > span.slo-wrap > input[type=date],
-.btn-set.normal > span.slo-wrap > input[type=number] {
+.btn-set.normal>span.slo-wrap>input[type=text],
+.btn-set.normal>span.slo-wrap>input[type=date],
+.btn-set.normal>span.slo-wrap>input[type=number] {
 	padding: 3px 19px 3px 6px;
 	height: 24px;
 }
 
+.btn-set>span.slo-wrap:first-child>input {
+	border-top-left-radius: var(--input-border-radius);
+	border-bottom-left-radius: var(--input-border-radius);
+	padding-left: 10px;
+}
+
+.btn-set>span.slo-wrap:last-child>input {
+	border-top-right-radius: var(--input-border-radius);
+	border-bottom-right-radius: var(--input-border-radius);
+	padding-right: 10px;
+}
 
 /* #endregion */
 
 /* #region - Pagination */
-.btn-set > button.pagination {
-	min-width: 45px;
-	position: relative;
-}
-
-.btn-set > button.pagination::before {
+.btn-set>input.pagination {
 	font-family: "icomoon";
-	position: absolute;
-	pointer-events: none;
-	content: "";
-	display: block;
-	text-align: center;
-	width: 20px;
-	height: 20px;
-	top: 6px;
-	right: 11px;
-	font-size: 17px;
-}
-
-.btn-set > button.pagination.next:before {
-	content: "\e61B";
-}
-
-.btn-set > button.pagination.prev:before {
-	content: "\E618";
+	font-size: 1.1em
 }
 
 /* #endregion */
@@ -770,15 +738,15 @@ input[type="number"]::-webkit-outer-spin-button {
 		flex-wrap: wrap;
 	}
 
-	.btn-set.mediabond-buttonset > * {
+	.btn-set.mediabond-buttonset>* {
 		margin-bottom: 10px;
 	}
 
-	.btn-set.mediabond-buttonset > span.gap {
+	.btn-set.mediabond-buttonset>span.gap {
 		display: none;
 	}
 
-	.btn-set.mediabond-buttonset > span.gap + * {
+	.btn-set.mediabond-buttonset>span.gap+* {
 		margin-left: 0px;
 		;
 	}

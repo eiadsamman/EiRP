@@ -4,18 +4,24 @@
 
 .js_upload_count {
 	position: relative;
-	padding-right:22px !important;
+	padding-right: 22px !important;
 }
 
-.js_upload_count::after {
+.js_upload_count::before {
 	position: absolute;
 	display: block;
 	font-family: "icomoon";
 	content: "\e619";
-	right: -2px;
-	top: 10px;
+	right: 0px;
 	width: 20px;
-	height: 20px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.js_upload_count::after {
+	content: "files";
+	padding-left: 5px;
 }
 
 .js_upload_list {
@@ -27,7 +33,7 @@
 	height: 0;
 }
 
-.js_upload_list > div {
+.js_upload_list>div {
 	display: none;
 	border: solid 1px #aaa;
 	margin-left: 0px;
@@ -50,7 +56,7 @@
 
 }
 
-.js_upload_list > div > span span.upload_record_pointer {
+.js_upload_list>div>span span.upload_record_pointer {
 	display: inline-block;
 	padding: 0px;
 	width: 87px;
@@ -58,7 +64,7 @@
 	text-align: left;
 }
 
-.js_upload_list > div > span span.upload_file_details {
+.js_upload_list>div>span span.upload_file_details {
 	display: inline-block;
 	vertical-align: middle;
 	padding: 0px;
@@ -67,8 +73,8 @@
 	text-align: left;
 }
 
-.js_upload_list > div > span span.upload_file_details > a,
-.js_upload_list > div > span span.upload_file_details > b {
+.js_upload_list>div>span span.upload_file_details>a,
+.js_upload_list>div>span span.upload_file_details>b {
 	font-weight: normal;
 	display: inline-block;
 	color: var(--root-ribbon-font-color);
@@ -80,24 +86,24 @@
 	height: 13px;
 }
 
-.js_upload_list > div > span span.upload_record_pointer > span.btn-set > span,
-.js_upload_list > div > span span.upload_record_pointer > span.btn-set > button {
+.js_upload_list>div>span span.upload_record_pointer>span.btn-set>span,
+.js_upload_list>div>span span.upload_record_pointer>span.btn-set>button {
 	text-align: center;
 }
 
-.js_upload_list > div > span span.js_up_failure {
+.js_upload_list>div>span span.js_up_failure {
 	color: #f03;
 	cursor: pointer;
 }
 
-.js_upload_list > div > span {
+.js_upload_list>div>span {
 	padding: 11px 8px;
 
 }
 
 
-.js_upload_list > div > span,
-.js_upload_list > div > b {
+.js_upload_list>div>span,
+.js_upload_list>div>b {
 	display: block;
 	text-align: left;
 	padding: 0px;
@@ -106,7 +112,7 @@
 	white-space: nowrap;
 }
 
-.js_upload_list > div > b {
+.js_upload_list>div>b {
 	font-weight: normal;
 	padding: 10px;
 	color: var(--root-font-color);

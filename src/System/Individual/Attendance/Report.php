@@ -523,7 +523,7 @@ class Report
 			$totalmonth = 0;
 			$totalactualmonth = 0;
 			$workingdate = false;
-			echo "<div class=\"btn-set\" style=\"position: sticky;top: calc(162px - var(--gremium-header-toggle));padding-bottom: 10px;z-index: 2;background-color: var(--root-background-color)\"><span class=\"flex\">$month_name</span></div><div>";
+			echo "<div class=\"btn-set\" style=\"position: sticky;top: calc(168px - var(--gremium-header-toggle));padding: 10px 0px;z-index: 2;background-color: var(--input-bgcolor);margin:0px -1px\"><span class=\"flex\">$month_name</span></div><div>";
 			echo "<table class=\"bom-table attendance\"><tbody>";
 
 			foreach ($monthv as $datek => $datev) {

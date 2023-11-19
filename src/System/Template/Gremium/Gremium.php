@@ -177,7 +177,7 @@ class Header extends Blocks
 class Menu extends Blocks
 {
 	protected string $id = "menu";
-	public int $height = 47;
+	public int $height = 53;
 
 	public function open(): self
 	{
@@ -228,10 +228,10 @@ class Article extends Blocks
 	public bool $stackable = false;
 	public int $height = 0;
 
-	public function open(): self
+	public function open(string|null $fxwidth = ""): self
 	{
 		if (!$this->opened) {
-			echo "<{$this->id}>\n";
+			echo "<{$this->id}" . (empty($fxwidth) ? "" : " style=\"width:{$fxwidth};\" ") . ">\n";
 			$this->opened = true;
 		}
 		return $this;
@@ -286,7 +286,7 @@ class Gremium
 	public function __construct(bool $limit_width = true, ?bool $legends_stackable = true, ?bool $omit_html = false, ?string $html_id = null)
 	{
 		$this->legends_stackable = $legends_stackable;
-		$this->stack             = array();
+		$this->stack = array();
 		if (!$omit_html)
 			echo "<div " . (!is_null($html_id) ? " id=\"$html_id\" " : "") . " class=\"gremium " . ($limit_width ? "limit-width" : "") . "\">\n\n\n\n";
 	}

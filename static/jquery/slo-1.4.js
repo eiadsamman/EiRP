@@ -818,9 +818,11 @@ class SmartListObject {
 					}
 				});
 
-				this.slo.selection_win.on('click', " > div", function () {
+				this.slo.selection_win.on('click', " > div", function (e) {
+					e.preventDefault();
 					slo.selection = $(this);
 					slo.commit(this.enter_key_event);
+					return false;
 				});
 				$(document).mousedown(function (e) {
 					var container = slo.htmltext.parent();

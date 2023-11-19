@@ -31,30 +31,41 @@ class StatementOfAccount
 				SELECT 
 				 _master.atm_value, 
 
-				 acc_main.acm_id, acm_ctime, acc_main.acm_beneficial, acc_main.acm_comments,
+				 statements_view.acm_id, acm_ctime, statements_view.acm_beneficial, statements_view.acm_comments,
+				 statements_view.accgrp_name,statements_view.acccat_name,
 				
 				_slave.comp_id, _slave.comp_name, _slave.prt_id, _slave.prt_name, _slave.cur_id, _slave.cur_shortname
 				 
-				,SUM(_master.atm_value) OVER(ORDER BY acc_main.acm_ctime ASC, acc_main.acm_id ASC) AS cumulative_sum
+				,SUM(_master.atm_value) OVER(ORDER BY statements_view.acm_ctime ASC, statements_view.acm_id ASC) AS cumulative_sum
 				
 				FROM 
-					acc_temp  _master
+					acc_temp _master
 					INNER JOIN 
 						(SELECT 
 							atm_id, atm_main, comp_name, comp_id, prt_name,prt_id, cur_id,cur_shortname
 						FROM 
 							acc_temp 
 								JOIN view_financial_accounts ON view_financial_accounts.prt_id = atm_account_id
-						)  _slave ON _slave.atm_id != _master.atm_id AND _slave.atm_main=_master.atm_main
+						) _slave ON _slave.atm_id != _master.atm_id AND _slave.atm_main=_master.atm_main
 					JOIN
-						acc_main ON _master.atm_main = acm_id
+						(SELECT 
+							acc_main.acm_id, acc_main.acm_beneficial, acc_main.acm_comments, acc_main.acm_ctime	,acc_main.acm_rejected,
+							acccat_name,accgrp_name
+						FROM 
+							acc_main
+							JOIN (
+								SELECT acccat_id,acccat_name,accgrp_name
+								FROM acc_categorygroups JOIN acc_categories ON accgrp_id = acccat_group
+								) category_view ON category_view.acccat_id = acc_main.acm_category
+						) statements_view
+						 ON _master.atm_main = statements_view.acm_id
 				WHERE
 					1 
 					AND _master.atm_account_id = {$this->app->user->account->id}
-					AND acc_main.acm_rejected = 0
+					AND statements_view.acm_rejected = 0
 					AND ({$this->criteria->where()})
 				ORDER BY
-					acc_main.acm_ctime ASC, acc_main.acm_id ASC
+					statements_view.acm_ctime ASC, statements_view.acm_id ASC
 				) AS _pagination
 			LIMIT {$this->criteria->limit()}
 			;"

@@ -82,8 +82,10 @@ if (isset($_POST['fetch'])) {
 			echo "</tr>";
 		}
 		echo "</tbody>
-			</table><br />";
+			</table>";
 		$grem->getLast()->close();
+		echo "<br />";
+		echo "<br />";
 	}
 }
 

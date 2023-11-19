@@ -323,54 +323,69 @@ $grem->header()->serve("<h1>{$fs()->title}</h1>");
 $grem->menu()->open();
 echo "<button id=\"jQreport\" type=\"button\">Update Report</button>";
 echo "<button id=\"jQexport\" disabled=\"disabled\" type=\"button\">Export</button>";
-echo "<span class=\"gap\"></span>";
 $grem->getLast()->close();
 
 $grem->title()->serve("<span class=\"flex\">Filter query</span>");
-$grem->article()->open();
+$grem->article()->open("660px");
 
 $slo = new SmartListObject($app);
-
 ?>
-<datalist id="js-data-list_paygroup"><?=$slo->hrPaymentMethod()?></datalist>
-
-<iframe style="display: none;" name="iframe" id="iframe"></iframe>
 <form action="<?= $fs(133)->dir ?>" method="post" target="_blank" id="searchform">
 	<input type="hidden" name="posubmit">
 	<input type="hidden" id="export_param" name="export" value="">
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Payment Group</span>
-			<input name="paymethod" id="input-payment-method" type="text" data-slo=":SELECT"
-				data-list="js-data-list_paygroup" />
-		</div>
-		<div></div>
-		<div></div>
+
+	<div class="form" style="max-width:315px">
+		<label>
+			<h1>Payment Group</h1>
+			<div class="btn-set">
+				<input name="paymethod" id="input-payment-method" class="flex" type="text" data-slo=":SELECT" data-list="js-data-list_paygroup" />
+			</div>
+		</label>
 	</div>
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Job Group</span>
-			<input name="section" type="text" id="input-job-group" data-slo="E001" />
-		</div>
-		<div class="btn-set vertical"><span>Job Title</span>
-			<input name="job" type="text" id="input-job-title" data-slo="E002A" />
-		</div>
-		<div></div>
+
+	<div class="form" style="max-width:650px">
+		<label>
+			<h1>Job Group</h1>
+			<div class="btn-set">
+				<input name="section" class="flex" type="text" id="input-job-group" data-slo="E001" />
+			</div>
+		</label>
+		<label>
+			<h1>Job Title</h1>
+			<div class="btn-set">
+				<input name="job" class="flex" type="text" id="input-job-title" data-slo="E002A" />
+			</div>
+		</label>
 	</div>
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>Start Date</span><input type="text" name="dateFrom" id="input-date-start"
-				data-slo=":DATE" value="<?php echo date("Y-m-1"); ?>"></div>
-		<div class="btn-set vertical"><span>End Date</span><input type="text" name="dateTo" id="input-date-end"
-				data-slo=":DATE" value="<?php echo date("Y-m-d"); ?>"></div>
-		<div></div>
+
+	<div class="form" style="max-width:650px">
+		<label>
+			<h1>From</h1>
+			<div class="btn-set">
+				<input type="text" class="flex" name="dateFrom" id="input-date-start" data-slo=":DATE" value="<?php echo date("Y-m-1"); ?>">
+			</div>
+		</label>
+		<label>
+			<h1>To</h1>
+			<div class="btn-set">
+				<input type="text" class="flex" name="dateTo" id="input-date-end" data-slo=":DATE" value="<?php echo date("Y-m-d"); ?>">
+			</div>
+		</label>
 	</div>
-</form><br />
+</form>
 <?php
 $grem->getLast()->close();
-
+echo "<br /><br />";
 $grem->title()->serve("<span class=\"flex\">Query Result</span>");
-$grem->article()->serve("<div id=\"jQoutput\"></div>");
+$grem->article()->serve("<div id=\"jQoutput\">No requests applied</div>");
 unset($grem);
-?>
 
+
+?>
+<iframe style="display: none;" name="iframe" id="iframe"></iframe>
+<datalist id="js-data-list_paygroup">
+	<?= $slo->hrPaymentMethod() ?>
+</datalist>
 <script>
 	$(document).ready(function (e) {
 		$("#input-payment-method").slo();

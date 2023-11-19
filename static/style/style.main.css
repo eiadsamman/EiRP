@@ -1,5 +1,13 @@
 /* #region Fonts*/
 @font-face {
+	font-family: 'Noto';
+	src: url('../fonts/NotoSansArabic-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+@font-face {
 	font-family: 'icomoon';
 	src: url('../fonts/icomoon/icomoon.eot?se601i');
 	src: url('../fonts/icomoon/icomoon.eot?#iefixse601i') format('embedded-opentype'),
@@ -45,10 +53,10 @@
 
 /* #region Global Configs*/
 :root {
-	--font: Verdana, Helvetica, Georgia;
+	--font: Verdana, 'Noto', 'Galada', sans-serif;
 	--dim-max-width: 1400px;
-	--font-size: 12px;
-	--root--menubar-height: 50px;
+	--font-size: 13px;
+	--root--menubar-height: 49px;
 	--gremium-header-height: 70px;
 	/*rgba(244, 244, 247, 1);rgba(244, 244, 247, 0.95);*/
 
@@ -151,7 +159,7 @@ input[type=number]:disabled {
 	background-color: #eee;
 }
 
-ul > li {
+ul>li {
 	padding: 8px 0px;
 }
 
@@ -172,26 +180,26 @@ body {
 	padding: 0px;
 }
 
-body > div {
+body>div {
 	display: table;
 	width: 100%;
 	height: 100%;
 	background-color: var(--root-background-color);
 }
 
-body > div > div {
+body>div>div {
 	display: table-row;
 	height: auto;
 }
 
-body > div > div > div {
+body>div>div>div {
 	display: table-cell;
 	text-align: center;
 	height: 100%;
 	width: 100%;
 }
 
-body > div > div > div > div {
+body>div>div>div>div {
 	display: inline-block;
 	max-width: var(--dim-max-width);
 	width: 100%;
@@ -235,14 +243,14 @@ span.header-ribbon {
 	color: var(--root-ribbon-font-color);
 }
 
-span.header-ribbon > div {
+span.header-ribbon>div {
 	display: inline-block;
 	position: relative;
 	width: 100%;
 	max-width: var(--dim-max-width);
 }
 
-.ico-home > span:before {
+.ico-home>span:before {
 	display: inline-block;
 	content: "\e600";
 	font-family: "icomoon";
@@ -258,7 +266,7 @@ span.header-ribbon > div {
 	position: relative;
 }
 
-#header-menu-useraccount-button > cite {
+#header-menu-useraccount-button>cite {
 	position: absolute;
 	font-size: 0.8em;
 	font-style: normal;
@@ -305,7 +313,7 @@ span.header-menu.hide {
 	/* transition: .5s; */
 }
 
-span.header-menu > div {
+span.header-menu>div {
 	display: inline-block;
 	width: 100%;
 	padding: 0px;
@@ -315,7 +323,7 @@ span.header-menu > div {
 	height: 10px;
 }
 
-span.header-menu > div > div {
+span.header-menu>div>div {
 	min-width: 300px;
 	height: auto;
 	max-height: 500px;
@@ -327,11 +335,11 @@ span.header-menu > div > div {
 	background: var(--root-ribbon-menu-background-color);
 }
 
-span.header-menu > div > div > div.menu-items {
+span.header-menu>div>div>div.menu-items {
 	text-align: left;
 }
 
-span.header-menu > div > div > header {
+span.header-menu>div>div>header {
 	position: sticky;
 	top: 0px;
 	z-index: 2;
@@ -344,13 +352,13 @@ span.header-menu > div > div > header {
 /* #endregion */
 
 /* #region - Left hand menus*/
-span.header-menu.lefthand > div > div {
+span.header-menu.lefthand>div>div {
 	text-align: left;
 	left: 10px;
 }
 
 
-span.header-menu.lefthand > div > div > div.menu-items b {
+span.header-menu.lefthand>div>div>div.menu-items b {
 	font-weight: normal;
 	display: block;
 	padding: 14px;
@@ -358,7 +366,7 @@ span.header-menu.lefthand > div > div > div.menu-items b {
 	color: var(--input_hover-border);
 }
 
-span.header-menu.lefthand > div > div > div.menu-items b.nested:before {
+span.header-menu.lefthand>div>div>div.menu-items b.nested:before {
 	display: inline-block;
 	content: "\e61b";
 	font-family: "icomoon";
@@ -373,32 +381,32 @@ span.header-menu.lefthand > div > div > div.menu-items b.nested:before {
 	right: 10px;
 }
 
-span.header-menu.lefthand > div > div > div.menu-items b > a.alink {
+span.header-menu.lefthand>div>div>div.menu-items b>a.alink {
 	color: var(--root-font-color);
 }
 
-span.header-menu.lefthand > div > div > div.menu-items b > a.alink:hover {
+span.header-menu.lefthand>div>div>div.menu-items b>a.alink:hover {
 	color: var(--root-font-color);
 }
 
-span.header-menu.lefthand > div > div > div.menu-items b:hover {
+span.header-menu.lefthand>div>div>div.menu-items b:hover {
 	text-decoration: none;
 	background-color: var(--root-ribbon-menu-itemhover-background-color);
 }
 
-span.header-menu.lefthand > div > div > div.menu-items div {
+span.header-menu.lefthand>div>div>div.menu-items div {
 	display: none;
 	position: relative;
 }
 
-span.header-menu.lefthand > div > div > div.menu-items b > span {
+span.header-menu.lefthand>div>div>div.menu-items b>span {
 	font-family: icomoon4;
 	display: inline-block;
 	padding-right: 14px;
 	font-size: 10px;
 }
 
-span.header-menu.lefthand > div > div > div.menu-items b.index-link {
+span.header-menu.lefthand>div>div>div.menu-items b.index-link {
 	display: none;
 }
 
@@ -407,12 +415,12 @@ span.header-menu.lefthand > div > div > div.menu-items b.index-link {
 /* #endregion */
 
 /* #region - Right hand menus*/
-span.header-menu.righthand > div > div {
+span.header-menu.righthand>div>div {
 	text-align: right;
 	right: 10px;
 }
 
-span.header-menu.righthand > div > div > div.menu-items div {
+span.header-menu.righthand>div>div>div.menu-items div {
 	display: block;
 	padding: 15px 13px 10px 13px;
 	color: var(--root-font-color);
@@ -422,8 +430,8 @@ span.header-menu.righthand > div > div > div.menu-items div {
 	border-bottom: solid 1px #ccc;
 }
 
-span.header-menu.righthand > div > div > div.menu-items > a,
-span.header-menu.righthand > div > div > div.menu-items > span {
+span.header-menu.righthand>div>div>div.menu-items>a,
+span.header-menu.righthand>div>div>div.menu-items>span {
 	font-weight: normal;
 	display: -webkit-box;
 	display: -moz-box;
@@ -436,26 +444,27 @@ span.header-menu.righthand > div > div > div.menu-items > span {
 	text-align: left;
 }
 
-span.header-menu.righthand > div > div > div.menu-items a > span {
+span.header-menu.righthand>div>div>div.menu-items a>span {
 	overflow-x: hidden;
 	min-height: 14px;
 	text-overflow: ellipsis;
 	flex: 1;
+	padding: 1px 0px;
 }
 
-span.header-menu.righthand > div > div > div.menu-items a > b {
+span.header-menu.righthand>div>div>div.menu-items a>b {
 	font-weight: normal;
 	color: var(--root-font-color);
 }
 
-span.header-menu.righthand > div > div > div.menu-items a:hover {
+span.header-menu.righthand>div>div>div.menu-items a:hover {
 	text-decoration: none;
 	color: var(--root-font-color);
 	cursor: default;
 	background-color: var(--root-ribbon-menu-itemhover-background-color);
 }
 
-span.header-menu.righthand > div > div > div.menu-items a:hover > b {
+span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 	color: var(--root-font-color);
 }
 
@@ -480,8 +489,8 @@ span.header-menu.righthand > div > div > div.menu-items a:hover > b {
 	justify-content: center
 }
 
-.btnheader-set > a,
-.btnheader-set > span {
+.btnheader-set>a,
+.btnheader-set>span {
 	display: inline;
 	height: auto;
 	color: inherit;
@@ -500,29 +509,29 @@ span.header-menu.righthand > div > div > div.menu-items a:hover > b {
 	transition: 0s;
 }
 
-.btnheader-set > input:hover,
-.btnheader-set > button:hover,
-.btnheader-set > a:hover,
-.btnheader-set > label:hover {
+.btnheader-set>input:hover,
+.btnheader-set>button:hover,
+.btnheader-set>a:hover,
+.btnheader-set>label:hover {
 	background-color: rgba(0, 0, 0, 0.2);
 	text-decoration: none;
 	transition: 0s;
 }
 
-.btnheader-set > label.active,
-.btnheader-set > a.active,
-.btnheader-set > button.active {
+.btnheader-set>label.active,
+.btnheader-set>a.active,
+.btnheader-set>button.active {
 	background-color: rgba(0, 0, 0, 0.6);
 	color: white;
 	transition: 0s;
 }
 
-.btnheader-set > span {
+.btnheader-set>span {
 	cursor: default;
 	white-space: nowrap;
 }
 
-.btnheader-set > span.gap {
+.btnheader-set>span.gap {
 	background-color: transparent;
 	-webkit-box-flex: 1;
 	-moz-box-flex: 1;
@@ -653,7 +662,7 @@ span.header-menu.righthand > div > div > div.menu-items a:hover > b {
 	flex-wrap: nowrap;
 }
 
-.loading_overlay > div {
+.loading_overlay>div {
 	margin-top: 80px;
 	padding: 33px 20px 10px 20px;
 	border-radius: 0px;
@@ -672,22 +681,22 @@ span.header-menu.righthand > div > div > div.menu-items a:hover > b {
 	min-width: 400px;
 }
 
-#screenSectorCol > tbody > tr > td > div > div > a {
+#screenSectorCol>tbody>tr>td>div>div>a {
 	min-width: 150px;
 	color: #333;
 }
 
-#screenSectorCol > tbody > tr > td {
+#screenSectorCol>tbody>tr>td {
 	white-space: normal;
 }
 
-#screenSectorCol > tbody > tr > td > div > div > span {
+#screenSectorCol>tbody>tr>td>div>div>span {
 	background-color: #fff;
 	min-width: 60px;
 	text-align: center;
 }
 
-#screenSectorCol > tbody > tr > td > div {
+#screenSectorCol>tbody>tr>td>div {
 	display: inline-block;
 	margin: 0px 3px;
 }
@@ -695,7 +704,7 @@ span.header-menu.righthand > div > div > div.menu-items a:hover > b {
 /* #endregion */
 
 /* #region General*/
-.op-done > *:before {
+.op-done>*:before {
 	display: inline-block;
 	content: "\f00c";
 	font-family: "icomoon2";
@@ -704,7 +713,7 @@ span.header-menu.righthand > div > div > div.menu-items a:hover > b {
 	color: #06c
 }
 
-.op-error > *:before {
+.op-error>*:before {
 	display: inline-block;
 	content: "\f00d";
 	font-family: "icomoon2";
@@ -713,7 +722,7 @@ span.header-menu.righthand > div > div > div.menu-items a:hover > b {
 	color: #f03
 }
 
-.op-down > *:before {
+.op-down>*:before {
 	display: inline-block;
 	content: "\e60c";
 	font-family: "icomoon";
@@ -736,7 +745,7 @@ span.vs-remove {
 	font-size: 0.9em
 }
 
-.css_fieldDesc > span > b {
+.css_fieldDesc>span>b {
 	display: inline-block;
 	min-width: 60px;
 	font-style: normal;
@@ -747,7 +756,7 @@ span.vs-remove {
 	min-width: 100px;
 }
 
-.css_maxfieldwidth > span {
+.css_maxfieldwidth>span {
 	padding-right: 20px;
 	top: 7px;
 	position: absolute;
@@ -770,7 +779,7 @@ span.vs-remove {
 		display: none;
 	}
 
-	span.header-menu.lefthand > div > div > div.menu-items b.index-link {
+	span.header-menu.lefthand>div>div>div.menu-items b.index-link {
 		display: block;
 	}
 }
@@ -780,8 +789,8 @@ span.vs-remove {
 		display: none;
 	}
 
-	.btnheader-set > a,
-	.btnheader-set > span {
+	.btnheader-set>a,
+	.btnheader-set>span {
 		padding: 18px 7px;
 	}
 
@@ -804,12 +813,12 @@ span.vs-remove {
 		display: none;
 	}
 
-	span.header-menu.righthand > div > div > div.menu-items a,
-	span.header-menu.lefthand > div > div > div.menu-items b {
+	span.header-menu.righthand>div>div>div.menu-items a,
+	span.header-menu.lefthand>div>div>div.menu-items b {
 		padding: 17px 23px;
 	}
 
-	span.header-menu.lefthand > div > div > div.menu-items b.nested:before {
+	span.header-menu.lefthand>div>div>div.menu-items b.nested:before {
 		top: 17px;
 	}
 }

@@ -9,7 +9,7 @@ if (is_null($app->user->account)) {
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->status(Status::Exclamation)->serve("<h1>No account selected!</h1>");
 	$grem->legend()->serve("<span class=\"flex\">Access to this page requires registering a valid account:</span>");
-	$article          = $grem->article();
+	$article = $grem->article();
 	$article->message .= '<ul style="margin:0">
 		<li>Select an account from Account Selection Menu</li>
 		<li>Contact system administrator</li>
@@ -22,7 +22,7 @@ if (is_null($app->user->account)) {
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->status(Status::Exclamation)->serve("<h1>Access restricted!</h1>");
 	$grem->legend()->serve("<span class=\"flex\">Loading journal for `{$app->user->account->name}` account failed:</span>");
-	$article          = $grem->article();
+	$article = $grem->article();
 	$article->message .= '<ul style="margin:0">
 		<li>Session has expired, loing in again to your account</li>
 		<li>Database query failed, contact system administrator</li>
@@ -40,8 +40,8 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 
 	/* Date input processing */
-	$date_start   = isset($_POST['from']) ? $app->date_validate($_POST['from']) : false;
-	$date_end     = isset($_POST['to']) ? $app->date_validate($_POST['to'], true) : false;
+	$date_start = isset($_POST['from']) ? $app->date_validate($_POST['from']) : false;
+	$date_end = isset($_POST['to']) ? $app->date_validate($_POST['to'], true) : false;
 	$user_current = abs((int) $_POST['page']);
 	if (($date_start && $date_end) && $date_start > $date_end) {
 		header("VENDOR_RESULT: DATE_CONFLICT");
@@ -56,7 +56,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 
 	$count = $sum = $pages = 0;
 	$controller->summary($count, $sum);
-	$sum   = is_null($sum) ? 0 : $sum;
+	$sum = is_null($sum) ? 0 : $sum;
 	$count = is_null($count) ? 0 : $count;
 	$pages = ceil($count / $controller->criteria->getRecordsPerPage());
 
@@ -100,7 +100,13 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 				echo "<td>{$row['acm_ctime']}</td>"; //date("Y-m-d",$row['acm_ctime'])
 				echo "<td><a>{$row['acm_id']}</a></td>";
 				echo "<td>" . ($row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") . "{$row['acm_beneficial']}</td>";
-				echo "<td class=\"value-comment\"><div><span>" . (str_repeat("<br/>", substr_count($row['acm_comments'] ?? "", "\n") + 1)) . "</span><div>" . (is_null($row['acm_comments']) ? "" : nl2br($row['acm_comments'])) . "</div></div></td>";
+				echo "<td class=\"value-comment\">
+					<span>{$row['accgrp_name']}: {$row['acccat_name']}</span>
+					<div>
+						<span>" . (str_repeat("<br/>", substr_count($row['acm_comments'] ?? "", "\n"))) . "</span>
+						<div>" . (is_null($row['acm_comments']) ? "-" : nl2br($row['acm_comments'])) . "</div>
+					</div>
+				</td>";
 				echo "<td class=\"blank\"></td>";
 				echo "<td class=\"value-number\">" . ($row['atm_value'] > 0 ? number_format($row['atm_value'], 2) : "-") . "</td>";
 				echo "<td class=\"value-number\">" . ($row['atm_value'] <= 0 ? number_format(abs($row['atm_value']), 2) : "-") . "</td>";
@@ -136,7 +142,7 @@ if ($app->xhttp) {
 }
 $initial_values = array(
 	'from' => isset($_GET['from']) && $app->date_validate($_GET['from']) ? date("Y-m-d", $app->date_validate($_GET['from'])) : "",
-	'to'   => isset($_GET['to']) && $app->date_validate($_GET['to']) ? date("Y-m-d", $app->date_validate($_GET['to'])) : "",
+	'to' => isset($_GET['to']) && $app->date_validate($_GET['to']) ? date("Y-m-d", $app->date_validate($_GET['to'])) : "",
 	"page" => isset($_GET['page']) ? abs((int) $_GET['page']) : 0
 );
 
@@ -148,7 +154,7 @@ $grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
 	"<ul class=\"small-media-hide\"><li class=\"small-media-hide\">{$app->user->company->name}: {$app->user->account->name}</li></ul>" .
 	"<cite><span id=\"js-output-total\">0.00</span>{$app->user->account->currency->shortname}</cite>");
 
-$menu         = $grem->menu()->sticky(false)->open();
+$menu = $grem->menu()->sticky(false)->open();
 $current_date = new DateTime();
 $current_date = $current_date->format("Y-m-d");
 echo <<<HTML
@@ -164,9 +170,9 @@ $legend = $grem->legend()->open();
 echo <<<HTML
 <span id="js-output_statements-count">0</span>
 <span class="small-media-hide flex">Statements</span>
-<button class="pagination prev" id="js-input_page-prev" disabled></button>
+<input type="button" class="pagination prev" id="js-input_page-prev" disabled value="&#xE618;" />
 <input type="text" id="js-input_page-current" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0" data-rangeend="100" />
-<button class="pagination next" id="js-input_page-next" disabled></button>
+<input type="button" class="pagination next" id="js-input_page-next" disabled value="&#xE61B;" />
 <input type="button" id="js-output_page-total" style="min-width:50px;text-align:center" value="0" />
 HTML;
 $legend->close();
@@ -184,25 +190,34 @@ unset($grem);
 
 	td.value-comment {
 		width: 100%;
+		line-height: 1.3em;
+	}
+
+	td.value-comment>span {
+		display: block;
+		padding: 5px 0px;
+		color: rgb(125, 125, 125);
 	}
 
 	td.value-comment>div {
 		position: relative;
+		padding: 5px 0px;
 	}
 
 	td.value-comment>div>span {
 		display: block;
 		width: 0px;
+		padding-bottom: 10px;
 	}
 
 	td.value-comment>div>div {
 		position: absolute;
+		padding-bottom: 2px;
 		right: 0px;
 		left: 0px;
 		top: 0px;
-		padding-bottom: 10px;
 		text-overflow: ellipsis;
-		overflow: hidden;
+		overflow-y: hidden;
 	}
 
 

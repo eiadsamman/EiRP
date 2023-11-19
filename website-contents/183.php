@@ -5,7 +5,7 @@ use System\Template\Gremium;
 $grem = new Gremium\Gremium();
 $attendance = new Registration($app);
 $grem->header()->serve("<h1>{$fs()->title}</h1><ul><li>" . date("Y-m-d", time()) . "</li></ul>");
-$grem->legend()->serve("<span class=\"flex\">Attendance report</span>");
+$grem->title()->serve("<span class=\"flex\">Attendance report</span>");
 $grem->article()->open();
 echo "<table class=\"bom-table\">";
 echo "<thead>";
