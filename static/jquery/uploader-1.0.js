@@ -20,23 +20,36 @@
 		}, options);
 
 
-		var _objectHandler = $("<div />"),
-			_emptymessage = $("<b />").html(settings.emptymessage),
+		var dom_placeholder = $("<div />"),
 			_liststate = false;
 
-		var _AddListItem = function (id, name, size = false, checked = false, mime = "image") {
-			var up_record = $("<span />");
-			var up_state = $("<span class=\"upload_record_pointer\" />");
-			var up_operation = $("<span class=\"btn-set\" />");
-			var up_filedet = $("<span class=\"upload_file_details\" />");
-			up_state.append(up_operation);
-			up_record.append(up_state);
-			up_record.append(up_filedet);
-			up_operation.html("<label class=\"btn-checkbox\"><input type=\"checkbox\" " + (checked ? " checked=\"checked\" " : "") + " name=\"" + settings.inputname + "[]\" value=\"" + id + "\" /><span></span></label>" +
-				"<button type=\"button\" data-id=\"" + id + "\" class=\"js_up_delete bnt-remove\"></button>");
-			up_filedet.html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + mime + "\" href=\"download/?id=" + id + "&pr=v\" data-href=\"download/?pr=v&id=" + id + "\">" + name + "</a>");
-			_objectHandler.append(up_record);
+		const container = $("<table class=\"bom-table hover\"><tbody></tbody></table>");
+		let containerbody = null;
+		const itemtemplate = $(`
+			<tr>
+				<td class="checkbox"><label><input type="checkbox" /></label></td>
+				<td class="op-remove"><span></span></td>
+				<td class="content">...</td>
+			</tr>
+		`);
+		const itemloading = $(`
+			<tr>
+				<td class="progress" colspan="2">0%</td>
+				<td class="content">...</td>
+			</tr>
+		`);
+		const itemempty  = $(`
+			<tr>
+				<td colspan=\"3\">${settings.emptymessage}</td>
+			</tr>
+		`);
 
+		var _AddListItem = function (id, name, size = false, checked = false, mime = "image") {
+			const clone = itemtemplate.clone();
+			clone.find(".checkbox input").prop("checked", checked).attr("name", settings.inputname + "[]").val(id);
+			clone.find(".op-remove").attr("data-id", id);
+			clone.find(".content").html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + mime + "\" href=\"download/?id=" + id + "&pr=v\" data-href=\"download/?pr=v&id=" + id + "\">" + name + "</a>");
+			containerbody.prepend(clone);
 			updateCount();
 		}
 
@@ -47,18 +60,11 @@
 			}
 
 			var formData = new FormData();
-			var up_record = $("<span />");
-			var up_state = $("<span class=\"upload_record_pointer\" />");
-			var up_operation = $("<span class=\"btn-set\" />");
-			var up_filedet = $("<span class=\"upload_file_details\" />");
 
-			up_state.append(up_operation);
-			up_record.append(up_state);
-			up_record.append(up_filedet);
-			up_operation.html("<span>0%</span>");
-			up_filedet.html("<b>" + file.name + "</b>&nbsp;&nbsp;&nbsp;[" + (file.size / 1024).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + "KB]");
+			const clone = itemloading.clone();
+			clone.find(".content").html(file.name + "&nbsp;&nbsp;[" + (file.size / 1024).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + "KB]");
+			containerbody.prepend(clone);
 
-			_objectHandler.append(up_record);
 
 			formData.append("file", file, file.name);
 			formData.append("upload_file", true);
@@ -77,9 +83,9 @@
 								total = event.total;
 							if (event.lengthComputable) {
 								percent = Math.ceil(position / total * 100);
-								up_operation.html("<span style=\"background:linear-gradient(90deg,#ffffff " + percent + "%,#dddddd 0%);\">" + percent + "%</span>");
+								clone.find(".progress").html(percent + "%");
 							} else {
-								up_operation.html("<span style=\"background:linear-gradient(90deg,#ffffff 0%,#dddddd 0%);\">0?</span>");
+								clone.find(".progress").html("0%");
 							}
 						}, false);
 						myXhr.upload.addEventListener('load', function (event) {
@@ -96,23 +102,19 @@
 				},
 				success: function (output) {
 					var json = null;
-					/* console.log(output); */
 					try {
 						json = JSON.parse(output);
 					} catch (e) {
-						/* console.log(e); */
 						up_operation.html("<span style=\"color:#f04;\" title=\"Parsing output error\">Failed</span>");
 						updateCount();
 						return false;
 					}
 					if (json == null) {
-						/* console.log("Empty Response"); */
 						up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
 						updateCount();
 						return false;
 					}
 					if (json.result == 0) {
-						/* console.log("Server Response Error \n" + output); */
 						up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
 						updateCount();
 						return false;
@@ -120,9 +122,8 @@
 					if (typeof (settings.onupload) == "function") {
 						settings.onupload.call(this, { "id": json.id, "size": json.size, "name": json.name, "mime": json.mime })
 					}
-					up_operation.html("<label class=\"btn-checkbox\"><input type=\"checkbox\" checked=\"checked\" name=\"" + settings.inputname + "[]\" value=\"" + json.id + "\" /><span></span><div></div></label>" +
-						"<button type=\"button\" data-id=\"" + json.id + "\" class=\"js_up_delete bnt-remove\"></button>");
-					up_filedet.html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + json.mime + "\" href=\"download/?id=" + json.id + "&pr=v\" data-href=\"download/?pr=v&id=" + json.id + "\">" + json.name + "</a>");
+					clone.remove();
+					_AddListItem(json.id, json.name, 0, true, json.mime);
 					updateCount();
 				},
 				error: function (e, b, c) {
@@ -142,89 +143,88 @@
 			return this;
 		}
 
-		var updateCount = function () {
-			var _count = settings.objectHandler.children().children("span").length;
-			var _countsel = settings.objectHandler.find('input:checkbox:checked').length;
+		const updateCount = function () {
+			let _count = containerbody.children("tr").length - 1;
+			let _countsel = containerbody.find('input:checkbox:checked').length;
 			settings.list_button.find("span").html(_countsel + " / " + _count);
+
 			if (_count <= 0) {
-				_emptymessage.show();
+				itemempty.show();
 				toggleUploadList(false);
 			} else {
-				_emptymessage.hide();
+				itemempty.hide();
 			}
 			if (_countsel >= 1 && !settings.multiple) {
 				settings.dombutton.prop("disabled", true);
-				settings.objectHandler.find('input:checkbox:not(:checked)').prop("disabled", true);
+				containerbody.find('input:checkbox:not(:checked)').prop("disabled", true);
 			} else {
 				settings.dombutton.prop("disabled", false);
-				settings.objectHandler.find('input:checkbox').prop("disabled", false);
+				containerbody.find('input:checkbox').prop("disabled", false);
 			}
 		}
-		var setUploadListPosition = function () {
+		const setUploadListPosition = function () {
 			return false;
 			if (settings.align == "right") {
-				_objectHandler.css({
+				dom_placeholder.css({
 				});
 			} else {
-				_objectHandler.css({
+				dom_placeholder.css({
 				});
 			}
 		}
-		var setZIndex = function (raise = false) {
+		const setZIndex = function (raise = false) {
 			return false;
 			if (raise) {
-				_objectHandler.css("z-index", "9");
+				dom_placeholder.css("z-index", "9");
 				settings.list_button.css("z-index", "10");
 			} else {
-				_objectHandler.css("z-index", "8");
+				dom_placeholder.css("z-index", "8");
 				settings.list_button.css("z-index", "8");
 			}
 		}
-
-		var toggleUploadList = function (state) {
+		const toggleUploadList = function (state) {
 			if (state !== undefined) {
 				if (state === true) {
 					_liststate = true;
 					setZIndex(true);
 					setUploadListPosition();
-					_objectHandler.show();
+					dom_placeholder.show();
 				} else if (state === false) {
 					_liststate = false;
 					setZIndex(false);
-					_objectHandler.hide();
+					dom_placeholder.hide();
 				}
 			} else {
 				if (_liststate == false) {
 					_liststate = true;
 					setZIndex(true);
 					setUploadListPosition();
-					_objectHandler.show();
+					dom_placeholder.show();
 				} else {
 					_liststate = false;
 					setZIndex(false);
-					_objectHandler.hide();
+					dom_placeholder.hide();
 				}
 			}
 		}
 
 		var output = {
 			'new': function (file) {
-				var _this = this;
-				var newupload = _newupload(file);
+				_newupload(file);
 				toggleUploadList(true);
 			},
 			'show': function () {
 				toggleUploadList(true);
 			},
 			'clear': function () {
-				settings.objectHandler.children().children("span").remove();
+				containerbody.children("tr").remove();
 				updateCount();
 			},
 			'update': function () {
 				updateCount();
 			},
 			'clean': function () {
-				settings.objectHandler.children().children("span").each(function () {
+				containerbody.children("tr").each(function () {
 					var _this = $(this);
 					if ($("input[type=checkbox]", _this).prop("checked") == true) {
 						_this.remove();
@@ -238,12 +238,19 @@
 			'init': function () {
 				var _this = this;
 				if (settings.domhandler != null) {
-					_objectHandler = settings.domhandler;
-					settings.objectHandler.append(_objectHandler);
+					dom_placeholder = settings.domhandler;
+					settings.objectHandler.append(dom_placeholder);
 				} else {
-					settings.objectHandler.append(_objectHandler);
+					settings.objectHandler.append(dom_placeholder);
 				}
-				settings.objectHandler.on('click', '.js_upload_view', function (e) {
+
+				/* Check if container already added to DOM */
+				if (dom_placeholder.find("table").length == 0)
+					dom_placeholder.append(container);
+				containerbody = dom_placeholder.find("tbody")
+
+
+				containerbody.on('click', '.js_upload_view', function (e) {
 					var mime = $(this).attr("data-mime");
 					var viewsrc = $(this).attr("data-href");
 					if (mime == "image") {
@@ -252,11 +259,10 @@
 						return false;
 					}
 				});
-				settings.objectHandler.on('change', 'input:checkbox', function () {
+				containerbody.on('change', 'input:checkbox', function () {
 					updateCount();
 				});
-				settings.objectHandler.on('click', '.js_up_delete', function () {
-
+				containerbody.on('click', '.op-remove', function () {
 					var rowobject = $(this);
 					var up_id = $(this).attr("data-id");
 					if (settings.delete_method == "permanent") {
@@ -272,19 +278,20 @@
 							type: "POST"
 						}).done(function (data) {
 							if (data == "1") {
-								rowobject.parent().parent().parent().remove();
+								rowobject.parent().remove();
 								updateCount();
 							}
 						});
 					} else if (settings.delete_method == "recycle") {
-						rowobject.parent().parent().parent().remove();
+						rowobject.parent().remove();
 						updateCount();
 					}
 				});
 				settings.list_button.on("click", function () {
 					toggleUploadList();
 				});
-				_objectHandler.append(_emptymessage);
+
+				containerbody.append(itemempty);
 				settings.dombutton.on('click', function () {
 					settings.domselector.trigger("click");
 				});
@@ -297,7 +304,7 @@
 				});
 				$(document).mouseup(function (e) {
 					if ((settings.list_button.is(e.target) || settings.list_button.has(e.target).length !== 0) ||
-						(_objectHandler.is(e.target) || _objectHandler.has(e.target).length !== 0)) {
+						(dom_placeholder.is(e.target) || dom_placeholder.has(e.target).length !== 0)) {
 					} else {
 						toggleUploadList(false);
 					}

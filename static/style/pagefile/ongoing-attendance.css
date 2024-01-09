@@ -19,12 +19,12 @@ td.elapsed>span {
 td.employee-photo>div {
 	display: inline-block;
 	background-position: 50% 50%;
-	background-size: 120px auto;
+	background-size: auto 120px;
 	background-repeat: no-repeat;
 	height: 120px;
 	width: 120px;
 	border-radius: 10px;
-	border: none;
+	border: solid 1px rgba(125,125,125,0.4);
 }
 
 .bom-table.local-force>tbody>tr>td.elapsed {
@@ -40,9 +40,9 @@ td.employee-photo>div {
 .bom-table.local-force>tbody>tr {
 	display: inline-block;
 	min-width: 100px;
-	margin: 10px;
+	margin: 8px;
 	padding: 20px;
-	border: solid 1px var(--root-ribbon-menu-background-color);
+	border: solid 1px var(--bomtable-border-color);
 	background-color: var(--static-bgcolor);
 	/* background: linear-gradient(180deg, rgba(255, 255, 255, 1) 80%, rgba(245, 245, 253, .4) 100%); */
 }
@@ -120,6 +120,7 @@ td.employee-photo>div {
 		min-width: 100px;
 		margin: 5px;
 		padding: 14px;
+		
 	}
 
 	.bom-table.local-mediabond-table>tbody>tr>td {

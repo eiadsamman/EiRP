@@ -1,3 +1,0 @@
-[2023-10-16 11:54:29 (CEST)] Warning: fopen(C:\xampp\htdocs\eiad\src\System/admin/queries.txt): Failed to open stream: No such file or directory in C:\xampp\htdocs\eiad\src\System\MySQL.php on line 15
-[2023-10-16 11:55:10 (CEST)] Warning: fopen(/admin/queries.txt): Failed to open stream: No such file or directory in C:\xampp\htdocs\eiad\src\System\MySQL.php on line 15
-[2023-10-16 11:55:14 (CEST)] Warning: fopen(\admin\queries.txt): Failed to open stream: No such file or directory in C:\xampp\htdocs\eiad\src\System\MySQL.php on line 15

@@ -6,14 +6,14 @@ use System\Finance\Account;
 use System\SmartListObject;
 
 $predefined = new \System\Finance\PredefinedRules($app);
-$defines    = $predefined->incomeRules();
+$defines = $predefined->incomeRules();
 $accounting = new \System\Finance\Accounting($app);
 
 if ($app->xhttp) {
 	$result = array(
-		"result"    => false,
-		"errno"     => 0,
-		"error"     => '',
+		"result" => false,
+		"errno" => 0,
+		"error" => '',
 		'insert_id' => 0
 	);
 	if (isset($_POST['objective']) && $_POST['objective'] == 'transaction') {
@@ -31,10 +31,10 @@ if ($app->xhttp) {
 			}
 
 			if ($transaction->post()) {
-				$result['result']    = true;
+				$result['result'] = true;
 				$result['insert_id'] = $transaction->insert_id;
-				$result['balance']   = number_format($app->user->account->getBalance(), 2);
-				$result['currency']  = $app->user->account->currency->shortname;
+				$result['balance'] = number_format($app->user->account->getBalance(), 2);
+				$result['currency'] = $app->user->account->currency->shortname;
 				new FrequentAccountUse($app, (int) $_POST['target-account'][1]);
 			} else {
 				$result['errno'] = 300;
@@ -68,6 +68,14 @@ if ($app->xhttp) {
 
 $SmartListObject = new SmartListObject($app);
 
+
+
+?>
+<!-- <div>
+</div>
+<div style="padding-left:400px;"> -->
+
+<?php
 if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 	$grem = new Gremium\Gremium();
 	$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>Invalid inbound account!</h1>");
@@ -98,7 +106,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		<input type="hidden" name="objective" value="transaction" />
 		<?php
 		$grem = new Gremium\Gremium(true);
-		$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button id=\"js-input_submit\" tabindex=\"9\">Submit Receipt</button></div>");
+		$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Receipt</button></div>");
 		if (sizeof($defines) > 0) {
 			$grem->menu()->sticky(false)->open();
 			echo "<input placeholder=\"Actions...\" type=\"text\" id=\"js-defines\" data-slo=\":LIST\" tabindex=\"-1\" data-list=\"defines\" />";
@@ -109,20 +117,18 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		$curreny_date = new DateTime();
 		$curreny_date = $curreny_date->format("Y-m-d");
 		?>
-
 		<div class="form predefined">
 			<label style="min-width:300px">
 				<h1>Creditor</h1>
 				<div class="btn-set">
-					<input tabindex="1" data-required title="Creditor account" data-touch="200" type="text" data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account"
-						id="target-account" />
+					<input tabindex="1" data-required title="Creditor account" data-touch="200" type="text" data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
 				</div>
 			</label>
 			<label>
 				<h1>Debitor</h1>
 				<div class="btn-set">
 					<?php
-					echo "<span>{$app->user->account->type->name}: {$app->user->account->name}</span>";
+					echo "<span>{$app->user->account->name}</span>"; /* {$app->user->account->type->name}:  */
 					if ($app->user->account->role->view) {
 						echo "<span id=\"issuer-account-balance\" class=\"flex\">" . number_format($app->user->account->balance, 2, ".", ",") . "</span>";
 					}
@@ -136,8 +142,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<label style="min-width:150px">
 				<h1>Date</h1>
 				<div class="btn-set">
-					<input type="text" class="flex" data-required data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2"
-						name="date" />
+					<input type="text" class="flex" data-required data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2" name="date" />
 				</div>
 			</label>
 			<label style="min-width:300px">
@@ -147,19 +152,18 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 				</div>
 			</label>
 		</div>
-<!-- <hr style="border:none;border-top:solid 1px rgb(230,230,230);margin:20px 0px 30px 0px" /> -->
+		<!-- <hr style="border:none;border-top:solid 1px rgb(230,230,230);margin:20px 0px 30px 0px" /> -->
 
 		<div class="form">
 			<label style="flex-basis:0%">
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
-					<input type="text" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary"
-						id="beneficiary" />
+					<input type="text" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
 					<input type="text" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
 				</div>
 			</label>
 		</div>
-		
+
 		<div class="form">
 			<label>
 				<h1>Value</h1>
@@ -192,8 +196,9 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<label>
 				<h1>Description</h1>
 				<div class="btn-set">
-					<textarea type="text" data-required tabindex="8" title="Statement Description" data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
-						name="description" id="description" rows="7"></textarea>
+					<textarea type="text" data-required tabindex="8" title="Statement Description" data-touch="103" 
+						style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" name="description" id="description"
+						rows="7"></textarea>
 				</div>
 			</label>
 		</div>
@@ -255,7 +260,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			});
 			<?php
 			$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
-			$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
+			$r_release = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
 			if ($r_release) {
 				while ($row_release = $r_release->fetch_assoc()) {
 					echo "Upload.AddListItem({$row_release['up_id']},'{$row_release['up_name']}',false,false,'" . (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document") . "');";
@@ -265,4 +270,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		});
 	</script>
 	<script src="static/javascript/Transactions.js"></script>
-<?php } ?>
+<?php
+} ?>
+
+<!-- </div> -->

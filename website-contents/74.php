@@ -58,7 +58,7 @@ if (sizeof($company_hr) > 0) {
 		$account_title = "Comapny";
 
 		echo "<div><div class=\"btn-set\" style=\"flex-wrap: nowrap; \">";
-		echo "<span class=\"nofetch flex\">{$data[2]} <span style=\"color:#999\">employees</span></span>";
+		echo "<span class=\"nofetch flex\">{$data[2]} <span style=\"color:#999;padding-left:10px;\">employees</span></span>";
 		echo "<input type=\"text\" style=\"width:70px;text-align:right;\" readonly=\"readonly\" tabindex=\"-1\" value=\"" . (isset($data[0]) ? (int) $data[0] : 0) . "/" . $data[1] . "\" />";
 		echo "</div></div>";
 	}

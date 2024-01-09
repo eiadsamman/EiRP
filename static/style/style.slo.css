@@ -2,7 +2,7 @@
 	position: absolute;
 	min-width: 100%;
 	display: none;
-	background-color: var(--root-background-color);
+	background-color: var(--slo-menu-background-color);
 	margin-top: 1px;
 	margin-bottom: 0px;
 	color: var(--root-font-color);
@@ -17,8 +17,10 @@
 .slo-container>div {
 	display: block;
 	border: none;
-	padding: 14px 8px;
+	padding: 12px 8px;
 	cursor: pointer;
+	margin: 3px;
+	border-radius: 6px;
 	background-color: var(--slo-menu-background-color);
 	z-index: 99 !important;
 }
@@ -44,8 +46,11 @@
 	color: #777;
 }
 
-.slo-wrap {
+.slo-wrap ,.btn-set>span.slo-wrap{
 	position: relative;
+	background-color: transparent;
+	padding: 0px;
+	border: none;
 }
 
 .slo-wrap>input[type=text],

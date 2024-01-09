@@ -98,7 +98,7 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 		<input type="hidden" name="objective" value="transaction" />
 		<?php
 		$grem = new Gremium\Gremium(true);
-		$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button id=\"js-input_submit\" tabindex=\"9\">Submit Payment</button></div>");
+		$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Payment</button></div>");
 		if (sizeof($defines) > 0) {
 			$grem->menu()->sticky(false)->open();
 			echo "<input placeholder=\"Actions...\" type=\"text\" id=\"js-defines\" data-slo=\":LIST\" tabindex=\"-1\" data-list=\"defines\" />";
@@ -115,19 +115,18 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 				<h1>Creditor</h1>
 				<div class="btn-set">
 					<?php
+					echo "<span>{$app->user->account->name}</span>";
 					if ($app->user->account->role->view) {
-						echo "<input id=\"issuer-account-balance\" type=\"text\" readonly=\"readonly\" class=\"flex\" tabindex=\"-1\" value=\"" . number_format($app->user->account->balance, 2, ".", ",") . "\" />";
+						echo "<span id=\"issuer-account-balance\" class=\"flex\">" . number_format($app->user->account->balance, 2, ".", ",") . "</span>";
 					}
 					echo "<span>{$app->user->account->currency->shortname}</span>";
-					echo "<span>{$app->user->account->type->name}: {$app->user->account->name}</span>";
 					?>
 				</div>
 			</label>
 			<label>
 				<h1>Debitor</h1>
 				<div class="btn-set">
-					<input tabindex="2" data-required title="Debitor account" data-touch="200" type="text" data-slo=":LIST"
-						data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
+					<input tabindex="2" data-required title="Debitor account" data-touch="200" type="text" data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
 				</div>
 			</label>
 
@@ -136,15 +135,13 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 			<label style="min-width:150px">
 				<h1>Date</h1>
 				<div class="btn-set">
-					<input type="text" class="flex" data-required data-slo=":DATE" data-touch="107" title="Transaction date"
-						value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2" name="date" />
+					<input type="text" class="flex" data-required data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2" name="date" />
 				</div>
 			</label>
 			<label style="min-width:300px">
 				<h1>Category</h1>
 				<div class="btn-set">
-					<input type="text" data-required data-slo=":LIST" data-touch="105" title="Category"
-						data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
+					<input type="text" data-required data-slo=":LIST" data-touch="105" title="Category" data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
 				</div>
 			</label>
 		</div>
@@ -154,10 +151,8 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 			<label style="flex-basis:0%">
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
-					<input type="text" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4"
-						data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
-					<input type="text" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual"
-						id="individual" />
+					<input type="text" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
+					<input type="text" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
 				</div>
 			</label>
 		</div>
@@ -166,8 +161,7 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 			<label>
 				<h1>Value</h1>
 				<div class="btn-set">
-					<input type="number" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value"
-						pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
+					<input type="number" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
 				</div>
 			</label>
 		</div>
@@ -185,10 +179,8 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 			<label style="min-width:300px">
 				<h1>Reference</h1>
 				<div class="btn-set">
-					<input type="text" data-slo="ACC_REFERENCE" title="Reference" tabindex="6" name="reference"
-						class="flex" />
-					<input type="text" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1"
-						placeholder="Related ID" name="relation" />
+					<input type="text" data-slo="ACC_REFERENCE" title="Reference" tabindex="6" name="reference" class="flex" />
+					<input type="text" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" placeholder="Related ID" name="relation" />
 				</div>
 			</label>
 		</div>
@@ -197,9 +189,8 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 			<label>
 				<h1>Description</h1>
 				<div class="btn-set">
-					<textarea type="text" data-required tabindex="8" title="Statement Description" data-touch="103"
-						style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
-						name="description" id="description" rows="7"></textarea>
+					<textarea type="text" data-required tabindex="8" title="Statement Description" data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" name="description" id="description"
+						rows="7"></textarea>
 				</div>
 			</label>
 		</div>

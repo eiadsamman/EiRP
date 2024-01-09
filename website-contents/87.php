@@ -48,28 +48,30 @@ $grem->header()->serve("<h1>{$fs()->title}</h1>");
 
 $grem->menu()->open();
 echo "<span class=\"gap\"></span>";
-echo "<button id=\"js-button-update\" type=\"button\">Update rates table</button>";
+echo "<button class=\"edge-left\" id=\"js-button-update\" type=\"button\">Update rates table</button>";
 $grem->getLast()->close();
 
 $grem->article()->open();
 ?>
-<form id="js-formDetails">
-	<div class="template-gridLayout role-input">
-		<div class="btn-set vertical"><span>System default currency</span>
+	<div class="form predefined">
+		<label style="min-width:300px">
+			<h1>System default currency</h1>
+			<div class="btn-set">
 			<?= $app->currency->name . " [{$app->currency->symbol}]"; ?>
-		</div>
-		<div class="btn-set vertical"><span>Latest rates updated date</span>
+			</div>
+		</label>
+		<label>
+			<h1>Latest rates updated date</h1>
+			<div class="btn-set">
 			<?php echo date("Y-m-d"); ?>
-		</div>
-		<div></div>
+			</div>
+		</label>
 	</div>
-</form>
-<br />
-<br />
 <?php
 $grem->getLast()->close();
-$grem->legend()->serve("<span class=\"flex\">Exchange rates table</span>");
 
+echo "<br />";
+$grem->title()->serve("<span class=\"flex\">Exchange rates table</span>");
 $grem->article()->open();
 
 echo <<<HTML
@@ -95,8 +97,7 @@ if ($r) {
 		echo <<<HTML
 		<tr>
 			<td class="btn-set">
-				<span style="min-width:54px">{$row['cur_shortname']}</span>
-				<span>=</span>
+				<label style="min-width:54px">{$row['cur_shortname']}</label>
 				<input 
 					title = "{$row['cur_name']}" 
 					type = "text" 

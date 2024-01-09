@@ -52,6 +52,15 @@ class ListHandler extends SmartListObjectHandler {
 		this.current = selected_buffer;
 		this.dataset = buffer;
 	}
+	specialChars(str) {
+		let output = str;
+		output = output.replace(/[\]\[\)\(\.\*\&\\\/]*/, "");
+		output = output.replace(/[أإاآ]/, "[أإاآ]");
+		output = output.replace(/[ةه]/, "[ةه]");
+		output = output.replace(/[يى]/, "[يى]");
+		return output;
+
+	}
 	itemGenerator() {
 		return "";
 	}
@@ -75,6 +84,7 @@ class ListHandler extends SmartListObjectHandler {
 				chunks_found_count++
 			}
 		} else {
+			let regeexp = null;
 			const chunks = input.split(" ");
 			for (let listitem of this.dataset) {
 				if (chunks_found_count > this.items_limit)
@@ -82,7 +92,8 @@ class ListHandler extends SmartListObjectHandler {
 				chunk_found = true;
 				for (let chunk of chunks) {
 					if (chunk.trim() == "") continue;
-					if ((listitem.id + listitem.value + listitem.keywords + listitem.height).toLocaleLowerCase().includes(chunk.toLocaleLowerCase())) {
+					regeexp = new RegExp('.*' + this.specialChars(chunk) + '.*', 'gi');
+					if (regeexp.test(listitem.id + " " + listitem.value + " " + listitem.keywords)) {
 						chunk_found &= true;
 					} else {
 						chunk_found &= false;
@@ -811,7 +822,7 @@ class SmartListObject {
 					slo.hadfocus = false;
 					return;
 				}).on('keyup', (e) => {
-					if (e.code === "Enter" && this.enter_key_event) {
+					if ((e.code === "Enter" || e.code === "NumpadEnter") && this.enter_key_event) {
 						this.slo.stamp(stamp.valid);
 						this.slo.call_onselect();
 						this.enter_key_event = false;
@@ -819,7 +830,8 @@ class SmartListObject {
 				});
 
 				this.slo.selection_win.on('click', " > div", function (e) {
-					e.preventDefault();
+					e.stopPropagation();
+					/*e.preventDefault(); */
 					slo.selection = $(this);
 					slo.commit(this.enter_key_event);
 					return false;

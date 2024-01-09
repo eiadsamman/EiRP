@@ -10,22 +10,12 @@ $imageMimes = array(
 function UploadDOM($fileID, $fileMime, $fileTitle, $fileSelected = false, $domField = "")
 {
 	return "
-		<span>
-			<span class=\"upload_record_pointer\">
-				<span class=\"btn-set\">
-					<label class=\"btn-checkbox\">
-						<input type=\"checkbox\" " . ($fileSelected ? "checked=\"checked\"" : "") . " name=\"{$domField}[]\" value=\"$fileID\">
-						<span></span>
-						<div></div>
-					</label>
-					<button type=\"button\" data-id=\"$fileID\" class=\"js_up_delete bnt-remove\"></button>
-				</span>
-			</span>
-			<span class=\"upload_file_details\">
-				<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"$fileMime\" href=\"download/?id=$fileID&amp;pr=v\" data-href=\"download/?pr=v&amp;id=$fileID\">$fileTitle</a>
-			</span>
-		</span>
-		";
+		<tr>
+		<td class=\"checkbox\"><label><input name=\"{$domField}[]\" value=\"$fileID\" type=\"checkbox\"" . ($fileSelected ? "checked=\"checked\"" : "") . " /></label></td>
+		<td class=\"op-remove\" data-id=\"$fileID\"><span></span></td>
+		<td class=\"content\"><a class=\"js_upload_view\" target=\"_blank\" data-mime=\"$fileMime\" href=\"download/?id=$fileID&amp;pr=v\" data-href=\"download/?pr=v&amp;id=$fileID\">$fileTitle</a></td>
+	</tr>";
+
 }
 
 
@@ -136,8 +126,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th>Nationality</th>
 				<td>
-					<div class="btn-set"><input type="text" name="nationality" id="slonationality" class="flex" data-slo="COUNTRIES"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['cntry_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['cntry_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="nationality" id="slonationality" class="flex" data-slo="COUNTRIES" value="<?php echo $arr_array_input != false ? $arr_array_input['cntry_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['cntry_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
@@ -146,17 +135,21 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<td>
 					<div class="btn-set">
 						<span id="js_upload_count_1" class="js_upload_count"><span>0</span></span>
-						<input type="button"  id="js_upload_trigger_1" class="js_upload_trigger" data-db_rel="usr_attrib_s2" value="Upload" />
+						<input type="button" id="js_upload_trigger_1" class="js_upload_trigger" data-db_rel="usr_attrib_s2" value="Upload" />
 						<input type="file" id="js_uploader_btn_1" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 						<span id="js_upload_list_1" class="js_upload_list">
 							<div id="UploadSocialDOMHandler">
-								<?php
-								if (isset($arr_array_uploads[190]) && is_array($arr_array_uploads[190])) {
-									foreach ($arr_array_uploads[190] as $fileIndex => $file) {
-										echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "social_id_image");
-									}
-								}
-								?>
+								<table class="bom-table hover">
+									<tbody>
+										<?php
+										if (isset($arr_array_uploads[190]) && is_array($arr_array_uploads[190])) {
+											foreach ($arr_array_uploads[190] as $fileIndex => $file) {
+												echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "social_id_image");
+											}
+										}
+										?>
+									</tbody>
+								</table>
 							</div>
 						</span>
 						<input type="text" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_socialnumber'] : ""; ?>" name="social_number" id="social_number" class="flex" placeholder="ID Number">
@@ -172,13 +165,17 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 						<input type="file" id="js_uploader_btn" class="js_uploader_btn" accept="image/*" />
 						<span id="js_upload_list" class="js_upload_list">
 							<div id="UploadPersonalDOMHandler">
-								<?php
-								if (isset($arr_array_uploads[\System\Attachment\Type::HrPerson->value]) && is_array($arr_array_uploads[\System\Attachment\Type::HrPerson->value])) {
-									foreach ($arr_array_uploads[\System\Attachment\Type::HrPerson->value] as $fileIndex => $file) {
-										echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "perosnal_image");
-									}
-								}
-								?>
+								<table class="bom-table hover">
+									<tbody>
+										<?php
+										if (isset($arr_array_uploads[\System\Attachment\Type::HrPerson->value]) && is_array($arr_array_uploads[\System\Attachment\Type::HrPerson->value])) {
+											foreach ($arr_array_uploads[\System\Attachment\Type::HrPerson->value] as $fileIndex => $file) {
+												echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "perosnal_image");
+											}
+										}
+										?>
+									</tbody>
+								</table>
 							</div>
 						</span>
 					</div>
@@ -187,39 +184,34 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th>Gender</th>
 				<td>
-					<div class="btn-set"><input type="text" name="gender" class="flex" id="slogender" data-slo="G000" value="<?php echo $arr_array_input != false ? $arr_array_input['gnd_name'] : ""; ?>"
-							<?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['gnd_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="gender" class="flex" id="slogender" data-slo="G000" value="<?php echo $arr_array_input != false ? $arr_array_input['gnd_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['gnd_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Birthdate</th>
 				<td>
-					<div class="btn-set"><input type="text" name="birthdate" class="flex" id="slobirthdate" data-slo="BIRTHDATE"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['usr_birthdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['usr_birthdate']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="birthdate" class="flex" id="slobirthdate" data-slo="BIRTHDATE" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_birthdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['usr_birthdate']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Phone numbers</th>
-				<td class="btn-set"><textarea name="phone_list" id="phone_list"
-						style="width:100%;height:66px;"><?php echo $arr_array_input != false ? $arr_array_input['usr_phone_list'] : ""; ?></textarea>
+				<td class="btn-set"><textarea name="phone_list" id="phone_list" style="width:100%;height:66px;"><?php echo $arr_array_input != false ? $arr_array_input['usr_phone_list'] : ""; ?></textarea>
 				</td>
 			</tr>
 
 			<tr>
 				<th>Residence</th>
 				<td>
-					<div class="btn-set"><input type="text" name="residence" class="flex" id="sloresidence" data-slo="E004"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['ldn_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['ldn_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="residence" class="flex" id="sloresidence" data-slo="E004" value="<?php echo $arr_array_input != false ? $arr_array_input['ldn_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['ldn_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Transportation</th>
 				<td>
-					<div class="btn-set"><input type="text" name="transportation" class="flex" id="slortransportation" data-slo="TRANSPORTATION"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['trans_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['trans_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="transportation" class="flex" id="slortransportation" data-slo="TRANSPORTATION" value="<?php echo $arr_array_input != false ? $arr_array_input['trans_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['trans_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
@@ -241,8 +233,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th style="max-width: 100px;width:100px;min-width:100px">Company</th>
 				<td style="width: 100%;">
-					<div class="btn-set"><input type="text" class="flex" name="company" id="slocompany" data-slo="COMPANY_USER"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['comp_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['comp_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" class="flex" name="company" id="slocompany" data-slo="COMPANY_USER" value="<?php echo $arr_array_input != false ? $arr_array_input['comp_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['comp_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
@@ -270,8 +261,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th>Register date</th>
 				<td>
-					<div class="btn-set"><input type="text" name="regdate" class="flex" id="sloregdate" data-slo="DATE"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_registerdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_registerdate']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="regdate" class="flex" id="sloregdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_registerdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_registerdate']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
@@ -279,8 +269,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 				<tr>
 					<th>Resign date</th>
 					<td>
-						<div class="btn-set"><input type="text" name="resdate" class="flex" id="sloresdate" data-slo="DATE"
-								value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_resigndate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_resigndate']}\" " : ""; ?>>
+						<div class="btn-set"><input type="text" name="resdate" class="flex" id="sloresdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_resigndate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_resigndate']}\" " : ""; ?>>
 						</div>
 					</td>
 				</tr>
@@ -288,32 +277,28 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 			<tr>
 				<th>Job title</th>
 				<td>
-					<div class="btn-set"><input type="text" name="jobtitle" class="flex" id="slotype" data-slo="E002A"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lsc_name'] . ", " . $arr_array_input['lty_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lty_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="jobtitle" class="flex" id="slotype" data-slo="E002A" value="<?php echo $arr_array_input != false ? $arr_array_input['lsc_name'] . ", " . $arr_array_input['lty_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lty_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Working shift</th>
 				<td>
-					<div class="btn-set"><input type="text" name="shift" class="flex" id="sloshift" data-slo="E003" value="<?php echo $arr_array_input != false ? $arr_array_input['lsf_name'] : ""; ?>"
-							<?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lsf_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="shift" class="flex" id="sloshift" data-slo="E003" value="<?php echo $arr_array_input != false ? $arr_array_input['lsf_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lsf_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Working Time</th>
 				<td>
-					<div class="btn-set"><input type="text" name="workingtimes" class="flex" id="sloworkingtimes" data-slo="WORKING_TIMES"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lwt_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lwt_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="workingtimes" class="flex" id="sloworkingtimes" data-slo="WORKING_TIMES" value="<?php echo $arr_array_input != false ? $arr_array_input['lwt_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lwt_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<th>Payment method</th>
 				<td>
-					<div class="btn-set"><input type="text" name="payment" class="flex" id="slopayment" data-slo="SALARY_PAYMENT_METHOD"
-							value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_mth_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_mth_id']}\" " : ""; ?>>
+					<div class="btn-set"><input type="text" name="payment" class="flex" id="slopayment" data-slo="SALARY_PAYMENT_METHOD" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_mth_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_mth_id']}\" " : ""; ?>>
 					</div>
 				</td>
 			</tr>

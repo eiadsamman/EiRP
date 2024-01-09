@@ -376,7 +376,7 @@ $grem->header()->prev($fs(30)->dir)->serve("<h1 id=\"js-output_headertitle\">" .
 $grem->menu()->open();
 echo "<span>Employee ID</span>";
 echo "<input type=\"text\" id=\"employeIDFormSearch\" data-slo=\":LIST\" data-list=\"personList\" class=\"flex\" placeholder=\"Select user...\" />";
-echo "<button class=\"clr-green\" id=\"js-input_submit-button\">Save</button>";
+echo "<button id=\"js-input_submit-button\">Save</button>";
 $grem->getLast()->close();
 echo ("<div id=\"UILoad\"></div>");
 $grem->terminate();
@@ -566,7 +566,8 @@ echo "</form>";
 					'limit': 10
 				});
 
-			<?php if ($fs(229)->permission->edit) { ?>				$(".derive_function").on('change', function () { var $this = $(this); var _result = $this.prop("checked"); $this.parent().prev().prop("disabled", _result); if (_result) { $("[name=" + $this.attr('data-rel') + "]").val($("input[name=" + $this.attr('data-rel') + "]").attr("data-basicvalue")); } else { $("[name=" + $this.attr('data-rel') + "]").val("0.00"); } });
+			<?php if ($fs(229)->permission->edit) { ?>
+				$(".derive_function").on('change', function () { var $this = $(this); var _result = $this.prop("checked"); $this.parent().prev().prop("disabled", _result); if (_result) { $("[name=" + $this.attr('data-rel') + "]").val($("input[name=" + $this.attr('data-rel') + "]").attr("data-basicvalue")); } else { $("[name=" + $this.attr('data-rel') + "]").val("0.00"); } });
 			<?php } ?>
 
 
@@ -574,6 +575,7 @@ echo "</form>";
 			$Form.on('submit', function (e) {
 				$("#js-input_submit-button").prop("disabled", true);
 				e.preventDefault();
+				console.log($Form.serialize())
 				$.ajax({
 					url: '<?php echo $fs()->dir; ?>',
 					type: 'POST',

@@ -326,7 +326,7 @@ echo "<button id=\"jQexport\" disabled=\"disabled\" type=\"button\">Export</butt
 $grem->getLast()->close();
 
 $grem->title()->serve("<span class=\"flex\">Filter query</span>");
-$grem->article()->open("660px");
+$grem->article()->width("660px")->open();
 
 $slo = new SmartListObject($app);
 ?>

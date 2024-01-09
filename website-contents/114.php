@@ -1,40 +1,31 @@
-<div draggable="true" style="padding:20px;border:solid 2px red;display:inline-block;">ASF</div>
 <?php
-//$sql = new \mysqli("azure-system.mysql.database.azure.com", "sappdbmaster","1a)a1_uNpN&b");
 
 exit;
+/* Ecrypt users passwords */
 $res = $app->db->query("SELECT usr_password, usr_id FROM users;");
-
 $newpass = $userid = 0;
 $stmt = $app->db->prepare("UPDATE users SET usr_password = ? WHERE usr_id = ?");
 if ($res) {
 	while ($row = $res->fetch_assoc()) {
 		if (!is_null($row['usr_password']) && strlen($row['usr_password']) > 1) {
 			$newpass = password_hash($row['usr_password'], PASSWORD_BCRYPT, ["cost" => "12"]);
-			;
 			$userid = $row['usr_id'];
 			$stmt->bind_param("si", $newpass, $userid);
 			$stmt->execute();
 		}
 	}
 }
-
 $stmt->close();
 
 
 
 
 
-
-
 exit;
-
 use System\SmartListObject;
-
-
 $SmartListObject = new SmartListObject($app);
-
 ?>
+<div draggable="true" style="padding:20px;border:solid 2px red;display:inline-block;">ASF</div>
 <div class="btn-set page" style="margin-top:50px;margin-left:10px">
 	<input type="text" />
 	<input type="button" value="Button" />
@@ -71,100 +62,4 @@ $SmartListObject = new SmartListObject($app);
 		}); */
 
 	});
-
-
-
-
-
-</script>
-
-
-
-<?php
-exit;
-class Animal
-{
-	public function __construct()
-	{
-		$arguments = func_get_args();
-		$numberOfArguments = func_num_args();
-
-		if ($numberOfArguments == 1) {
-			if (gettype($arguments[0]) == "integer") {
-				call_user_func_array(array($this, '__construct1'), $arguments);
-			}
-			if (gettype($arguments[0]) == "string") {
-				call_user_func_array(array($this, '__construct2'), $arguments);
-			}
-		}
-	}
-
-	public function __construct1(int $a)
-	{
-		echo "I AM INTEGER CONSTRUCTOR<Br />";
-	}
-
-	public function __construct2(string $a)
-	{
-		echo "I AM STRGINGNNGNGNG CONSTRUCTOR<BR/>";
-	}
-}
-
-$a = new Animal(1);
-$a = new Animal("1");
-
-exit;
-?>
-
-
-
-
-<script>
-	const submiter = document.getElementById("js-input_button-submit");
-	const form = document.getElementById("js-input_form-main");
-	const BreakException = {};
-	const slo_objects = $(".--slo-object").slo();
-
-
-	const shit = async () => {
-		try {
-			const formData = new FormData(form);
-			formData.append("shit", "");
-			let response = await fetch('<?= $fs()->dir; ?>', {
-				method: 'POST',
-				headers: {
-					"Application-From": "same",
-				},
-				body: formData,
-			});
-			const result = await response.text()
-
-			console.log(result);
-		} catch (error) {
-			//console.log(error);
-		}
-	};
-
-
-	form.addEventListener("submit", function (e) {
-		e.preventDefault();
-		try {
-			slo_objects.each(function (e) {
-				/* if (this.dataset.skip == undefined && e.slo.stamped != true) {
-					e.focus()
-					throw BreakException;
-				} */
-			});
-			if (isNaN(parseFloat(document.getElementsByName('value')[0].value))) {
-				document.getElementsByName('value')[0].focus();
-				throw BreakException;
-			}
-		} catch (e) {
-			messagesys.failure("Required field")
-			return false;
-		}
-		//shit();
-		return false;
-	});
-
 </script>

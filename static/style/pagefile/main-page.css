@@ -2,138 +2,22 @@
 	--widget_height: 180px;
 }
 
-.homepageWidget {
+.dashboard {
 	display: flex;
 	flex-wrap: wrap;
 }
 
-.homepageWidget > div {
+.dashboard>div {
 	margin: 10px;
 	cursor: default;
+
+	box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.3);
+	background-color: var(--root-ribbon-menu-background-color);
+	border-radius: 10px;
+	padding:20px;
 }
 
-.homepageWidget > div > div {
+.dashboard>div>div {
 	padding: 0px;
 	position: relative;
-}
-
-
-div.widgetWQT,
-div.widgetWQU,
-div.widgetWQY {
-	flex-grow: 1;
-	flex-shrink: 1;
-	min-width: 250px;
-	max-width: 520px;
-}
-
-
-
-
-
-div.widgetWQT > div {
-	display: grid;
-	grid-template-rows: repeat(4, 1fr);
-	grid-row-gap: px;
-}
-
-div.widgetWQT > div > a {
-	flex-direction: column;
-	padding: 12px;
-	color: var(--root-ribbon-font-color);
-	background-color: var(--root-ribbon-menu-background-color);
-}
-
-div.widgetWQT > div > a > span {
-	display: inline-block;
-	margin-right: 10px;
-}
-
-div.widgetWQT > div > a:hover ,div.widgetWQT > div > a:focus{
-	text-decoration: none;
-	background-color: var(--root-ribbon-menu-itemhover-background-color);
-}
-
-
-
-
-
-div.widgetWQY > div {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	min-height: var(--widget_height);
-	border: solid 1px var(--root-ribbon-border-color);
-	background: var(--root-ribbon-menu-background-color)
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-div.widgetWQU > div {
-	height: 100%;
-	flex: 4 1 auto;
-	min-height: var(--widget_height);
-}
-
-div.widgetWQU > div > div {
-	display: grid;
-	grid-template-rows: repeat(4, 1fr);
-	grid-row-gap: 6px;
-}
-
-div.widgetWQU > div > div > div {
-	width: 100%;
-	overflow: hidden;
-}
-
-div.widgetWQU > div > h1 {
-	padding: 0;
-	padding-left: 3px;
-	color: dodgerblue
-}
-
-div.widgetWQU > div > div > div > div > a,
-div.widgetWQU > div > div > div > div > span.nofetch {
-	flex: 1;
-	color: var(--root-font-color);
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-div.widgetWQY > div > div {
-	padding-top: 35px;
-	height: 150px;
-	overflow: hidden;
-	padding-left: 10px;
-	padding-right: 10px;
-	display: block;
-}
-
-div.widgetWQY > div > div > div {
-	font-size: 1.4em;
-	line-height: 1.1em;
-	text-align: right;
 }

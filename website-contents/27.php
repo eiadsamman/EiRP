@@ -41,14 +41,14 @@ echo <<<HTML
 	<form action="{$fs()->dir}" method="post" id="passForm">
 	<input type="hidden" name="method" value="changepassword" />
 HTML;
-$grem = new Gremium\Gremium(true);
+$grem = new Gremium\Gremium(false);
 $grem->header()->serve("<h1>My Account</h1>");
 $grem->menu()->serve("<a href=\"{$fs(17)->dir}\">{$fs(17)->title}</a><a href=\"{$fs(263)->dir}\">{$fs(263)->title}</a></span>");
 $grem->title()->serve("<span class=\"flex\">Account information</span>");
-$grem->article()->serve(
+$grem->article()->width("600px")->serve(
 	<<<HTML
 	<div class="form">
-		<label style="flex:.5">
+		<label>
 			<h1>Name</h1>
 			<div class="btn-set">
 				<input type="text" class="flex" tabindex="-1" value="{$app->user->info->name}" readonly="readonly" />
@@ -56,7 +56,7 @@ $grem->article()->serve(
 		</label>
 	</div>
 	<div class="form">
-		<label style="flex:.5">
+		<label>
 			<h1>Username</h1>
 			<div class="btn-set">
 				<input type="text" class="flex" tabindex="-1" value="{$app->user->info->username}" readonly="readonly" />
@@ -64,24 +64,22 @@ $grem->article()->serve(
 		</label>
 	</div>
 	<div class="form">
-		<label style="flex:.5">
+		<label>
 			<h1>Registration date</h1>
 			<div class="btn-set">
 				<input type="text" class="flex" tabindex="-1" value="{$curinfo['usr_regdate']}" readonly="readonly" />
 			</div>
 		</label>
 	</div>
-	<br /><br /><br />
 	HTML
 );
 
-
+echo "<br /><br />";
 $grem->title()->serve("<span class=\"flex\">Security management</span>");
-$grem->article()->open();
+$grem->article()->width("600px")->open();
 echo <<<HTML
-
 	<div class="form">
-		<label style="flex:.5">
+		<label>
 			<h1>Current password</h1>
 			<div class="btn-set">
 				<input type="password" class="flex" name="oldpass" id="oldpass" />	
@@ -89,7 +87,7 @@ echo <<<HTML
 		</label>
 	</div>
 	<div class="form">
-		<label style="flex:.5">
+		<label>
 			<h1>New password</h1>
 			<div class="btn-set">
 				<input type="password" class="flex" name="newpass" id="newpass" />
@@ -97,7 +95,7 @@ echo <<<HTML
 		</label>
 	</div>
 	<div class="form">
-		<label style="flex:.5">
+		<label>
 			<h1>Password confirmation</h1>
 			<div class="btn-set">
 				<input type="password" class="flex" name="conpass" id="conpass" />
@@ -106,21 +104,20 @@ echo <<<HTML
 	</div>
 
 	<div class="form">
-		<label style="flex:.5">
+		<label>
 			<div class="btn-set">
 				<button type="submit">Update Password</button>
 			</div>
 		</label>
 	</div>
-
-
-</form>
 HTML;
 
 
 $grem->getLast()->close();
 unset($grem);
 ?>
+</form>
+
 <script>
 	$(document).ready(function (e) {
 		var ajax = null;

@@ -1,16 +1,18 @@
 <?php
 use System\Personalization\DashboardReports;
 use System\Personalization\Personalization;
+use System\Personalization\RecordsPerPage;
 use System\Template\Gremium;
 
-$salt      = date("YmdHm") . session_id() . "(08#F(&Go7g32f";
+$salt = date("YmdHm") . session_id() . "(08#F(&Go7g32f";
 $dashboard = new DashboardReports($app);
+$perpage = new RecordsPerPage($app);
+
 if ($app->xhttp) {
 	if (isset($_POST['update'])) {
 		$dashboard->update($_POST['update']);
 		exit;
 	}
-
 
 	if (isset($_POST[md5($salt)])) {
 		if (Personalization::purgeAllPreferences($app)) {
@@ -19,13 +21,17 @@ if ($app->xhttp) {
 		exit;
 	}
 
+	if (isset($_POST['pagepage'])) {
+		$perpage->register(null, (int) $_POST['pagepage']);
+		exit;
+	}
 	exit;
 }
 
 $grem = new Gremium\Gremium(true);
 $grem->header()->prev($fs(27)->dir)->serve("<h1>Settings</h1>");
 
-$grem->title()->serve("<span>System settings:</span>");
+$grem->title()->serve("<span>System settings</span>");
 $grem->article()->open();
 
 $darkmode_checked = $themeDarkMode->mode == "light" ? "" : " checked=\"checked\" ";
@@ -39,15 +45,17 @@ echo <<<HTML
 		<td class="checkbox"><label><input id="toggle-darkmode" type="checkbox" $darkmode_checked /></label></td>
 		<td width="100%"><span style="white-space:wrap">Toggle Dark Mode</span></td>
 	</tr>
+	<tr>
+		<td><div class="btn-set"><input type="text" data-slo=":SELECT" class="flex" data-list="perpage" id="js-input_perpage" /></div></td>
+		<td width="100%"><span style="white-space:wrap">Items & Records per page</span></td>
+	</tr>
 </body></table>
 <br />
 <br />
 HTML;
 $grem->getLast()->close();
 
-
-
-$grem->title()->serve("<span>Dashboard reports:</span>");
+$grem->title()->serve("<span>Dashboard reports</span>");
 $grem->article()->open();
 $firstocc = false;
 foreach ($dashboard->list() as $dashboard) {
@@ -69,26 +77,29 @@ if ($firstocc) {
 echo "<br /><br />";
 $grem->getLast()->close();
 
-
-
-
-$grem->title()->serve("<span>System theme:</span>");
+$grem->title()->serve("<span>System theme</span>");
 $grem->article()->open();
 echo <<<HTML
 <table class="bom-table hover row-selector"><tbody>
 	<tr>
-		<td class="checkbox" style="min-width:67px"><label><input id="theme-default" name="theme" type="radio" checked /></label></td>
+		<td class="checkbox" style="min-width:38px;width:38px;"><label><input id="theme-default" name="theme" type="radio" checked /></label></td>
 		<td>Default theme</td>
 	</tr>
 </tbody></table>
 HTML;
 $grem->getLast()->close();
-
-
-
 unset($grem);
-
 ?>
+
+<datalist id="perpage">
+	<?php
+	$globalval = $perpage->get();
+	for ($i = 25; $i <= 100; $i += 25) {
+		echo "<option " . ($i == $globalval ? "selected " : "") . "data-id=\"$i\">$i</option>";
+	}
+	?>
+</datalist>
+
 <style>
 	.ui-sortable-start {
 		background-color: var(--color-soft-gray);
@@ -112,7 +123,15 @@ unset($grem);
 </style>
 <script>
 	$(document).ready(function (e) {
-
+		$("#js-input_perpage").slo({
+			onselect: function (e) {
+				$.ajax({
+					url: "<?= $fs()->dir; ?>",
+					data: { "pagepage": e.hidden },
+					type: "POST"
+				});
+			}
+		});
 		const saveDashboard = function () {
 			const leaseObj = [];
 			$("#dash-table > tbody").find("tr").each(function (index, element) {

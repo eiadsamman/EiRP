@@ -59,7 +59,7 @@ if (isset($_POST['fetch'])) {
 	$grem->menu();
 	foreach ($posgroup as $groupk => $groupv) {
 		$grem->legend()->serve("<span class=\"flex\">{$groupv['title']}</span><span>{$groupv['count']}</span>");
-		$grem->article()->open();
+		$grem->article()->options(array("nobg"))->open();
 		echo "
 			<table class=\"bom-table local-mediabond-table " . (isset($_GET['view']) && $_GET['view'] == "1" ? "local-force" : "") . "\">
 				<tbody>";
@@ -84,8 +84,7 @@ if (isset($_POST['fetch'])) {
 		echo "</tbody>
 			</table>";
 		$grem->getLast()->close();
-		echo "<br />";
-		echo "<br />";
+		echo "<br /><br />";
 	}
 }
 
@@ -100,7 +99,7 @@ $grem->header()->serve("<h1>{$fs()->title}</h1><cite id=\"s-output_count\"></cit
 $grem->menu()->open();
 //echo "<input type=\"text\" placeholder=\"Search...\">";
 echo "<span class=\"gap\"></span>";
-echo "<input type=\"text\" id=\"js-input_filter-list\" data-slo=\":SELECT\" placeholder=\"Group options...\" readonly style=\"width:130px;\" data-list=\"js-data-list_group\" />";
+echo "<input type=\"text\" class=\"edge-left\" id=\"js-input_filter-list\" data-slo=\":SELECT\" placeholder=\"Group options...\" readonly style=\"width:150px;\" data-list=\"js-data-list_group\" />";
 echo "<button id=\"btn-card_view\" data-state=\"$ui_view_selection\" tabindex=\"1\">" . $ui_view[$ui_view_selection] . "</button>";
 $grem->getLast()->close();
 echo ("<div id=\"ajax-content\"></div>");

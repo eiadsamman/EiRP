@@ -2,38 +2,37 @@
 	border: solid 1px var(--bomtable-border-color);
 	border-collapse: collapse;
 	width: 100%;
-
 }
 
-.bom-table > tfoot > tr > th,
-.bom-table > thead > tr > th,
-.bom-table > tbody > tr > th {
+.bom-table>tfoot>tr>th,
+.bom-table>thead>tr>th,
+.bom-table>tbody>tr>th {
 	font-weight: normal;
 }
 
-.bom-table > tbody > tr:not(:first-child) > td,
-.bom-table > tbody > tr:not(:first-child) > th,
-.bom-table > tfoot > tr:not(:first-child) > td {
+.bom-table>tbody>tr:not(:first-child)>td,
+.bom-table>tbody>tr:not(:first-child)>th,
+.bom-table>tfoot>tr:not(:first-child)>td {
 	border-top: solid 1px var(--bomtable-border-color);
 }
 
-.bom-table > tbody > tr > td,
-.bom-table > tfoot > tr > td,
-.bom-table > tbody > tr > th,
-.bom-table > tfoot > tr > th {
-	padding: 10px 8px;
+.bom-table>tbody>tr>td,
+.bom-table>tfoot>tr>td,
+.bom-table>tbody>tr>th,
+.bom-table>tfoot>tr>th {
+	padding: 12px 8px;
 	white-space: nowrap;
 	color: var(--root-font-color);
 	background-color: var(--bomtable-background-color);
 }
 
-.bom-table > tbody > tr > td.console {
+.bom-table>tbody>tr>td.console {
 	font-family: "Lucida Console", Monaco, monospace;
 	font-size: 0.9em;
 }
 
-.bom-table > tbody > tr > th,
-.bom-table > tfoot > tr > th {
+.bom-table>tbody>tr>th,
+.bom-table>tfoot>tr>th {
 	padding: 10px 8px;
 	color: var(--root-link-color);
 	border-bottom: none;
@@ -43,37 +42,37 @@
 }
 
 
-.bom-table > thead > tr > td,
-.bom-table > tfoot > tr > td {
+.bom-table>thead>tr>td,
+.bom-table>tfoot>tr>td {
 	border: solid 1px var(--bomtable-border-color);
 	background-color: var(--bomtable-background-color);
 	border-left: none;
 	border-right: none;
 	padding: 10px 8px;
-	color: var(--root-link-color);
+	color: var(--root-font-color);
 	white-space: nowrap;
 	cursor: default;
-	font-weight: bold;
+	font-weight: normal;
 }
 
-.bom-table > thead > tr > td {
-	border-bottom: double 3px var(--bomtable-border-color);
+.bom-table>thead>tr>td {
+	border-bottom: solid 1px var(--bomtable-border-color);
 }
 
-.bom-table > tfoot > tr > td {
-	border-top: double 3px var(--bomtable-border-color);
+.bom-table>tfoot>tr>td {
+	border-top: solid 1px var(--bomtable-border-color);
 }
 
 
-.bom-table > thead > tr > td:first-child {
+.bom-table>thead>tr>td:first-child {
 	border-left: solid 1px var(--bomtable-border-color);
 }
 
-.bom-table > thead > tr > td:last-child {
+.bom-table>thead>tr>td:last-child {
 	border-right: solid 1px var(--bomtable-border-color);
 }
 
-.bom-table > thead > tr > th {
+.bom-table>thead>tr>th {
 	border: solid 1px var(--bomtable-border-color);
 	height: 25px;
 }
@@ -82,16 +81,16 @@
 
 
 
-.bom-table.strip > tbody > tr:nth-child(2n) > td {
+.bom-table.strip>tbody>tr:nth-child(2n)>td {
 	background-color: var(--bomtable-stripes-color);
 }
 
-.bom-table.strip.hover > tbody > tr:hover:nth-child(2n) > td,
-.bom-table.hover > tbody > tr:hover > td {
+.bom-table.strip.hover>tbody>tr:hover:nth-child(2n)>td,
+.bom-table.hover>tbody>tr:hover>td {
 	background-color: var(--bomtable-hover-color)
 }
 
-.bom-table > thead.sticky {
+.bom-table>thead.sticky {
 	position: sticky;
 	background-color: var(--bomtable-background-color);
 	outline: solid .5px gainsboro;
@@ -101,12 +100,12 @@
 
 
 
-.bom-table tr > td.op-edit,
-.bom-table tr > td.op-remove,
-.bom-table tr > td.op-add,
-.bom-table tr > td.op-print,
-.bom-table tr > td.op-donwload,
-.bom-table tr > td.op-display {
+.bom-table tr>td.op-edit,
+.bom-table tr>td.op-remove,
+.bom-table tr>td.op-add,
+.bom-table tr>td.op-print,
+.bom-table tr>td.op-donwload,
+.bom-table tr>td.op-display {
 	padding: 0;
 	cursor: pointer;
 	-webkit-touch-callout: none;
@@ -117,38 +116,39 @@
 	user-select: none;
 }
 
-.bom-table tr > td.op-edit > *,
-.bom-table tr > td.op-remove > *,
-.bom-table tr > td.op-add > *,
-.bom-table tr > td.op-print > *,
-.bom-table tr > td.op-donwload > *,
-.bom-table tr > td.op-display > * {
+.bom-table tr>td.op-edit>*,
+.bom-table tr>td.op-remove>*,
+.bom-table tr>td.op-add>*,
+.bom-table tr>td.op-print>*,
+.bom-table tr>td.op-donwload>*,
+.bom-table tr>td.op-display>* {
 	display: block;
-	padding: 12px 8px;
-	color: var(--root-font-color);
+	padding: 0px 8px;
+	color: var(--root-font-lightcolor);
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+
 }
 
 
 
-.bom-table tr > td.op-edit > *:before {
+.bom-table tr>td.op-edit>*:before {
 	display: inline-block;
-	content: "\e62a";
-	font-family: "icomoon";
+	content: "\e906";
+	font-family: "icomoon4";
 	width: 20px;
 	text-align: center;
 }
 
-.bom-table tr > td.op-edit:hover > * {
+.bom-table tr>td.op-edit:hover>* {
 	color: #06c
 }
 
-.bom-table tr > td.op-remove > *:before {
+.bom-table tr>td.op-remove>*:before {
 	display: inline-block;
 	content: "\e62b";
 	font-family: "icomoon";
@@ -156,11 +156,11 @@
 	text-align: center;
 }
 
-.bom-table tr > td.op-remove:hover > * {
+.bom-table tr>td.op-remove:hover>* {
 	color: #f03;
 }
 
-.bom-table tr > td.op-add > *:before {
+.bom-table tr>td.op-add>*:before {
 	display: inline-block;
 	content: "\e630";
 	font-family: "icomoon";
@@ -168,11 +168,11 @@
 	text-align: center;
 }
 
-.bom-table tr > td.op-add:hover > * {
+.bom-table tr>td.op-add:hover>* {
 	color: #0066cc;
 }
 
-.bom-table tr > td.op-print > *:before {
+.bom-table tr>td.op-print>*:before {
 	display: inline-block;
 	content: "\e63b";
 	font-family: "icomoon";
@@ -180,11 +180,11 @@
 	text-align: center;
 }
 
-.bom-table tr > td.op-print:hover > * {
+.bom-table tr>td.op-print:hover>* {
 	color: #ff3c00;
 }
 
-.bom-table tr > td.op-display > *:before {
+.bom-table tr>td.op-display>*:before {
 	display: inline-block;
 	content: "\e9ce";
 	font-family: "icomoon4";
@@ -192,11 +192,11 @@
 	text-align: center;
 }
 
-.bom-table tr > td.op-display:hover > * {
+.bom-table tr>td.op-display:hover>* {
 	color: #00cc33;
 }
 
-.bom-table tr > td.op-donwload > *:before {
+.bom-table tr>td.op-donwload>*:before {
 	display: inline-block;
 	content: "\e60c";
 	font-family: "icomoon";
@@ -204,23 +204,41 @@
 	text-align: center;
 }
 
-.bom-table tr > td.op-donwload:hover > * {
+.bom-table tr>td.op-donwload:hover>* {
 	color: var(--root-link-color);
 }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* #region Table Checkbox*/
-.bom-table > tbody > tr > td.checkbox {
-	padding: 0px;
+.bom-table>tbody>tr>td.checkbox {
 	position: relative;
-	width: 32px;
-	min-width: 32px;
+	min-width: 38px;
+	text-align: center;
 }
 
-.bom-table > tbody > tr > td.checkbox > label {
-	display: block;
+.bom-table>tbody>tr>td.checkbox>label {
 	position: absolute;
+	display: flex;
+	align-items: center;
+	text-align: center;
+	justify-content: center;
 	inset: 0 0 0 0;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
@@ -230,35 +248,28 @@
 	user-select: none;
 }
 
-.bom-table > tbody > tr > td.checkbox > label::before {
-	display: block;
+.bom-table>tbody>tr>td.checkbox>label::before {
 	position: absolute;
 	content: " ";
-	top: 8px;
-	left: 8px;
 	border: solid 1px var(--input-border);
 	border-radius: 10px;
 	width: 14px;
 	height: 14px;
-	background-color: transparent;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 
-.bom-table > tbody > tr > td.checkbox > label:hover::before {
-
+.bom-table>tbody>tr>td.checkbox>label:hover::before {
+	background-color: var(--bomtable-background-color);
 	border-color: var(--input_hover-border);
 }
 
-.bom-table > tbody > tr > td.checkbox > label > input {
+.bom-table>tbody>tr>td.checkbox>label>input {
 	visibility: hidden;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
 }
 
-.bom-table > tbody > tr > td.checkbox > label > input:before {
+.bom-table>tbody>tr>td.checkbox>label>input:before {
 	display: block;
 	position: absolute;
 	content: " ";
@@ -266,30 +277,26 @@
 }
 
 
-.bom-table > tbody > tr > td.checkbox > label > input[type=checkbox]::before,
-.bom-table > tbody > tr > td.checkbox > label > input[type=radio]::before {
-	display: block;
-	position: relative;
-	content: " ";
+.bom-table>tbody>tr>td.checkbox>label>input[type=checkbox]::before,
+.bom-table>tbody>tr>td.checkbox>label>input[type=radio]::before {
 	border-radius: 10px;
-	top: 7px;
-	left: 6px;
 	background-color: var(--root-link-color);
-	width: 11px;
-	height: 11px;
+	position: relative;
+	left: -.5px;
+	width: 10px;
+	height: 10px;
 	transform: scale(0);
 	transition: transform ease .1s;
 }
 
-.bom-table > tbody > tr > td.checkbox > label > input[type=radio]::before {
-	left: 5px;
-
+.bom-table>tbody>tr>td.checkbox>label>input[type=radio]::before {
+	top: -1.5px;
+	left: -1px;
 }
 
-.bom-table > tbody > tr > td.checkbox > label > input[type=checkbox]:checked::before,
-.bom-table > tbody > tr > td.checkbox > label > input[type=radio]:checked::before {
-	transform: scale(.9);
-
+.bom-table>tbody>tr>td.checkbox>label>input[type=checkbox]:checked::before,
+.bom-table>tbody>tr>td.checkbox>label>input[type=radio]:checked::before {
+	transform: scale(1);
 }
 
 /* #endregion Table Checkbox*/
@@ -298,7 +305,4 @@
 
 
 
-@media only screen and (max-width: 480px) {
-	
-
-}
+@media only screen and (max-width: 480px) {}

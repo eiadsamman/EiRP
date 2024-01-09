@@ -32,15 +32,31 @@ if ($access_error == 403) {
 			($access_error == 2 ? $grem->legend()->serve("<span class=\"flexx\">Incorrect username or password</span>") : null);
 			($access_error == 3 ? $grem->legend()->serve("<span class=\"flexx\">Inactive account</span>") : null);
 
-			$grem->article()->serve('
-			<div class="template-gridLayout role-input">
-				<div class="btn-set vertical" style="min-width:100%;"><span>Username</span><input type="text" autofocus class="flex" list="browsers" autocomplete="off" name="log_username" id="username" value="' . (isset($_POST['username']) ? $_POST['username'] : "") . '" /></div>
-				<div class="btn-set vertical" style="min-width:100%;"><span>Password</span><input type="password" class="flex" class="password" name="log_password" autocomplete="off" value="" /></div>
-				<div><label><input type="checkbox" name="remember" /> Remember my login</label></div>
+
+			$grem->article()->open();
+
+			$prev_username = $_POST['username'] ?? "";
+			echo <<<HTML
+			<div class="form">
+				<label style="min-width:150px">
+					<h1>Username</h1>
+					<div class="btn-set">
+					<input type="text" autofocus class="flex" list="browsers" autocomplete="off" name="log_username" id="username" value="{$prev_username}" />
+					</div>
+				</label>
+				<label style="min-width:300px; flex: 1 1 100%">
+					<h1>Password</h1>
+					<div class="btn-set">
+					<input type="password" class="flex" class="password" name="log_password" autocomplete="off" value="" />
+					</div>
+				</label>
+				<div class="btn-set"><label style="border:none"><input type="checkbox" name="remember" /> Remember me</label></div>
+				<div style="flex:1"></div>
+				<div class="btn-set"><button style="width:100px;">Login</button></div>
 			</div>
-			<div class="template-gridLayout role-input">
-				<div class="btn-set vertical"><div class="btn-set"><button style="width:200px;">Login</button></div>
-			</div>');
+
+			HTML;
+			$grem->getLast()->close();
 			unset($grem);
 
 			?>

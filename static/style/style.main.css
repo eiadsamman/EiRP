@@ -236,6 +236,7 @@ span.header-ribbon {
 	text-align: center;
 	z-index: 100;
 	overflow: none;
+	font-size:12px;
 	/*backdrop-filter: blur(4px);
 	-webkit-backdrop-filter: blur(4px);
 	-moz-backdrop-filter: blur(4px);*/

@@ -79,11 +79,9 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	header("VENDOR_FN_CURRENT: " . $controller->criteria->getCurrentPage());
 
 	echo "<table class=\"bom-table statment-view hover strip\">";
-	echo "<thead class=\"table-head\" style=\"top: calc(161px - var(--gremium-header-toggle));background-color:#fff;z-index:1\">";
+	echo "<thead class=\"table-head\" style=\"top: calc(165px - var(--gremium-header-toggle));background-color:#fff;z-index:1\">";
 	echo "<tr>";
-	echo "<td>Date</td>";
 	echo "<td>ID</td>";
-	echo "<td></td>";
 	echo "<td>Description</td>";
 	echo "<td class=\"blank\"></td>";
 	echo "<td class=\"value-number\">Debit</td>";
@@ -97,9 +95,13 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 		if ($mysqli_result->num_rows > 0) {
 			while ($row = $mysqli_result->fetch_assoc()) {
 				echo "<tr>";
-				echo "<td>{$row['acm_ctime']}</td>"; //date("Y-m-d",$row['acm_ctime'])
-				echo "<td><a>{$row['acm_id']}</a></td>";
-				echo "<td>" . ($row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") . "{$row['acm_beneficial']}</td>";
+
+				echo "<td>";
+				echo "<div><a>{$row['acm_id']}</a></div>";
+				echo "<div>{$row['acm_ctime']}</div>";
+				echo "<div>" . ($row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") . "{$row['acm_beneficial']}</div>";
+				echo "</td>";
+
 				echo "<td class=\"value-comment\">
 					<span>{$row['accgrp_name']}: {$row['acccat_name']}</span>
 					<div>
@@ -107,10 +109,11 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 						<div>" . (is_null($row['acm_comments']) ? "-" : nl2br($row['acm_comments'])) . "</div>
 					</div>
 				</td>";
+
 				echo "<td class=\"blank\"></td>";
-				echo "<td class=\"value-number\">" . ($row['atm_value'] > 0 ? number_format($row['atm_value'], 2) : "-") . "</td>";
-				echo "<td class=\"value-number\">" . ($row['atm_value'] <= 0 ? number_format(abs($row['atm_value']), 2) : "-") . "</td>";
-				echo "<td class=\"value-number final " . ($row['cumulative_sum'] < 0 ? "negative" : "positive") . "\">" . number_format(abs($row['cumulative_sum']), 2) . "</td>";
+				echo "<td class=\"value-number\">" . ($row['atm_value'] > 0 ? number_format($row['atm_value'] , 2) : "-") . "</td>";
+				echo "<td class=\"value-number\">" . ($row['atm_value'] <= 0 ? number_format(abs($row['atm_value']) , 2) : "-") . "</td>";
+				echo "<td class=\"value-number final " . ($row['cumulative_sum'] < 0 ? "negative" : "positive") . "\">" . number_format(abs($row['cumulative_sum']) , 2) . "</td>";
 				echo "</tr>";
 			}
 		}
@@ -123,8 +126,6 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	if ($controller->criteria->getCurrentPage() == $pages) {
 		echo '<tfoot>';
 		echo "<tr>";
-		echo "<td></td>";
-		echo "<td></td>";
 		echo "<td></td>";
 		echo "<td></td>";
 		echo "<td></td>";
@@ -158,9 +159,8 @@ $menu = $grem->menu()->sticky(false)->open();
 $current_date = new DateTime();
 $current_date = $current_date->format("Y-m-d");
 echo <<<HTML
-<span class="menu-date_title">Date</span>
-<input type="text" id="js-input_date-start" style="width:110px" data-slo=":DATE" placeholder="From" value="{$initial_values['from']}" value=""  />
-<input type="text" id="js-input_date-end" style="width:110px" data-slo=":DATE" placeholder="To" value="{$initial_values['to']}" value="{$current_date}"  />
+<input type="text" id="js-input_date-start" style="width:110px" data-slo=":DATE" placeholder="From date" value="{$initial_values['from']}" value=""  />
+<input type="text" id="js-input_date-end" style="width:110px" data-slo=":DATE" placeholder="To date" value="{$initial_values['to']}" value="{$current_date}"  />
 <button id="js-input_cmd-update">Search</button>
 <input type="button" id="js-input_cmd-export" value="Export" />
 HTML;
@@ -169,7 +169,7 @@ $menu->close();
 $legend = $grem->legend()->open();
 echo <<<HTML
 <span id="js-output_statements-count">0</span>
-<span class="small-media-hide flex">Statements</span>
+<span class="small-media-hide flex"></span>
 <input type="button" class="pagination prev" id="js-input_page-prev" disabled value="&#xE618;" />
 <input type="text" id="js-input_page-current" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0" data-rangeend="100" />
 <input type="button" class="pagination next" id="js-input_page-next" disabled value="&#xE61B;" />
@@ -177,7 +177,7 @@ echo <<<HTML
 HTML;
 $legend->close();
 
-$article = $grem->article()->open();
+$article = $grem->article()->options(array("nobg"))->open();
 echo "<div id=\"js-container-output\" style=\"padding-bottom:50px\"></div>";
 $article->close();
 
@@ -186,6 +186,20 @@ unset($grem);
 <style>
 	.table-head {
 		position: sticky;
+	}
+
+	table.bom-table.statment-view>tbody>tr>td:nth-child(1)>div {
+			padding: 2px 5px;
+		}
+
+	.table-head::before {
+		position: absolute;
+		display: block;
+		content: "";
+		width: 100%;
+		height: 100%;
+		margin-top: -2px;
+		border-bottom: double 3px var(--bomtable-border-color);
 	}
 
 	td.value-comment {
@@ -271,6 +285,9 @@ unset($grem);
 	}
 
 	@media only screen and (max-width: 768px) {
+		table.bom-table.statment-view {
+			border: none;
+		}
 
 		table.bom-table.statment-view>thead,
 		table.bom-table.statment-view>tfoot {
@@ -282,53 +299,54 @@ unset($grem);
 		}
 
 		table.bom-table.statment-view>tbody>tr {
-			border-bottom: solid 1px var(--bomtable-border-color);
+			border: solid 1px var(--bomtable-border-color);
 			display: flex;
 			flex-wrap: wrap;
-
+			margin: 5px 0px;
 		}
 
 		table.bom-table.statment-view>tbody>tr>td {
 			border: none;
+			padding: 8px 10px;
 		}
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(1) {
-			width: 100px;
-			min-width: 100px;
+			flex: 1;
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(1)>div {
+			display: inline-block;
+			padding: 0px 10px;
 		}
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(2) {
-			width: 70px;
-			min-width: 70px;
+			flex: 1;
+			flex-basis: 100%;
 		}
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(3) {
 			flex: 1;
-
-		}
-
-		table.bom-table.statment-view>tbody>tr>td:nth-child(4) {
-			flex-basis: 100%;
+			display: none;
 		}
 
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(5) {
-			display: block;
-			flex: 1
+		table.bom-table.statment-view>tbody>tr>td.value-number,
+		td.value-number {
+			width: auto;
+			min-width: auto;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(6) {}
-
-		table.bom-table.statment-view>tbody>tr>td:nth-child(7) {}
-
-		table.bom-table.statment-view>tbody>tr>td:nth-child(8) {
-			font-weight: bold;
+		table.bom-table.statment-view>tbody>tr>td.value-number:nth-child(4),
+		table.bom-table.statment-view>tbody>tr>td.value-number:nth-child(5) {
+			flex: 1 1 50%;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(n+6) {
-			min-width: 80px;
-			width: 90px;
+		table.bom-table.statment-view>tbody>tr>td:nth-child(6) {
+			color:var(--root-font-lightcolor);
+			flex: 1;
 		}
+
+
 	}
 
 	@media only screen and (max-width: 624px) {

@@ -9,6 +9,7 @@ $(document).ready(function (e) {
 	});
 	let slo_page_current = $("#js-input_page-current").slo({
 		onselect: function (e) {
+			console.log(e.hidden);
 			nav.setProperty("page", e.hidden);
 			nav.pushState();
 			xhttp_request(nav);

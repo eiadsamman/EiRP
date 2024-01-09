@@ -34,22 +34,11 @@ Crit v2.1 210818
 function UploadDOM($fileID, $fileMime, $fileTitle, $fileSelected = false, $domField = "")
 {
 	return "
-		<span>
-			<span class=\"upload_record_pointer\">
-				<span class=\"btn-set\">
-					<label class=\"btn-checkbox\">
-						<input type=\"checkbox\" " . ($fileSelected ? "checked=\"checked\"" : "") . " name=\"{$domField}[]\" value=\"$fileID\">
-						<span></span>
-						<div></div>
-					</label>
-					<button type=\"button\" data-id=\"$fileID\" class=\"js_up_delete bnt-remove\"></button>
-				</span>
-			</span>
-			<span class=\"upload_file_details\">
-				<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"$fileMime\" href=\"download/?id=$fileID&amp;pr=v\" data-href=\"download/?pr=v&amp;id=$fileID\">$fileTitle</a>
-			</span>
-		</span>
-		";
+	<tr>
+		<td class=\"checkbox\"><label><input name=\"{$domField}[]\" value=\"$fileID\" type=\"checkbox\"" . ($fileSelected ? "checked=\"checked\"" : "") . " /></label></td>
+		<td class=\"op-remove\" data-id=\"$fileID\"><span></span></td>
+		<td class=\"content\"><a class=\"js_upload_view\" target=\"_blank\" data-mime=\"$fileMime\" href=\"download/?id=$fileID&amp;pr=v\" data-href=\"download/?pr=v&amp;id=$fileID\">$fileTitle</a></td>
+	</tr>";
 }
 
 $debug = false;
@@ -57,12 +46,12 @@ $database['primary'] = null;
 $pageper = 20;
 $accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
 
-if (isset($database['perpage']) && (int)$database['perpage'] > 0) {
+if (isset($database['perpage']) && (int) $database['perpage'] > 0) {
 	$pageper = $database['perpage'];
 }
 
 
-foreach ((array)$database['fields'] as $fieldk => $fieldv) {
+foreach ((array) $database['fields'] as $fieldk => $fieldv) {
 	if ($fieldv[4] == "primary") {
 		if ($database['primary'] != null) {
 			die("Primary ID conflict");
@@ -107,9 +96,9 @@ function single_call(&$app, $database, $id)
 function sqlvalue($type, $value, $isset)
 {
 	if ($type == "int") {
-		return $isset && trim($value) != "" ? (int)($value) : "NULL";
+		return $isset && trim($value) != "" ? (int) ($value) : "NULL";
 	} elseif ($type == "float") {
-		return $isset && trim($value) != "" ? (float)($value) : "NULL";
+		return $isset && trim($value) != "" ? (float) ($value) : "NULL";
 	} elseif ($type == "string") {
 		return $isset && trim($value) != "" ? "'" . addslashes($value) . "'" : "NULL";
 	} else {
@@ -139,7 +128,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 	$smart = "";
 	foreach ($database['fields'] as $fieldk => $fieldv) {
 		if ($fieldv[4] == "file") {
-		} elseif ($fieldv[6] == true) {/*Allow field value updating*/
+		} elseif ($fieldv[6] == true) { /*Allow field value updating*/
 			$q .= $smart . "$fieldk";
 			$smart = ",\n\t\t";
 		}
@@ -151,7 +140,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 
 	foreach ($database['fields'] as $fieldk => $fieldv) {
 		if ($fieldv[4] != "file") {
-			if ($fieldv[6] == true) {/*Allow field value updating*/
+			if ($fieldv[6] == true) { /*Allow field value updating*/
 				if (($fieldv[4] == 'hidden' || $fieldv[4] == 'text' || $fieldv[4] == 'textarea')) {
 					$q .= $smart . sqlvalue($fieldv[5], $_POST[$database['hash']['r'][$fieldk]], isset($_POST[$database['hash']['r'][$fieldk]]));
 				} elseif (($fieldv[4] == 'slo')) {
@@ -159,7 +148,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 				} else if ($fieldv[4] == 'default') {
 					$q .= $smart . sqlvalue($fieldv[5], $fieldv[10], isset($fieldv[10]));
 				} else if ($fieldv[4] == 'primary') {
-					$idvalue = (isset($_POST[$database['hash']['r'][$fieldk]]) && (int)$_POST[$database['hash']['r'][$fieldk]] != 0 ? (int)$_POST[$database['hash']['r'][$fieldk]] : 0);
+					$idvalue = (isset($_POST[$database['hash']['r'][$fieldk]]) && (int) $_POST[$database['hash']['r'][$fieldk]] != 0 ? (int) $_POST[$database['hash']['r'][$fieldk]] : 0);
 					$q .= $smart . ($idvalue == 0 ? "NULL" : $idvalue);
 				} else if ($fieldv[4] == 'bool') {
 					$q .= $smart . (isset($_POST[$database['hash']['r'][$fieldk]]) ? "1" : "0");
@@ -179,7 +168,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 
 	foreach ($database['fields'] as $fieldk => $fieldv) {
 		if ($fieldv[4] != "file") {
-			if ($fieldv[6] == true) {/*Allow field value updating*/
+			if ($fieldv[6] == true) { /*Allow field value updating*/
 				if (($fieldv[4] == 'hidden' || $fieldv[4] == 'text' || $fieldv[4] == 'textarea')) {
 					$q .= $smart . "`$fieldk`=VALUES(`$fieldk`)";
 				} elseif (($fieldv[4] == 'slo')) {
@@ -239,7 +228,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 
 
 if ($fs()->permission->delete && isset($_POST['method']) && $_POST['method'] == 'delete' && (!isset($database['disable-delete']) || $database['disable-delete'] != true)) {
-	$record_id = (int)$_POST['id'];
+	$record_id = (int) $_POST['id'];
 	try {
 		include($app->root . 'admin/class/attachlib.php');
 		$ulib = new AttachLib($app);
@@ -272,18 +261,18 @@ if ($fs()->permission->delete && isset($_POST['method']) && $_POST['method'] == 
 
 
 if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepare'], $_POST['id']) && (!isset($database['readonly']) || !$database['readonly'])) {
-	$_POST['id'] = (int)$_POST['id'];
+	$_POST['id'] = (int) $_POST['id'];
 	$cleaned = $database['fields'];
 	foreach ($cleaned as $k => $v) {
 		$cleaned[$k] = "";
 	}
 	$op_type = null;
-	if ((int)$_POST['id'] == 0) {
+	if ((int) $_POST['id'] == 0) {
 		$op_type = "add";
-		$cleaned[$database['primary']] = (int)$_POST['id'];
+		$cleaned[$database['primary']] = (int) $_POST['id'];
 	} else {
 		$op_type = "edit";
-		if ($cleaned = single_call($app, $database, (int)$_POST['id'])) {
+		if ($cleaned = single_call($app, $database, (int) $_POST['id'])) {
 		} else {
 			echo "Fetching record information failed";
 			exit;
@@ -304,7 +293,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 		}
 	}
 	echo "<table class=\"bom-table hover\">
-			<thead><tr class=\"special\"><td colspan=\"3\"><span id=\"jQcomtitle\"><span class=\"vs-add\"><span></span></span>" . ((int)$_POST['id'] == 0 ? "Add a new record to " : "Modify an existing record from ") . "</span>`{$database['tablename']}`</td></tr></thead>
+			<thead><tr class=\"special\"><td colspan=\"3\"><span id=\"jQcomtitle\"><span class=\"vs-add\"><span></span></span>" . ((int) $_POST['id'] == 0 ? "Add a new record to " : "Modify an existing record from ") . "</span>`{$database['tablename']}`</td></tr></thead>
 			<tbody>";
 
 	foreach ($database['fields'] as $fieldk => $fieldv) {
@@ -331,7 +320,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 		} elseif ($fieldv[4] == 'bool') {
 			echo "<tr>
 						<th style=\"min-width:130px\">{$fieldv[1]}</th>
-						<td><label class=\"ios-io\"><input type=\"checkbox\" id=\"{$database['hash']['r'][$fieldk]}\" name=\"{$database['hash']['r'][$fieldk]}\" " . (isset($cleaned[$fieldk]) && (int)$cleaned[$fieldk] == 1 ? " checked=\"checked\" " : "") . " class=\"change-we-status\" /><span>&nbsp;</span><div></div></lable></td>
+						<td><label class=\"ios-io\"><input type=\"checkbox\" id=\"{$database['hash']['r'][$fieldk]}\" name=\"{$database['hash']['r'][$fieldk]}\" " . (isset($cleaned[$fieldk]) && (int) $cleaned[$fieldk] == 1 ? " checked=\"checked\" " : "") . " class=\"change-we-status\" /><span>&nbsp;</span><div></div></lable></td>
 						<td class=\"css_fieldDesc\"><span>" . (isset($fieldv[9]) ? $fieldv[9] : "") . "</span></td></tr>";
 		} elseif ($fieldv[4] == 'textarea') {
 			echo "<tr>
@@ -344,46 +333,56 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 		} elseif ($fieldv[4] == 'file') {
 			// accept=\"image/*\" Here
 
-			$_uploads_query = $app->db->query("
-						SELECT up_id,up_name,up_size,up_date,up_pagefile,up_mime,up_rel 
-						FROM uploads 
-						WHERE 
-							(up_rel={$_POST['id']} OR up_rel=0)
-							AND up_deleted=0 
-							AND up_pagefile={$fieldv[5]} 
-						ORDER BY 
-							up_rel DESC, up_date DESC;");
+			$_uploads_query = $app->db->query(
+				"SELECT 
+					up_id, up_name, up_size, up_date, up_pagefile, up_mime, up_rel 
+				FROM 
+					uploads 
+				WHERE 
+					(up_rel={$_POST['id']} OR up_rel = 0)
+					AND up_deleted = 0 
+					AND up_pagefile = {$fieldv[5]} 
+				ORDER BY 
+					up_rel DESC, up_date DESC;");
 
-			echo "<tr>
-						<th style=\"min-width:130px\">{$fieldv[1]}</th>
-						<td style=\"min-width:400px\">
-							<div class=\"btn-set\" style=\"justify-content:left\">
-								<input id=\"up_trigger{$fieldk}\" class=\"js_upload_trigger\" type=\"button\" value=\"Upload\" />
-								<input type=\"file\" id=\"up_btn{$fieldk}\" class=\"js_uploader_btn\" multiple=\"multiple\" />
-								<span id=\"up_list{$fieldk}\" class=\"js_upload_list\">
-									<div id=\"up_handler{$fieldk}\">";
+			echo <<<HTML
+				<tr>
+					<th style="min-width:130px">{$fieldv[1]}</th>
+					<td style="min-width:400px">
+						<div class="btn-set" style="justify-content:left">
+							<input id="up_trigger{$fieldk}" class="js_upload_trigger" type="button" value="Upload" />
+							<input type="file" id="up_btn{$fieldk}" class="js_uploader_btn" multiple="multiple" />
+							<span id="up_list{$fieldk}" class="js_upload_list">
+								<div id="up_handler{$fieldk}">
+									<table class="bom-table hover">
+										<tbody>
+			HTML;
 			while ($_uploads_query && $_uploads_row = $_uploads_query->fetch_assoc()) {
 				echo UploadDOM(
 					$_uploads_row['up_id'],
 					(in_array($_uploads_row['up_mime'], $accepted_mimes) ? "image" : "document"),
 					$_uploads_row['up_name'],
-					((int)$_uploads_row['up_rel'] == 0 ? false : true),
+					((int) $_uploads_row['up_rel'] == 0 ? false : true),
 					"attachments[$fieldk]"
 				);
 			}
-			echo "
-									</div>
-								</span>
-								<span id=\"up_count{$fieldk}\" class=\"js_upload_count\"><span>0 / 0</span></span>
-							</div>
-						</td>
-						<td class=\"css_fieldDesc\"><span>" . (isset($fieldv[9]) ? $fieldv[9] : "") . "</span></td></tr>";
+			echo <<<HTML
+										</tbody>
+									</table>
+								</div>
+							</span>
+							<span id="up_count{$fieldk}" class="js_upload_count"><span>0 / 0</span></span>
+						</div>
+					</td>
+					<td class="css_fieldDesc"><span>{$fieldv[9]}</span></td>
+				</tr>
+			HTML;
 		}
 	}
 
 	echo "
 		<tr><td align=\"left\" colspan=\"3\" id=\"jQcommands\">
-			<div class=\"btn-set\" style=\"justify-content:center\"><button type=\"submit\" id=\"jQsubmit\">" . ((int)$_POST['id'] == 0 ? "Add" : "Modify") . "</button><input type=\"button\" id=\"jQcancel\" value=\"Cancel\" /></div>
+			<div class=\"btn-set\" style=\"justify-content:center\"><button type=\"submit\" id=\"jQsubmit\">" . ((int) $_POST['id'] == 0 ? "Add" : "Modify") . "</button><input type=\"button\" id=\"jQcancel\" value=\"Cancel\" /></div>
 		</td></tr>
 	</tbody>
 	</table>
@@ -394,7 +393,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 
 
 if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
-	$_POST['page'] = (int)$_POST['page'];
+	$_POST['page'] = (int) $_POST['page'];
 	$totalRecords = 0;
 	$pagecurrent = 1;
 	$pagecount = 1;
@@ -419,21 +418,21 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 						$searchQuery .= " $sq ";
 						$searchOccurrenece++;
 					} elseif ($fieldv[5] == "int" && is_numeric($searchCriteria['search_' . $database['hash']['r'][$fieldk]])) {
-						$searchQuery .= " AND {$fieldk} = " . (int)$searchCriteria['search_' . $database['hash']['r'][$fieldk]];
+						$searchQuery .= " AND {$fieldk} = " . (int) $searchCriteria['search_' . $database['hash']['r'][$fieldk]];
 						$searchOccurrenece++;
 					} elseif ($fieldv[5] == "float" && is_numeric($searchCriteria['search_' . $database['hash']['r'][$fieldk]])) {
-						$searchQuery .= " AND {$fieldk} = " . (float)$searchCriteria['search_' . $database['hash']['r'][$fieldk]];
+						$searchQuery .= " AND {$fieldk} = " . (float) $searchCriteria['search_' . $database['hash']['r'][$fieldk]];
 						$searchOccurrenece++;
 					}
-				} elseif ($fieldv[4] == 'slo' && (isset($searchCriteria['search_' . $database['hash']['r'][$fieldk]][1]) && (int)($searchCriteria['search_' . $database['hash']['r'][$fieldk]][1]) != 0)) {
-					$searchQuery .= " AND {$fieldv[8]} = " . ((int)$searchCriteria['search_' . $database['hash']['r'][$fieldk]][1]);
+				} elseif ($fieldv[4] == 'slo' && (isset($searchCriteria['search_' . $database['hash']['r'][$fieldk]][1]) && (int) ($searchCriteria['search_' . $database['hash']['r'][$fieldk]][1]) != 0)) {
+					$searchQuery .= " AND {$fieldv[8]} = " . ((int) $searchCriteria['search_' . $database['hash']['r'][$fieldk]][1]);
 					$searchOccurrenece++;
 				} elseif ($fieldv[4] == 'bool') {
 					//$searchQuery.=" AND {$fieldk} = ".((int)$searchCriteria['search_'.$fieldk][1]);
 				} elseif ($fieldv[4] == 'file') {
 					//$searchQuery.=" AND {$fieldk} = ".((int)$searchCriteria['search_'.$fieldk][1]);
-				} elseif ($fieldv[4] == 'primary' && (int)$searchCriteria['search_' . $database['hash']['r'][$fieldk]] != 0) {
-					$searchQuery .= " AND {$fieldk} = " . (int)$searchCriteria['search_' . $database['hash']['r'][$fieldk]];
+				} elseif ($fieldv[4] == 'primary' && (int) $searchCriteria['search_' . $database['hash']['r'][$fieldk]] != 0) {
+					$searchQuery .= " AND {$fieldk} = " . (int) $searchCriteria['search_' . $database['hash']['r'][$fieldk]];
 					$searchOccurrenece++;
 				}
 			}
@@ -457,7 +456,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 	$pagecurrent = $_POST['page'];
 	$pagecurrent = $pagecurrent > $pagecount ? $pagecount : $pagecurrent;
 	$pagecurrent = $pagecurrent < 1 ? 1 : $pagecurrent;
-	$pagenav = ((int)$pagecurrent - 1) * $pageper;
+	$pagenav = ((int) $pagecurrent - 1) * $pageper;
 
 
 	$filehandler = "";
@@ -512,7 +511,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 					}
 
 					if ($fieldv[4] == "bool") {
-						echo ((int)$row[$fieldk] == 1 ? "Yes" : "");
+						echo ((int) $row[$fieldk] == 1 ? "Yes" : "");
 					} elseif ($fieldv[4] == "file") {
 						if (is_null($row[$fieldk . "_count"])) {
 							echo "-";
@@ -616,7 +615,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 	<div class="btn-set flex" id="jQnavigator">
 		<?php
 		if (!isset($database['readonly']) || (isset($database['readonly']) && !$database['readonly'])) {
-			echo '<button type="button" class="btn-add" id="jQbtnAdd"></button>';
+			echo '<button type="button" class="plus" id="jQbtnAdd"></button>';
 		}
 		?>
 
@@ -635,7 +634,8 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 
 	<div style="position: relative;margin-top: 10px;">
 		<span style="padding: 0;width:0px;border:none;">
-			<div style="display:none;position: absolute;background-color: var(--root-background-color);top:100%;left:0px;padding: 10px;border:solid 1px #ccc;border-radius: 4px; box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);margin-top: 5px;" id="jQDivSearchWindow">
+			<div style="display:none;position: absolute;background-color: var(--root-background-color);top:100%;left:0px;padding: 10px;border:solid 1px #ccc;border-radius: 4px; box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);margin-top: 5px;"
+				id="jQDivSearchWindow">
 				<form id="jQFromSearch">
 					<table class="bom-table">
 						<thead>
@@ -703,7 +703,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		<tr data-id="0">
 			<?php
 			$colspan = 0
-				+ ($fs()->permission->delete && !(isset($database['disable-delete']) && $database['disable-delete'])  ? 1 : 0)
+				+ ($fs()->permission->delete && !(isset($database['disable-delete']) && $database['disable-delete']) ? 1 : 0)
 				+ ($fs()->permission->edit ? 1 : 0);
 
 			if (!isset($database['readonly']) || (isset($database['readonly']) && !$database['readonly'])) {
@@ -723,7 +723,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 
 
 <script type="text/javascript">
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 
 		var slo = {};
 		let nav = {
@@ -731,20 +731,20 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			'search': ''
 		};
 		let searchWindowState = false;
-		popup.onboundaryclick(function() {});
+		popup.onboundaryclick(function () { });
 
 		<?php
-		if (isset($_GET['nav']) && (int)$_GET['nav'] > 0) {
-			echo "nav.current=" . (int)$_GET['nav'] . ";";
+		if (isset($_GET['nav']) && (int) $_GET['nav'] > 0) {
+			echo "nav.current=" . (int) $_GET['nav'] . ";";
 		}
 		if (isset($_GET['search']) && trim($_GET['search']) != "") {
 			echo "nav.search=\"" . base64_decode($_GET['search']) . "\";";
 		}
 		?>
 
-		$("#jQDivSearchWindow").find("[data-slo]").each(function() {
+		$("#jQDivSearchWindow").find("[data-slo]").each(function () {
 			$(this).slo({
-				onselect: function(e) {
+				onselect: function (e) {
 					return false;
 				},
 				limit: 7
@@ -752,11 +752,11 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		});
 
 
-		$("#jQbtnRefresh").on("click", function(e) {
+		$("#jQbtnRefresh").on("click", function (e) {
 			Populate();
 		});
 
-		$("#jQFromSearch").on("submit", function(e) {
+		$("#jQFromSearch").on("submit", function (e) {
 			e.preventDefault();
 			nav.search = $("#jQFromSearch").serialize().replace(/[^&]+=\.?(?:&|$)/g, '');
 			nav.current = 1;
@@ -770,7 +770,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			Populate();
 			return false;
 		});
-		$("#jQButtonSearchClear").on("click", function() {
+		$("#jQButtonSearchClear").on("click", function () {
 			nav.search = "";
 			nav.current = 1;
 			history.pushState({
@@ -782,12 +782,12 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			Populate();
 		});
 
-		$("#jQButtonSearch").on("click", function() {
+		$("#jQButtonSearch").on("click", function () {
 			searchWindowState = !searchWindowState;
 			$("#jQDivSearchWindow").css("display", (searchWindowState ? "block" : "none"));
 		});
 
-		let Populate = function() {
+		let Populate = function () {
 			overlay.show();
 			var $ajax = $.ajax({
 				type: 'POST',
@@ -797,7 +797,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 					'page': nav.current,
 					'search': nav.search
 				}
-			}).done(function(data) {
+			}).done(function (data) {
 				$("#jQPopulatePool").html(data);
 				let legend = $("#jQPopulatePool").find("td#LegendParams");
 
@@ -817,16 +817,16 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 				}
 				nav.current = ~~legend.attr("data-pagecurrent");
 
-			}).fail(function(a, b, c) {
+			}).fail(function (a, b, c) {
 				messagesys.failure("Unable to execute your request, " + b);
-			}).always(function() {
+			}).always(function () {
 				overlay.hide();
 			});
 		}
 		Populate();
 
 
-		$("#jQnavNext").on("click", function() {
+		$("#jQnavNext").on("click", function () {
 			nav.current += 1;
 			history.pushState({
 				'nav': nav.current,
@@ -834,7 +834,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			}, "<?php echo $fs()->title; ?>", "<?php echo $fs()->dir; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
 			Populate();
 		});
-		$("#jQnavFirst").on("click", function() {
+		$("#jQnavFirst").on("click", function () {
 			nav.current = 1;
 			history.pushState({
 				'nav': nav.current,
@@ -842,7 +842,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			}, "<?php echo $fs()->title; ?>", "<?php echo $fs()->dir; ?>/?nav=" + nav.current + "&search=" + btoa(nav.search));
 			Populate();
 		});
-		$("#jQnavPrev").on("click", function() {
+		$("#jQnavPrev").on("click", function () {
 			nav.current -= 1;
 			history.pushState({
 				'nav': nav.current,
@@ -851,7 +851,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 			Populate();
 		});
 
-		window.onpopstate = function(e) {
+		window.onpopstate = function (e) {
 			if (e.state && e.state.nav)
 				nav.current = e.state.nav;
 			else
@@ -865,7 +865,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		};
 
 		<?php if ($fs()->permission->edit || $fs()->permission->add) { ?>
-			var FormDisplay = function($evoker, _id) {
+			var FormDisplay = function ($evoker, _id) {
 				overlay.show();
 				var $ajax = $.ajax({
 					type: 'POST',
@@ -875,10 +875,10 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 						'ea_prepare': ''
 					},
 					async: true,
-				}).done(function(data) {
+				}).done(function (data) {
 					overlay.hide();
 					popup.show(data);
-					popup.self().find("[data-slo]").each(function() {
+					popup.self().find("[data-slo]").each(function () {
 						var $pop = $(this);
 						slo[$pop.attr('id')] = $("#" + $pop.attr('id')).slo({
 							limit: 7
@@ -896,8 +896,8 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 							list_button:$("#up_count' . $fieldk . '"),
 							emptymessage:"[No files uploaded]",
 							delete_method:"permanent",
-							upload_url:"' . $fs(186)->dir  . '",
-							relatedpagefile:' . (int)$fieldv[5] . ',
+							upload_url:"' . $fs(186)->dir . '",
+							relatedpagefile:' . (int) $fieldv[5] . ',
 							multiple:true,
 							inputname:"attachments[' . $fieldk . ']",
 							domhandler:$("#up_handler' . $fieldk . '"),
@@ -910,11 +910,11 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 
 
 
-					popup.self().find("#jQcancel").on('click', function() {
+					popup.self().find("#jQcancel").on('click', function () {
 						popup.hide();
 					});
 					popup.self().find("#jQcancel").focus();
-					popup.self().find("#jQform").on('submit', function(e) {
+					popup.self().find("#jQform").on('submit', function (e) {
 						overlay.show();
 						e.preventDefault();
 						$form = $(this);
@@ -924,52 +924,52 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 							type: 'POST',
 							url: '<?php echo $fs()->dir; ?>',
 							data: _ser,
-						}).done(function(data) {
-							<?php if ($debug) { ?>popup.show(data);
-							return;
-						<?php } ?>
-						$form.find("input,button,textarea").prop("disabled", false);
-						$form.find("#jQsubmit").focus();
+						}).done(function (data) {
+										<?php if ($debug) { ?>popup.show(data);
+								return;
+							<?php } ?>
+							$form.find("input,button,textarea").prop("disabled", false);
+							$form.find("#jQsubmit").focus();
 
-						let json = false;
-						try {
-							json = JSON.parse(data);
-						} catch (e) {
-							messagesys.failure("Parsing output failed");
-							return false;
-						}
-
-						if (json.result == true) {
-							if (json.method == 0) {
-								messagesys.success("Record added successfully");
-								Populate();
-							} else {
-								messagesys.success("Record modified successfully");
-								Populate();
+							let json = false;
+							try {
+								json = JSON.parse(data);
+							} catch (e) {
+								messagesys.failure("Parsing output failed");
+								return false;
 							}
-						} else {
-							messagesys.failure(json.string);
-						}
 
-						}).fail(function(a, b, c) {
+							if (json.result == true) {
+								if (json.method == 0) {
+									messagesys.success("Record added successfully");
+									Populate();
+								} else {
+									messagesys.success("Record modified successfully");
+									Populate();
+								}
+							} else {
+								messagesys.failure(json.string);
+							}
+
+						}).fail(function (a, b, c) {
 							messagesys.failure("Executing request failed, " + b);
-						}).always(function() {
+						}).always(function () {
 							overlay.hide();
 						});
 
 						return false;
 					});
-				}).fail(function(a, b, c) {
+				}).fail(function (a, b, c) {
 					overlay.hide();
 					messagesys.failure("Unable to execute your request, " + b);
 				});
 			}
-			$("#jQmtable").on('click', ".op-edit", function() {
+			$("#jQmtable").on('click', ".op-edit", function () {
 				var $this = $(this);
 				var _id = $this.closest("tr").attr("data-id");
 				FormDisplay($this, _id);
 			});
-			$("#jQbtnAdd").on('click', function() {
+			$("#jQbtnAdd").on('click', function () {
 				var $this = $(this);
 				var _id = 0;
 				FormDisplay($this, _id);
@@ -977,7 +977,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		<?php } ?>
 
 		<?php if ($fs()->permission->delete) { ?>
-			$("#jQmtable").on('click', ".op-remove", function() {
+			$("#jQmtable").on('click', ".op-remove", function () {
 				if (window.confirm("Are you sure you want to delete this record?") != true) {
 					return false;
 				}
@@ -991,14 +991,14 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 						'id': _id,
 						'method': 'delete'
 					}
-				}).done(function(data) {
+				}).done(function (data) {
 					if (data == "1") {
 						$this.closest("tr").remove();
 						messagesys.success("Record delete successfully");
 					} else {
 						messagesys.failure("Unable to delete requested record");
 					}
-				}).fail(function(a, b, c) {
+				}).fail(function (a, b, c) {
 					messagesys.failure("Unable to execute your request, " + b);
 				});
 			});

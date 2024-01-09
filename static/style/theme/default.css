@@ -1,8 +1,8 @@
 .theme-default {
 
-	--root-background-color: rgb(250, 251, 255);
+	--root-background-color: #F0F2F5;/* rgb(250, 251, 255) */;
 	--root-font-color: rgb(33, 37, 41);
-	--root-font-lightcolor: rgb(100, 100, 100);
+	--root-font-lightcolor: #344767;
 	--root-link-color: dodgerblue;
 	--root-ribbon-background-color: #e3e3ee;
 	--root-ribbon-border-color: #ccc;
@@ -18,7 +18,7 @@
 
 	--root-modal-background-color: rgba(238, 238, 245, .6);
 
-	--bomtable-border-color: #ebebee;
+	--bomtable-border-color: rgb(228, 228, 233);
 	--bomtable-background-color: #fff;
 	--bomtable-hover-color: #f0f0f6;
 	--bomtable-stripes-color: #fafafc;
@@ -45,23 +45,24 @@
 	--button_disabled-bgcolor: var(--static-bgcolor);
 
 
-
-
 	--slo-menu-background-color: white;
 	--slo-menu-itemhover-background-color: rgb(243, 245, 253);
-	--slo-menu-itemactive-background-color: var(--root-ribbon-menu-itemhover-background-color);
+	--slo-menu-itemactive-background-color: rgba(217, 235, 255, 1);/* var(--root-ribbon-menu-itemhover-background-color); */
+
+
+
 }
 
 .theme-default.dark {
-	--root-background-color: #121212;
+	--root-background-color: #1A2035;
 	--root-font-color: #eee;
 	--root-font-lightcolor: rgb(200, 200, 200);
 	--root-link-color: hsl(206, 100%, 65%);
-	--root-ribbon-background-color: #38383f;
+	--root-ribbon-background-color: #202940;
 	--root-ribbon-border-color: #5c5c67;
 	--root-ribbon-font-color: white;
-	--root-ribbon-menu-background-color: rgba(56, 56, 67, 0.969);
-	--root-ribbon-menu-header-background-color: #38383f;
+	--root-ribbon-menu-background-color: #202940;
+	--root-ribbon-menu-header-background-color: #202940;
 	--root-ribbon-menu-itemhover-background-color: rgb(80, 80, 100);
 	
 	--root-input-background-color: white;
@@ -72,20 +73,20 @@
 	--root-modal-background-color: rgba(18, 18, 18, 0.8);
 
 	--bomtable-border-color: #323239;
-	--bomtable-background-color: #121212;
-	--bomtable-hover-color: rgb(50, 50, 63);
-	--bomtable-stripes-color: #18181b;
+	--bomtable-background-color: #1A2035;
+	--bomtable-hover-color: hsl(223, 33%, 25%);
+	--bomtable-stripes-color: #202940;
 
 
 
 	--input-border-radius: 5px;
-	--input-font-color: black;
-	--input-bgcolor: rgb(25, 25, 30);
-	--input-border: rgb(60, 60, 75);
+	--input-font-color: rgb(33, 37, 41);
+	--input-bgcolor: rgb(32, 41, 64);
+	--input-border: rgb(115, 115, 135);
 	--input_hover-border: rgb(153, 153, 157);
 	--input_active-border: rgba(82, 168, 236, .75);
 
-	--static-bgcolor: rgb(33, 33, 40);
+	--static-bgcolor: rgb(25, 34, 57);
 	--static-border: var(--input-border);
 	--static_hover-border: var(--bomtable-border-color);
 

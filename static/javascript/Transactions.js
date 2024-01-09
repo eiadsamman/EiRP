@@ -115,7 +115,7 @@ $(document).ready(function (e) {
 					clearFields();
 					Upload.clean();
 					slo_objects.getElementById("beneficiary").slo.focus();
-					$("#issuer-account-balance").val(payload.balance);
+					$("#issuer-account-balance").html(payload.balance);
 					$("#jqroot_bal").html(payload.balance + " " + payload.currency);
 				} else {
 					messagesys.failure(payload.error);

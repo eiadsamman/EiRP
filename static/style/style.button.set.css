@@ -11,6 +11,11 @@
 	justify-content: center;
 }
 
+.btn-set.right {
+	justify-content: end;
+}
+
+
 .btn-set>* {
 	outline: none;
 	background-color: var(--static-bgcolor);
@@ -20,17 +25,33 @@
 	margin-left: -.5px;
 	margin-right: -.5px;
 	white-space: nowrap;
-
 }
 
-.btn-set>*:first-child {
+.btn-set>*:first-child,
+.btn-set>*.edge-left {
 	border-top-left-radius: var(--input-border-radius);
 	border-bottom-left-radius: var(--input-border-radius);
 }
 
-.btn-set>*:last-child {
+.btn-set>*:last-child,
+.btn-set>*.edge-right {
 	border-top-right-radius: var(--input-border-radius);
 	border-bottom-right-radius: var(--input-border-radius);
+}
+
+.btn-set>span.slo-wrap:first-child>input,
+.btn-set>span.slo-wrap.edge-left>input {
+	border-top-left-radius: var(--input-border-radius);
+	border-bottom-left-radius: var(--input-border-radius);
+	padding-left: 10px;
+}
+
+.btn-set>span.slo-wrap:last-child>input,
+.btn-set>span.slo-wrap.edge-right>input
+ {
+	border-top-right-radius: var(--input-border-radius);
+	border-bottom-right-radius: var(--input-border-radius);
+	padding-right: 10px;
 }
 
 /* #region - Components*/
@@ -41,7 +62,12 @@
 	/* background-color: var(--color-faint-white); */
 }
 
+.btn-set>label {
+	height: 36px;
+}
+
 .btn-set>a,
+.btn-set>label,
 .btn-set>span {
 	display: flex;
 	align-items: center;
@@ -67,7 +93,9 @@
 }
 
 
+.btn-set>a,
 .btn-set>input,
+.btn-set>label,
 .btn-set>textarea {
 	font-size: 1em;
 	max-width: 100%;
@@ -75,13 +103,16 @@
 	background-color: var(--input-bgcolor);
 }
 
+.btn-set>a:hover,
 .btn-set>input:hover,
 .btn-set>label:hover,
 .btn-set>textarea:focus {
+	text-decoration: none;
 	border-color: var(--input_hover-border);
 	z-index: 12;
 }
 
+.btn-set>a:focus,
 .btn-set>input:focus,
 .btn-set>label:focus,
 .btn-set>textarea:focus {
@@ -93,12 +124,7 @@
 }
 
 
-
-
-
-
-.btn-set>button,
-.btn-set>a {
+.btn-set>button {
 	font-size: 1em;
 	background-color: var(--button-bgcolor);
 	color: var(--button-font-color) !important;
@@ -110,18 +136,14 @@
 	padding: 0px 20px;
 }
 
-
-
-.btn-set>button:hover,
-.btn-set>a:hover {
+.btn-set>button:hover {
 	background-color: var(--button_hover-bgcolor);
 	text-decoration: none;
 	z-index: 15;
 	transition: background-color .2s;
 }
 
-.btn-set>button:focus,
-.btn-set>a:focus {
+.btn-set>button:focus {
 	background-color: var(--button_focus-bgcolor);
 	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
@@ -135,11 +157,6 @@
 	transition: background-color .2s;
 }
 
-.btn-set>a:active {
-	transition: background-color .2s;
-}
-
-
 .btn-set>input[type=button] {
 	padding: 0px 15px;
 	font-size: 1em;
@@ -150,16 +167,7 @@
 
 
 
-
-
-
-
-.btn-set>input.flex,
-.btn-set>button.flex,
-.btn-set>a.flex,
-.btn-set>label.flex,
-.btn-set>span.flex,
-.btn-set>textarea.flex {
+.btn-set>*.flex {
 	flex: 1;
 }
 
@@ -173,559 +181,190 @@
 	border-color: var(--static-border);
 }
 
+/* #endregion - Components*/
 
 
+/* #region - Styling*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.btn-set>*.clr-red {
-	color: rgba(180, 30, 40, 1);
-	border-color: rgba(230, 80, 100, .3)
+.btn-set>*.red {
+	color: rgb(195, 45, 50);
+	border-color: rgba(240, 90, 90, .5);
+	z-index: 10;
 }
 
-.btn-set>*.clr-red:hover {
+.btn-set>a.red:hover,
+.btn-set>button.red:hover,
+.btn-set>input.red:hover {
 	border-color: rgba(180, 42, 50, .4);
 	background-color: rgba(255, 180, 200, .05);
 }
 
-.btn-set>*.clr-red:focus {
+.btn-set>a.red:focus,
+.btn-set>button.red:focus,
+.btn-set>input.red:focus {
 	border-color: rgba(180, 42, 50, .4);
 	box-shadow: 0 0 3px 0px rgba(220, 70, 100, 0.4);
 	background-color: rgba(255, 180, 200, .05);
 }
 
-.btn-set>*.clr-red:active {
+.btn-set>a.red:active,
+.btn-set>button.red:active,
+.btn-set>input.red:active {
 	box-shadow: 0 0 4px 1px rgba(220, 70, 100, 0.4);
 	background-color: rgba(255, 180, 200, .1);
 }
 
-.btn-set>*.clr-green {
-	color: rgba(10, 140, 20, 1);
-	border-color: rgba(30, 150, 30, .3)
+
+.btn-set>*.green {
+	color: rgb(30, 160, 40);
+	border-color: rgba(30, 150, 30, .3);
+	z-index: 10;
 }
 
-.btn-set>*.clr-green:hover {
+.btn-set>a.green:hover,
+.btn-set>button.green:hover,
+.btn-set>input.green:hover {
 	border-color: rgba(42, 180, 50, .4);
 	background-color: rgba(180, 255, 200, .05);
 }
 
-.btn-set>*.clr-green:focus {
+.btn-set>a.green:focus,
+.btn-set>button.green:focus,
+.btn-set>input.green:focus {
 	border-color: rgba(42, 180, 50, .4);
 	box-shadow: 0 0 3px 0px rgba(70, 220, 100, 0.4);
 	background-color: rgba(180, 255, 200, .05);
 }
 
-.btn-set>*.clr-green:active {
+.btn-set>a.green:active,
+.btn-set>button.green:active,
+.btn-set>input.green:active {
 	box-shadow: 0 0 4px 1px rgba(70, 220, 100, 0.4);
 	background-color: rgba(180, 255, 200, .1);
 }
 
-/* #endregion - Components*/
 
 
-
-
-
-
-
-
-
-/* #region - Vertical*/
-.btn-set.vertical {
-	flex-direction: column;
-	align-items: flex-start;
-}
-
-.btn-set.vertical>* {
-	align-self: stretch;
-}
-
-.btn-set.vertical>span {
-	padding: 10px 0px 0px 0px;
-	border: none;
-	background-color: transparent;
-}
-
-.btn-set.vertical>div {
-	padding: 5px 0px 0px 0px;
-	background-color: transparent;
-	border: none;
-	color: #333;
-}
-
-.btn-set.vertical>input[type=text],
-.btn-set.vertical>input[type=date],
-.btn-set.vertical>input[type=password],
-.btn-set.vertical>input[type=number] {
-	height: 30px;
-}
-
-.btn-set.vertical>input[type=text],
-.btn-set.vertical>input[type=date],
-.btn-set.vertical>input[type=password],
-.btn-set.vertical>input[type=number],
-.btn-set.vertical>textarea {
-	margin-bottom: 5px;
-	padding: 6px 6px;
-}
-
-/* #endregion - Vertical*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* #region - Checkbox*/
-.btn-set>label.btn-checkbox {
-	padding: 7px 10px;
-	height: 16px;
-	cursor: default;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	padding-left: 30px;
-}
-
-.btn-set.normal>label.btn-checkbox {
-	padding: 1px 7px;
-	height: 16px;
-	cursor: default;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	padding-left: 30px;
-
-}
-
-.btn-set.small>label.btn-checkbox {
-	padding: 2px 10px;
-	height: 17px;
-	width: 18px;
-	border: none;
-	background-color: none;
-	background: none;
-}
-
-.btn-set>label.btn-checkbox.disabled {
-	background-color: #fff;
-	pointer-events: none;
-}
-
-.btn-set.small>label.btn-checkbox.disabled {
-	background-color: none;
-	background: none;
-	opacity: 0.4;
-}
-
-
-.btn-set>label.btn-checkbox.disabled>span {
-	color: #999;
-}
-
-.btn-set>label.btn-checkbox>input[type=checkbox] {
-	display: none;
-}
-
-.btn-set>label.btn-checkbox>span {
-	display: inline-block;
-	padding-top: 2px;
-}
-
-.btn-set.normal>label.btn-checkbox>span {
-	display: inline-block;
-	padding-top: 1px;
-}
-
-.btn-set>label.btn-checkbox>input[type=checkbox]~span:before {
-	display: inline-block;
-	font-family: "icomoon";
-	font-size: 1em;
-	width: 16px;
-	position: relative;
-	top: 8px;
-	left: -2px;
-	font-weight: normal;
-}
-
-.btn-set.small>label.btn-checkbox>input[type=checkbox]~span:before {
-	top: 1px;
-}
-
-
-.btn-set>label.btn-checkbox>input[type=checkbox]:checked~span:before {
-	color: #06c;
-	content: "\e644";
-	display: inline-block;
-	position: absolute;
-	top: px;
-	left: 14px;
-}
-
-.btn-set.normal>label.btn-checkbox>input[type=checkbox]:checked~span:before {
-	color: #06c;
-	content: "\e644";
-	display: inline-block;
-	position: absolute;
-	top: 2px;
-	left: 10px;
-
-}
-
-.btn-set.small>label.btn-checkbox>input[type=checkbox]:checked~span:before {
-	color: #06c;
-	content: "\e644";
-	display: inline-block;
-	position: absolute;
-	top: 5px;
-	left: 13px;
-
-}
-
-.btn-set>label.btn-checkbox>input[type=checkbox]:not(:checked)~span:before {
-	content: " ";
-	display: inline-block;
-	position: absolute;
-	top: 8px;
-	left: 13px;
-	width: 11px;
-	height: 11px;
-	border: solid 1px #ccc;
-	border-radius: 2px;
-}
-
-.btn-set.normal>label.btn-checkbox>input[type=checkbox]:not(:checked)~span:before {
-	content: " ";
-	display: inline-block;
-	position: absolute;
-	top: 5px;
-	left: 12px;
-	width: 11px;
-	height: 11px;
-	border: solid 1px #ccc;
-	border-radius: 2px;
-}
-
-.btn-set.small>label.btn-checkbox>input[type=checkbox]:not(:checked)~span:before {
-	content: " ";
-	display: inline-block;
-	position: absolute;
-	top: 4px;
-	left: 12px;
-	width: 11px;
-	height: 11px;
-	border: solid 1px #ccc;
-	border-radius: 2px;
-}
-
-/* #endregion - Checkbox*/
-
-/* #region - Sizing*/
-.btn-set.small>input,
-.btn-set.small>textarea,
-.btn-set.small>button {
-	padding: 0px 10px 0px 10px;
-	height: 25px !important;
-}
-
-.btn-set.small>span,
-.btn-set.small>div,
-.btn-set.small>a {
-	padding: 3px 10px 0px 10px;
-	height: 25px !important;
-	vertical-align: middle;
-}
-
-.btn-set.small>input {
-	padding: 0px 3px
-}
-
-.btn-set.normal>input,
-.btn-set.normal>button,
-.btn-set.normal>textarea {
-	padding: 3px 6px;
-	height: 24px;
-}
-
-.btn-set.normal>div,
-.btn-set.normal>a {
-	padding: 3px 6px;
-	vertical-align: middle;
-	height: 24px;
-}
-
-.btn-set.normal>span {
-	padding: 2px 6px;
-	vertical-align: middle;
-	height: 24px;
-}
-
-/* #endregion - Sizing*/
-
-/* #region - Special marks*/
-.mark-success {
-	border: none;
-	background-color: #fff !important;
-	width: 40px;
-	position: relative;
-}
-
-.mark-success:before {
-	position: absolute;
+.btn-set>*.success:before,
+.btn-set>*.plus:before,
+.btn-set>*.error:before {
 	font-family: icomoon2;
+}
+
+.btn-set>*.success:before {
 	content: "\f00c";
-	color: rgb(60, 180, 60);
-	font-size: 2em;
+	color: rgb(30, 160, 40);
 }
 
-.mark-error {
-	border-top: none;
-	border-bottom: none;
-	background-color: #fff !important;
-	width: 40px;
-	position: relative;
+.btn-set>*.plus:before {
+	font-family: icomoon;
+	content: "\e630";
+	color: var(--root-link-color);
+	font-size: 0.8em;
 }
 
-.mark-error:first-child {
-	border-left: none;
+.btn-set>*.error:before {
+	content: "\f00d";
+	color: rgb(195, 45, 50);
 }
 
-.mark-error:last-child {
-	border-right: none;
-}
-
-.mark-error:before {
-	position: absolute;
+.btn-set>*.lock:before,
+.btn-set>*.unlock:before {
 	font-family: icomoon4;
-	content: "\ea08";
-	color: #f03;
-	font-size: 2em;
-	padding-left: 6px;
 }
 
-.mark-lock,
-.mark-unlock {
-	border-top: none;
-	border-bottom: none;
-	background-color: #fff !important;
-	width: 40px;
-	position: relative;
-}
-
-.mark-lock:first-child,
-.mark-unlock:first-child {
-	border-left: none;
-}
-
-.mark-lock:last-child,
-.mark-unlock:last-child {
-	border-right: none;
-}
-
-.mark-lock:before,
-.mark-unlock:before {
-	position: absolute;
-	font-family: icomoon4;
-
-	color: #069;
-	font-size: 2em;
-	padding-left: 6px;
-}
-
-.mark-lock:before {
+.btn-set>*.lock:before {
 	content: "\e98f";
 }
 
-.mark-unlock:before {
+.btn-set>*.unlock:before {
 	content: "\e990";
 }
 
-/* #endregion - Special Marks*/
-
-/* #region - Special Buttons*/
-.btn-set>input.btn-add:before,
-.btn-set>button.btn-add:before {
-	display: inline-block;
-	font-family: "icomoon";
-	text-align: center;
-	content: "\e630";
-}
-
-.btn-set>input.btn-add:hover,
-.btn-set>button.btn-add:hover {
-	color: #06c;
-}
-
-.btn-set>input.bnt-edit:before,
-.btn-set>button.bnt-edit:before {
-	display: inline-block;
-	content: "\e62a";
-	font-family: "icomoon";
-	text-align: center;
-}
-
-.btn-set>input.bnt-edit:hover,
-.btn-set>button.bnt-edit:hover {
-	color: #06c;
-}
-
-.btn-set>input.bnt-remove:before,
-.btn-set>button.bnt-remove:before,
-.btn-set>span.bnt-remove:before,
-.btn-set>span.bnt-remove:before {
-	display: inline-block;
-	content: "\e62b";
-	font-family: "icomoon";
-	text-align: center;
-}
-
-.btn-set>input.bnt-remove:hover,
-.btn-set>button.bnt-remove:hover {
-	color: #f03;
-}
-
-.btn-set>input.bnt-error:before,
-.btn-set>button.bnt-error:before,
-.btn-set>span.bnt-error:before,
-.btn-set>span.bnt-error:before {
-	display: inline-block;
-	content: "\f00d";
-	font-family: "icomoon2";
-	text-align: center;
-	position: relative;
-	top: -1px;
-	color: #f03;
-}
-
-.btn-set>input.bnt-remove:before,
-.btn-set>button.bnt-donwload:before,
-.btn-set>span.bnt-remove:before,
-.btn-set>span.bnt-donwload:before {
-	display: inline-block;
-	content: "\e60c";
-	font-family: "icomoon";
-	text-align: center;
-}
-
-
-.btn-set>input.bnt-forward:before,
-.btn-set>button.bnt-forward:before,
-.btn-set>a.bnt-forward:before {
-	content: "\e61b";
-	font-family: "icomoon";
-	display: inline-block;
-	position: relative;
-}
-
-.btn-set>input.bnt-back:before,
-.btn-set>button.bnt-back:before,
-.btn-set>a.bnt-back:before {
-	content: "\e618";
-	font-family: "icomoon";
-	display: inline-block;
-	position: relative;
-}
-
-/* #endregion - Special Buttons*/
-
-/* #region - Smart List Object buttons */
-.btn-set.vertical>* {
-	align-self: stretch;
-}
-
-.btn-set>span.slo-wrap {
-	background-color: transparent;
-	padding: 0px;
-	border: none;
-}
-
-.btn-set.vertical>span.slo-wrap {
-	color: #333;
-}
-
-.btn-set.vertical>span.slo-wrap>input[type=text],
-.btn-set.vertical>span.slo-wrap>input[type=date],
-.btn-set.vertical>span.slo-wrap>input[type=number] {
-	padding: 6px 6px;
-}
-
-
-.btn-set.normal>span.slo-wrap.valid:after,
-.btn-set.normal>span.slo-wrap.unvalid:after {
-	top: 6px;
-	right: 6px;
-}
-
-.btn-set.normal>span.slo-wrap {
-	padding: 0px;
-	height: 24px;
-}
-
-.btn-set.normal>span.slo-wrap>input[type=text],
-.btn-set.normal>span.slo-wrap>input[type=date],
-.btn-set.normal>span.slo-wrap>input[type=number] {
-	padding: 3px 19px 3px 6px;
-	height: 24px;
-}
-
-.btn-set>span.slo-wrap:first-child>input {
-	border-top-left-radius: var(--input-border-radius);
-	border-bottom-left-radius: var(--input-border-radius);
-	padding-left: 10px;
-}
-
-.btn-set>span.slo-wrap:last-child>input {
-	border-top-right-radius: var(--input-border-radius);
-	border-bottom-right-radius: var(--input-border-radius);
-	padding-right: 10px;
-}
-
-/* #endregion */
-
-/* #region - Pagination */
 .btn-set>input.pagination {
 	font-family: "icomoon";
 	font-size: 1.1em
 }
 
-/* #endregion */
+.btn-set>button.success:before,
+.btn-set>button.plus:before,
+.btn-set>button.error:before {
+	color: var(--button-font-color);
+}
+
+/* #endregion - Styling*/
+
+
+/* #region - Checkbox*/
+.btn-set>label>input[type=checkbox] {
+	appearance: none;
+	position: relative;
+	padding-right: 20px;
+}
+
+.btn-set>label>input[type=checkbox]::before {
+	content: " ";
+	display: inline-block;
+	position: absolute;
+	border: solid 1px var(--input-border);
+	border-radius: 10px;
+	height: 14px;
+	width: 14px;
+	left: 0;
+	top: -8px;
+}
+
+.btn-set>label>input[type=checkbox]:hover::before {
+	background-color: var(--bomtable-background-color);
+	border-color: var(--input_hover-border);
+}
+
+.btn-set>label>input[type=checkbox]::after {
+	content: " ";
+	border-radius: 10px;
+	background-color: var(--root-link-color);
+	position: absolute;
+	left: 3px;
+	top: -5px;
+	width: 10px;
+	height: 10px;
+	transform: scale(0);
+	transition: transform ease .07s;
+
+}
+
+.btn-set>label>input[type=checkbox]:checked::before {
+	/* border-color: var(--root-link-color); */
+}
+
+.btn-set>label>input[type=checkbox]:checked::after {
+	transform: scale(1);
+}
+
+
+/* #endregion - Checkbox*/
+
+
+/* #region - Sizing*/
+.btn-set.small>a,
+.btn-set.small>input,
+.btn-set.small>span,
+.btn-set.small>label,
+.btn-set.small>textarea,
+.btn-set.small>button {
+	padding: 0px 8px;
+	height: 28px !important;
+	vertical-align: middle;
+}
+
+.btn-set.small>label {
+	height: 26px !important;
+}
+
+/* #endregion - Sizing*/
+
+
+
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {

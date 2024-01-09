@@ -12,7 +12,7 @@ $grem->header()->sticky(false)->serve("<h1><span style=\"color:var(--input_hover
 unset($grem);
 
 $atleastone = false;
-echo "<div class=\"homepageWidget\">";
+echo "<div class=\"dashboard\">";
 foreach ($dashboard->list(true) as $dashboard) {
 	$atleastone   = true;
 	$reportpageid = $dashboard['trd_id'];
@@ -24,7 +24,7 @@ echo "</div>";
 if(!$atleastone){
 echo <<<HTML
 <ul>
-<li>Dashboard reports is empty, goto `<a href="{$fs(17)->dir}">Settings</a>` and select required reports</li>
+<li>Dashboard is empty, goto `<a href="{$fs(17)->dir}">Settings</a>` and select desired reports</li>
 </ul>
 HTML;
 }

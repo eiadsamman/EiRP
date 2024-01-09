@@ -1,10 +1,6 @@
 <?php
 
-use System\Template\Body;
 use System\Template\Gremium;
-
-
-
 
 
 if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchrecord") {
@@ -63,7 +59,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			$grem->header();
 			$grem->menu();
 			if ($fs(227)->permission->read) {
-				$grem->legend()->serve("<span class=\"flex\">Personal Information:</span>");
+				$grem->title()->serve("<span class=\"flex\">Personal Information:</span>");
 				$grem->article()->open();
 				echo '
 					<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:10px;">
@@ -82,31 +78,38 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 
 				echo '</td>
 					<td style="width:100%">
+						
+					<div class="template-gridLayout">
+							<div><span>Name</span><div>' . $row['usr_firstname'] . ' ' . $row['usr_lastname'] . '</div></div>
+						</div>
+
+					
 						<div class="template-gridLayout">
 							<div><span>ID</span><div>' . $row['usr_id'] . '</div></div>
 						</div>
+						
 						<div class="template-gridLayout">
 							<div><span>Nationality</span><div>' . $row['cntry_name'] . '</div></div>
 						</div>
-						<div class="template-gridLayout">
-							<div><span>Name</span><div>' . $row['usr_firstname'] . ' ' . $row['usr_lastname'] . '</div></div>
-						</div>
+						
+
 						<div class="template-gridLayout">
 							<div><span>Birthdate</span><div>' . (is_null($row['usr_birthdate']) ? "-" : $row['usr_birthdate']) . '</div></div>
 						</div>
+
 					</tr>
 					</table>
 
 					<div class="template-gridLayout">
-						<div><span>Gender</span><div>' . $row['gnd_name'] . '</div></div>
-						<div><span>Contact infomration</span><div>' . (is_null($row['usr_phone_list']) ? "-" : $row['usr_phone_list']) . '</div></div>
-						<div><span>Residence</span><div>' . (is_null($row['ldn_name']) ? "-" : $row['ldn_name']) . '</div></div>
+						<div><span>Gender</span><div>' . ($row['gnd_name'] ?? "-") . '</div></div>
+						<div><span>Contact infomration</span><div>' . ($row['usr_phone_list'] ?? "-") . '</div></div>
+						<div><span>Residence</span><div>' . ($row['ldn_name'] ?? "-") . '</div></div>
 						<div><div></div></div>
 					</div>
 					
 					<div class="template-gridLayout">
-						<div><span>Transportation</span><div>' . (is_null($row['trans_name']) ? "-" : $row['trans_name']) . '</div></div>
-						<div><span>Social ID Number</span><div>' . (is_null($row['lbr_socialnumber']) ? "-" : $row['lbr_socialnumber']) . '</div></div>
+						<div><span>Transportation</span><div>' . ($row['trans_name'] ?? "-") . '</div></div>
+						<div><span>Social ID Number</span><div>' . ($row['lbr_socialnumber'] ?? "-") . '</div></div>
 						<div><span></span><div></div></div>
 					</div>
 
@@ -117,7 +120,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			}
 
 			if ($fs(228)->permission->read) {
-				$grem->legend()->serve("<span class=\"flex\">Job Information:</span>");
+				$grem->title()->serve("<span class=\"flex\">Job Information:</span>");
 				$grem->article()->open();
 				echo '
 				<div class="template-gridLayout">
@@ -143,7 +146,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 
 
 			if ($fs(229)->permission->read) {
-				$grem->legend()->serve("<span class=\"flex\">Salary Details:</span>");
+				$grem->title()->serve("<span class=\"flex\">Salary Details:</span>");
 				$grem->article()->open();
 				echo '<div class="template-gridLayout">
 					<div><span>Salary</span><div>' . (is_null($row['lbr_fixedsalary']) ? number_format((float) $row['lbr_typ_sal_basic_salary'], 2, ".", ",") : number_format((float) $row['lbr_fixedsalary'], 2, ".", ",")) . '</div></div>
@@ -158,7 +161,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			$grem = new Gremium\Gremium(true);
 			header("HTTP_X_RESPONSE: ERROR");
 			$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>Not Found</h1>");
-			$grem->legend()->serve("<span class=\"flex\">Loading select personnel failed:</span>");
+			$grem->title()->serve("<span class=\"flex\">Loading select personnel failed:</span>");
 			$grem->article()->serve('<ul>
 				<li>Personnel ID is invalid</li>
 				<li>Session has expired</li>
@@ -196,13 +199,13 @@ $SmartListObject = new System\SmartListObject($app);
 <?php
 
 echo "<datalist id=\"personList\">" . $SmartListObject->systemIndividual($app->user->company->id) . "</datalist>";
-$grem= new Gremium\Gremium(true);
+$grem = new Gremium\Gremium(true);
 $grem->header()->serve("<h1>{$fs()->title}</h1><ul><li id=\"jQdomPID\"></li></ul>");
 
 $grem->menu()->open();
 echo "<input id=\"employeIDFormSearch\" tabindex=\"1\" type=\"text\" data-slo=\":LIST\" data-list=\"personList\" class=\"flex\" placeholder=\"Employee name or id\" />";
-echo "<button type=\"button\" id=\"jQedit\" tabindex=\"2\" disabled>Edit information</button>";
-echo "<button type=\"button\" id=\"jQprintIDCard\" tabindex=\"3\" disabled>Print ID Card</button>";
+echo "<input type=\"button\" id=\"jQedit\" tabindex=\"2\" disabled value=\"Edit information\" />";
+echo "<input type=\"button\" id=\"jQprintIDCard\" tabindex=\"3\" disabled value=\"Print ID Card\" />";
 $grem->getLast()->close();
 
 ?>
@@ -243,7 +246,7 @@ $grem->getLast()->close();
 				fn_fetchfile();
 			},
 			ondeselect: function () {
-				
+
 			},
 			"limit": 10
 		});

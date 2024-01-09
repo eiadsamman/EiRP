@@ -1,0 +1,1 @@
+overscroll-behavior: contain
