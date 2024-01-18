@@ -8,16 +8,258 @@
 }
 
 .dashboard>div {
+	flex: 1;
 	margin: 10px;
 	cursor: default;
-
-	box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.3);
+	box-shadow: 1px 2px 6px 0px rgba(0, 0, 0, 0.1);
 	background-color: var(--root-ribbon-menu-background-color);
 	border-radius: 10px;
-	padding:20px;
+	max-width: 447px;
+	flex-wrap: wrap;
 }
 
 .dashboard>div>div {
+	min-width: 350px;
+	flex-wrap: wrap;
+	position: relative;
+	max-height: 176px;
+	overflow: hidden;
+}
+
+
+/* #region Accounts Overview */
+.dashboard>div.accounts-overview>div.tickets {
+	display: flex;
+	padding: 10px 12px;
+}
+
+.dashboard>div.accounts-overview>div.tickets>span {
+	flex: 1 1 0;
+	text-align: center;
+	padding: 10px 0px;
+	min-height: 88px;
+	min-width: 90px;
+}
+
+.dashboard>div.accounts-overview>div.tickets>span:hover {
+	outline: solid 2px var(--button-border);
+	border-radius: 2px;
+	text-decoration: none;
+}
+
+.dashboard>div.accounts-overview>div.tickets>span>h1 {
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	font-weight: normal;
+	font-size: 0.9em;
+	line-height: 1em;
+	text-transform: uppercase;
+	color: #999;
+	margin: 0;
+	height: 24px;
+}
+
+.dashboard>div.accounts-overview>div.tickets>span>h2 {
+	font-weight: normal;
+	padding: 0;
+	line-height: 1em;
+	margin: 0;
+	margin-top: 5px;
+	height: 34px;
+
+}
+
+.dashboard>div.accounts-overview>div.tickets>span>span {
+	display: block;
+	font-weight: bold;
+	font-size: 1.1em;
+	height: 20px;
+	font-family: Verdana, Noto, Galada, sans-serif;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	margin-top: 5px;
+}
+
+.dashboard>div.accounts-overview>div.tickets>span>cite {
+	display: block;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 0.9em;
+	font-family: Verdana, Noto, Galada, sans-serif;
+	color: #999;
+	margin-top: 0px;
+}
+
+
+
+.dashboard>div.accounts-overview>div.tickets>span>div.plot {
+	margin-top: 20px;
+	display: inline-block;
 	padding: 0px;
+}
+
+.dashboard>div.accounts-overview>div.tickets>span>div.plot {
+	max-width: 70px;
+}
+
+/* #endregion */
+
+
+/* #region Links */
+.dashboard>div.links>div {
+	display: flex;
+	padding: 10px;
+	padding-bottom: 3px;
+	height: 120px;
+}
+
+.dashboard>div.links>div>a {
+	flex: 1 1 0;
+	text-align: center;
+	padding: 5px;
+	min-height: 95px;
+	min-width: 90px;
+	margin-bottom: 10px;
+}
+
+.dashboard>div.links>div>a:hover {
+	outline: solid 2px var(--button-border);
+	border-radius: 2px;
+	text-decoration: none;
+}
+
+.dashboard>div.links>div>a>span {
+	display: inline-block;
+	font-family: icomoon4;
+	font-size: 1.7em;
+	line-height: 1em;
+	padding: 17px;
+	color: #fff;
+	border-radius: 12px;
+	margin-bottom: 12px;
+	border: solid 1px var(--input-border);
+	/* background-image: linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.4)); */
+}
+
+.dashboard>div.links>div>a>div {
+	color: var(--root-font-color);
+
+}
+
+.dashboard>div.links>hr {
+	border: none;
+	border-top: solid 1px;
+	border-color: var(--root-ribbon-border-color);
+}
+
+.dashboard>div.links>a {
+	display: block;
+	text-align: center;
+	padding: 10px 10px 18px 10px;
+}
+
+.dashboard>div.links>span {
+	display: block;
+	text-align: center;
+	padding: 10px 10px 18px 10px;
+	color: var(--root-font-lightcolor);
+}
+
+/* #endregion */
+
+
+/* #region Account Ticket */
+.dashboard>div.account-ticket {
+	height: 180px;
+	background: rgb(0, 0, 0);
+	background: linear-gradient(155deg, hsla(229, 34%, 22%, 0.95) 30%, #1a1f35 90%);
+}
+
+.dashboard>div.account-ticket>div {
 	position: relative;
 }
+
+.dashboard>div.account-ticket>div>div.ticket-title {
+	padding: 25px 25px 15px 25px;
+	font-size: 1.3em;
+	line-height: 0.9em;
+	color: white;
+	opacity: 0.6;
+	text-transform: uppercase;
+}
+
+.dashboard>div.account-ticket>div>div.ticket-title>span {
+	font-size: 0.8em;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.dashboard>div.account-ticket>div>div.ticket-value {
+	color: white;
+	font-size: 2.3em;
+	padding: 0px 25px 15px 25px;
+	line-height: 1em;
+}
+
+.dashboard>div.account-ticket>div>div.ticket-value>span {
+	display: block;
+	font-size: 0.6em;
+	line-height: 0.7em;
+	opacity: 0.5;
+	font-family: monospace;
+	padding-top: 7px;
+	padding-left: 2px;
+}
+
+
+.dashboard>div.account-ticket>div>div.plot {
+	display: flex;
+	padding-left: 20px;
+	font-size: 1em;
+	align-items: center;
+}
+
+.dashboard>div.account-ticket>div>div.plot>span {
+	/* background-color: rgba(255,255,255,.051); */
+}
+
+.dashboard>div.account-ticket>div>div.plot>div>span.state {
+	font-size: 1em;
+	padding: 3px 10px 0px 10px;
+	display: block;
+}
+
+.dashboard>div.account-ticket>div>div.plot>div>span.state>i {
+	font-family: icomoon4;
+	font-style: normal;
+	padding-right: 5px;
+	font-size: 0.9em;
+}
+
+.dashboard>div.account-ticket>div>div.plot>div>h2 {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	font-weight: normal;
+	color: rgba(255, 255, 255, 0.5);
+	padding-left: 10px;
+
+}
+
+.dashboard>div.account-ticket>div>div.ticket-icon {
+	background-color: white;
+	width: 60px;
+	height: 60px;
+	border-radius: 50px;
+	font-family: icomoon4;
+	font-size: 2em;
+	line-height: 2em;
+	position: absolute;
+	right: 25px;
+	top: 25px;
+	text-align: center;
+	padding-top: 3px;
+}
+
+/* #endregion */

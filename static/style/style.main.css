@@ -64,10 +64,9 @@
 
 
 pre {
-	color: green;
-	font-size: 1.5em;
+	font-size: 1.1em;
 	line-height: 1.2em;
-	font-family: monospace;
+	font-family: 'Courier New', Courier, monospace;
 	border: solid 1px green;
 	padding: 10px;
 }
@@ -141,6 +140,17 @@ select {
 	border: solid 1px var(--root-input-border-color);
 	background-color: var(--root-input-background-color);
 }
+
+
+input[type=text]::placeholder,
+input[type=number]::placeholder,
+input[type=password]::placeholder,
+textarea::placeholder {
+	color: var(--input-placeholder-color);
+}
+
+
+
 
 button,
 input[type=button] {
@@ -236,11 +246,13 @@ span.header-ribbon {
 	text-align: center;
 	z-index: 100;
 	overflow: none;
-	font-size:12px;
-	/*backdrop-filter: blur(4px);
-	-webkit-backdrop-filter: blur(4px);
-	-moz-backdrop-filter: blur(4px);*/
+	font-size: 12px;
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	-moz-backdrop-filter: blur(6px);
 	background-color: var(--root-ribbon-background-color);
+
+
 	color: var(--root-ribbon-font-color);
 }
 
@@ -364,7 +376,7 @@ span.header-menu.lefthand>div>div>div.menu-items b {
 	display: block;
 	padding: 14px;
 	position: relative;
-	color: var(--input_hover-border);
+	color: var(--input_hover-color);
 }
 
 span.header-menu.lefthand>div>div>div.menu-items b.nested:before {

@@ -79,7 +79,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	header("VENDOR_FN_CURRENT: " . $controller->criteria->getCurrentPage());
 
 	echo "<table class=\"bom-table statment-view hover strip\">";
-	echo "<thead class=\"table-head\" style=\"top: calc(165px - var(--gremium-header-toggle));background-color:#fff;z-index:1\">";
+	echo "<thead class=\"table-head\" style=\"top: calc(158px - var(--gremium-header-toggle));background-color:#fff;z-index:1\">";
 	echo "<tr>";
 	echo "<td>ID</td>";
 	echo "<td>Description</td>";
@@ -111,15 +111,15 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 				</td>";
 
 				echo "<td class=\"blank\"></td>";
-				echo "<td class=\"value-number\">" . ($row['atm_value'] > 0 ? number_format($row['atm_value'] , 2) : "-") . "</td>";
-				echo "<td class=\"value-number\">" . ($row['atm_value'] <= 0 ? number_format(abs($row['atm_value']) , 2) : "-") . "</td>";
-				echo "<td class=\"value-number final " . ($row['cumulative_sum'] < 0 ? "negative" : "positive") . "\">" . number_format(abs($row['cumulative_sum']) , 2) . "</td>";
+				echo "<td class=\"value-number\">" . ($row['atm_value'] > 0 ? number_format($row['atm_value'], 2) : "-") . "</td>";
+				echo "<td class=\"value-number\">" . ($row['atm_value'] <= 0 ? number_format(abs($row['atm_value']), 2) : "-") . "</td>";
+				echo "<td class=\"value-number final " . ($row['cumulative_sum'] < 0 ? "negative" : "positive") . "\">" . number_format(abs($row['cumulative_sum']), 2) . "</td>";
 				echo "</tr>";
 			}
 		}
 	} else {
 		echo "<tr>";
-		echo "<td></td><td></td><td>No records found</td><td class=\"value-comment\"></td><td></td><td></td><td></td><td></td>";
+		echo "<td></td><td>No records found</td><td></td><td class=\"value-comment\"></td><td></td><td></td>";
 		echo "</tr>";
 	}
 	echo "</tbody>";
@@ -162,7 +162,7 @@ echo <<<HTML
 <input type="text" id="js-input_date-start" style="width:110px" data-slo=":DATE" placeholder="From date" value="{$initial_values['from']}" value=""  />
 <input type="text" id="js-input_date-end" style="width:110px" data-slo=":DATE" placeholder="To date" value="{$initial_values['to']}" value="{$current_date}"  />
 <button id="js-input_cmd-update">Search</button>
-<input type="button" id="js-input_cmd-export" value="Export" />
+<input type="button" class="edge-right" id="js-input_cmd-export" value="Export" />
 HTML;
 $menu->close();
 
@@ -170,10 +170,10 @@ $legend = $grem->legend()->open();
 echo <<<HTML
 <span id="js-output_statements-count">0</span>
 <span class="small-media-hide flex"></span>
-<input type="button" class="pagination prev" id="js-input_page-prev" disabled value="&#xE618;" />
-<input type="text" id="js-input_page-current" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0" data-rangeend="100" />
+<input type="button" class="pagination prev edge-left" id="js-input_page-prev" disabled value="&#xE618;" />
+<input type="text" id="js-input_page-current" placeholder="#" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0" data-rangeend="100" />
 <input type="button" class="pagination next" id="js-input_page-next" disabled value="&#xE61B;" />
-<input type="button" id="js-output_page-total" style="min-width:50px;text-align:center" value="0" />
+<input type="button" class="edge-right" id="js-output_page-total" style="min-width:50px;text-align:center" value="0" />
 HTML;
 $legend->close();
 
@@ -189,8 +189,8 @@ unset($grem);
 	}
 
 	table.bom-table.statment-view>tbody>tr>td:nth-child(1)>div {
-			padding: 2px 5px;
-		}
+		padding: 2px 5px;
+	}
 
 	.table-head::before {
 		position: absolute;
@@ -342,7 +342,7 @@ unset($grem);
 		}
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(6) {
-			color:var(--root-font-lightcolor);
+			color: var(--root-font-lightcolor);
 			flex: 1;
 		}
 

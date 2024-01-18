@@ -46,7 +46,8 @@
 	color: #777;
 }
 
-.slo-wrap ,.btn-set>span.slo-wrap{
+.slo-wrap,
+.btn-set>span.slo-wrap {
 	position: relative;
 	background-color: transparent;
 	padding: 0px;
@@ -60,10 +61,13 @@
 	height: 100%;
 	position: relative;
 	outline: none;
-	border: solid 1px var(--input-border);
+	border: none;
+	border-bottom: solid 2px var(--input-border);
+	border-color: var(--input-border);
+	transition: border 0.2s ease-out;
 	width: 100%;
 	color: var(--root-font-color);
-	background-color: var(--input-bgcolor);
+	background-color: transparent;
 	padding-right: 25px;
 	font-size: 1em;
 }
@@ -72,7 +76,7 @@
 .slo-wrap>input[type=number]:not(:disabled):hover,
 .slo-wrap>input[type=password]:not(:disabled):hover,
 .slo-wrap>input[type=date]:not(:disabled):hover {
-	border-color: var(--input_hover-border);
+	border-color: var(--input_hover-color);
 	z-index: 12;
 }
 
@@ -81,10 +85,10 @@
 .slo-wrap>input[type=number]:not(:disabled):focus,
 .slo-wrap>input[type=password]:not(:disabled):focus,
 .slo-wrap>input[type=date]:not(:disabled):focus {
-	border-color: rgba(82, 168, 236, .75);
-	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	border-color: var(--input_active-color);
+	/* -webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	box-shadow: 0 0 4px rgba(82, 168, 236, .7); */
 	z-index: 13;
 }
 

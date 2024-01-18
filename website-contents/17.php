@@ -50,23 +50,25 @@ echo <<<HTML
 		<td width="100%"><span style="white-space:wrap">Items & Records per page</span></td>
 	</tr>
 </body></table>
-<br />
-<br />
 HTML;
 $grem->getLast()->close();
 
-$grem->title()->serve("<span>Dashboard reports</span>");
+
+
+
+
+$grem->title()->serve("<span>Overview</span>");
 $grem->article()->open();
 $firstocc = false;
-foreach ($dashboard->list() as $dashboard) {
+foreach ($dashboard->overview() as $item) {
 	if (!$firstocc) {
 		echo "<table class=\"bom-table hover row-selector\" id=\"dash-table\" style=\"position:relative;\"><tbody>";
 		$firstocc = true;
 	}
-	echo "<tr data-pageid=\"{$dashboard['trd_id']}\">";
-	echo "<td class=\"checkbox\"><label><input " . ($dashboard['usrset_time'] == null ? " " : " checked=\"checked\" ") . " data-pageif=\"{$dashboard['trd_id']}\" type=\"checkbox\" /></label></td>";
+	echo "<tr data-pageid=\"{$item['trd_id']}\">";
+	echo "<td class=\"checkbox\"><label><input " . ($item['usrset_time'] == null ? " " : " checked=\"checked\" ") . " data-pageif=\"{$item['trd_id']}\" type=\"checkbox\" /></label></td>";
 	echo "<td style=\"min-width:34px;\" class=\"move-handle\">:::</td>";
-	echo "<td style=\"width:100%\">{$dashboard['pfl_value']}</td>";
+	echo "<td style=\"width:100%\">{$item['pfl_value']}</td>";
 	echo "</tr>";
 }
 if ($firstocc) {
@@ -74,7 +76,33 @@ if ($firstocc) {
 } else {
 	echo ('<ul><li>No dashboard reports available for your account</li><ul>');
 }
-echo "<br /><br />";
+$grem->getLast()->close();
+
+
+
+
+
+
+
+$grem->title()->serve("<span>Dashboard reports</span>");
+$grem->article()->open();
+$firstocc = false;
+foreach ($dashboard->list() as $item) {
+	if (!$firstocc) {
+		echo "<table class=\"bom-table hover row-selector\" id=\"dash-table\" style=\"position:relative;\"><tbody>";
+		$firstocc = true;
+	}
+	echo "<tr data-pageid=\"{$item['trd_id']}\">";
+	echo "<td class=\"checkbox\"><label><input " . ($item['usrset_time'] == null ? " " : " checked=\"checked\" ") . " data-pageif=\"{$item['trd_id']}\" type=\"checkbox\" /></label></td>";
+	echo "<td style=\"min-width:34px;\" class=\"move-handle\">:::</td>";
+	echo "<td style=\"width:100%\">{$item['pfl_value']}</td>";
+	echo "</tr>";
+}
+if ($firstocc) {
+	echo "</tbody></table>";
+} else {
+	echo ('<ul><li>No dashboard reports available for your account</li><ul>');
+}
 $grem->getLast()->close();
 
 $grem->title()->serve("<span>System theme</span>");

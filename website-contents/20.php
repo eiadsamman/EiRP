@@ -50,7 +50,7 @@ if ($access_error == 403) {
 					<input type="password" class="flex" class="password" name="log_password" autocomplete="off" value="" />
 					</div>
 				</label>
-				<div class="btn-set"><label style="border:none"><input type="checkbox" name="remember" /> Remember me</label></div>
+				<div class="btn-set"><label style="border:none"><input type="checkbox" name="remember" /><span> Remember me</span></label></div>
 				<div style="flex:1"></div>
 				<div class="btn-set"><button style="width:100px;">Login</button></div>
 			</div>

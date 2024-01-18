@@ -56,20 +56,49 @@ $(document).ready(function (e) {
 	}
 
 	const validateFields = () => {
-		slo_objects.each(function (e) {
+		let thrownerror = {
+			occured: false,
+			message: "",
+			object: undefined
+		};
+
+
+		for (const reqmark of document.querySelectorAll("label>h1")) {
+			reqmark.classList.remove("required");
+		}
+		slo_objects.each(function () {
 			if (this.dataset.required != undefined && !this.slo.stamped) {
-				this.focus();
-				throw (this.getAttribute("title") + " is required");
+				this.slo.object.parentNode.parentNode.parentNode.querySelector("h1").classList.add("required");
+				if (!thrownerror.occured) {
+					thrownerror.occured = true;
+					thrownerror.message = this.getAttribute("title") + " is required";
+					thrownerror.object = this;
+				}
 			}
 		});
 		if (isNaN(parseFloat(value_field.value))) {
-			value_field.focus();
-			throw ("Invalid statement value");
+			value_field.parentNode.parentNode.querySelector("h1").classList.add("required");
+			if (!thrownerror.occured) {
+				thrownerror.occured = true;
+				thrownerror.message = "Invalid statement value";
+				thrownerror.object = value_field;
+			}
 		}
 		if ((description_field.value).trim() == "") {
-			description_field.focus();
-			throw ("Provide a description for the statment");
+			description_field.parentNode.parentNode.querySelector("h1").classList.add("required");
+			if (!thrownerror.occured) {
+				thrownerror.occured = true;
+				thrownerror.message = "Provide a description for the statment";
+				thrownerror.object = description_field;
+			}
 		}
+
+
+		if (thrownerror.occured) {
+			thrownerror.object.focus();
+			throw (thrownerror.message);
+		}
+
 	}
 	const clearFields = () => {
 		slo_objects.getElementById("beneficiary").slo.clear(false);
@@ -121,6 +150,7 @@ $(document).ready(function (e) {
 					messagesys.failure(payload.error);
 					if (payload.errno <= 199) {
 						$("[data-touch=" + payload.errno + "]").slo.focus();
+						alert(payload.errno);
 					} else if (payload.errno <= 299) {
 						$("[data-touch=200]").focus();
 					} else if (payload.errno <= 399) {

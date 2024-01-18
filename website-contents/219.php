@@ -99,7 +99,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 	$grem->title()->serve("<span class=\"flex\">Personal Information</span>");
 	$grem->article()->open();
 	?>
-	<table class="bom-table mediabond-table">
+	<table class="bom-table mediabond-table form-table">
 		<tbody>
 			<?php if ($arr_array_input != false) { ?>
 				<tr>
@@ -227,7 +227,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 	$grem->title()->serve("<span class=\"flex\">Job details</span>");
 	$grem->article()->open();
 	?>
-	<table class="bom-table mediabond-table">
+	<table class="bom-table mediabond-table form-table">
 		<tbody>
 
 			<tr>
@@ -315,7 +315,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 	$grem->title()->serve("<span class=\"flex\">Salary details</span>");
 	$grem->article()->open();
 	?>
-	<table class="bom-table mediabond-table">
+	<table class="bom-table mediabond-table form-table">
 		<tbody>
 			<tr>
 				<th style="max-width: 100px;width:100px;min-width:100px">Salary</th>

@@ -68,14 +68,6 @@ if ($app->xhttp) {
 
 $SmartListObject = new SmartListObject($app);
 
-
-
-?>
-<!-- <div>
-</div>
-<div style="padding-left:400px;"> -->
-
-<?php
 if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 	$grem = new Gremium\Gremium();
 	$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>Invalid inbound account!</h1>");
@@ -121,7 +113,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<label style="min-width:300px">
 				<h1>Creditor</h1>
 				<div class="btn-set">
-					<input tabindex="1" data-required title="Creditor account" data-touch="200" type="text" data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
+					<input tabindex="1" placeholder="Creditor account" data-required title="Creditor account" data-touch="200" type="text" data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
 				</div>
 			</label>
 			<label>
@@ -136,19 +128,20 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 					?>
 				</div>
 			</label>
-
 		</div>
+
 		<div class="form predefined">
 			<label style="min-width:150px">
 				<h1>Date</h1>
 				<div class="btn-set">
-					<input type="text" class="flex" data-required data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2" name="date" />
+					<input type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2" name="date" data-required />
+					<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value="" data-rangeend="<?= $curreny_date ?>" tabindex="-1" name="duedate" />
 				</div>
 			</label>
 			<label style="min-width:300px">
 				<h1>Category</h1>
 				<div class="btn-set">
-					<input type="text" data-required data-slo=":LIST" data-touch="105" title="Category" data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
+					<input type="text" placeholder="Statement category" data-required data-slo=":LIST" data-touch="105" title="Category" data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
 				</div>
 			</label>
 		</div>
@@ -158,8 +151,8 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<label style="flex-basis:0%">
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
-					<input type="text" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
-					<input type="text" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
+					<input type="text" placeholder="Beneficiary name" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
+					<input type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
 				</div>
 			</label>
 		</div>
@@ -168,7 +161,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<label>
 				<h1>Value</h1>
 				<div class="btn-set">
-					<input type="number" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
+					<input type="number" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
 				</div>
 			</label>
 		</div>
@@ -177,7 +170,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<label style="flex:0" for="">
 				<h1>Attachments</h1>
 				<div class="btn-set">
-					<input type="button" id="js_upload_trigger" class="js_upload_trigger" value="Upload" />
+					<input type="button" id="js_upload_trigger" class="js_upload_trigger edge-right edge-left" value="Upload" />
 					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 					<span id="js_upload_list" class="js_upload_list"></span>
 					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
@@ -186,8 +179,8 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<label style="min-width:300px">
 				<h1>Reference</h1>
 				<div class="btn-set">
-					<input type="text" data-slo="ACC_REFERENCE" title="Reference" tabindex="6" name="reference" class="flex" />
-					<input type="text" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" placeholder="Related ID" name="relation" />
+					<input type="text" placeholder="Statement reference..." data-slo="ACC_REFERENCE" title="Reference" tabindex="6" name="reference" class="flex" />
+					<input type="text" placeholder="Related ID" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" placeholder="Related ID" name="relation" />
 				</div>
 			</label>
 		</div>
@@ -196,9 +189,8 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<label>
 				<h1>Description</h1>
 				<div class="btn-set">
-					<textarea type="text" data-required tabindex="8" title="Statement Description" data-touch="103" 
-						style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" name="description" id="description"
-						rows="7"></textarea>
+					<textarea type="text" placeholder="Statement description..." data-required tabindex="8" title="Statement Description" data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
+						name="description" id="description" rows="7"></textarea>
 				</div>
 			</label>
 		</div>
@@ -242,7 +234,6 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		</datalist>
 	</div>
 
-
 	<script type="text/javascript">
 		const callurl = "<?= $fs()->dir; ?>";
 		$(document).ready(function (e) {
@@ -270,7 +261,4 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		});
 	</script>
 	<script src="static/javascript/Transactions.js"></script>
-<?php
-} ?>
-
-<!-- </div> -->
+<?php } ?>

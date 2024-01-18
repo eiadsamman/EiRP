@@ -63,5 +63,33 @@ class DashboardReports extends Personalization
 		}
 	}
 
+	public function overview(bool $only_selected = null): \Generator
+	{
+		try {
+			$result = $this->app->db->query(
+				"SELECT 
+					trd_directory, pfl_value, trd_id, trd_attrib4, trd_attrib5, usrset_time
+				FROM 
+					pagefile 
+					JOIN pagefile_language ON pfl_trd_id = trd_id AND pfl_lng_id = 1
+					JOIN pagefile_permissions ON pfp_trd_id = trd_id AND pfp_per_id = {$this->app->user->info->permissions} AND (pfp_value & b'1000') > 0
+					LEFT JOIN user_settings ON usrset_usr_defind_name = trd_id AND usrset_usr_id = {$this->app->user->info->id} AND usrset_type = {$this->identifier}
+					
+				WHERE 
+					trd_enable = 1 AND trd_parent = 19
+					" . ($only_selected ? " AND usrset_time IS NOT NULL " : "") . "
+				ORDER BY 
+					(usrset_value + 0) ASC, trd_zorder ASC;"
+			);
+			if ($result) {
+				while ($row = $result->fetch_assoc()) {
+					yield $row;
+				}
+			}
+		} catch (\mysqli_sql_exception $e) {
+			$this->app->errorHandler->logError($e);
+		}
+	}
+
 
 }

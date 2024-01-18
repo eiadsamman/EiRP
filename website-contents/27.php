@@ -122,9 +122,9 @@ unset($grem);
 	$(document).ready(function (e) {
 		var ajax = null;
 		$("#passForm").on('submit', function (e) {
-			if ($("#newpass").val().length < 6) {
+			if ($("#newpass").val().length < 8) {
 				e.preventDefault();
-				messagesys.failure("Minumum of 6 characters password is required");
+				messagesys.failure("At least 8 characters long but 10 or more is better.<br />A combination of uppercase letters, lowercase letters, numbers, and symbols.");
 				$("#newpass").focus().select();
 				return false;
 			} else if ($("#conpass").val() != $("#newpass").val()) {

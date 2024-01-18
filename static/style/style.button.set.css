@@ -18,41 +18,16 @@
 
 .btn-set>* {
 	outline: none;
-	background-color: var(--static-bgcolor);
-	border: solid 1px var(--static-border);
-	height: 38px;
+	background-color: transparent;
+	border: none;
+	border-bottom: solid 2px var(--static-border);
+	height: 30px;
 	position: relative;
 	margin-left: -.5px;
 	margin-right: -.5px;
 	white-space: nowrap;
 }
 
-.btn-set>*:first-child,
-.btn-set>*.edge-left {
-	border-top-left-radius: var(--input-border-radius);
-	border-bottom-left-radius: var(--input-border-radius);
-}
-
-.btn-set>*:last-child,
-.btn-set>*.edge-right {
-	border-top-right-radius: var(--input-border-radius);
-	border-bottom-right-radius: var(--input-border-radius);
-}
-
-.btn-set>span.slo-wrap:first-child>input,
-.btn-set>span.slo-wrap.edge-left>input {
-	border-top-left-radius: var(--input-border-radius);
-	border-bottom-left-radius: var(--input-border-radius);
-	padding-left: 10px;
-}
-
-.btn-set>span.slo-wrap:last-child>input,
-.btn-set>span.slo-wrap.edge-right>input
- {
-	border-top-right-radius: var(--input-border-radius);
-	border-bottom-right-radius: var(--input-border-radius);
-	padding-right: 10px;
-}
 
 /* #region - Components*/
 
@@ -68,16 +43,21 @@
 
 .btn-set>a,
 .btn-set>label,
-.btn-set>span {
+.btn-set>input,
+.btn-set>span,
+.btn-set>textarea {
+	font-size: 1em;
 	display: flex;
 	align-items: center;
-	padding: 0px 12px;
+	padding: 0px 10px;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	border: none;
+	background-color: transparent;
 	color: var(--root-font-color);
 }
 
@@ -93,33 +73,32 @@
 }
 
 
-.btn-set>a,
 .btn-set>input,
-.btn-set>label,
 .btn-set>textarea {
-	font-size: 1em;
 	max-width: 100%;
-	border: solid 1px var(--input-border);
-	background-color: var(--input-bgcolor);
+	border-bottom: solid 2px var(--input-border);
+	border-color: var(--input-border);
+	transition: border 0.2s ease-out;
 }
 
 .btn-set>a:hover,
 .btn-set>input:hover,
 .btn-set>label:hover,
-.btn-set>textarea:focus {
+.btn-set>textarea:hover {
 	text-decoration: none;
-	border-color: var(--input_hover-border);
+	border-color: var(--input_hover-color);
 	z-index: 12;
+
 }
 
 .btn-set>a:focus,
 .btn-set>input:focus,
 .btn-set>label:focus,
 .btn-set>textarea:focus {
-	border-color: rgba(82, 168, 236, .75);
-	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	border-color: var(--input_active-color);
+	/* -webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	box-shadow: 0 0 4px rgba(82, 168, 236, .7); */
 	z-index: 13;
 }
 
@@ -161,9 +140,25 @@
 	padding: 0px 15px;
 	font-size: 1em;
 	cursor: pointer;
+	border: solid 1px var(--input-border);
+	background-color: var(--input-bgcolor);
 }
 
-.btn-set>input[type=button]:active {}
+.btn-set>input[type=button]:hover {
+	border-color: var(--input_hover-color);
+}
+
+.btn-set>input[type=button]:active {
+	background-color: var(--input_focus-color);
+}
+
+.btn-set>input[type=button]:active,
+.btn-set>input[type=button]:focus {
+	border-color: var(--input_active-color);
+	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+}
 
 
 
@@ -175,10 +170,38 @@
 .btn-set input[disabled],
 .btn-set textarea[disabled],
 .btn-set button[disabled] {
-	color: rgba(125, 125, 125, .8) !important;
-	background-color: var(--button_disabled-bgcolor) !important;
+	color: rgba(125, 125, 125, .7) !important;
+	background-color: var(--button_disabled-bgcolor);
 	pointer-events: none;
-	border-color: var(--static-border);
+	/* background-color: var(--button_disabled-bgcolor) !important;
+	border-color: var(--static-border); */
+}
+
+
+.btn-set>button:first-child,
+.btn-set>*.edge-left {
+	border-top-left-radius: var(--input-border-radius);
+	border-bottom-left-radius: var(--input-border-radius);
+}
+
+.btn-set>button:last-child,
+.btn-set>*.edge-right {
+	border-top-right-radius: var(--input-border-radius);
+	border-bottom-right-radius: var(--input-border-radius);
+}
+
+.btn-set>span.slo-wrap:first-child>button,
+.btn-set>span.slo-wrap.edge-left>button {
+	border-top-left-radius: var(--input-border-radius);
+	border-bottom-left-radius: var(--input-border-radius);
+	padding-left: 10px;
+}
+
+.btn-set>span.slo-wrap:last-child>button,
+.btn-set>span.slo-wrap.edge-right>button {
+	border-top-right-radius: var(--input-border-radius);
+	border-bottom-right-radius: var(--input-border-radius);
+	padding-right: 10px;
 }
 
 /* #endregion - Components*/
@@ -296,6 +319,12 @@
 
 
 /* #region - Checkbox*/
+.btn-set>label {
+	position: relative;
+	height: 30px;
+}
+
+
 .btn-set>label>input[type=checkbox] {
 	appearance: none;
 	position: relative;
@@ -314,9 +343,24 @@
 	top: -8px;
 }
 
+.btn-set>label>input[type=checkbox]+span::before {
+	content: " ";
+	display: inline-block;
+	position: absolute;
+	inset: 2px 2px 2px 2px;
+	outline: solid 2px var(--button-border);
+	border-radius: 2px;
+	opacity: 0;
+	transition: opacity 0.1s ease-in;
+}
+
+.btn-set>label>input[type=checkbox]:focus+span::before{
+	opacity: 1;
+}
+
 .btn-set>label>input[type=checkbox]:hover::before {
 	background-color: var(--bomtable-background-color);
-	border-color: var(--input_hover-border);
+	border-color: var(--input_hover-color);
 }
 
 .btn-set>label>input[type=checkbox]::after {

@@ -289,9 +289,9 @@ $SmartListObject  = new SmartListObject($app);
 						echo "<a href=\"{$fs()->dir}/?logout\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Logout\">&#xe9b6;</span><span>Logout</span></a>";
 						echo "<div><span class=\"btn-set \"><span class=\"flex\" style=\"padding:10px 0px 0px 0px;background:none;border:none\">Bookmarks</span>";
 						if (!$bookmarked) {
-							echo "<button type=\"button\" title=\"Add this page to bookmarks\" data-target_id=\"{$fs()->id}\" data-bookmark_title=\"{$fs()->title}\" data-role=\"add\" id=\"bookmark-button\">Add</button>";
+							echo "<button type=\"button\" class=\"edge-left\" title=\"Add this page to bookmarks\" data-target_id=\"{$fs()->id}\" data-bookmark_title=\"{$fs()->title}\" data-role=\"add\" id=\"bookmark-button\">Add</button>";
 						} else {
-							echo "<button type=\"button\" title=\"Remove this page from bookmarks\" data-target_id=\"{$fs()->id}\" data-role=\"remove\" id=\"bookmark-button\">Remove</button>";
+							echo "<button type=\"button\" class=\"edge-left\" title=\"Remove this page from bookmarks\" data-target_id=\"{$fs()->id}\" data-role=\"remove\" id=\"bookmark-button\">Remove</button>";
 						}
 						echo "</span></div>";
 

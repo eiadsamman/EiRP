@@ -208,7 +208,7 @@ class Header extends Blocks
 class Menu extends Blocks
 {
 	protected string $id = "menu";
-	public int $height = 53;
+	public int $height = 45;
 
 	public function open(): self
 	{

@@ -1,5 +1,6 @@
 <?php
 
+
 exit;
 /* Ecrypt users passwords */
 $res = $app->db->query("SELECT usr_password, usr_id FROM users;");
@@ -23,6 +24,7 @@ $stmt->close();
 
 exit;
 use System\SmartListObject;
+
 $SmartListObject = new SmartListObject($app);
 ?>
 <div draggable="true" style="padding:20px;border:solid 2px red;display:inline-block;">ASF</div>
@@ -56,10 +58,7 @@ $SmartListObject = new SmartListObject($app);
 			}
 		});
 
-		//list.set(1058);
-		/* fucK.addEventListener('click', function (e) {
-			console.log(list.first()[0].stamped)   
-		}); */
+		//list.set(1058);			/* fucK.addEventListener('click', function (e) {				console.log(list.first()[0].stamped)   			}); */
 
 	});
 </script>

@@ -90,7 +90,7 @@ $(document).ready(function (e) {
 			if (isloaded) {
 				const y = js_output_total[0].getBoundingClientRect().top;
 				window.scroll({
-					top: y - 15,
+					top: y - 25,
 					behavior: 'smooth'
 				});
 			}

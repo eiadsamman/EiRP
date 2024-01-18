@@ -3,16 +3,25 @@ use System\Personalization\Bookmark;
 
 $bookmarks = new Bookmark($app);
 $limit = 0;
+
+
 foreach ($bookmarks->list() as $bookmark) {
 	if ($limit >= 5)
 		break;
 	if ($limit == 0) {
-		echo "<div style=\"flex:1;min-width:25%\"><div>";
+		echo "<div class=\"links\"><div>";
 	}
-	echo "<a href=\"{$bookmark['trd_directory']}\">
-	<span " . ($bookmark['trd_attrib5'] != null ? "style=\"font-family:icomoon4;\"" : "font-family:icomoon4;") . ">&#xe{$bookmark['trd_attrib4']};</span>{$bookmark['pfl_value']}</a>";
+	echo "<a href=\"{$bookmark['trd_directory']}\">";
+
+	echo "<span style=\"color:var(--root-font-color);background-color:var(--static-bgcolor);\">&#xe{$bookmark['trd_attrib4']};</span>";//background-color:#{$bookmark['trd_attrib5']}
+	echo "<div>{$bookmark['pfl_value']}</div>";
+
+	echo "</a>";
 	$limit++;
 }
 if ($limit != 0) {
-	echo "</div></div>";
+	echo "</div>";
+	echo "<hr />";
+	echo "<a href=\"{$fs(263)->dir}\">Manage bookmarks</a>";
+	echo "</div>";
 }
