@@ -80,10 +80,6 @@ $grem->getLast()->close();
 
 
 
-
-
-
-
 $grem->title()->serve("<span>Dashboard reports</span>");
 $grem->article()->open();
 $firstocc = false;
@@ -110,7 +106,7 @@ $grem->article()->open();
 echo <<<HTML
 <table class="bom-table hover row-selector"><tbody>
 	<tr>
-		<td class="checkbox" style="min-width:38px;width:38px;"><label><input id="theme-default" name="theme" type="radio" checked /></label></td>
+		<td class="checkbox" style="min-width:38px;width:38px;"><label><input type="radio"  id="theme-default" name="theme" type="radio" checked /></label></td>
 		<td>Default theme</td>
 	</tr>
 </tbody></table>

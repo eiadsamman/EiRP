@@ -57,11 +57,9 @@
 	--dim-max-width: 1400px;
 	--font-size: 13px;
 	--root--menubar-height: 49px;
-	--gremium-header-height: 70px;
-	/*rgba(244, 244, 247, 1);rgba(244, 244, 247, 0.95);*/
-
+	--gremium-header-height: 0px;
+	--transition-speed: 0.5s;
 }
-
 
 pre {
 	font-size: 1.1em;
@@ -77,6 +75,7 @@ body {
 	line-height: 1em;
 	color: var(--root-font-color);
 	background-color: var(--root-background-color);
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 	font-weight: normal;
 	text-align: center;
 	display: table;
@@ -139,6 +138,7 @@ select {
 	color: var(--root-font-color);
 	border: solid 1px var(--root-input-border-color);
 	background-color: var(--root-input-background-color);
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }
 
 
@@ -186,56 +186,52 @@ ul>li {
 
 /* #region Layout Content*/
 body {
-	text-align: center;
 	padding: 0px;
 }
 
-body>div {
-	display: table;
-	width: 100%;
+body>article {
+	display: flex;
+	justify-content: center;
 	height: 100%;
 	background-color: var(--root-background-color);
+	transition: background-color var(--transition-speed) ease;
+	margin: 0 auto;
 }
 
-body>div>div {
-	display: table-row;
-	height: auto;
-}
-
-body>div>div>div {
-	display: table-cell;
-	text-align: center;
-	height: 100%;
-	width: 100%;
-}
-
-body>div>div>div>div {
-	display: inline-block;
+body>article>div {
+	flex: 1;
 	max-width: var(--dim-max-width);
-	width: 100%;
-	height: 100%;
+	margin-top: var(--root--menubar-height);
 	text-align: left;
-	background-color: var(--root-background-color);
-	margin: 0px;
-	position: relative;
-	padding-top: calc(var(--root--menubar-height));
-}
 
-#body-content.blur,
-#template-sidePanel.blur {
-	filter: blur(3px);
-	/*transition: filter 0.10s linear;*/
-}
-
-#body-content,
-#template-sidePanel {
 	filter: blur(0px);
-	/*transition: filter 0.10s linear;*/
+	transition: filter 0.2s ease-out;
+}
+
+body>article>div.blur {
+	filter: blur(4px);
+}
+
+body::-webkit-scrollbar {
+	width: 0.8em;
+	background-color: var(--root-ribbon-background-color);
+
+}
+
+body::-webkit-scrollbar-track {
+	/* background-color: var(--root-ribbon-background-color); */
+}
+
+/* body::-webkit-scrollbar-button {
+} */
+
+body::-webkit-scrollbar-thumb {
+	border-right: solid 1px var(--input-border);
+	background-color: var(--input_hover-color);
+	/* background-color: var(--input_hover-color); */
 }
 
 /* #endregion */
-
-
 
 /* #region - Ribbon*/
 span.header-ribbon {
@@ -251,8 +247,7 @@ span.header-ribbon {
 	-webkit-backdrop-filter: blur(6px);
 	-moz-backdrop-filter: blur(6px);
 	background-color: var(--root-ribbon-background-color);
-
-
+	transition: background-color var(--transition-speed) ease;
 	color: var(--root-ribbon-font-color);
 }
 
@@ -297,7 +292,6 @@ span.header-ribbon>div {
 
 /* #endregion */
 
-
 /* #region - Menus*/
 span.header-menu {
 	position: fixed;
@@ -305,9 +299,6 @@ span.header-menu {
 	text-align: center;
 	z-index: 99;
 	display: block;
-	-webkit-backdrop-filter: blur(4px);
-	-moz-backdrop-filter: blur(4px);
-	backdrop-filter: blur(4px);
 	visibility: hidden;
 	opacity: 0;
 	/* transition: visibility 0.1s, opacity 0.1s linear, top 0.1s; */
@@ -484,7 +475,6 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 
 /* #endregion */
 
-
 /* #region - Buttons*/
 .btnheader-set {
 	/* display: -webkit-box;
@@ -519,7 +509,6 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	transition: 0s;
 }
 
 .btnheader-set>input:hover,
@@ -528,7 +517,6 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 .btnheader-set>label:hover {
 	background-color: rgba(0, 0, 0, 0.2);
 	text-decoration: none;
-	transition: 0s;
 }
 
 .btnheader-set>label.active,
@@ -536,7 +524,6 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 .btnheader-set>button.active {
 	background-color: rgba(0, 0, 0, 0.6);
 	color: white;
-	transition: 0s;
 }
 
 .btnheader-set>span {
@@ -782,9 +769,128 @@ span.vs-remove {
 
 /* #endregion General*/
 
+/* #region Split View */
+.split-view {
+	display: flex;
+	height: 100%;
+}
+
+.split-view>div.panel {
+	flex: 2;
+	position: relative;
+}
+
+.split-view>div.panel>div.scroll {
+	top: var(--root--menubar-height);
+	position: sticky;
+	overflow-y: auto;
+	/* scrollbar-width: thin; */
+	max-height: calc(100vh - var(--root--menubar-height));
+	margin-right: 10px;
+}
+
+.split-view>div.panel>div.scroll::-webkit-scrollbar {
+	width: 5px;
+}
+
+.split-view>div.panel>div.scroll:hover::-webkit-scrollbar-thumb {
+	background-color: var(--input_hover-color);
+}
+
+.split-view>div.panel>div.scroll::-webkit-scrollbar-thumb {
+	background-color: var(--input-border);
+}
+
+
+
+
+@keyframes placeHolderShimmer {
+	0% {
+		background-position: -468px 0
+	}
+
+	90% {
+		background-position: 468px 0
+	}
+
+	100% {
+		background-position: 468px 0;
+	}
+}
+
+
+.split-view>div.panel>div.scroll div.panel-item {
+	border-bottom: solid 1px var(--bomtable-border-color);
+	min-height: 80px;
+	padding: 10px;
+	position: relative;
+	cursor: default;
+	transition: background-color 0.2s ease;
+}
+
+.split-view>div.panel>div.scroll div.panel-item.active {
+	
+	background-color: var(--bomtable-hover-color);
+}
+
+.split-view>div.panel>div.scroll div.panel-item:not(.place-holder):hover {
+	outline: solid 2px var(--button-border);
+	border-radius: 2px;
+	text-decoration: none;
+	z-index: 2;
+}
+
+.split-view>div.panel>div.scroll div.panel-item:last-child {
+	border-bottom: none;
+	margin-bottom: 0;
+}
+
+.split-view>div.panel>div.scroll div.panel-item.place-holder::after,
+.split-view>div.panel>div.scroll div.panel-item.place-holder::before {
+	height: 10px;
+	display: inline-block;
+	content: " ";
+	animation-duration: 2.2s;
+	animation-fill-mode: forwards;
+	animation-iteration-count: infinite;
+	animation-name: placeHolderShimmer;
+	animation-timing-function: linear;
+	background: var(--root-background-color);
+	background: linear-gradient(to right, var(--placeholder-bgcolor) 0%, var(--placeholder-sweeping-bgcolor) 15%, var(--placeholder-bgcolor) 30%);
+	background-size: 800px 104px;
+	position: absolute;
+}
+
+.split-view>div.panel>div.scroll div.panel-item.place-holder::after {
+	top: 10px;
+	width: 100px;
+}
+
+.split-view>div.panel>div.scroll div.panel-item.place-holder::before {
+	top: 30px;
+	left: 10px;
+	right: 10px;
+}
+
+.split-view>div.body {
+	flex: 5;
+}
+
+
+
+/* #endregion */
+
+
+
 
 
 /* #region Media*/
+@media only screen and (max-width: 1080px) {
+	.split-view>div.panel {
+		display: none;
+	}
+}
+
 @media only screen and (max-width: 768px) {
 
 	#jqroot_accgrp,
@@ -813,8 +919,6 @@ span.vs-remove {
 	#header-menu-logout {
 		padding: 18px;
 	}
-
-
 
 	.mediabond-hide {
 		display: none !important;

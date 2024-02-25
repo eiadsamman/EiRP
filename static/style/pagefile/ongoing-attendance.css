@@ -23,8 +23,8 @@ td.employee-photo>div {
 	background-repeat: no-repeat;
 	height: 120px;
 	width: 120px;
-	border-radius: 10px;
-	border: solid 1px rgba(125,125,125,0.4);
+	border-radius: 50%;
+	border: solid 1px rgba(125,125,125,0.2);
 }
 
 .bom-table.local-force>tbody>tr>td.elapsed {
@@ -42,9 +42,6 @@ td.employee-photo>div {
 	min-width: 100px;
 	margin: 8px;
 	padding: 20px;
-	border: solid 1px var(--bomtable-border-color);
-	background-color: var(--static-bgcolor);
-	/* background: linear-gradient(180deg, rgba(255, 255, 255, 1) 80%, rgba(245, 245, 253, .4) 100%); */
 }
 
 .bom-table.local-force>tbody>tr>td {
@@ -53,8 +50,6 @@ td.employee-photo>div {
 	padding: 2px;
 	min-height: auto;
 	text-align: center;
-	background-color: var(--static-bgcolor);
-
 }
 
 .bom-table.local-force>tbody>tr>td:nth-child(4) {

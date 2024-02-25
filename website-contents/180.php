@@ -6,7 +6,7 @@ if ($app->user->account) {
 		'company' => $app->user->company ? $app->user->company->name : false,
 		'group' => isset($app->user->account) ? $app->user->account->type->name : false,
 		'name' => isset($app->user->account) ? $app->user->account->name : false,
-		'currency' => isset($app->user->account) ? $app->user->account->currency->name : false,
+		'currency' => isset($app->user->account) ? $app->user->account->currency->shortname : false,
 		'value' => (isset($app->user->account) && $app->user->account->balance != null ?
 			($app->user->account->balance < 0 ?
 				"(" . number_format(abs($app->user->account->balance), 2, ".", ",") . ")" :

@@ -1,142 +1,233 @@
 <?php
+use System\Template\Gremium;
 
-if (isset($_POST['id'])) {
-	$transaction_id = isset($_POST['id']) ? (int) $_POST['id'] : null;
-} elseif (isset($_GET['id'])) {
-	$transaction_id = isset($_GET['id']) ? (int) $_GET['id'] : null;
-}
-if (is_null($transaction_id)) {
-	exit;
-}
+$perpage_val = 20;
+$id = isset($_REQUEST['id']) ? (int) $_REQUEST['id'] : 0;
 
-$arr_transaction = null;
-if (
-	$r = $app->db->query("
-	SELECT 
-		acm_id,acm_usr_id,acm_editor_id,UNIX_TIMESTAMP(acm_ctime) AS acm_ctime,acm_type,acm_beneficial,acm_comments,acm_reference,
-		_category._catname,_category._catid,
-		CONCAT_WS(' ',COALESCE(_usr.usr_firstname,''),IF(NULLIF(_usr.usr_lastname, '') IS NULL, NULL, _usr.usr_lastname)) AS _usrname,
-		CONCAT_WS(' ',COALESCE(_editor.usr_firstname,''),IF(NULLIF(_editor.usr_lastname, '') IS NULL, NULL, _editor.usr_lastname)) AS _editorname,
-		acm_rejected,
-		acm_realvalue, cur_name AS realcurrency
-	FROM 
-		acc_main 
-			LEFT JOIN 
-			(
-				SELECT
-					acccat_id AS _catid,CONCAT(accgrp_name,\": \",acccat_name) AS _catname
-				FROM
-					acc_categories JOIN acc_categorygroups  ON acccat_group=accgrp_id
-			) AS _category ON _category._catid=acm_category
-			LEFT JOIN users AS _usr ON _usr.usr_id=acm_usr_id
-			LEFT JOIN users AS _editor ON _editor.usr_id=acm_editor_id
-			LEFT JOIN currencies ON cur_id=acm_realcurrency
-	WHERE 
-		acm_id=$transaction_id;")
-) {
-	if ($row = $r->fetch_assoc()) {
-		$arr_transaction = $row;
-	}
-}
-if (is_null($arr_transaction)) {
-	echo "Invalid transaction ID";
-	exit;
-}
 
-$arr_transaction['transactions'] = array();
-if (
-	$r = $app->db->query("
-	SELECT 
-		atm_id,atm_account_id,atm_value,atm_dir,cur_name,cur_symbol,prt_name,cur_id
-	FROM
-		`acc_accounts`
-			RIGHT JOIN acc_temp ON prt_id=atm_account_id
-			LEFT JOIN 
-				currencies ON cur_id = prt_currency
-	WHERE
-		atm_main={$arr_transaction['acm_id']}")
-) {
-	while ($row = $r->fetch_assoc()) {
-		$arr_transaction['transactions'][$row['atm_dir']] = $row;
-	}
-}
-?>
-<input type="hidden" id="jQtransactionID" value="<?php echo $arr_transaction['acm_id']; ?>" />
-<table class="bom-table" id="jQformTable">
-	<thead>
-		<tr class="special">
-			<td colspan="4">Displaying transaction statement `
-				<?php echo $arr_transaction['acm_id']; ?>`
-			</td>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<th>Type</th>
-			<td>
-				<?= \System\Finance\Transaction\Nature::tryFrom((int) $arr_transaction['acm_type'])->name; ?>
-			</td>
-			<th>Status</th>
-			<td>
-				<?php echo $arr_transaction['acm_rejected'] == 1 ? "<span style=\"color:#f03\">Canceled</span>" : "Active"; ?>
-			</td>
-		</tr>
-		<tr>
-			<th style="min-width:100px">Creditor</th>
-			<td width="50%">
-				<?php echo $arr_transaction['transactions'][0]['prt_name'] . " (" . $arr_transaction['transactions'][0]['cur_symbol'] . ")"; ?>
-			</td>
-			<th style="min-width:100px">Beneficial</th>
-			<td width="50%">
-				<?php echo $arr_transaction['acm_beneficial']; ?>
-			</td>
-		</tr>
-		<tr>
-			<th>Date</th>
-			<td>
-				<?php echo date("F d,Y", $arr_transaction['acm_ctime']); ?>
-			</td>
-			<th>Reference</th>
-			<td>
-				<?php echo $arr_transaction['acm_reference']; ?>
-			</td>
-		</tr>
-		<tr>
-			<th>Debitor</th>
-			<td>
-				<?php echo $arr_transaction['transactions'][1]['prt_name'] . " (" . $arr_transaction['transactions'][1]['cur_symbol'] . ")"; ?>
-			</td>
-			<th>Employee ID</th>
-			<td>
-				<?php echo $arr_transaction['acm_usr_id'] == 0 ? "-" : $arr_transaction['acm_usr_id'] . ", " . $arr_transaction['_usrname']; ?>
-			</td>
-		</tr>
-		<tr>
-			<th>Category</th>
-			<td>
-				<?php echo $arr_transaction['_catname']; ?>
-			</td>
-			<th rowspan="2">Comments</th>
-			<td rowspan="2" valign="top">
-				<div style="max-height:55px;overflow:auto">
-					<?php echo !is_null($arr_transaction['acm_comments']) ? nl2br($arr_transaction['acm_comments']) : ""; ?>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<th>Value</th>
-			<td>
-				<?php echo number_format(abs($arr_transaction['acm_realvalue']), 2, ".", ","); ?>
-				<?php echo $arr_transaction['realcurrency']; ?>
-			</td>
-		</tr>
-		<?php echo isset($_GET['ajax']) ? "<tr><td colspan=\"4\"><div class=\"btn-set\" style=\"justify-content:center\"><button id=\"jQpopupCancel\">Close</button></div></td></tr>" : ""; ?>
-	</tbody>
-</table>
-<script>
-	$(document).ready(function (e) {
-		$("#jQpopupCancel").on('click', function () {
-			popup.hide();
+$statement = new System\Finance\Transaction\Statement($app);
+$read = $statement->read($id);
+
+
+
+if (!$app->xhttp) { ?>
+	<div class="split-view">
+		<div class="panel">
+			<div class="scroll" id="PanelNavigator-Scroll">
+				<?php
+				$grem_panel = new Gremium\Gremium(true, true);
+				$grem_panel->base = "0px";
+				$grem_panel->header()->serve("<h1>Statements</h1>");
+				$grem_panel->menu()->serve("<input class=\"edge-left\" type=\"button\" value=\"Search\" /><button id=\"js-input_btunew\">New</button>");
+				$grem_panel->article("PanelNavigator-Window")->options(array("nopadding"))->serve();
+				$grem_panel->title("PanelNavigator-Informative")->serve("<div style=\"text-align:center;font-size:0.8em\">No more records</div>");
+				$grem_panel->terminate();
+				?>
+			</div>
+		</div>
+		<div class="body" id="PanelNavigator-Body">
+		<?php } ?>
+
+
+
+
+
+
+		<?php
+		if ($read) {
+
+			$grem = new Gremium\Gremium(true);
+			$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
+			$grem->menu()->serve("<span class=\"small-media-hide flex\"></span><button id=\"js-input_print\" " . ($read ? "" : "disabled") . " class=\"edge-left\" tabindex=\"-1\">Print</button>");
+			$grem->title()->serve("<span class=\"flex\">Statement details</span>");
+
+			$grem->article()->open(); ?>
+
+			<div class="form predefined">
+				<label style="min-width:200px;">
+					<h1>Statement ID</h1>
+					<div class="btn-set">
+						<span>
+							<?= $read->id; ?>
+						</span>
+					</div>
+				</label>
+				<label style="min-width:200px;">
+					<h1>Type</h1>
+					<div class="btn-set">
+						<span>
+							<?= $read->type->name; ?>
+						</span>
+					</div>
+				</label>
+			</div>
+
+			<div class="form predefined">
+				<label>
+					<h1>Post Date</h1>
+					<div class="btn-set">
+						<span>
+							<?= $read->dateTime->format("Y-m-d"); ?>
+						</span>
+					</div>
+				</label>
+				<label>
+					<h1>Due Date</h1>
+					<div class="btn-set">
+						<span>
+							-
+						</span>
+					</div>
+				</label>
+			</div>
+
+
+			<div class="form predefined">
+				<label style="min-width:200px;">
+					<h1>Value</h1>
+					<div class="btn-set">
+						<span>
+							<?= $read->currency->shortname . " " . number_format($read->value, 2); ?>
+						</span>
+					</div>
+				</label>
+			</div>
+
+			<div class="form predefined">
+				<label style="min-width:200px;">
+					<h1>Beneficiary</h1>
+					<div class="btn-set">
+						<span>
+							<?= $read->beneficiary; ?>
+						</span>
+					</div>
+				</label>
+
+			</div>
+
+
+			<div class="form predefined">
+				<label style="min-width:200px;">
+					<h1>Creditor</h1>
+					<div class="btn-set">
+						<span>
+							<?= "[" . $read->creditor->currency->shortname . "] " . $read->creditor->company->name . ": " . $read->creditor->name; ?>
+						</span>
+					</div>
+				</label>
+				<label>
+					<h1>Debitor</h1>
+					<div class="btn-set">
+						<span>
+							<?= "[" . $read->debitor->currency->shortname . "] " . $read->debitor->company->name . ": " . $read->debitor->name; ?>
+						</span>
+					</div>
+				</label>
+			</div>
+
+
+			<div class="form predefined">
+				<label style="min-width:200px;">
+					<h1>Description</h1>
+					<div style="padding:5px 10px;line-height:1.7em">
+						<?= nl2br($read->description ?? ""); ?>
+					</div>
+				</label>
+			</div>
+
+			<?php
+			$grem->getLast()->close();
+			$grem->terminate();
+			unset($grem);
+
+		} else {
+			$grem = new Gremium\Gremium(true);
+			$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1>");
+			$grem->menu()->serve("<span class=\"small-media-hide flex\"></span>");
+			$grem->article()->serve(
+				<<<HTML
+				<ul>
+					<li>No statement selected or selected statement number is invalid</li>
+					<li>Permission denied or not enough privileges to proceed with this document</li>
+				</ul>
+				HTML
+			);
+			unset($grem);
+
+		}
+		?>
+
+
+
+
+
+		<?php if (!$app->xhttp) { ?>
+		</div>
+	</div>
+
+
+
+
+
+
+
+
+
+
+
+
+	<script type="text/javascript">
+		let pageConfig = {
+			method: "new",
+			url: '<?= $fs()->dir ?>',
+			title: '<?= $app->settings->site['title']; ?> - <?= $fs()->title ?>',
+			id: <?= !empty($_GET['id']) ? (int) $_GET['id'] : "null"; ?>,
+			upload: {
+				url: "<?= $fs(186)->dir ?>",
+				identifier: <?= \System\Attachment\Type::FinanceRecord->value; ?>
+			}
+		}
+	</script>
+	<script type="text/javascript" src="static/javascript/Transactions.js"></script>
+	<script type="text/javascript" src="static/javascript/Navigator.js"></script>
+	<script type="text/javascript" src="static/javascript/PanelNavigator.js"></script>
+	<script type="text/javascript">
+
+		let pn = new PanelNavigator();
+		pn.sourceUrl = '<?= $fs(121)->dir ?>';
+		pn.itemPerRequest = <?= (int) $perpage_val; ?>;
+
+		document.getElementById("js-input_btunew").addEventListener("click", function () {
+			pn.clearActiveItem();
+			pn.navigator.setProperty("id", null);
+			pn.navigator.history_vars.method = "new";
+			pn.navigator.history_vars.url = '<?= $fs(91)->dir; ?>';
+			pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(91)->title; ?>';
+			pn.navigator.url = '<?= $fs(91)->dir; ?>';
+			pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "new", "id": null }, () => { initInvokers() });
+			pn.navigator.pushState();
 		});
-	});
-</script>
+
+		pn.onclick = function (event) {
+			pn.navigator.setProperty("id", event.dataset.listitem_id);
+			pn.navigator.history_vars.method = "view";
+			pn.navigator.history_vars.url = '<?= $fs(104)->dir; ?>';
+			pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(104)->title; ?>';
+			pn.navigator.url = '<?= $fs(104)->dir; ?>';
+			pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "view", "id": event.dataset.listitem_id });
+			pn.navigator.pushState();
+		}
+
+		pn.listitemHandler = function (data) {
+			let statementTypeIcon = data.positive ? `<span class="stm inc active"></span>` : `<span class="stm pay active"></span>`;
+			let lockIcon = `<span class="stt chk"></span>`;
+			let attachments = parseInt(data.attachements) > 0 ? `<span class="atch"></span>` : "";
+			return `<div><h1>${data.beneficial}</h1><cite>${data.id}</cite></div>` +
+				`<div><h1>${data.value}</h1><cite>${data.date}</cite></div>` +
+				`<div><h1>${data.category}</h1><cite>${attachments}${statementTypeIcon}</cite></div>` +
+				`<div><h1>${data.details}</h1></div>`;
+		}
+		pn.init();
+	</script>
+
+<?php } ?>

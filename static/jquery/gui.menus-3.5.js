@@ -131,17 +131,17 @@ $(document).ready(function (e) {
 			}).done(function (data, textStatus, request) {
 				let response = request.getResponseHeader('QUERY_RESULT');
 				if (parseInt(response) == 1) {
-					messagesys.success("Bookmark added successfully");
+					messagesys.success("Page bookmarked successfully");
 
 					e.target.textContent = "Remove";
 					e.target.dataset.role = "remove";
 				} else if (parseInt(response) == 2) {
-					messagesys.success("Bookmark already exists");
+					messagesys.success("Page already bookmarked");
 				} else {
-					messagesys.failure("Adding bookmark failed, server error");
+					messagesys.failure("Bookmarking page failed");
 				}
 			}).fail(function () {
-				messagesys.failure("Adding bookmark failed, server error");
+				messagesys.failure("Bookmarking page failed");
 			});
 
 
@@ -198,7 +198,7 @@ $(document).ready(function (e) {
 	}
 
 
-	/*setInterval(function(){BALANCE_UPDATE();},5000);*/
+	setInterval(function () { BALANCE_UPDATE(); }, 10000);
 
 	$.fn.serialize = function (options) {
 		return $.param(this.serializeArray(options));

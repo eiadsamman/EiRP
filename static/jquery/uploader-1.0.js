@@ -19,7 +19,7 @@
 
 		}, options);
 
-
+		var object = this;
 		var dom_placeholder = $("<div />"),
 			_liststate = false;
 
@@ -38,7 +38,7 @@
 				<td class="content">...</td>
 			</tr>
 		`);
-		const itemempty  = $(`
+		const itemempty = $(`
 			<tr>
 				<td colspan=\"3\">${settings.emptymessage}</td>
 			</tr>
@@ -219,9 +219,11 @@
 			'clear': function () {
 				containerbody.children("tr").remove();
 				updateCount();
+				return object;
 			},
 			'update': function () {
 				updateCount();
+				return object;
 			},
 			'clean': function () {
 				containerbody.children("tr").each(function () {
@@ -231,6 +233,7 @@
 					}
 				});
 				updateCount();
+				return object;
 			},
 			'AddListItem': function (id, name, size = false, checked = false, mime = "image") {
 				_AddListItem(id, name, size, checked, mime);

@@ -1,15 +1,40 @@
 $(document).ready(function (e) {
-	const form_main = document.getElementById("js-ref_form-main");
-	const slo_objects = $("#js-ref_form-main [data-slo]").not("#js-defines").slo();
-	const value_field = document.getElementById('value');
-	const description_field = document.getElementById('description');
+	let form_main = slo_objects = value_field = description_field = null;
+	initInvokers = function () {
+
+		Upload = $.Upload({
+			objectHandler: $("#js_upload_list"),
+			domselector: $("#js_uploader_btn"),
+			dombutton: $("#js_upload_trigger"),
+			list_button: $("#js_upload_count"),
+			emptymessage: "[No files uploaded]",
+			delete_method: 'permanent',
+			upload_url: pageConfig.upload.url,
+			relatedpagefile: pageConfig.upload.identifier,
+			multiple: true,
+			inputname: "attachments",
+			domhandler: $("#UploadDOMHandler"),
+		});
+		Upload.update();
 
 
-	const initInvokers = function () {
+		form_main = document.getElementById("js-ref_form-main");
+		slo_objects = $("#js-ref_form-main [data-slo]").not("#js-defines").slo();
+		description_field = document.getElementById('description');
+		value_field = document.getElementById('value');
+
 		$("[name=value]").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
 			OnlyFloat(this, null, 0);
 		});
-		document.getElementById("js-ref_form-main").addEventListener("submit", function (e) {
+
+		if (form_main == null) {
+			return
+		}
+		document.getElementById("js-input_submit").addEventListener("click", () => {
+			postTransaction();
+		});
+
+		form_main.addEventListener("submit", function (e) {
 			e.preventDefault();
 			postTransaction();
 			return false;
@@ -50,12 +75,11 @@ $(document).ready(function (e) {
 
 		slo_objects.getElementById("target-account").slo.focus();
 	}
-	const disableForm = (state) => {
+	disableForm = (state) => {
 		$("#js-ref_form-main input, #js-ref_form-main textarea, #js-ref_form-main button").prop('disabled', state);
 		overlay.state(state);
 	}
-
-	const validateFields = () => {
+	validateFields = () => {
 		let thrownerror = {
 			occured: false,
 			message: "",
@@ -100,23 +124,24 @@ $(document).ready(function (e) {
 		}
 
 	}
-	const clearFields = () => {
+	clearFields = () => {
 		slo_objects.getElementById("beneficiary").slo.clear(false);
 		value_field.value = "";
 		description_field.value = "";
 	}
-	const postTransaction = async () => {
+	postTransaction = async () => {
 		try {
 			validateFields();
 		} catch (e) {
 			messagesys.failure(e);
 			return false;
 		}
-
+		alert("Attemping");
+		return;
 		try {
 			const formData = new FormData(form_main);
 			disableForm(true)
-			let response = await fetch(callurl, {
+			let response = await fetch(form_main.action, {
 				method: 'POST',
 				mode: "cors", // no-cors, *cors, same-origin
 				cache: "no-cache",
@@ -160,8 +185,8 @@ $(document).ready(function (e) {
 			}
 
 		} catch (error) {
+			console.log(error)
 			messagesys.failure("Request failed, internal client error");
-			console.log(error);
 		}
 	}
 

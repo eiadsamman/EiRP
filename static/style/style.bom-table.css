@@ -14,7 +14,6 @@
 .bom-table>tbody>tr:not(:first-child)>th,
 .bom-table>tfoot>tr:not(:first-child)>td {
 	border-top: solid 1px var(--bomtable-border-color);
-
 }
 
 .bom-table>tbody>tr>td,
@@ -25,6 +24,7 @@
 	white-space: nowrap;
 	color: var(--root-font-color);
 	background-color: var(--bomtable-background-color);
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease,border-color var(--transition-speed) ease;
 }
 
 .bom-table>tbody>tr>td.console {
@@ -45,12 +45,13 @@
 
 .bom-table>thead>tr>td,
 .bom-table>tfoot>tr>td {
+	color: var(--root-font-color);
 	border: solid 1px var(--bomtable-border-color);
 	background-color: var(--bomtable-background-color);
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 	border-left: none;
 	border-right: none;
 	padding: 10px 8px;
-	color: var(--root-font-color);
 	white-space: nowrap;
 	cursor: default;
 	font-weight: normal;
@@ -252,18 +253,10 @@
 	user-select: none;
 }
 
-.bom-table>tbody>tr>td.checkbox>label::before {
-	position: absolute;
-	content: " ";
-	border: solid 1px var(--input-border);
-	border-radius: 10px;
-	width: 14px;
-	height: 14px;
-}
-
-.bom-table>tbody>tr>td.checkbox>label:hover::before {
-	background-color: var(--bomtable-background-color);
-	border-color: var(--input_hover-color);
+.bom-table>tbody>tr>td.checkbox>label:hover {
+	outline: solid 2px var(--button-border);
+	z-index: 1;
+	border-radius: 2px;
 }
 
 .bom-table>tbody>tr>td.checkbox>label>input {
@@ -271,36 +264,56 @@
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
+	display: flex;
+	align-items: center;
+	text-align: center;
+	justify-content: center;
+	border: none;
+	padding: 0;
+	margin: 0;
+	position: absolute;
 }
 
-.bom-table>tbody>tr>td.checkbox>label>input:before {
+.bom-table>tbody>tr>td.checkbox>label>input::before {
+	visibility: visible;
 	display: block;
 	position: absolute;
+	content: " ";
+	border: solid 3px var(--input-border);
+	border-radius: 10px;
+	width: 10px;
+	height: 10px;
+	transition: border-color 0.2s ease-out;
+}
+
+.bom-table>tbody>tr>td.checkbox>label>input:hover::before {
+	background-color: var(--bomtable-background-color);
+	border-color: var(--input_hover-color);
+}
+
+
+.bom-table>tbody>tr>td.checkbox>label>input:after {
+	display: block;
 	content: " ";
 	visibility: visible;
 }
 
-
-.bom-table>tbody>tr>td.checkbox>label>input[type=checkbox]::before,
-.bom-table>tbody>tr>td.checkbox>label>input[type=radio]::before {
+.bom-table>tbody>tr>td.checkbox>label>input::after,
+.bom-table>tbody>tr>td.checkbox>label>input[type=radio]::after {
 	border-radius: 10px;
 	background-color: var(--root-link-color);
-	position: relative;
-	left: -.5px;
-	width: 10px;
-	height: 10px;
+	width: 6px;
+	height: 6px;
 	transform: scale(0);
-	transition: transform ease .1s;
+	transition: transform ease .2s;
 }
 
-.bom-table>tbody>tr>td.checkbox>label>input[type=radio]::before {
-	top: -1.5px;
-	left: -1px;
-}
-
-.bom-table>tbody>tr>td.checkbox>label>input[type=checkbox]:checked::before,
-.bom-table>tbody>tr>td.checkbox>label>input[type=radio]:checked::before {
+.bom-table>tbody>tr>td.checkbox>label>input:checked::after {
 	transform: scale(1);
+}
+
+.bom-table>tbody>tr>td.checkbox>label>input:checked::before {
+	border-color: var(--root-link-color);
 }
 
 /* #endregion Table Checkbox*/
@@ -315,7 +328,8 @@
 	border: none;
 	background-color: transparent;
 }
-.bom-table.form-table>tbody>tr>th{
+
+.bom-table.form-table>tbody>tr>th {
 	color: var(--root-font-lightcolor);
 }
 

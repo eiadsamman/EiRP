@@ -275,6 +275,8 @@ class Article extends Blocks
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo (empty($this->fxwidth) ? "" : " style=\"width:{$this->fxwidth};\" ");
 			echo is_array($this->options) && in_array("nobg", $this->options) ? " class=\"nobg\" " : "";
+			echo is_array($this->options) && in_array("nopadding", $this->options) ? " class=\"nopadding\" " : "";
+
 			echo ">\n";
 			$this->opened = true;
 		}

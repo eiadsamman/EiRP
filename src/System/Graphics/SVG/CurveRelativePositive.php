@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace System\Graphics\SVG;
 
 
-class CurveRelative extends SVG
+
+class CurveRelativePositive extends SVG
 {
 
-	private int $x_shift = 1;
+	private int $x_shift = 5;
 	private float $y_shift = 3;
 	private float $bez = 0;
 
@@ -22,7 +23,7 @@ class CurveRelative extends SVG
 
 	public function ViewBox($size): string
 	{
-		return "0 0 " . ($this->wavelength * $size + ($this->x_shift * 2)) . " " . (($this->magnitude * 2) + (2 * $this->y_shift));
+		return "0 0 " . ($this->wavelength * $size + ($this->x_shift * 2)) . " " . (($this->magnitude) + (2 * $this->y_shift));
 	}
 
 
@@ -78,20 +79,28 @@ class CurveRelative extends SVG
 
 	public function XMLHorizontalAxis(float $size): string
 	{
-		return "x1=" . $this->x_shift . " y1=" . ($this->magnitude + $this->y_shift) . " x2=" . ($this->wavelength * $size + $this->x_shift) . " y2=" . ($this->magnitude + $this->y_shift);
-		;
+		return " x1=" . $this->x_shift . " y1=" . ($this->magnitude + $this->y_shift) . " x2=" . ($this->wavelength * $size + $this->x_shift) . " y2=" . ($this->magnitude + $this->y_shift);
 	}
-	public function XMLPoints(array $arr): string
+
+
+
+	public function XMLPoints(array $arr): \Generator
 	{
-		$legend = "";
 		reset($arr);
 		$i = 0;
-		foreach ($arr as $point) {
-			$legend .= "<circle cx=\"" . ($i * $this->wavelength + $this->x_shift) . "\" cy=\"" . ($this->magnitude * -$point + $this->magnitude + $this->y_shift) . "\" r=\"1\" fill=\"red\"/>";
+		foreach ($arr as $key => $point) {
+			if (is_null($point)) {
+				yield $key => null;
+			} else {
+				yield $key => (
+					new \System\Graphics\Points2D(
+						$i * $this->wavelength + $this->x_shift,
+						($this->magnitude * -floatval($point)) + $this->magnitude + $this->y_shift
+					)
+				);
+			}
 			$i++;
 		}
-		return $legend;
+		return;
 	}
 }
-
-?>

@@ -1,20 +1,74 @@
 <?php
 use System\Graphics\SVG\CurveRelative;
 
-$curve = new CurveRelative(4, 2, -.5);
+$curve = new CurveRelative(12, 10, -.5);
+$accounts_count = 4;
 
-function randarr()
-{
-	$arr = [0];
-	for ($i = 0; $i < 7; $i++)
-		$arr[] = (float) (rand(0, 70) + 30) / 100 * (rand(0, 100) < 50 ? -1 : 1) * .9;
-	return $arr;
+$ident = \System\Personalization\Identifiers::SystemCountAccountSelection->value;
+
+// DATE(NOW() - INTERVAL 7 DAY)
+
+$date_object = new \DateTime();
+$date_object->modify("-6 day");
+$date_interval = new DateInterval("P1D");
+
+$date_range = 7;
+$date_map = array();
+$date_stamp_start = $date_object->format("Y-m-d");
+$date_map[$date_stamp_start] = 0;
+
+for ($i = 1; $i < $date_range; $i++) {
+	$date_object->add($date_interval);
+	$date_map[$date_object->format("Y-m-d")] = 0;
+}
+$date_stamp_end = $date_object->format("Y-m-d");
+
+
+
+
+$r = (
+	"SELECT
+		mua.prt_id,
+		acm_ctime,
+		SUM(atm_value) AS sum_grp
+	FROM 
+		acc_temp 
+		JOIN acc_main ON acm_id = atm_main
+		JOIN (
+			SELECT 
+				prt_id
+			FROM 
+				acc_accounts
+					JOIN user_partition ON prt_id = upr_prt_id AND upr_usr_id = {$app->user->info->id} AND upr_prt_view = 1
+					LEFT JOIN user_settings ON usrset_usr_defind_name = prt_id AND usrset_usr_id = {$app->user->info->id} AND usrset_type = $ident
+			ORDER BY 
+				(usrset_value + 0) DESC, prt_name
+			LIMIT $accounts_count
+		) AS mua ON mua.prt_id = atm_account_id
+	WHERE
+		acm_rejected = 0 AND acm_ctime >= \"$date_stamp_start\" AND acm_ctime <= \"$date_stamp_end\"
+	GROUP BY
+		mua.prt_id, acm_ctime
+	ORDER BY 
+		mua.prt_id, acm_ctime ASC;"
+
+);
+
+$r = $app->db->query($r);
+
+$report = array();
+while ($row = $r->fetch_assoc()) {
+	if (!isset($report[$row['prt_id']])) {
+		$report[$row['prt_id']] = $date_map;
+	}
+	$report[$row['prt_id']][$row['acm_ctime']] = (float) $row['sum_grp'];
+}
+
+foreach ($report as $k => &$v) {
+	$curve->prepareArray($v);
 }
 
 
-
-$ss = microtime(true);
-$ident = \System\Personalization\Identifiers::SystemCountAccountSelection->value;
 $r = $app->db->query(
 	"SELECT
 		 SUM(atm_value) AS total_accountgroup, mua.upr_prt_fetch,mua.comp_id,
@@ -31,7 +85,7 @@ $r = $app->db->query(
 					LEFT JOIN user_settings ON usrset_usr_defind_name = prt_id AND usrset_usr_id = {$app->user->info->id} AND usrset_type = $ident
 			ORDER BY 
 				(usrset_value + 0) DESC, prt_name
-			LIMIT 5
+			LIMIT $accounts_count
 		) AS mua ON mua.prt_id = atm_account_id
 	WHERE
 		acm_rejected = 0
@@ -39,9 +93,13 @@ $r = $app->db->query(
 		mua.prt_id
 	ORDER BY 
 		mua.usrset_value DESC
-	LIMIT 4
+	
 	;"
 );
+
+
+
+
 
 if ($r) {
 	echo "<div class=\"accounts-overview\"><div class=\"tickets\">";
@@ -51,12 +109,12 @@ if ($r) {
 		$title = "{$row['comp_name']}, {$row['prt_name']}: " . number_format(abs($row['total_accountgroup']), 0, ".", ",") . " {$row['cur_shortname']}";
 
 
-		echo "<span draggable=\"true\" title=\"$title\">";
-		
+		echo "<span title=\"$title\">";// draggable=\"true\"
+
 		echo "<h1><div>{$row['comp_name']}</div></h1>";
 		echo "<h2>{$row['prt_name']}</h2>";
 
-		
+
 		if ($row['total_accountgroup'] >= 0) {
 			echo "<span style=\"color:var(--root-font-color);\">" . number_format(abs($row['total_accountgroup']), 0, ".", ",") . "</span>";
 		} else {
@@ -66,21 +124,29 @@ if ($r) {
 		echo "<cite>{$row['cur_shortname']}</cite>";
 
 
+		if (isset($report[$row['prt_id']])) {
 
-		$arr = randarr();
-		echo "<div class=\"plot\"><div>";
-		echo "<svg 
-			viewBox=\"" . $curve->ViewBox(sizeof($arr) - 1) . "\" 
-			style=\"width:100%;\" 
-			preserveAspectRatio=\"xMidYMid slice\">";
-		echo "<path d=\"" . $curve->XMLCurve($arr) . "\" stroke=\"" . (($arr[sizeof($arr) - 1] > $arr[0]) ? "tomato" : "limegreen") . "\" fill=\"transparent\" shape-rendering=\"geometricPrecision\" />";
-		//echo $curve->XMLPoints($arr);
-		echo "</svg></div></div>";
+			$arr = $report[$row['prt_id']];
+			$color = "limegreen";
+			if ($arr[array_key_last($arr)] < $arr[array_key_first($arr)]) {
+				$color = "tomato";
+			}
+			echo "<div class=\"plot\"><div>";
+			echo "<svg viewBox=\"" . $curve->ViewBox(6) . "\" style=\"width:100%;\" preserveAspectRatio=\"xMidYMid slice\">";
+			echo "<line " . ($curve->XMLHorizontalAxis(7)) . " stroke=\"#999\" fill=\"transparent\" stroke-width=\"1\"  shape-rendering=\"geometricPrecision\" />";
+			echo "<path d=\"" . $curve->XMLCurve($arr) . "\" fill=\"transparent\" shape-rendering=\"geometricPrecision\" stroke-width=\"3\" 
+				stroke=\"$color\"  />";
+			echo "</svg></div></div>";
+		} else {
+			$arr = $date_map;
+			echo "<div class=\"plot\"><div>";
+			echo "<svg viewBox=\"" . $curve->ViewBox(6) . "\" style=\"width:100%;\" preserveAspectRatio=\"xMidYMid slice\">";
+			echo "<line " . ($curve->XMLHorizontalAxis(7)) . " stroke=\"#999\" fill=\"transparent\" stroke-width=\"1\"  shape-rendering=\"geometricPrecision\" />";
+			echo "</svg></div></div>";
+		}
 
 
 		echo "</span>";
 	}
 	echo "</div></div>";
 }
-
-//https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths

@@ -1,0 +1,62 @@
+.statment-panel>div {
+	display: flex;
+	line-height: 1.5em;
+}
+
+.statment-panel>div>h1 {
+	font-size: 1em;
+	font-weight: normal;
+	flex: 1;
+	margin: 0;
+	padding: 0;
+}
+
+.statment-panel>div>cite>span.stm,
+.statment-panel>div>cite>span.atch,
+.statment-panel>div>cite>span.stt {
+	display: inline-block;
+}
+
+.statment-panel>div>cite>span.stm::after,
+.statment-panel>div>cite>span.atch::after,
+.statment-panel>div>cite>span.stt::after {
+	font-family: icomoon4;
+	display: inline-block;
+	margin: 0px 4px;
+}
+
+
+.statment-panel>div>cite>span.atch::after {
+	content: "\e9cd";
+	color:tomato ;
+}
+
+.statment-panel>div>cite>span.stt.opn::after {
+	content: "\e990";
+	color: orange;
+}
+
+.statment-panel>div>cite>span.stt.chk::after {
+	content: "\e98f";
+}
+
+.statment-panel>div>cite>span.stm.inc.active::after {
+	color: lime;
+}
+
+.statment-panel>div>cite>span.stm.pay.active::after {
+	color: dodgerblue;
+}
+
+.statment-panel>div>cite>span.stm.inc::after {
+	content: "\ea43";
+}
+
+.statment-panel>div>cite>span.stm.pay::after {
+	content: "\ea41";
+}
+
+.statment-panel>div>cite {
+	font-style: normal;
+	color: var(--root-font-lightcolor);
+}

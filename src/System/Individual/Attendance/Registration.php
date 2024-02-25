@@ -25,7 +25,7 @@ class Registration extends \System\Individual\Employee
 
 	public function DefaultCheckInAccount($companyID)
 	{
-		if ((int)$companyID == 0) {
+		if ((int) $companyID == 0) {
 			return false;
 		}
 		$r = $this->app->db->query("
@@ -35,11 +35,11 @@ class Registration extends \System\Individual\Employee
 				`acc_accounts` 
 					JOIN partitionlabour ON prtlbr_prt_id =prt_id AND prtlbr_op = 1
 			WHERE
-				prt_company_id = " . ((int)$companyID) . "
+				prt_company_id = " . ((int) $companyID) . "
 			");
 		if ($r) {
 			if ($rowacc = $r->fetch_assoc()) {
-				return (int)$rowacc['prt_id'];
+				return (int) $rowacc['prt_id'];
 			}
 		}
 		return false;
@@ -67,7 +67,7 @@ class Registration extends \System\Individual\Employee
 		if ($r) {
 			$output = array();
 			while ($rowacc = $r->fetch_assoc()) {
-				$output[] = array((int)$rowacc['prt_id'], $rowacc['prtlbr_name']);
+				$output[] = array((int) $rowacc['prt_id'], $rowacc['prtlbr_name']);
 			}
 			return $output;
 		}
@@ -76,9 +76,9 @@ class Registration extends \System\Individual\Employee
 
 	public function CheckOut($customTime = null)
 	{
-		$time			= $customTime == null ? time() : (int)$customTime;
-		$resultquery	= true;
-		$runningAtt 	= $this->GetRunningAttendance();
+		$time = $customTime == null ? time() : (int) $customTime;
+		$resultquery = true;
+		$runningAtt = $this->GetRunningAttendance();
 
 		if ($runningAtt['id'] == false) {
 			throw new ExceptionCheckedout("Already checked out", 21003);
@@ -97,10 +97,10 @@ class Registration extends \System\Individual\Employee
 
 	public function CheckIn($pointID = null, $customTime = null)
 	{
-		$time			= $customTime == null ? time() : (int)$customTime;
-		$accessPoint	= 0;
-		$resultquery	= true;
-		$runningAtt 	= $this->GetRunningAttendance();
+		$time = $customTime == null ? time() : (int) $customTime;
+		$accessPoint = 0;
+		$resultquery = true;
+		$runningAtt = $this->GetRunningAttendance();
 		$this->app->db->autocommit(false);
 
 		if ($pointID == null) {
@@ -112,10 +112,10 @@ class Registration extends \System\Individual\Employee
 			}
 			$accessPoint = $this->defaultCheckInAccount;
 		} else {
-			if ((int)$pointID == 0) {
+			if ((int) $pointID == 0) {
 				throw new LocationInvalid("Invalid sector", 21005);
 			}
-			$accessPoint = (int)$pointID;
+			$accessPoint = (int) $pointID;
 		}
 
 		if ($runningAtt['id'] == false && $pointID != null) {
@@ -169,17 +169,11 @@ class Registration extends \System\Individual\Employee
 				FROM
 					(
 						SELECT 
-							ltr_id, ltr_usr_id, ltr_prt_id,prt_lbr_perc,
-							ltr_ctime,
-							COALESCE(ltr_otime,'{$dateTo}') AS ltr_otime
+							ltr_id, ltr_usr_id, ltr_prt_id,prt_lbr_perc,ltr_ctime,COALESCE(ltr_otime,'{$dateTo}') AS ltr_otime
 						FROM
 							labour_track
 								JOIN `acc_accounts` ON prt_id = ltr_prt_id
-								JOIN labour ON lbr_id = ltr_usr_id
-						WHERE 
-							1
-							
-							
+								JOIN labour ON lbr_id = ltr_usr_id	
 					) AS atttable
 
 					INNER JOIN (
@@ -189,8 +183,6 @@ class Registration extends \System\Individual\Employee
 							(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
 							(select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2
 					) AS integers ON integers.i <= DATEDIFF(atttable.ltr_otime, atttable.ltr_ctime)
-					
-					
 					
 				WHERE
 					DATE(ltr_ctime + INTERVAL i DAY)  >= '{$dateFrom}'
@@ -231,16 +223,16 @@ class Registration extends \System\Individual\Employee
 							
 							LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 							LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
-							LEFT JOIN uploads ON (up_pagefile=" .  \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted=0
+							LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted=0
 							
 					) AS personDetails ON personDetails.lbr_id = joiner.ltr_usr_id
 							
 			
 			WHERE
 				lbr_company = {$parameters['company']}
-				" . (isset($parameters['paymethod']) && (int)$parameters['paymethod'] != 0 ? " AND lbr_payment_method=" . ($parameters['paymethod']) : "") . " 
-				" . (isset($parameters['section']) && !is_null($parameters['section']) && (int)$parameters['section'] != 0 ? " AND lty_section=" . ((int)$parameters['section']) : "") . "
-				" . (isset($parameters['job']) && !is_null($parameters['job']) && (int)$parameters['job'] != 0 ? " AND lbr_type=" . ((int)$parameters['job']) : "") . "
+				" . (isset($parameters['paymethod']) && (int) $parameters['paymethod'] != 0 ? " AND lbr_payment_method=" . ($parameters['paymethod']) : "") . " 
+				" . (isset($parameters['section']) && !is_null($parameters['section']) && (int) $parameters['section'] != 0 ? " AND lty_section=" . ((int) $parameters['section']) : "") . "
+				" . (isset($parameters['job']) && !is_null($parameters['job']) && (int) $parameters['job'] != 0 ? " AND lbr_type=" . ((int) $parameters['job']) : "") . "
 				
 			GROUP BY
 				{$parameters['::group']}
@@ -380,9 +372,9 @@ class Registration extends \System\Individual\Employee
 							LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted=0
 						WHERE
 							lbr_company = {$parameters['company']}
-							" . (isset($parameters['paymethod']) && (int)$parameters['paymethod'] != 0 ? " AND lbr_payment_method=" . ($parameters['paymethod']) : "") . " 
-							" . (isset($parameters['section']) && !is_null($parameters['section']) && (int)$parameters['section'] != 0 ? " AND lty_section=" . ((int)$parameters['section']) : "") . "
-							" . (isset($parameters['job']) && !is_null($parameters['job']) && (int)$parameters['job'] != 0 ? " AND lbr_type=" . ((int)$parameters['job']) : "") . "
+							" . (isset($parameters['paymethod']) && (int) $parameters['paymethod'] != 0 ? " AND lbr_payment_method=" . ($parameters['paymethod']) : "") . " 
+							" . (isset($parameters['section']) && !is_null($parameters['section']) && (int) $parameters['section'] != 0 ? " AND lty_section=" . ((int) $parameters['section']) : "") . "
+							" . (isset($parameters['job']) && !is_null($parameters['job']) && (int) $parameters['job'] != 0 ? " AND lbr_type=" . ((int) $parameters['job']) : "") . "
 							
 					) AS personDetails ON personDetails.lbr_id = ltr_usr_id
 			WHERE

@@ -16,7 +16,7 @@ class Criteria
 		$this->date_start = null;
 		$this->date_end = null;
 		$this->page_current = 0;
-		$this->page_records = 100;
+		$this->page_records = 25;
 	}
 
 	public function dateStart(string $date)

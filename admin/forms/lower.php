@@ -1,8 +1,5 @@
-				
-				</div>
-			</div>
-		</div>	
 	</div>
-</div>
+</article>
 </body>
+
 </html>

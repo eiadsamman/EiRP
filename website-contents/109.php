@@ -1,12 +1,12 @@
 <?php
 
-use System\Individual\Attendance\Report;
+use System\Individual\Attendance\VisualReport;
 use System\SmartListObject;
 use System\Template\Gremium\Gremium;
 
 function getAttendanceReport(&$app, $dateFrom, $dateTo, $employeeID)
 {
-	$attendance = new Report($app);
+	$attendance = new VisualReport($app);
 	$attendance->getAttendaceList($employeeID, $dateFrom, $dateTo, true, false);
 	$attendance->PrintTable();
 }
@@ -80,30 +80,28 @@ $_tmk = mktime(0, 0, 0, date("m") + 1, 0, date("Y"));
 $grem = new Gremium(true);
 $grem->header()->serve("<h1>{$fs()->title}</h1>");
 
-$grem->legend()->serve("<span class=\"flex\">Query employee attendance</span><button type=\"button\" id=\"attendanceReportSearch\">Search</button>");
-$grem->article()->serve("
-<table class=\"bom-table mediabond-table\" id=\"jQformTable\" style=\"margin-bottom:15px;\">
-	<tbody>
-		<tr>
-			<th>Employee name</th>
-			<td style=\"width:100%\">
-				<div class=\"btn-set\" style=\"max-width:400px;\">
-					<input id=\"employeIDFormSearch\" type=\"text\" data-slo=\":LIST\" data-list=\"emplist\" class=\"flex\" placeholder=\"\"  />
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<th>Date range</th>
-			<td>
-				<div class=\"btn-set\" style=\"max-width:400px;\">
-					<input class=\"flex\" id=\"dateFrom\" data-slo=\":DATE\" value=\"" . date("Y-m-d", $_tmp) . "\" data-rangestart=\"2000-01-01\" type=\"text\"/>
-					<input class=\"flex\" id=\"dateTo\" data-slo=\":DATE\" value=\"" . date("Y-m-d", $_tmk) . "\" data-rangestart=\"2000-01-01\" type=\"text\"/>
-				</div>
-			</td>
-		</tr>
-	</tbody>
-</table>
-");
+$grem->legend()->serve("<span class=\"flex\">Query employee attendance</span><button class=\"edge-left\" type=\"button\" id=\"attendanceReportSearch\">Search</button>");
+$grem->article()->open();
+echo "
+
+<div class=\"form predefined\" id=\"jQformTable\">
+	<label style=\"min-width:200px;\">
+		<h1>Employee</h1>
+		<div class=\"btn-set\">
+			<input id=\"employeIDFormSearch\" type=\"text\" data-slo=\":LIST\" data-list=\"emplist\" class=\"flex\" placeholder=\"Employee ID or name\"  />
+		</div>
+	</label>
+	
+	<label style=\"min-width:300px;\">
+		<h1>Date range</h1>
+		<div class=\"btn-set\">
+			<input class=\"flex\" id=\"dateFrom\" data-slo=\":DATE\" value=\"" . date("Y-m-d", $_tmp) . "\" data-rangestart=\"2000-01-01\" type=\"text\" placeholder=\"Start date\" />
+			<input class=\"flex\" id=\"dateTo\" data-slo=\":DATE\" value=\"" . date("Y-m-d", $_tmk) . "\" data-rangestart=\"2000-01-01\" type=\"text\" placeholder=\"End date\" />
+		</div>
+	</label>
+</div>
+";
+$grem->getLast()->close();
 
 echo "<br />";
 $grem->article()->serve("<div id=\"jQoutput\">No queries applied!<br /><br />To start chose an employee from the list above and set the desired attendance date range</div>");

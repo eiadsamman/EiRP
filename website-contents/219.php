@@ -15,7 +15,6 @@ function UploadDOM($fileID, $fileMime, $fileTitle, $fileSelected = false, $domFi
 		<td class=\"op-remove\" data-id=\"$fileID\"><span></span></td>
 		<td class=\"content\"><a class=\"js_upload_view\" target=\"_blank\" data-mime=\"$fileMime\" href=\"download/?id=$fileID&amp;pr=v\" data-href=\"download/?pr=v&amp;id=$fileID\">$fileTitle</a></td>
 	</tr>";
-
 }
 
 
@@ -99,212 +98,236 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 	$grem->title()->serve("<span class=\"flex\">Personal Information</span>");
 	$grem->article()->open();
 	?>
-	<table class="bom-table mediabond-table form-table">
-		<tbody>
-			<?php if ($arr_array_input != false) { ?>
-				<tr>
-					<th>ID</th>
-					<td>
-						<div class="btn-set"><input type="text" class="flex" disabled="disabled" value="<?php echo $arr_array_input['usr_id']; ?>" /></div>
-					</td>
-				</tr>
-			<?php } ?>
-			<tr>
-				<th style="max-width: 100px;width:100px;min-width:100px">First name</th>
-				<td>
-					<div class="btn-set"><input type="text" name="firstname" id="firstname" class="flex" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_firstname'] : ""; ?>" />
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Last name</th>
-				<td>
-					<div class="btn-set"><input type="text" name="lastname" id="lastname" class="flex" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_lastname'] : ""; ?>" />
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Nationality</th>
-				<td>
-					<div class="btn-set"><input type="text" name="nationality" id="slonationality" class="flex" data-slo="COUNTRIES" value="<?php echo $arr_array_input != false ? $arr_array_input['cntry_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['cntry_id']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Identification</th>
-				<td>
-					<div class="btn-set">
-						<span id="js_upload_count_1" class="js_upload_count"><span>0</span></span>
-						<input type="button" id="js_upload_trigger_1" class="js_upload_trigger" data-db_rel="usr_attrib_s2" value="Upload" />
-						<input type="file" id="js_uploader_btn_1" class="js_uploader_btn" multiple="multiple" accept="image/*" />
-						<span id="js_upload_list_1" class="js_upload_list">
-							<div id="UploadSocialDOMHandler">
-								<table class="bom-table hover">
-									<tbody>
-										<?php
-										if (isset($arr_array_uploads[190]) && is_array($arr_array_uploads[190])) {
-											foreach ($arr_array_uploads[190] as $fileIndex => $file) {
-												echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "social_id_image");
-											}
-										}
-										?>
-									</tbody>
-								</table>
-							</div>
-						</span>
-						<input type="text" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_socialnumber'] : ""; ?>" name="social_number" id="social_number" class="flex" placeholder="ID Number">
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Personal photo</th>
-				<td>
-					<div class="btn-set">
-						<span id="js_upload_count" class="js_upload_count"><span>0</span></span>
-						<input type="button" id="js_upload_trigger" class="js_upload_trigger " style="max-width:100px" value="Upload" />
-						<input type="file" id="js_uploader_btn" class="js_uploader_btn" accept="image/*" />
-						<span id="js_upload_list" class="js_upload_list">
-							<div id="UploadPersonalDOMHandler">
-								<table class="bom-table hover">
-									<tbody>
-										<?php
-										if (isset($arr_array_uploads[\System\Attachment\Type::HrPerson->value]) && is_array($arr_array_uploads[\System\Attachment\Type::HrPerson->value])) {
-											foreach ($arr_array_uploads[\System\Attachment\Type::HrPerson->value] as $fileIndex => $file) {
-												echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "perosnal_image");
-											}
-										}
-										?>
-									</tbody>
-								</table>
-							</div>
-						</span>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Gender</th>
-				<td>
-					<div class="btn-set"><input type="text" name="gender" class="flex" id="slogender" data-slo="G000" value="<?php echo $arr_array_input != false ? $arr_array_input['gnd_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['gnd_id']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Birthdate</th>
-				<td>
-					<div class="btn-set"><input type="text" name="birthdate" class="flex" id="slobirthdate" data-slo="BIRTHDATE" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_birthdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['usr_birthdate']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Phone numbers</th>
-				<td class="btn-set"><textarea name="phone_list" id="phone_list" style="width:100%;height:66px;"><?php echo $arr_array_input != false ? $arr_array_input['usr_phone_list'] : ""; ?></textarea>
-				</td>
-			</tr>
 
-			<tr>
-				<th>Residence</th>
-				<td>
-					<div class="btn-set"><input type="text" name="residence" class="flex" id="sloresidence" data-slo="E004" value="<?php echo $arr_array_input != false ? $arr_array_input['ldn_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['ldn_id']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Transportation</th>
-				<td>
-					<div class="btn-set"><input type="text" name="transportation" class="flex" id="slortransportation" data-slo="TRANSPORTATION" value="<?php echo $arr_array_input != false ? $arr_array_input['trans_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['trans_id']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
+	<?php if ($arr_array_input != false) { ?>
+		<div class="form predefined">
+			<label>
+				<h1>Personal ID</h1>
+				<div class="btn-set">
+					<input type="text" class="flex" readonly="readonly" value="<?php echo $arr_array_input['usr_id']; ?>" />
+				</div>
+			</label>
+		</div>
+	<?php } ?>
 
-		</tbody>
-	</table>
+	<div class="form predefined">
+		<label>
+			<h1>Full name</h1>
+			<div class="btn-set">
+				<input type="text" name="firstname" id="firstname" placeholder="First name" class="flex" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_firstname'] : ""; ?>" />
+				<input type="text" name="lastname" id="lastname" placeholder="Last name" class="flex" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_lastname'] : ""; ?>" />
+			</div>
+		</label>
+	</div>
+
+	<div class="form predefined">
+		<label>
+			<h1>Gender</h1>
+			<div class="btn-set">
+				<input type="text" name="gender" class="flex" id="slogender" data-slo="G000" value="<?php echo $arr_array_input != false ? $arr_array_input['gnd_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['gnd_id']}\" " : ""; ?>>
+			</div>
+		</label>
+		<label>
+			<h1>Birthdate</h1>
+			<div class="btn-set">
+				<input type="text" name="birthdate" class="flex" id="slobirthdate" data-slo="BIRTHDATE" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_birthdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['usr_birthdate']}\" " : ""; ?>>
+			</div>
+		</label>
+	</div>
+
+	<div class="form predefined">
+		<label>
+			<h1>Nationality</h1>
+			<div class="btn-set">
+				<input type="text" name="nationality" id="slonationality" class="flex" data-slo="COUNTRIES" value="<?php echo $arr_array_input != false ? $arr_array_input['cntry_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['cntry_id']}\" " : ""; ?>>
+			</div>
+		</label>
+	</div>
+
+
+	<div class="form predefined">
+		<label for="">
+			<h1>Identification</h1>
+			<div class="btn-set">
+				<span id="js_upload_count_1" class="js_upload_count"><span>0</span></span>
+				<input type="button" id="js_upload_trigger_1" class="js_upload_trigger" data-db_rel="usr_attrib_s2" value="Upload" />
+				<input type="file" id="js_uploader_btn_1" class="js_uploader_btn" multiple="multiple" accept="image/*" />
+				<span id="js_upload_list_1" class="js_upload_list">
+					<div id="UploadSocialDOMHandler">
+						<table class="bom-table hover">
+							<tbody>
+								<?php
+								if (isset($arr_array_uploads[190]) && is_array($arr_array_uploads[190])) {
+									foreach ($arr_array_uploads[190] as $fileIndex => $file) {
+										echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "social_id_image");
+									}
+								}
+								?>
+							</tbody>
+						</table>
+					</div>
+				</span>
+				<input type="text" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_socialnumber'] : ""; ?>" name="social_number" id="social_number" class="flex" placeholder="ID Number">
+			</div>
+		</label>
+	</div>
+
+
+	<div class="form predefined">
+		<label for="">
+			<h1>Personal photo</h1>
+			<div class="btn-set">
+				<span id="js_upload_count" class="js_upload_count"><span>0</span></span>
+				<input type="button" id="js_upload_trigger" class="js_upload_trigger " style="max-width:100px" value="Upload" />
+				<input type="file" id="js_uploader_btn" class="js_uploader_btn" accept="image/*" />
+				<span id="js_upload_list" class="js_upload_list">
+					<div id="UploadPersonalDOMHandler">
+						<table class="bom-table hover">
+							<tbody>
+								<?php
+								if (isset($arr_array_uploads[\System\Attachment\Type::HrPerson->value]) && is_array($arr_array_uploads[\System\Attachment\Type::HrPerson->value])) {
+									foreach ($arr_array_uploads[\System\Attachment\Type::HrPerson->value] as $fileIndex => $file) {
+										echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "perosnal_image");
+									}
+								}
+								?>
+							</tbody>
+						</table>
+					</div>
+				</span>
+			</div>
+		</label>
+	</div>
+
+
+	<div class="form predefined">
+		<label>
+			<h1>Phone numbers</h1>
+			<div class="btn-set">
+				<textarea name="phone_list" id="phone_list" style="width:100%;height:66px;"><?php echo $arr_array_input != false ? $arr_array_input['usr_phone_list'] : ""; ?></textarea>
+			</div>
+		</label>
+	</div>
+
+
+	<div class="form predefined">
+		<label>
+			<h1>Residence</h1>
+			<div class="btn-set">
+				<input type="text" name="residence" class="flex" id="sloresidence" data-slo="E004" value="<?php echo $arr_array_input != false ? $arr_array_input['ldn_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['ldn_id']}\" " : ""; ?>>
+
+			</div>
+		</label>
+		<label>
+			<h1>Transportation</h1>
+			<div class="btn-set">
+				<input type="text" name="transportation" class="flex" id="slortransportation" data-slo="TRANSPORTATION" value="<?php echo $arr_array_input != false ? $arr_array_input['trans_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['trans_id']}\" " : ""; ?>>
+
+			</div>
+		</label>
+	</div>
+
 	<?php
 	$grem->getLast()->close();
 } ?>
 <br />
+
+
 <?php
 if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_input == false && $fs(228)->permission->add)) {
 	$grem->title()->serve("<span class=\"flex\">Job details</span>");
 	$grem->article()->open();
 	?>
-	<table class="bom-table mediabond-table form-table">
-		<tbody>
 
-			<tr>
-				<th style="max-width: 100px;width:100px;min-width:100px">Company</th>
-				<td style="width: 100%;">
-					<div class="btn-set"><input type="text" class="flex" name="company" id="slocompany" data-slo="COMPANY_USER" value="<?php echo $arr_array_input != false ? $arr_array_input['comp_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['comp_id']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
 
-			<tr>
-				<th>Role</th>
-				<td>
-					<div class="btn-set">
-						<?php
-						$r = array(1 => false, 2 => false, 3 => false);
-						$r[1] = isset($_POST['frole']) && $_POST['frole'] == 1 ? true : false;
-						$r[2] = isset($_POST['frole']) && $_POST['frole'] == 2 ? true : false;
-						$r[3] = isset($_POST['frole']) && $_POST['frole'] == 3 ? true : false;
-						$r[1] = $arr_array_input == false ? $r[1] : (sprintf('%03b', $arr_array_input['lbr_role'])[2] == "1" ? true : false);
-						$r[2] = $arr_array_input == false ? $r[2] : (sprintf('%03b', $arr_array_input['lbr_role'])[1] == "1" ? true : false);
-						$r[3] = $arr_array_input == false ? $r[3] : (sprintf('%03b', $arr_array_input['lbr_role'])[0] == "1" ? true : false);
-						?>
-						<label class="btn-checkbox"><input type="checkbox" name="role[1]" <?php echo $r[1] ? "checked=\"checked\"" : ""; ?> /> <span>Employee</span></label>
-						<label class="btn-checkbox"><input type="checkbox" name="role[2]" <?php echo $r[2] ? "checked=\"checked\"" : ""; ?> /> <span>Client</span></label>
-						<label class="btn-checkbox"><input type="checkbox" name="role[3]" <?php echo $r[3] ? "checked=\"checked\"" : ""; ?> /> <span>Vendor</span></label>
-					</div>
-				</td>
-			</tr>
+	<div class="form predefined">
+		<label>
+			<h1>Company</h1>
+			<div class="btn-set">
+				<input type="text" class="flex" name="company" id="slocompany" data-slo="COMPANY_USER" value="<?php echo $arr_array_input != false ? $arr_array_input['comp_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['comp_id']}\" " : ""; ?>>
+			</div>
+		</label>
+	</div>
 
-			<tr>
-				<th>Register date</th>
-				<td>
-					<div class="btn-set"><input type="text" name="regdate" class="flex" id="sloregdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_registerdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_registerdate']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
-			<?php if ($arr_array_input != false) { ?>
-				<tr>
-					<th>Resign date</th>
-					<td>
-						<div class="btn-set"><input type="text" name="resdate" class="flex" id="sloresdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_resigndate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_resigndate']}\" " : ""; ?>>
-						</div>
-					</td>
-				</tr>
-			<?php } ?>
-			<tr>
-				<th>Job title</th>
-				<td>
-					<div class="btn-set"><input type="text" name="jobtitle" class="flex" id="slotype" data-slo="E002A" value="<?php echo $arr_array_input != false ? $arr_array_input['lsc_name'] . ", " . $arr_array_input['lty_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lty_id']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Working shift</th>
-				<td>
-					<div class="btn-set"><input type="text" name="shift" class="flex" id="sloshift" data-slo="E003" value="<?php echo $arr_array_input != false ? $arr_array_input['lsf_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lsf_id']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Working Time</th>
-				<td>
-					<div class="btn-set"><input type="text" name="workingtimes" class="flex" id="sloworkingtimes" data-slo="WORKING_TIMES" value="<?php echo $arr_array_input != false ? $arr_array_input['lwt_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lwt_id']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th>Payment method</th>
-				<td>
-					<div class="btn-set"><input type="text" name="payment" class="flex" id="slopayment" data-slo="SALARY_PAYMENT_METHOD" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_mth_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_mth_id']}\" " : ""; ?>>
-					</div>
-				</td>
-			</tr>
+	<div class="form predefined">
+		<label for="">
+			<h1>Role</h1>
+			<div class="btn-set">
+				<?php
+				$r = array(1 => false, 2 => false, 3 => false);
+				$r[1] = isset($_POST['frole']) && $_POST['frole'] == 1 ? true : false;
+				$r[2] = isset($_POST['frole']) && $_POST['frole'] == 2 ? true : false;
+				$r[3] = isset($_POST['frole']) && $_POST['frole'] == 3 ? true : false;
+				$r[1] = $arr_array_input == false ? $r[1] : (sprintf('%03b', $arr_array_input['lbr_role'])[2] == "1" ? true : false);
+				$r[2] = $arr_array_input == false ? $r[2] : (sprintf('%03b', $arr_array_input['lbr_role'])[1] == "1" ? true : false);
+				$r[3] = $arr_array_input == false ? $r[3] : (sprintf('%03b', $arr_array_input['lbr_role'])[0] == "1" ? true : false);
+				?>
+				<label class="btn-checkbox"><input type="checkbox" name="role[1]" <?php echo $r[1] ? "checked=\"checked\"" : ""; ?> /> <span>Employee</span></label>
+				<label class="btn-checkbox"><input type="checkbox" name="role[2]" <?php echo $r[2] ? "checked=\"checked\"" : ""; ?> /> <span>Client</span></label>
+				<label class="btn-checkbox"><input type="checkbox" name="role[3]" <?php echo $r[3] ? "checked=\"checked\"" : ""; ?> /> <span>Vendor</span></label>
 
-		</tbody>
-	</table>
+			</div>
+		</label>
+	</div>
+
+
+	<div class="form predefined">
+		<label>
+			<h1>Register date</h1>
+			<div class="btn-set">
+				<input type="text" name="regdate" class="flex" id="sloregdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_registerdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_registerdate']}\" " : ""; ?>>
+			</div>
+		</label>
+
+		<?php if ($arr_array_input != false) { ?>
+			<label>
+				<h1>Resign date</h1>
+				<div class="btn-set">
+					<input type="text" name="resdate" class="flex" id="sloresdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_resigndate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_resigndate']}\" " : ""; ?>>
+
+				</div>
+			</label>
+		<?php } ?>
+	</div>
+
+
+
+
+	<div class="form predefined">
+		<label>
+			<h1>Job title</h1>
+			<div class="btn-set">
+				<input type="text" name="jobtitle" class="flex" id="slotype" data-slo="E002A" value="<?php echo $arr_array_input != false ? $arr_array_input['lsc_name'] . ", " . $arr_array_input['lty_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lty_id']}\" " : ""; ?>>
+			</div>
+		</label>
+
+		<label>
+			<h1>Payment method</h1>
+			<div class="btn-set">
+				<input type="text" name="payment" class="flex" id="slopayment" data-slo="SALARY_PAYMENT_METHOD" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_mth_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_mth_id']}\" " : ""; ?>>
+			</div>
+		</label>
+	</div>
+
+
+
+	<div class="form predefined">
+		<label>
+			<h1>Working shift</h1>
+			<div class="btn-set">
+				<input type="text" name="shift" class="flex" id="sloshift" data-slo="E003" value="<?php echo $arr_array_input != false ? $arr_array_input['lsf_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lsf_id']}\" " : ""; ?>>
+			</div>
+		</label>
+
+		<label>
+			<h1>Time group</h1>
+			<div class="btn-set">
+				<input type="text" name="workingtimes" class="flex" id="sloworkingtimes" data-slo="WORKING_TIMES" value="<?php echo $arr_array_input != false ? $arr_array_input['lwt_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lwt_id']}\" " : ""; ?>>
+
+			</div>
+		</label>
+	</div>
+
 	<?php
 	$grem->getLast()->close();
 } ?>
@@ -315,55 +338,55 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 	$grem->title()->serve("<span class=\"flex\">Salary details</span>");
 	$grem->article()->open();
 	?>
-	<table class="bom-table mediabond-table form-table">
-		<tbody>
-			<tr>
-				<th style="max-width: 100px;width:100px;min-width:100px">Salary</th>
-				<td>
-					<div class="btn-set">
-						<input type="text" name="salary_basic" <?= ($arr_array_input && is_null($arr_array_input['lbr_fixedsalary']) ? "disabled=\"disabled\"" : ""); ?>
-							value="<?php echo ($arr_array_input ? (is_null($arr_array_input['lbr_fixedsalary']) ? number_format((float) $arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : number_format((float) $arr_array_input['lbr_fixedsalary'], 2, ".", "")) : "") ?>"
-							data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : ""; ?>" class="flex" />
-						<label class="btn-checkbox">
-							<input type="checkbox" class="derive_function" data-rel="salary_basic" name="sal_default_salary" <?= $arr_array_input && (is_null($arr_array_input['lbr_fixedsalary']) ? "checked=\"checked\"" : ""); ?> />
-							<span>Default</span>
-						</label>
-					</div>
-				</td>
-			</tr>
 
-			<tr>
-				<th>Variable</th>
-				<td>
-					<div class="btn-set">
-						<input type="text" name="salary_variable" <?= ($arr_array_input && is_null($arr_array_input['lbr_variable']) ? "disabled=\"disabled\"" : ""); ?>
-							value="<?= ($arr_array_input ? (is_null($arr_array_input['lbr_variable']) ? number_format((float) $arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : number_format((float) $arr_array_input['lbr_variable'], 2, ".", "")) : "") ?>"
-							data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : ""; ?>" class="flex" />
-						<label class="btn-checkbox">
-							<input type="checkbox" class="derive_function" data-rel="salary_variable" name="sal_default_variable" <?= ($arr_array_input && is_null($arr_array_input['lbr_variable']) ? "checked=\"checked\"" : ""); ?> />
-							<span>Default</span>
-						</label>
-					</div>
-				</td>
-			</tr>
+	<div class="form predefined">
+		<label for="">
+			<h1>Salary</h1>
+			<div class="btn-set">
+				<input type="text" name="salary_basic" <?= ($arr_array_input && is_null($arr_array_input['lbr_fixedsalary']) ? "disabled=\"disabled\"" : ""); ?>
+					value="<?php echo ($arr_array_input ? (is_null($arr_array_input['lbr_fixedsalary']) ? number_format((float) $arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : number_format((float) $arr_array_input['lbr_fixedsalary'], 2, ".", "")) : "") ?>"
+					data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_basic_salary'], 2, ".", "") : ""; ?>" class="flex" />
+				<label class="btn-checkbox">
+					<input type="checkbox" class="derive_function" data-rel="salary_basic" name="sal_default_salary" <?= $arr_array_input && (is_null($arr_array_input['lbr_fixedsalary']) ? "checked=\"checked\"" : ""); ?> />
+					<span>Default</span>
+				</label>
 
-			<tr>
-				<th>Allowance</th>
-				<td>
-					<div class="btn-set">
-						<input type="text" name="salary_allowance" <?= ($arr_array_input && is_null($arr_array_input['lbr_allowance']) ? "disabled=\"disabled\"" : ""); ?>
-							value="<?= ($arr_array_input ? (is_null($arr_array_input['lbr_allowance']) ? number_format((float) $arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : number_format((float) $arr_array_input['lbr_allowance'], 2, ".", "")) : "") ?>"
-							data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : ""; ?>" class="flex" />
-						<label class="btn-checkbox">
-							<input type="checkbox" class="derive_function" data-rel="salary_allowance" name="sal_default_allowance" <?= ($arr_array_input && is_null($arr_array_input['lbr_allowance']) ? "checked=\"checked\"" : ""); ?> />
-							<span>Default</span>
-						</label>
-					</div>
-				</td>
-			</tr>
+			</div>
+		</label>
+	</div>
 
-		</tbody>
-	</table>
+
+	<div class="form predefined">
+		<label for="">
+			<h1>Variable</h1>
+			<div class="btn-set">
+				<input type="text" name="salary_variable" <?= ($arr_array_input && is_null($arr_array_input['lbr_variable']) ? "disabled=\"disabled\"" : ""); ?>
+					value="<?= ($arr_array_input ? (is_null($arr_array_input['lbr_variable']) ? number_format((float) $arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : number_format((float) $arr_array_input['lbr_variable'], 2, ".", "")) : "") ?>"
+					data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_variable'], 2, ".", "") : ""; ?>" class="flex" />
+				<label class="btn-checkbox">
+					<input type="checkbox" class="derive_function" data-rel="salary_variable" name="sal_default_variable" <?= ($arr_array_input && is_null($arr_array_input['lbr_variable']) ? "checked=\"checked\"" : ""); ?> />
+					<span>Default</span>
+				</label>
+			</div>
+		</label>
+	</div>
+
+
+	<div class="form predefined">
+		<label for="">
+			<h1>Allowance</h1>
+			<div class="btn-set">
+				<input type="text" name="salary_allowance" <?= ($arr_array_input && is_null($arr_array_input['lbr_allowance']) ? "disabled=\"disabled\"" : ""); ?>
+					value="<?= ($arr_array_input ? (is_null($arr_array_input['lbr_allowance']) ? number_format((float) $arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : number_format((float) $arr_array_input['lbr_allowance'], 2, ".", "")) : "") ?>"
+					data-basicvalue="<?= $arr_array_input ? number_format((float) $arr_array_input['lbr_typ_sal_allowance'], 2, ".", "") : ""; ?>" class="flex" />
+				<label class="btn-checkbox">
+					<input type="checkbox" class="derive_function" data-rel="salary_allowance" name="sal_default_allowance" <?= ($arr_array_input && is_null($arr_array_input['lbr_allowance']) ? "checked=\"checked\"" : ""); ?> />
+					<span>Default</span>
+				</label>
+			</div>
+		</label>
+	</div>
+
 	<?php
 	$grem->getLast()->close();
 }

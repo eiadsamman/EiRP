@@ -2,6 +2,7 @@
 ob_start();
 ob_implicit_flush(true);
 $_v = "?rev=1013"; //. uniqid();
+$_v = "?rev=1013" . uniqid();
 
 use System\FileSystem\Hierarchy;
 use System\Finance\AccountRole;
@@ -9,7 +10,7 @@ use System\Personalization\Bookmark;
 use System\SmartListObject;
 
 
-$__helper     = false;
+$__helper = false;
 $__side_panel = false;
 if (isset($fs()->parameters) && preg_match("/help([0-9]+)/", $fs()->parameters, $match)) {
 	$__helper = $fs((int) $match[1]);
@@ -20,7 +21,7 @@ if (isset($fs()->parameters) && preg_match("/side-panel([0-9]+)/", $fs()->parame
 
 
 $__workingaccount = false;
-$SmartListObject  = new SmartListObject($app);
+$SmartListObject = new SmartListObject($app);
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
@@ -82,6 +83,7 @@ $SmartListObject  = new SmartListObject($app);
 <?php ob_end_flush(); ?>
 
 <body class="theme-default <?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>" data-mode="<?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>">
+	<a href="" id="PFTrigger" style="display: none;"></a>
 	<span class="header-ribbon noprint">
 		<div>
 			<div class="btnheader-set" style="white-space:nowrap">
@@ -115,7 +117,6 @@ $SmartListObject  = new SmartListObject($app);
 			</div>
 		</div>
 	</span>
-	<a href="" id="PFTrigger" style="display: none;"></a>
 
 	<?php if ($app->user->logged) { ?>
 		<span id="header-menu" class="header-menu lefthand">
@@ -127,9 +128,9 @@ $SmartListObject  = new SmartListObject($app);
 							<datalist id="PFSelectorList" style="display: none;">
 								<?php
 								$ident = \System\Personalization\Identifiers::SystemFrequentVisit->value;
-								$q     = <<<SQL
+								$q = <<<SQL
 								SELECT 
-									trd_directory, CONCAT(trd_id,': ', pfl_value) AS pagefile_title, trd_id
+									trd_directory, CONCAT(trd_id,': ', pfl_value) AS pagefile_title
 								FROM 
 									pagefile 
 									JOIN pagefile_language ON pfl_trd_id = trd_id AND pfl_lng_id = 1 
@@ -160,7 +161,6 @@ $SmartListObject  = new SmartListObject($app);
 				</div>
 			</div>
 		</span>
-
 
 		<span id="account-menu" class="header-menu righthand">
 			<div>
@@ -278,7 +278,7 @@ $SmartListObject  = new SmartListObject($app);
 				<div>
 					<div style="white-space:nowrap;" class="menu-items">
 						<?php
-						$bookmark   = new Bookmark($app);
+						$bookmark = new Bookmark($app);
 						$bookmarked = $bookmark->isBookmarked($fs()->id);
 
 						echo "<div>" . $app->user->info->name . "</div>";
@@ -311,21 +311,10 @@ $SmartListObject  = new SmartListObject($app);
 		</span>
 
 	<?php } ?>
-	<div>
-		<div>
-			<div>
-				<div style="position:relative;">
-					<?php if ($__side_panel && !$__side_panel->permission->deny && is_file("website-contents/" . $__side_panel->id . ".php")) { ?>
-						<span style="position: absolute;right:0px;top:45px;width:310px">
-							<span style="position: fixed;display: block;z-index: 999;font-size: 0.7em;padding-left: 4px;color:#ccc">
-								<?= $__side_panel->id; ?>
-							</span>
-							<span id="template-sidePanel" data-template_url="<?= $__side_panel->dir ?>">
-								<div>
-									<?php include_once("website-contents/" . $__side_panel->id . ".php"); ?>
-								</div>
-							</span>
-						</span>
-					<?php } ?>
-					<div <?= ($__side_panel && $__side_panel->permission->deny == false) ? "class=\"template-enableSidePanel\"" : ""; ?> id="body-content">
-						<?php unset($SmartListObject); ?>
+
+	<article>
+		<div id="body-content">
+			<?php if ($__side_panel && !$__side_panel->permission->deny && is_file("website-contents/" . $__side_panel->id . ".php")) {
+				$__side_panel->id;
+				include_once("website-contents/" . $__side_panel->id . ".php");
+			} ?>

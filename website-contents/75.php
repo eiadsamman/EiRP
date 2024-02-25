@@ -1,181 +1,103 @@
 <?php
-if (isset($reportpageid)) {
-	$arroutput = array();
-	$reportid = $fs((int)$reportpageid)->id;
-	$reportwidth = "100%";
-	$total = 0;
-	$arrout = array();
+use System\Graphics\SVG\CurveRelativePositive;
 
-	$month = time();
+$curve = new CurveRelativePositive(20, 100, -.6);
 
-	if ($r = $app->db->query("
-	SELECT 
-		DATE_FORMAT(ltr_ctime, '%Y-%m-%d') AS grpdate,
-		UNIX_TIMESTAMP(ltr_ctime) AS ltr_ctime,
-		count(DISTINCT _major.ltr_usr_id) AS pcnt,
-		lsf_name,
-		ltr_shift_id
+$date_current = new \DateTimeImmutable();
+$date_start = new \DateTimeImmutable("first day of this month 00:00:00");
+$date_end = $date_start->modify("last day of this month 23:59:59");
+
+try {
+	$att_reports = new System\Individual\Attendance\Reports($app);
+	$curratt = $att_reports->OngoingAttendance($app->user->company->id);
+	$ind_reports = new System\Individual\Reports($app);
+	$totindv = $ind_reports->RegisteredEmployees($app->user->company->id);
+} catch (\System\Exceptions\Instance\SQLException $e) {
+	$curratt = 0;
+	$totindv = 0;
+}
+
+/* Count attendance of current month */
+$r = (
+	"SELECT 
+		COUNT(ltr_id), integers.pr_day 
 	FROM
-		labour_track AS _major
-			JOIN
-			(
-				SELECT
-					prt_id,ptp_id,ptp_name,prt_name,prt_color
-				FROM
-					`acc_accounts` 
-						JOIN `acc_accounttype` ON ptp_id=prt_type
-			) AS _partition ON _partition.prt_id=ltr_prt_id
+		(
+			SELECT
+				DATE('{$date_start->format("Y-m-d")}' + INTERVAL (t1 + t2 * 10) DAY) AS pr_day
+			FROM
+				(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+				(select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2
+
+			HAVING pr_day <= '{$date_end->format("Y-m-d")}'
+		) AS integers 
+		JOIN
+			(SELECT comp_id FROM companies 
+			JOIN user_company ON urc_usr_id=" . $app->user->info->id . " AND urc_usr_comp_id = comp_id AND comp_id ={$app->user->company->id}) AS companies
 			
-			LEFT JOIN
-				labour_shifts ON lsf_id=ltr_shift_id
-			
-	WHERE
-		ltr_type=1 AND DATE_FORMAT(ltr_ctime,'%Y-%m') = '" . (date("Y-m", $month)) . "'  
+		LEFT JOIN 
+				(SELECT ltr_ctime,ltr_otime,ltr_id,prt_company_id FROM labour_track JOIN acc_accounts ON ltr_prt_id = prt_id) AS location ON 
+					DATE(location.ltr_ctime) <= integers.pr_day AND 
+					(DATE(location.ltr_otime) >= '{$date_start->format("Y-m-d")}' OR location.ltr_otime IS NULL) AND
+					(pr_day <= DATE(location.ltr_otime) OR location.ltr_otime IS NULL) AND
+					location.prt_company_id = comp_id
 	GROUP BY
-		grpdate,ltr_shift_id
+		comp_id, pr_day 
 	ORDER BY
-		grpdate ASC
-	")) {
+		comp_id,integers.pr_day
+"
+);
 
-		if (!isset($arrout[$reportid])) {
-			$arrout[$reportid] = array($reportpage['title'], array(), array());
-		}
-		while ($row = $r->fetch_assoc()) {
+$r = $app->db->query($r);
+/* Store count result */
+$plot_points = array();
+if ($r) {
+	while ($row = $r->fetch_row()) {
+		$plot_points[$row[1]] = (int) $row[0];
+	}
+}
 
-			if (!isset($arrout[$reportid][1][$row['grpdate']])) {
-				$arrout[$reportid][1][$row['grpdate']] = array();
-			}
-			if (!isset($arrout[$reportid][2][$row['ltr_shift_id']])) {
-				$arrout[$reportid][2][$row['ltr_shift_id']] = $row['lsf_name'] == null ? "[No Shift]" : $row['lsf_name'];
-			}
-			$arrout[$reportid][1][$row['grpdate']][$row['ltr_shift_id']] = $row['pcnt'];
+if (sizeof($plot_points) > 0) {
+	/* Relative values */
+	$valscale = $curve->prepareArray($plot_points);
+	/* Clear over-date values */
+	foreach ($plot_points as $k => &$v) {
+		$point_date = new DateTime($k);
+		if ($point_date > $date_current) {
+			$v = null;
 		}
 	}
 
-	$arrout[$reportid][2]["cum"] = "Total";
-	foreach ($arrout[$reportid][1] as $datek => $datev) {
-		$sum = 0;
-		foreach ($datev as $v) {
-			$sum += $v;
+
+	echo "<div class=\"full-chart\"><div class=\"chart\">";
+	echo "<div class=\"chart-title\">
+		<h1>{$app->user->company->name}</h1>
+		<h2>$curratt<span>$totindv</span></h2>
+		<h3>{$date_end->format("d, M Y")}</h3>";
+	echo "</div>";
+
+	echo "<div class=\"chart-icon\" style=\"color:#{$fs(75)->color}\">&#xe{$fs(75)->icon};</div>";
+
+	echo "<div class=\"plot\">";
+	echo "<svg viewBox=\"" . $curve->ViewBox($date_start->diff($date_end)->days) . "\" style=\"width:100%;\" preserveAspectRatio=\"xMidYMid slice\">";
+
+	echo "<line " . ($curve->XMLHorizontalAxis($date_start->diff($date_end)->days)) . " stroke=\"#999\" fill=\"transparent\" stroke-width=\"1\"  shape-rendering=\"geometricPrecision\" />";
+	echo "<path d=\"" . $curve->XMLCurve($plot_points) . "\" fill=\"transparent\" shape-rendering=\"geometricPrecision\" stroke-width=\"8\" stroke=\"limegreen\" />";
+
+
+	foreach ($curve->XMLPoints($plot_points) as $k => $v) {
+		if (!empty($v)) {
+			echo "<g class=\"svg-plot_point\">";
+			echo "<rect x=\"0\" y=\"0\" rx=\"5\" width=\"150\" height=\"60\"></rect>";
+			echo "<text x=\"10\" y=\"25\">" . ($plot_points[$k]*$valscale) . "</text>";
+			echo "<text x=\"10\" y=\"49\">$k</text>";
+			echo "<circle data-value=\"\" cx=\"{$v->x}\" cy=\"{$v->y}\" r=\"10\" />";
+			echo "</g>";
 		}
-		$arrout[$reportid][1][$datek]["cum"] = $sum;
 	}
-
-	foreach ($arrout as $cotk => $cotv) {
-		$first = null;
-		$last = null;
-		foreach ($cotv[1] as $datek => $datav) {
-			if ($first == null) {
-				$first = $datek;
-			}
-			$last = $datek;
-		}
-		if (preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $first, $match)) {
-			$first = mktime(0, 0, 0, $match[2], $match[3], $match[1]);
-		}
-		if (preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $last, $match)) {
-			$last = mktime(0, 0, 0, $match[2], $match[3], $match[1]);
-		}
-		$current = $first;
-		$cnt = 0;
-		while ($current <= $last) {
-			if (!isset($arrout[$cotk][1][date("Y-m-d", $current)])) {
-				$arrout[$cotk][1][date("Y-m-d", $current)] = array();
-				foreach ($cotv[2] as $partk => $partv) {
-					$arrout[$cotk][1][date("Y-m-d", $current)][$partk] = 0;
-				}
-			}
-			$current = mktime(0, 0, 0, date("m", $current), date("d", $current) + 1, date("Y", $current));
-			if ($cnt > 100) {
-				break;
-			}
-			$cnt++;
-		}
-		ksort($arrout[$cotk][1]);
-	}
+	
+	echo "</svg></div>";
 
 
-
-	foreach ($arrout as $cotk => $cotv) {
-		echo "<div style=\"width:$reportwidth;\" class=\"creportholder\">
-	<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"cantable\">
-	<tbody><tr><td style=\"text-align:center\"><h1>{$cotv[0]}</h1></td><td></td></tr><tr><td width=\"100%\">
-	<div class=\"candiv\"><canvas id=\"chart{$cotk}\"></canvas></div></td><td class=\"legend\" style=\"min-width:150px;\" valign=\"middle\">";
-		$cnt = 0;
-		foreach ($cotv[2] as $valk => $valv) {
-			echo "<div><span style=\"background-color:rgba({$colorlist[$cnt]},1);\"></span>$valv</div>";
-			$cnt++;
-		}
-		echo "</td></tr></tbody></table></div>";
-	}
-?><script>
-		$(document).ready(function(e) {
-			<?php
-			foreach ($arrout as $cotk => $cotv) {
-				echo "var ctx{$cotk} = document.getElementById(\"chart{$cotk}\").getContext(\"2d\");";
-				echo "var barChart{$cotk} = new Chart(ctx{$cotk}).Line({
-			labels: [\"\",";
-				$smart = "";
-				$even = false;
-				$swap = 3;
-				$cnt = 0;
-				if (sizeof($cotv[1]) > 30) {
-					$even = true;
-				}
-				foreach ($cotv[1] as $valk => $valv) {
-					$cnt++;
-					if ($even) {
-						if ($cnt >= $swap) {
-							echo $smart . "\"$valk\"";
-							$cnt = 0;
-						} else {
-							echo $smart . "\"\"";
-						}
-					} else {
-						echo $smart . "\"$valk\"";
-					}
-					$smart = ",";
-				}
-				echo "],
-			datasets: [
-				";
-				$smart = "";
-				$cnt = 0;
-				foreach ($cotv[2] as $legenedk => $legenedv) {
-					echo $smart;
-					echo "{";
-					echo "label:\"$legenedv\",";
-					echo "fillColor: \"rgba({$colorlist[$cnt]},0.1)\",";
-					echo "strokeColor: \"rgba({$colorlist[$cnt]},0.7)\",";
-					echo "pointColor: \"rgba({$colorlist[$cnt]},1)\",";
-					echo "pointStrokeColor: \"#aaa\",";
-					echo "pointHighlightFill: \"#333\",";
-					echo "pointHighlightStroke: \"#333\",";
-					echo "data:[0,";
-					$cute = "";
-					foreach ($cotv[1] as $valk => $valv) {
-						echo $cute;
-						if (!isset($valv[$legenedk])) {
-							echo "0";
-						} else {
-							echo ((int)$valv[$legenedk]);
-						}
-						$cute = ",";
-					}
-					echo "]";
-					echo "}";
-					$smart = ",";
-					$cnt++;
-				}
-
-				echo "]
-		},{barStrokeWidth : 1,pointDot :true,pointDotRadius :2,datasetFill :false,bezierCurveTension :0.4,
-			multiTooltipTemplate: \" <%if (value>0){%><b><%= (value) %></b><%= datasetLabel %><%}%>\",
-			tooltipTemplate: \"<b><%= (value) %></b><%if (label){%><%=datasetLabel%><%}%>\",
-			customTooltips:function(tooltip){setCustometooltip(tooltip);}
-			
-		});";
-			}
-			?>
-		});
-	</script><?php } ?>
+	echo "</div></div>";
+}

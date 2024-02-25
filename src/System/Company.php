@@ -6,7 +6,7 @@ namespace System;
 
 class Company
 {
-	public $id;
-	public $name;
-	public $logo;
+	public int $id;
+	public string $name;
+	public ?string $logo;
 }

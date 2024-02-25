@@ -81,13 +81,11 @@ class Page
 	}
 	public function children(int $id): \Generator
 	{
-		$output = array();
 		foreach ($this->files as $file) {
 			if ($file->parent == $id && $file->id != 0) {
 				yield $file->id => $file;
 			}
 		}
-		return $output;
 	}
 	public function dir(string $dir): Data|bool
 	{

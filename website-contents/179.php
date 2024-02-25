@@ -316,7 +316,12 @@ unset($grem);
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(1)>div {
 			display: inline-block;
-			padding: 0px 10px;
+			padding: 0 10px 0 0;
+		}
+
+		table.bom-table.statment-view>tbody>tr>td:nth-child(1)>div:last-child {
+			display: block;
+			padding-top: 10px;
 		}
 
 		table.bom-table.statment-view>tbody>tr>td:nth-child(2) {

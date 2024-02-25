@@ -1,7 +1,7 @@
 .theme-default {
 
 	--root-background-color: rgb(250, 250, 250);
-	--root-background-color_backdrop: rgb(250, 250, 250, 0.8);
+	--root-background-color_backdrop: rgb(250, 250, 250, 1);
 
 	--root-font-color: rgb(33, 37, 41);
 	--root-font-lightcolor: hsl(218, 18%, 60%);
@@ -52,15 +52,17 @@
 	--slo-menu-background-color: white;
 	--slo-menu-itemhover-background-color: rgb(243, 245, 253);
 	--slo-menu-itemactive-background-color: rgba(217, 235, 255, 1);
+
+	--placeholder-bgcolor: hsl(0, 0%, 94%);
+	--placeholder-sweeping-bgcolor: white;
+
 	/* var(--root-ribbon-menu-itemhover-background-color); */
-
-
 
 }
 
 .theme-default.dark {
 	--root-background-color: rgb(21, 25, 40, 1);
-	--root-background-color_backdrop: rgb(21, 25, 40, 0.9);
+	--root-background-color_backdrop: rgb(21, 25, 40, 1);
 
 	--root-font-color: #eee;
 	--root-font-lightcolor: hsl(200, 13%, 65%);
@@ -88,8 +90,8 @@
 	--input-border-radius: 5px;
 	--input-font-color: rgb(33, 37, 41);
 	--input-bgcolor: rgb(32, 41, 64);
-	--input-border: rgb(115, 115, 135);
-	--input_hover-color: rgb(153, 153, 157);
+	--input-border: rgb(90, 90, 105);
+	--input_hover-color: rgb(153, 153, 175);
 	--input_focus-color: hsl(223, 33%, 13%);
 	--input_active-color: dodgerblue;
 	--input-placeholder-color: rgb(100, 100, 100);
@@ -111,6 +113,11 @@
 	--slo-menu-background-color: rgb(40, 40, 49);
 	--slo-menu-itemhover-background-color: rgb(60, 60, 74);
 	--slo-menu-itemactive-background-color: var(--root-ribbon-menu-itemhover-background-color);
+
+	--placeholder-bgcolor: #202940;
+	--placeholder-sweeping-bgcolor: hsl(223, 25%, 25%);
+
+
 }
 
 @media (prefers-color-scheme: dark) {}

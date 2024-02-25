@@ -6,7 +6,7 @@ namespace System\Individual;
 
 class PersonData
 {
-	public int $id = 0;
+	public int $id;
 	public string $name;
 	public string $username;
 	public int $permissions;

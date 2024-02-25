@@ -13,13 +13,13 @@ class Bookmark extends Personalization
 
 	public function update(array $order_array): bool
 	{
-		$stmt   = $this->app->db->prepare("UPDATE user_settings SET usrset_value = ? 
+		$stmt = $this->app->db->prepare("UPDATE user_settings SET usrset_value = ? 
 			WHERE 
 				usrset_usr_id= {$this->app->user->info->id} AND 
 				usrset_type = {$this->identifier} AND 
 				usrset_usr_defind_name = ?
 				");
-		$order  = 0;
+		$order = 0;
 		$pageid = 0;
 		$stmt->bind_param("ii", $order, $pageid);
 		foreach ($order_array as $v) {
@@ -53,7 +53,7 @@ class Bookmark extends Personalization
 				WHERE 
 					trd_enable = 1 
 				ORDER BY
-					(usrset_value + 0) ASC;"
+					(usrset_value + 0) ASC , usrset_time DESC;"
 			);
 			if ($result) {
 				while ($row = $result->fetch_assoc()) {
@@ -77,7 +77,7 @@ class Bookmark extends Personalization
 	{
 		try {
 			$result = $this->app->db->query("DELETE FROM user_settings WHERE usrset_usr_id = {$this->app->user->info->id} AND usrset_type = {$this->identifier} AND usrset_usr_defind_name=$page_id;");
-			if ($result && $row = $this->app->db->affected_rows > 0) {
+			if ($result && $this->app->db->affected_rows > 0) {
 				return true;
 			}
 		} catch (\mysqli_sql_exception $e) {
@@ -93,7 +93,7 @@ class Bookmark extends Personalization
 			if ($result && $result->num_rows > 0) {
 				return null;
 			}
-			$stmt = $this->app->db->prepare("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name) VALUES ({$this->app->user->info->id}, {$this->identifier} , ?);");
+			$stmt = $this->app->db->prepare("INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value, usrset_time) VALUES ({$this->app->user->info->id}, {$this->identifier} , ?, 0, NOW());");
 			if ($stmt) {
 				$stmt->bind_param("i", $page_id);
 				if ($stmt->execute()) {

@@ -58,8 +58,9 @@ if (isset($_POST['fetch'])) {
 	$grem->header();
 	$grem->menu();
 	foreach ($posgroup as $groupk => $groupv) {
-		$grem->legend()->serve("<span class=\"flex\">{$groupv['title']}</span><span>{$groupv['count']}</span>");
-		$grem->article()->options(array("nobg"))->open();
+		$grem->title()->serve("{$groupv['title']} : {$groupv['count']}");
+
+		$grem->article()->options(array(/* "nobg" */))->open();
 		echo "
 			<table class=\"bom-table local-mediabond-table " . (isset($_GET['view']) && $_GET['view'] == "1" ? "local-force" : "") . "\">
 				<tbody>";

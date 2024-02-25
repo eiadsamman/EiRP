@@ -41,19 +41,18 @@ div.attendance-monthfooter {
 
 
 .bom-table.attendance>tbody>tr.weekend>th {
-	background: repeating-linear-gradient(45deg,
-			rgba(0, 0, 0, 0.03),
-			rgba(0, 0, 0, 0.03) 10px,
-			rgba(255, 255, 255,0.05) 10px,
-			rgba(255, 255, 255,0.05) 20px);
+	/* background: repeating-linear-gradient(45deg,
+			rgba(100, 100, 150, 0.23),
+			rgba(100, 100, 150, 0.23) 20px,
+			rgba(255, 255, 255,0.05) 20px,
+			rgba(255, 255, 255,0.05) 40px); */
+	background-color: var(--root-ribbon-background-color);
+	
 }
 
 .bom-table.attendance>tbody>tr.weekend>td {
-	background: repeating-linear-gradient(45deg,
-			rgba(0, 0, 0, 0.03),
-			rgba(0, 0, 0, 0.03) 10px,
-			rgba(255, 255, 255,0.05) 10px,
-			rgba(255, 255, 255,0.05) 20px);
+	
+	background-color: var(--root-ribbon-background-color);
 
 }
 

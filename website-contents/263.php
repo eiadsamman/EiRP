@@ -7,7 +7,6 @@ $bookmark = new Bookmark($app);
 
 if ($app->xhttp) {
 	if (isset($_POST['order'])) {
-
 		$bookmark->update($_POST['order']);
 		exit;
 	}
@@ -42,14 +41,19 @@ if ($app->xhttp) {
 
 $grem = new Gremium\Gremium(true);
 $grem->header()->prev($fs(27)->dir)->serve("<h1>Bookmarks</h1>");
+
+$grem->menu()->serve("<span class=\"flex\"></span><input id=\"js-input_add-list\" data-slo=\":LIST\" data-list=\"js-ref_list\" placeholder=\"Add a bookmark...\" type=\"text\" />");
+
 $grem->article()->open();
 
 $firstocc = false;
+
+echo "<table class=\"bom-table hover\" id=\"js-output_tablelist\" style=\"position:relative;\"><tbody>";
 foreach ($bookmark->list() as $bookmark) {
 	//color:#{$bookmark['trd_attrib5']}
 	//<span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px;display:inline-block;color:#555\">&#xe{$bookmark['trd_attrib4']};</span>
 	if (!$firstocc) {
-		echo "<table class=\"bom-table hover\" id=\"bookmarks-table\" style=\"position:relative;\"><tbody>";
+
 		$firstocc = true;
 	}
 
@@ -61,22 +65,56 @@ foreach ($bookmark->list() as $bookmark) {
 	echo "</tr>";
 }
 
+echo "</tbody></table>";
+
 
 if ($firstocc) {
-	echo "</tbody></table>";
+	$tempview = " style=\"display:none;\" ";
 } else {
-	//$_TEMPLATE->NewFrameTitle("<span class=\"flex\">N</span>", false, true);
-	echo ('<ul>
-			<li>No bookmarks found</li>
-			<li>Try adding some pages to bookmarks</li>
-			<li>Bookmarks can be added through `User Account` menu by clicking `Add` button</li>
-			<ul>');
+	$tempview = " style=\"display:block;\" ";
 }
+echo ('<ul id="js-output_disclaimer" ' . $tempview . '>
+	<li>No bookmarks found</li>
+	<li>Try adding some pages to bookmarks</li>
+	<li>Bookmarks can be added through `User Account` menu by clicking `Add` button</li>
+	<ul>');
 
 $grem->getLast()->close();
 unset($grem);
 
+
+
 ?>
+
+<datalist id="js-ref_list" style="display: none;">
+	<?php
+	$ident = \System\Personalization\Identifiers::SystemFrequentVisit->value;
+	$q = <<<SQL
+	SELECT 
+		pfl_value, trd_id
+	FROM 
+		pagefile 
+		JOIN pagefile_language ON pfl_trd_id = trd_id AND pfl_lng_id = 1 
+		JOIN 
+			pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id = {$app->user->info->permissions}
+				LEFT JOIN user_settings ON usrset_usr_defind_name = trd_id AND usrset_usr_id = {$app->user->info->id} 
+				AND usrset_type = {$ident}
+	WHERE 
+		trd_enable = 1 AND trd_visible = 1
+	ORDER BY
+		(usrset_value + 0) DESC, pfl_value
+	SQL;
+
+	if ($r = $app->db->query($q)) {
+		while ($row = $r->fetch_assoc()) {
+			echo "<option data-id=\"{$row['trd_id']}\">{$row['pfl_value']}</option>";
+		}
+	}
+	?>
+</datalist>
+
+
+
 <style>
 	.ui-sortable-start {
 		background-color: var(--color-soft-gray);
@@ -84,7 +122,7 @@ unset($grem);
 		margin-left: -1px;
 	}
 
-	#bookmarks-table>tbody>tr>td.move-handle {
+	#js-output_tablelist>tbody>tr>td.move-handle {
 		cursor: move;
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
@@ -96,14 +134,15 @@ unset($grem);
 </style>
 <script>
 	$(document).ready(function (e) {
-		var ajax = null;
-		$(".op-remove").on('click', function (e) {
+		var outtable = $("#js-output_tablelist > tbody");
+		var outdisc = $("#js-output_disclaimer");
+
+		outtable.on('click', '.op-remove', function (e) {
 			let bookmarkid = $(this).attr("data-id");
 			let rowowner = $(this).parent();
 			rowowner.css("display", "none");
-
-			ajax = $.ajax({
-				url: '<?= $fs(263)->dir ?>',
+			$.ajax({
+				url: '<?= $fs()->dir ?>',
 				type: 'POST',
 				data: {
 					"remove": bookmarkid
@@ -112,15 +151,69 @@ unset($grem);
 				if (parseInt(data) != 1) {
 					rowowner.css("display", "table-row");
 					messagesys.failure("Removing bookmark failed");
+				} else {
+					rowowner.remove();
 				}
+				checkListState();
 			}).fail(function (a, b, c) {
 				rowowner.css("display", "table-row");
 				messagesys.failure("Removing bookmark failed");
 			});
 		});
 
+		$("#js-input_add-list").slo({
+			onselect: function (o) {
+				overlay.show();
+				$.ajax({
+					url: '<?= $fs()->dir ?>',
+					type: 'POST',
+					data: {
+						"add": o.hidden
+					}
+				}).done(function (data, textStatus, request) {
+					let response = request.getResponseHeader('QUERY_RESULT');
+					if (response == 2) {
+						messagesys.success("Page already bookmarked");
+					} else if (response == 0) {
+						messagesys.failuer("Bookmarking page failed");
+					} else {
+						var json = null;
+						try {
+							json = JSON.parse(data);
+						} catch (e) {
+							messagesys.failure("Parsing server response failed");
+							return false;
+						}
+						messagesys.success("Page bookmarked successfully");
 
-		$("#bookmarks-table > tbody").sortable({
+						let newrow = $("<tr data-pageid=\"" + (json[0]) + "\" />");
+						newrow.append("<td style=\"min-width:34px;\" class=\"move-handle\">:::</td>");
+						newrow.append("<td><span>" + (json[2]) + "</span></td>");
+						newrow.append("<td width=\"100%\"><a href=\"" + (json[1]) + "/\" title=\"" + (json[1]) + "\">" + (json[1]) + "</a></td>");
+						newrow.append("<td class=\"op-remove noselect\" data-id=\"" + (json[0]) + "\"><span></span></td>");
+
+						outtable.prepend(newrow);
+						checkListState();
+					}
+				}).fail(function (a, b, c) {
+					messagesys.failuer("Bookmarking page failed");
+				}).always(function () {
+					overlay.hide();
+				});
+			}
+		});
+
+
+		let checkListState = function () {
+			let count = outtable.children().length;
+			if (count == 0) {
+				outdisc.css("display", "block");
+			} else {
+				outdisc.css("display", "none");
+			}
+		}
+
+		$("#js-output_tablelist > tbody").sortable({
 			handle: '.move-handle',
 			helper: 'clone',
 			tolerance: 'pointer',
