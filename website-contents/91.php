@@ -94,17 +94,15 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 <?php if (!$app->xhttp) { ?>
 	<div class="split-view">
 		<div class="panel">
-			<div class="scroll" id="PanelNavigator-Scroll">
-				<?php
-				$grem_panel = new Gremium\Gremium(true, true);
-				$grem_panel->base = "0px";
-				$grem_panel->header()->serve("<h1>Statements</h1>");
-				$grem_panel->menu()->serve("<input class=\"edge-left\" type=\"button\" value=\"Search\" /><button id=\"js-input_btunew\">New</button>");
-				$grem_panel->article("PanelNavigator-Window")->options(array("nopadding"))->serve();
-				$grem_panel->title("PanelNavigator-Informative")->serve("<div style=\"text-align:center;font-size:0.8em\">No more records</div>");
-				$grem_panel->terminate();
-				?>
-			</div>
+			<?php
+			$grem_panel = new Gremium\Gremium(true, true, false, "PanelNavigator-Scroll");
+			$grem_panel->base = "0px";
+			$grem_panel->header()->serve("<h1>Statements</h1>");
+			$grem_panel->menu()->serve("<span class=\"flex\" id=\"PanelNavigator-TotalRecords\"></span><input class=\"edge-left\" type=\"button\" value=\"Search\" /><button id=\"js-input_btunew\">New</button>");
+			$grem_panel->article("PanelNavigator-Window")->options(array("nopadding"))->serve();
+			$grem_panel->title("PanelNavigator-Informative")->serve("<div style=\"text-align:center;font-size:0.8em\">No more records</div>");
+			$grem_panel->terminate();
+			?>
 		</div>
 		<div class="body" id="PanelNavigator-Body">
 
@@ -274,10 +272,16 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		</div>
 	</div>
 
-
-
-
-
+	<div id="PanelNavigator-LoadingScreen">
+		<?php
+		$grem = new Gremium\Gremium(true);
+		$grem->header()->serve("<span class=\"loadingScreen-placeholder header\">&nbsp;</span>");
+		$grem->menu()->serve("<span class=\"\">&nbsp;</span>");
+		$grem->title()->serve("<span class=\"loadingScreen-placeholder title\">&nbsp;</span>");
+		$grem->article()->serve("<span class=\"loadingScreen-placeholderBody\"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>");
+		unset($grem);
+		?>
+	</div>
 
 	<script type="text/javascript">
 		let pageConfig = {
@@ -328,7 +332,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			return `<div><h1>${data.beneficial}</h1><cite>${data.id}</cite></div>` +
 				`<div><h1>${data.value}</h1><cite>${data.date}</cite></div>` +
 				`<div><h1>${data.category}</h1><cite>${attachments}${statementTypeIcon}</cite></div>` +
-				`<div><h1>${data.details}</h1></div>`;
+				`<div><h1 class=\"description\">${data.details}</h1></div>`;
 		}
 		pn.init();
 	</script>

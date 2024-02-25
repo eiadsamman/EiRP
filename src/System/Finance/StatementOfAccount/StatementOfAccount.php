@@ -118,7 +118,6 @@ class StatementOfAccount
 
 	public function summary(int &$count, float &$sum): void
 	{
-
 		$stmt = $this->app->db->prepare(
 			"SELECT 
 				COUNT(atm_value) AS fn_count, SUM(atm_value) AS fn_sum
@@ -133,7 +132,6 @@ class StatementOfAccount
 			ORDER BY
 				acc_main.acm_ctime ASC, acc_main.acm_id ASC
 			"
-
 		);
 		if ($stmt->execute()) {
 			$result = $stmt->get_result();

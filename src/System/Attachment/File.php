@@ -66,7 +66,7 @@ class File
 	public function all(): \Generator
 	{
 		$stmt = $this->app->db->prepare(
-			$this->sqlHeader() . "WHERE up_id =0 LIMIT 0, 1; "
+			$this->sqlHeader() . "WHERE up_id = 0 LIMIT 0, 1; "
 		);
 		$stmt->execute();
 		$result = $stmt->get_result();

@@ -40,7 +40,6 @@ class StatementProperty
 	
 	public PersonData $editor;
 
-
 	public array $attachments;
 
 	public bool $canceled;
@@ -53,8 +52,8 @@ class StatementProperty
 	public function __toString(): string
 	{
 		return print_r([
-			"Issuer Account" => $this->issuer_account->id . ": " . $this->issuer_account->currency->shortname . " " . $this->issuer_account->name,
-			"Target Account" => $this->target_account->id . ": " . $this->target_account->currency->shortname . " " . $this->target_account->name,
+			"Issuer Account" => $this->creditor->id . ": " . $this->creditor->currency->shortname . " " . $this->creditor->name,
+			"Target Account" => $this->debitor->id . ": " . $this->debitor->currency->shortname . " " . $this->debitor->name,
 			"Date" => $this->dateTime->format("Y-m-d"),
 			"Beneficiary" => $this->beneficiary,
 			"Value" => $this->value,

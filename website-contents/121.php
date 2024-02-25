@@ -2,14 +2,15 @@
 header("Content-Type: application/json; charset=utf-8");
 $perpage_val = 20;
 
-
 if ($app->xhttp) {
 	$request = json_decode(file_get_contents('php://input'), true);
-
 	if (!empty($request['method']) && $request['method'] == "fetch") {
 		$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 
 		$controller->criteria->setRecordsPerPage($perpage_val);
+		//$controller->criteria->statementID(7207);
+		//$controller->criteria->statementBeneficiary('مصطفى');
+
 		$user_current = abs((int) $request['page']);
 		$count = $sum = $pages = 0;
 		$controller->summary($count, $sum);

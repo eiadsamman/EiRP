@@ -1,8 +1,6 @@
 class PanelNavigator {
 	constructor() {
-
 		this.placeholderTemplate = "<div class=\"panel-item place-holder statment-panel\" />";
-
 		this.sourceUrl = "";
 		this.itemPerRequest = 20;
 		this.navigator = new Navigator({}, '');
@@ -10,13 +8,18 @@ class PanelNavigator {
 		this.runtime = new Object();
 		this.runtime.isLoading = false;
 		this.runtime.isFinished = false;
+		this.runtime.isContentLoading = false;
 		this.runtime.totalPages = 1;
 		this.runtime.currentPage = 1;
 		this.runtime.activeItem = null;
 		this.runtime.scrollArea = document.getElementById("PanelNavigator-Scroll");
 		this.runtime.container = document.getElementById("PanelNavigator-Window");
+
+		this.runtime.loadingScreen = document.getElementById("PanelNavigator-LoadingScreen");
+		this.runtime.outputScreen = document.getElementById("PanelNavigator-Body");
 		this.runtime.informative = document.getElementById("PanelNavigator-Informative").querySelector("div");
 
+		this.latency = null;
 		this.runtime.scrollArea.addEventListener("scroll", () => {
 			if (this.checkAvailability() &&
 				this.runtime.scrollArea.scrollHeight - this.runtime.scrollArea.scrollTop <= this.runtime.scrollArea.clientHeight * 1.2
@@ -28,10 +31,10 @@ class PanelNavigator {
 		return this;
 	}
 
-	onclick = function (event) {
+	onclick = function () {
 	}
 
-	listitemHandler = function (data) {
+	listitemHandler = function () {
 	}
 
 	init = function () {
@@ -42,7 +45,6 @@ class PanelNavigator {
 		this.navigator.history_vars.url = pageConfig.url;
 		this.navigator.history_vars.title = pageConfig.title;
 		this.navigator.replaceVariableState();
-
 		this.navigator.onPopState((event) => {
 			this.loader(
 				event.state.url,
@@ -56,6 +58,47 @@ class PanelNavigator {
 					this.clearActiveItem();
 					this.setActiveItem(listitem);
 				}
+			}
+		});
+
+		this.runtime.scrollArea.tabIndex = 0;
+		this.runtime.scrollArea.autofocus = true;
+		this.runtime.scrollArea.addEventListener("keydown", (e) => {
+
+			if (e.key == "ArrowDown") {
+				e.preventDefault();
+				if (this.runtime.activeItem != null && !this.runtime.isContentLoading) {
+					let listitem = this.runtime.scrollArea.querySelector(`.panel-item[data-listitem_id="${this.runtime.activeItem.dataset.listitem_id}"]`);
+					if (listitem) {
+						let nextSibling = listitem.nextSibling;
+						if (nextSibling && nextSibling.dataset != undefined && nextSibling.dataset.listitem_id != undefined) {
+							this.clearActiveItem()
+							this.navigator.history_vars.method = "view";
+							this.setActiveItem(nextSibling);
+							this.onclick(nextSibling);
+							nextSibling.scrollIntoView({ behavior: "smooth", block: "nearest" });
+						}
+					}
+				}
+				return false;
+			}
+			if (e.key == "ArrowUp") {
+				e.preventDefault();
+				if (this.runtime.activeItem != null && !this.runtime.isContentLoading) {
+					let listitem = this.runtime.scrollArea.querySelector(`.panel-item[data-listitem_id="${this.runtime.activeItem.dataset.listitem_id}"]`);
+					if (listitem) {
+						let previousSibling = listitem.previousSibling;
+
+						if (previousSibling && previousSibling.dataset != undefined && previousSibling.dataset.listitem_id != undefined) {
+							this.clearActiveItem()
+							this.navigator.history_vars.method = "view";
+							this.setActiveItem(previousSibling);
+							this.onclick(previousSibling);
+							previousSibling.scrollIntoView({ behavior: "smooth", block: "nearest" });
+						}
+					}
+				}
+				return false;
 			}
 		});
 	}
@@ -105,6 +148,7 @@ class PanelNavigator {
 		if (response.ok) {
 			const payload = await response.json()
 			this.runtime.totalPages = parseInt(payload.headers.pages);
+			document.getElementById("PanelNavigator-TotalRecords").innerText = payload.headers.count + " records"
 			payload.contents.forEach(element => {
 				let freeObject = this.getFreePlaceholder();
 				if (freeObject) {
@@ -112,7 +156,7 @@ class PanelNavigator {
 					this.buildItem(freeObject, element);
 				}
 			});
-			this.assigneClickEvents();
+			this.assigneEvents();
 			this.runtime.isFinished = !this.checkAvailability() && this.clearEmptyPlaceholders() > 0;
 			if (this.runtime.isFinished) {
 				this.runtime.informative.innerText = "No more records";
@@ -122,8 +166,9 @@ class PanelNavigator {
 				this.runtime.currentPage += 1;
 				this.xhttp_request();
 			}
+			this.runtime.isLoading = false;
 		}
-		this.runtime.isLoading = false;
+
 
 	}
 
@@ -139,6 +184,7 @@ class PanelNavigator {
 		item.classList.add("active");
 		this.runtime.activeItem = item;
 	}
+
 	clearActiveItem = function () {
 		if (this.runtime.activeItem != null) {
 			this.runtime.scrollArea.querySelectorAll(".panel-item.active").forEach(element => {
@@ -147,7 +193,8 @@ class PanelNavigator {
 			this.runtime.activeItem = null;
 		}
 	}
-	assigneClickEvents = function () {
+
+	assigneEvents = function () {
 		let instance = this;
 		let listitems = this.runtime.scrollArea.querySelectorAll(".panel-item:not(.place-holder)");
 		listitems.forEach(element => {
@@ -174,7 +221,14 @@ class PanelNavigator {
 	}
 
 	loader = function (url, title, options = {}, callback) {
+		this.runtime.isContentLoading = true;
 		var formData = new FormData();
+
+		this.runtime.outputScreen.classList.add("busy");
+		this.latency = setTimeout(() => {
+			this.runtime.outputScreen.innerHTML = this.runtime.loadingScreen.innerHTML;
+		}, 400);
+
 		for (var key in options) {
 			formData.append(key, options[key]);
 		}
@@ -189,18 +243,25 @@ class PanelNavigator {
 			},
 			body: formData
 		}).then(response => {
+			this.runtime.isContentLoading = false;
 			if (response.ok) {
 				return response.text();
 			}
 			return Promise.reject(response);
 		}).then(body => {
+			if (this.latency) {
+				clearTimeout(this.latency);
+			}
+			this.runtime.outputScreen.classList.remove("busy");
+			this.runtime.isContentLoading = false;
 			document.title = title;
-			document.getElementById("PanelNavigator-Body").innerHTML = (body);
+			this.runtime.outputScreen.innerHTML = (body);
 
 			if (typeof callback === "function") {
 				callback.call(this);
 			}
 		}).catch(response => {
+			this.runtime.isContentLoading = false;
 			messagesys.failure("Server response `" + response.statusText + "`");
 		})
 	}

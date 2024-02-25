@@ -5,7 +5,6 @@ namespace System\Attachment;
 
 class Properties
 {
-
 	public int $id;
 	public int $scope;
 	public int $relation;

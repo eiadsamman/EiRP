@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace System\Finance\Transaction;
 
+
 use System\Exceptions\Finance\TransactionException;
 use System\Finance\Account;
 use System\Finance\Currency;
@@ -66,8 +67,8 @@ class Statement
 				$result->dateTime = new \DateTime($row['acm_ctime']);
 				$result->reference = $row['acm_reference'];
 				$result->description = $row['acm_comments'];
-
 				$result->beneficiary = $row['acm_beneficial'];
+				$result->value = (float) $row['acm_realvalue'];
 
 				if (empty($row['acm_usr_id'])) {
 					$result->individual = null;
@@ -80,17 +81,13 @@ class Statement
 				$result->editor = new PersonData();
 				$result->editor->id = (int) $row['acm_editor_id'];
 				$result->editor->name = $row['_editorname'];
-
 				$result->category = new StatementCategoryProperty((int) $row['acm_category'], $row['accgrp_name'], $row['acccat_name']);
-
-				$result->value = (float) $row['acm_realvalue'];
 				$result->currency = new Currency((int) $row['cur_id'], $row['cur_name'], $row['cur_symbol'], $row['cur_shortname']);
 				$this->pairs($result);
-
+				$this->getAttachements($result);
 				return $result;
 			}
 		}
-
 		return false;
 	}
 
@@ -115,6 +112,30 @@ class Statement
 					/* Debitor */
 					$statementProperty->debitor = new Account($this->app, (int) $row['atm_account_id']);
 				}
+			}
+		}
+	}
+	private function getAttachements(StatementProperty &$statementProperty)
+	{
+		$statementProperty->attachments= array();
+		if (
+			$r = $this->app->db->query(
+				"SELECT 
+					up_id, up_name
+				FROM 
+					uploads 
+				WHERE 
+					up_pagefile = " . \System\Attachment\Type::FinanceRecord->value . " AND 
+					up_deleted = 0 AND
+					up_active = 1 AND
+					up_rel = {$statementProperty->id}"
+			)
+		) {
+			while ($row = $r->fetch_assoc()) {
+				$file = new \System\Attachment\Properties();
+				$file->id = (int) $row['up_id'];
+				$file->name = $row['up_name'] ?? "";
+				$statementProperty->attachments[] = $file;
 			}
 		}
 	}

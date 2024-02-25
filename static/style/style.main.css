@@ -191,7 +191,7 @@ body {
 
 body>article {
 	display: flex;
-	justify-content: center;
+	justify-content: left;
 	height: 100%;
 	background-color: var(--root-background-color);
 	transition: background-color var(--transition-speed) ease;
@@ -200,10 +200,10 @@ body>article {
 
 body>article>div {
 	flex: 1;
-	max-width: var(--dim-max-width);
+	/* max-width: var(--dim-max-width); */
 	margin-top: var(--root--menubar-height);
 	text-align: left;
-
+	padding: 0px 15px;
 	filter: blur(0px);
 	transition: filter 0.2s ease-out;
 }
@@ -215,7 +215,6 @@ body>article>div.blur {
 body::-webkit-scrollbar {
 	width: 0.8em;
 	background-color: var(--root-ribbon-background-color);
-
 }
 
 body::-webkit-scrollbar-track {
@@ -255,7 +254,7 @@ span.header-ribbon>div {
 	display: inline-block;
 	position: relative;
 	width: 100%;
-	max-width: var(--dim-max-width);
+	/* max-width: var(--dim-max-width); */
 }
 
 .ico-home>span:before {
@@ -322,7 +321,7 @@ span.header-menu>div {
 	width: 100%;
 	padding: 0px;
 	margin: 0px;
-	max-width: var(--dim-max-width);
+	/* max-width: var(--dim-max-width); */
 	position: relative;
 	height: 10px;
 }
@@ -778,76 +777,75 @@ span.vs-remove {
 .split-view>div.panel {
 	flex: 2;
 	position: relative;
+	max-width: 400px;
 }
 
-.split-view>div.panel>div.scroll {
+.split-view>div.body {
+	flex: 5;
+}
+
+/* div#PanelNavigator-Scroll {
+	scroll-snap-type: y mandatory;
+}
+
+#PanelNavigator-Window>div {
+	scroll-snap-align: start;
+}
+ */
+
+div#PanelNavigator-Scroll {
 	top: var(--root--menubar-height);
 	position: sticky;
 	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 	/* scrollbar-width: thin; */
+	outline: none;
 	max-height: calc(100vh - var(--root--menubar-height));
 	margin-right: 10px;
+	scroll-padding-top: 115px;
 }
 
-.split-view>div.panel>div.scroll::-webkit-scrollbar {
+div#PanelNavigator-Scroll::-webkit-scrollbar {
 	width: 5px;
 }
 
-.split-view>div.panel>div.scroll:hover::-webkit-scrollbar-thumb {
+div#PanelNavigator-Scroll:hover::-webkit-scrollbar-thumb {
 	background-color: var(--input_hover-color);
 }
 
-.split-view>div.panel>div.scroll::-webkit-scrollbar-thumb {
+div#PanelNavigator-Scroll::-webkit-scrollbar-thumb {
 	background-color: var(--input-border);
 }
 
-
-
-
-@keyframes placeHolderShimmer {
-	0% {
-		background-position: -468px 0
-	}
-
-	90% {
-		background-position: 468px 0
-	}
-
-	100% {
-		background-position: 468px 0;
-	}
-}
-
-
-.split-view>div.panel>div.scroll div.panel-item {
+div#PanelNavigator-Scroll div.panel-item {
 	border-bottom: solid 1px var(--bomtable-border-color);
-	min-height: 80px;
+	min-height: 100px;
 	padding: 10px;
 	position: relative;
 	cursor: default;
 	transition: background-color 0.2s ease;
 }
 
-.split-view>div.panel>div.scroll div.panel-item.active {
-	
+div#PanelNavigator-Scroll div.panel-item.active {
+
 	background-color: var(--bomtable-hover-color);
 }
 
-.split-view>div.panel>div.scroll div.panel-item:not(.place-holder):hover {
+div#PanelNavigator-Scroll div.panel-item:not(.place-holder):hover {
 	outline: solid 2px var(--button-border);
 	border-radius: 2px;
 	text-decoration: none;
 	z-index: 2;
 }
 
-.split-view>div.panel>div.scroll div.panel-item:last-child {
+div#PanelNavigator-Scroll div.panel-item:last-child {
 	border-bottom: none;
 	margin-bottom: 0;
 }
 
-.split-view>div.panel>div.scroll div.panel-item.place-holder::after,
-.split-view>div.panel>div.scroll div.panel-item.place-holder::before {
-	height: 10px;
+div#PanelNavigator-Scroll div.panel-item.place-holder::after,
+div#PanelNavigator-Scroll div.panel-item.place-holder::before {
+	height: 12px;
 	display: inline-block;
 	content: " ";
 	animation-duration: 2.2s;
@@ -861,25 +859,113 @@ span.vs-remove {
 	position: absolute;
 }
 
-.split-view>div.panel>div.scroll div.panel-item.place-holder::after {
-	top: 10px;
+div#PanelNavigator-Scroll div.panel-item.place-holder::after {
+	top: 15px;
 	width: 100px;
 }
 
-.split-view>div.panel>div.scroll div.panel-item.place-holder::before {
-	top: 30px;
+div#PanelNavigator-Scroll div.panel-item.place-holder::before {
+	top: 37px;
 	left: 10px;
 	right: 10px;
 }
 
-.split-view>div.body {
-	flex: 5;
+
+
+
+div#PanelNavigator-LoadingScreen {
+	display: none;
+}
+
+span.loadingScreen-placeholder::after {
+	height: 12px;
+	display: inline-block;
+	content: " ";
+	animation-duration: 2.2s;
+	animation-fill-mode: forwards;
+	animation-iteration-count: infinite;
+	animation-name: placeHolderShimmer;
+	animation-timing-function: linear;
+	background: var(--root-background-color);
+	background: linear-gradient(to right, var(--placeholder-bgcolor) 0%, var(--placeholder-sweeping-bgcolor) 15%, var(--placeholder-bgcolor) 30%);
+	background-size: 800px 104px;
+	position: absolute;
+	width: 100px;
+}
+
+span.loadingScreen-placeholder.header::after {
+	width: 300px;
+	height: 30px;
+	top: 5px;
+}
+
+span.loadingScreen-placeholder.title::after {
+	width: 300px;
+	height: 15px;
+	top: 15px
+}
+
+
+#PanelNavigator-Body.busy {
+	cursor: wait;
+}
+
+span.loadingScreen-placeholderBody>span {
+	display: block;
+}
+
+span.loadingScreen-placeholderBody>span::after {
+	height: 12px;
+	display: inline-block;
+	content: " ";
+	margin-bottom: 10px;
+	animation-duration: 2.2s;
+	animation-fill-mode: forwards;
+	animation-iteration-count: infinite;
+	animation-name: placeHolderShimmerLong;
+	animation-timing-function: linear;
+	background: var(--root-background-color);
+	background: linear-gradient(to right, var(--placeholder-bgcolor) 0%, var(--placeholder-sweeping-bgcolor) 15%, var(--placeholder-bgcolor) 30%);
+	background-size: 1400px 104px;
+	width: 100%;
+}
+
+span.loadingScreen-placeholderBody>span:last-child {
+	width: 33%;
+}
+
+
+@keyframes placeHolderShimmer {
+	0% {
+		background-position: -468px 0;
+	}
+
+	90% {
+		background-position: 468px 0;
+	}
+
+	100% {
+		background-position: 468px 0;
+	}
+}
+
+@keyframes placeHolderShimmerLong {
+	0% {
+		background-position: -700px 0;
+	}
+
+	90% {
+		background-position: 700px 0;
+	}
+
+	100% {
+		background-position: 700px 0;
+	}
 }
 
 
 
 /* #endregion */
-
 
 
 
@@ -900,6 +986,10 @@ span.vs-remove {
 
 	span.header-menu.lefthand>div>div>div.menu-items b.index-link {
 		display: block;
+	}
+
+	body>article>div {
+		padding: 0px;
 	}
 }
 

@@ -11,6 +11,13 @@
 	padding: 0;
 }
 
+.statment-panel>div>h1.description {
+	max-height: 60px;
+	text-overflow: ellipsis;
+	overflow-y: hidden;
+	color: var(--root-font-lightcolor);
+}
+
 .statment-panel>div>cite>span.stm,
 .statment-panel>div>cite>span.atch,
 .statment-panel>div>cite>span.stt {
@@ -25,10 +32,9 @@
 	margin: 0px 4px;
 }
 
-
 .statment-panel>div>cite>span.atch::after {
 	content: "\e9cd";
-	color:tomato ;
+	color: tomato;
 }
 
 .statment-panel>div>cite>span.stt.opn::after {
@@ -59,4 +65,27 @@
 .statment-panel>div>cite {
 	font-style: normal;
 	color: var(--root-font-lightcolor);
+}
+
+.attachments-view>a {
+	display: inline-block;
+	border: solid 2px transparent;
+	border-radius: 4px;
+	padding: 0;
+	width: 104px;
+	height: 104px;
+}
+
+.attachments-view>a:hover {
+	border-color: var(--button-border);
+	text-decoration: none;
+	z-index: 2;
+}
+
+.attachments-view>a>img {
+	margin: 0;
+	border-radius: 2px;
+	max-width: 100px;
+	max-height: 100px;
+	position: absolute;
 }
