@@ -5,37 +5,6 @@ use System\Template\Gremium;
 use System\Template\Gremium\Status;
 
 
-if (is_null($app->user->account)) {
-	$grem = new Gremium\Gremium(true);
-	$grem->header()->status(Status::Exclamation)->serve("<h1>No account selected!</h1>");
-	$grem->legend()->serve("<span class=\"flex\">Access to this page requires registering a valid account:</span>");
-	$article = $grem->article();
-	$article->message .= '<ul style="margin:0">
-		<li>Select an account from Account Selection Menu</li>
-		<li>Contact system administrator</li>
-		<li>Permission denied or not enough privileges to proceed with this document</li>
-		<ul>';
-	$article->serve();
-	unset($grem);
-	exit;
-} elseif (!$app->user->account->role->view) {
-	$grem = new Gremium\Gremium(true);
-	$grem->header()->status(Status::Exclamation)->serve("<h1>Access restricted!</h1>");
-	$grem->legend()->serve("<span class=\"flex\">Loading journal for `{$app->user->account->name}` account failed:</span>");
-	$article = $grem->article();
-	$article->message .= '<ul style="margin:0">
-		<li>Session has expired, loing in again to your account</li>
-		<li>Database query failed, contact system administrator</li>
-		<li>Viewing account detials is restricted by management, try selecting another account</li>
-		<li>Permission denied or not enough privileges to proceed with this document</li>
-		<ul>';
-	$article->serve();
-	unset($grem);
-	exit;
-}
-
-
-
 if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_report") {
 	$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 
@@ -97,7 +66,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 				echo "<tr>";
 
 				echo "<td>";
-				echo "<div><a>{$row['acm_id']}</a></div>";
+				echo "<div><a href=\"{$fs(104)->dir}/?id={$row['acm_id']}\" dir=\"_blank\">{$row['acm_id']}</a></div>";
 				echo "<div>{$row['acm_ctime']}</div>";
 				echo "<div>" . ($row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") . "{$row['acm_beneficial']}</div>";
 				echo "</td>";
@@ -141,6 +110,37 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 if ($app->xhttp) {
 	exit;
 }
+
+if (is_null($app->user->account)) {
+	$grem = new Gremium\Gremium(true);
+	$grem->header()->status(Status::Exclamation)->serve("<h1>No account selected!</h1>");
+	$grem->legend()->serve("<span class=\"flex\">Access to this page requires registering a valid account:</span>");
+	$article = $grem->article();
+	$article->message .= '<ul style="margin:0">
+		<li>Select an account from Account Selection Menu</li>
+		<li>Contact system administrator</li>
+		<li>Permission denied or not enough privileges to proceed with this document</li>
+		<ul>';
+	$article->serve();
+	unset($grem);
+	exit;
+} elseif (!$app->user->account->role->view) {
+	$grem = new Gremium\Gremium(true);
+	$grem->header()->status(Status::Exclamation)->serve("<h1>Access restricted!</h1>");
+	$grem->legend()->serve("<span class=\"flex\">Loading journal for `{$app->user->account->name}` account failed:</span>");
+	$article = $grem->article();
+	$article->message .= '<ul style="margin:0">
+		<li>Session has expired, loing in again to your account</li>
+		<li>Database query failed, contact system administrator</li>
+		<li>Viewing account detials is restricted by management, try selecting another account</li>
+		<li>Permission denied or not enough privileges to proceed with this document</li>
+		<ul>';
+	$article->serve();
+	unset($grem);
+	exit;
+}
+
+
 $initial_values = array(
 	'from' => isset($_GET['from']) && $app->date_validate($_GET['from']) ? date("Y-m-d", $app->date_validate($_GET['from'])) : "",
 	'to' => isset($_GET['to']) && $app->date_validate($_GET['to']) ? date("Y-m-d", $app->date_validate($_GET['to'])) : "",
@@ -149,7 +149,7 @@ $initial_values = array(
 
 
 
-$grem = new Gremium\Gremium(false);
+$grem = new Gremium\Gremium(true);
 
 $grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
 	"<ul class=\"small-media-hide\"><li class=\"small-media-hide\">{$app->user->company->name}: {$app->user->account->name}</li></ul>" .
@@ -389,4 +389,4 @@ unset($grem);
 		"to": "",
 	}, drainurl);
 </script>
-<script type="text/javascript" src="static\javascript\Finance.statement.js"></script>
+<script type="text/javascript" src="static\javascript\Finance.Statement.js"></script>

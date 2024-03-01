@@ -1,8 +1,7 @@
 <?php
 ob_start();
 ob_implicit_flush(true);
-$_v = "?rev=1013"; //. uniqid();
-$_v = "?rev=1013" . uniqid();
+$_v = $app->settings->site['environment'] === "development" ? "?rev=1013" . uniqid() : "";
 
 use System\FileSystem\Hierarchy;
 use System\Finance\AccountRole;
@@ -101,7 +100,7 @@ $SmartListObject = new SmartListObject($app);
 
 					echo "<span class=\"gap\" style=\"text-align:right;\"></span>";
 					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=company\" tabindex=\"-1\" title=\"Running Company\" id=\"jqroot_com\">" . ($app->user->company ? $app->user->company->name : "N/A") . "</a>";
-					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($app->user->account) ? "<span id=\"jqroot_accgrp\"></span><span class=\"mediabond-hide\">" . $app->user->account->type->name . ": </span>" . $app->user->account->name : "N/A") . "</a>";
+					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($app->user->account) ? "<span class=\"mediabond-hide\">{$app->user->account->type->name}: </span>{$app->user->account->name}"  : "N/A") . "</a>";
 					if ($app->user->account && $app->user->account->role->view) {
 						echo "<span id=\"jqroot_bal\">" . ($app->user->account->balance < 0 ? "(" . number_format(abs($app->user->account->balance), 2, ".", ",") . ")" : number_format(abs($app->user->account->balance), 2, ".", ","));
 						echo " {$app->user->account->currency->shortname}</span>";
@@ -191,7 +190,7 @@ $SmartListObject = new SmartListObject($app);
 									prt_id,prt_name,ptp_name,cur_shortname,_fusro.comp_name,typetermPair
 								FROM 
 									acc_accounts
-									JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . $app->user->info->id . " AND upr_prt_fetch=1
+									JOIN user_partition ON upr_prt_id = prt_id AND upr_usr_id = {$app->user->info->id} AND upr_prt_fetch = 1
 									
 									JOIN (
 										SELECT ptp_id,ptp_name,trmgrp_name, CONCAT_WS(': ', trmgrp_name, ptp_name) AS typetermPair
@@ -204,11 +203,11 @@ $SmartListObject = new SmartListObject($app);
 											comp_name,comp_id
 										FROM
 											companies
-												JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . $app->user->info->id . "
-												JOIN user_settings ON usrset_usr_id=" . $app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemWorkingCompany->value . " AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
+												JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id = {$app->user->info->id}
+												JOIN user_settings ON usrset_usr_id = {$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::SystemWorkingCompany->value . " AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
 									) AS _fusro ON _fusro.comp_id=prt_company_id
 									
-									LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemCountAccountSelection->value . "
+									LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id = {$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::SystemCountAccountSelection->value . "
 								ORDER BY
 									(usrset_value + 0) DESC,cur_id,ptp_name,prt_name
 								;"

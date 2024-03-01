@@ -12,12 +12,13 @@
 	"site": {
 		"version": "4.2.7",
 		"subdomain": "eiad",
-		"forcehttps": "true",
+		"forcehttps": false,
 		"index": "index",
 		"auther": "Eiad",
 		"title": "Eiad",
 		"keywords": "",
 		"description": "",
-		"timezone": "Africa/Cairo"
+		"timezone": "Africa/Cairo",
+		"environment": "production"
 	}
 }

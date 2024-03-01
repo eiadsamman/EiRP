@@ -4,6 +4,7 @@ use System\Personalization\FrequentAccountUse;
 use System\Template\Gremium;
 use System\Finance\Account;
 use System\SmartListObject;
+use System\Template\PanelNavigator\PanelStatements;
 
 
 $predefined = new \System\Finance\PredefinedRules($app);
@@ -12,21 +13,26 @@ $accounting = new \System\Finance\Accounting($app);
 $perpage_val = 20;
 
 if ($app->xhttp) {
-	$result = array(
-		"result" => false,
-		"errno" => 0,
-		"error" => '',
-		'insert_id' => 0
-	);
 	if (isset($_POST['objective']) && $_POST['objective'] == 'transaction') {
+		header("Content-Type: application/json; charset=utf-8");
+		$result = array(
+			"result" => false,
+			"errno" => 0,
+			"error" => '',
+			'insert_id' => 0
+		);
 		try {
-			$transaction = new Receipt($app);
+			$transaction = new Payment($app);
 			$transaction->issuerAccount($app->user->account);
 			$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1]));
-			$transaction->date($_POST['date'][0])->category($_POST['category'][1]);
-			$transaction->beneficiary($_POST['beneficiary'][0])->value($_POST['value']);
-			$transaction->individual($_POST['individual'][1])->description($_POST['description']);
-			$transaction->reference($_POST['reference'][0])->relation($_POST['relation']);
+			$transaction->date($_POST['date'][0]);
+			$transaction->category($_POST['category'][1] ?? 0);
+			$transaction->beneficiary($_POST['beneficiary'][0] ?? "");
+			$transaction->value($_POST['value'] ?? 0);
+			$transaction->individual($_POST['individual'][1] ?? 0);
+			$transaction->description($_POST['description'] ?? "");
+			$transaction->reference($_POST['reference'][0] ?? "");
+			$transaction->relation($_POST['relation'] ?? 0);
 
 			if (isset($_POST['attachments']) && is_array($_POST['attachments'])) {
 				$transaction->attachments($_POST['attachments']);
@@ -64,6 +70,7 @@ if ($app->xhttp) {
 		echo json_encode($result);
 		exit;
 	}
+
 }
 
 $SmartListObject = new SmartListObject($app);
@@ -95,21 +102,12 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 	<div class="split-view">
 		<div class="panel">
 			<?php
-			$grem_panel = new Gremium\Gremium(true, true, false, "PanelNavigator-Scroll");
-			$grem_panel->base = "0px";
-			$grem_panel->header()->serve("<h1>Statements</h1>");
-			$grem_panel->menu()->serve("<span class=\"flex\" id=\"PanelNavigator-TotalRecords\"></span><input class=\"edge-left\" type=\"button\" value=\"Search\" /><button id=\"js-input_btunew\">New</button>");
-			$grem_panel->article("PanelNavigator-Window")->options(array("nopadding"))->serve();
-			$grem_panel->title("PanelNavigator-Informative")->serve("<div style=\"text-align:center;font-size:0.8em\">No more records</div>");
-			$grem_panel->terminate();
+			$panelNavigator = new PanelStatements($app);
+			$panelNavigator->SidePanelHTML();
 			?>
 		</div>
 		<div class="body" id="PanelNavigator-Body">
-
 		<?php } ?>
-
-
-
 		<?php
 		$grem = new Gremium\Gremium(true);
 		$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Receipt</button></div>");
@@ -213,7 +211,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 				<label style="min-width:300px">
 					<h1>Reference</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Statement reference..." data-slo="ACC_REFERENCE" title="Reference" tabindex="6" name="reference" class="flex" />
+						<input type="text" placeholder="Statement reference..." data-slo="ACC_REFERENCE" title="Reference" tabindex="-1" name="reference" class="flex" />
 						<input type="text" placeholder="Related ID" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" placeholder="Related ID" name="relation" />
 					</div>
 				</label>
@@ -223,7 +221,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 				<label>
 					<h1>Description</h1>
 					<div class="btn-set">
-						<textarea type="text" placeholder="Statement description..." data-required tabindex="8" title="Statement Description" data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
+						<textarea type="text" placeholder="Statement description..." data-required tabindex="6" title="Statement Description" data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea"
 							name="description" id="description" rows="7"></textarea>
 					</div>
 				</label>
@@ -239,7 +237,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<thead>
 				<tr>
 					<td>ID</td>
-					<td stlye="text-align:right" colspan="2">Amount</td>
+					<td stlye="text-align:right">Amount</td>
 					<td style="width:100%">Benificial</td>
 				</tr>
 			</thead>
@@ -271,7 +269,6 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		<?php if (!$app->xhttp) { ?>
 		</div>
 	</div>
-
 	<div id="PanelNavigator-LoadingScreen">
 		<?php
 		$grem = new Gremium\Gremium(true);
@@ -299,11 +296,12 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 	<script type="text/javascript" src="static/javascript/Navigator.js"></script>
 	<script type="text/javascript" src="static/javascript/PanelNavigator.js"></script>
 	<script type="text/javascript">
-
 		let pn = new PanelNavigator();
 		pn.sourceUrl = '<?= $fs(121)->dir ?>';
 		pn.itemPerRequest = <?= (int) $perpage_val; ?>;
+		pn.classList = ["statment-panel"];
 
+		if(document.getElementById("js-input_btunew"))
 		document.getElementById("js-input_btunew").addEventListener("click", function () {
 			pn.clearActiveItem();
 			pn.navigator.setProperty("id", null);
@@ -314,6 +312,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "new", "id": null }, () => { initInvokers() });
 			pn.navigator.pushState();
 		});
+
 
 		pn.onclick = function (event) {
 			pn.navigator.setProperty("id", event.dataset.listitem_id);

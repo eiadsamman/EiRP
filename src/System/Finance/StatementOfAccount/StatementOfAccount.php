@@ -118,6 +118,10 @@ class StatementOfAccount
 
 	public function summary(int &$count, float &$sum): void
 	{
+		if (!$this->app->user->account) {
+			$count = 0;
+			$sum = 0;
+		}
 		$stmt = $this->app->db->prepare(
 			"SELECT 
 				COUNT(atm_value) AS fn_count, SUM(atm_value) AS fn_sum

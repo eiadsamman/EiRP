@@ -394,7 +394,7 @@ class SmartListObject {
 		this.state = state.idle;
 		this.hadfocus = false;
 		this.handler = this.objectHandler();
-		this.events = { onselect: function () { }, ondeselect: function () { } }
+		this.events = { onselect: function () { }, ondeselect: function () { }, onkeydown: function (e) { }, onkeyup: function () { } }
 		this.parameters = this.htmltext.attr('data-sloparam');
 		this.init();
 
@@ -661,6 +661,8 @@ class SmartListObject {
 			onselect: function () { },
 			onblur: function () { },
 			ondeselect: function () { },
+			onkeydown: function (e) { },
+			onkeyup: function (e) { },
 			align: "left",
 			limit: 5,
 			dropdown: false
@@ -763,10 +765,12 @@ class SmartListObject {
 					if (slo.hadfocus) return true;
 					this.slo.focus(this.slo.stamped != stamp.valid ? true : false);
 				}).on('keydown', (e) => {
+					slosettings.onkeydown.call(slo, e);
 					if (e.code === "Escape") {
 						if (this.slo.htmltext.val() == "") {
 							this.slo.stamp(stamp.empty);
 							this.slo.hide();
+
 							return true;
 						}
 						e.preventDefault();
@@ -806,6 +810,7 @@ class SmartListObject {
 						}
 						return false;
 					}
+
 
 				}).on('click', function (e) {
 					if (slo.is_selectobject) {

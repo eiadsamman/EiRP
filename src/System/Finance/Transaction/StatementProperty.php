@@ -13,7 +13,7 @@ use System\Individual\User;
 
 class StatementCategoryProperty
 {
-	public function __construct(public int $id, public string $group,public string $name)
+	public function __construct(public int $id, public string $group, public string $name)
 	{
 	}
 }
@@ -21,23 +21,28 @@ class StatementCategoryProperty
 
 class StatementProperty
 {
-	public Account $creditor;
-	public Account $debitor;
+	public Nature $type;
 
 	public int $id;
-	public StatementCategoryProperty $category;
 	public float $value;
+	public ?Account $creditor;
+	public ?Account $debitor;
+
+	public float $creditAmount;
+	public float $debitAmount;
+
+
+	public StatementCategoryProperty $category;
 	public Currency $currency;
 
 	public \DateTime $dateTime;
 	public ?string $beneficiary;
 	public ?string $description;
 	public ?string $reference;
-	public Nature $type;
 
 	public ?int $relation;
 	public ?PersonData $individual;
-	
+
 	public PersonData $editor;
 
 	public array $attachments;

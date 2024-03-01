@@ -1,7 +1,6 @@
 <?php
 
 
-exit;
 /* Ecrypt users passwords */
 $res = $app->db->query("SELECT usr_password, usr_id FROM users;");
 $newpass = $userid = 0;

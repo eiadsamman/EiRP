@@ -1,7 +1,22 @@
-$(document).ready(function (e) {
-	let form_main = slo_objects = value_field = description_field = null;
-	initInvokers = function () {
 
+let form_main = inputFields = slo_input = inputFieldsSorted = slo_objects = value_field = description_field = busy = null;
+let Upload = null;
+$(document).ready(function (e) {
+
+	findNextInputField = function (target) {
+		let located = false;
+		for (let i in inputFieldsSorted) {
+			if (located) {
+				return inputFieldsSorted[i];
+			}
+			if (inputFieldsSorted[i] == target) {
+				located = true;
+			}
+		}
+		return false;
+	}
+
+	initInvokers = function () {
 		Upload = $.Upload({
 			objectHandler: $("#js_upload_list"),
 			domselector: $("#js_uploader_btn"),
@@ -19,17 +34,65 @@ $(document).ready(function (e) {
 
 
 		form_main = document.getElementById("js-ref_form-main");
-		slo_objects = $("#js-ref_form-main [data-slo]").not("#js-defines").slo();
+		if (form_main == null) {
+			return
+		}
+		inputFields = form_main.querySelectorAll("input,textarea");
+		inputFieldsSorted = new Array();
+
+		for (const field of inputFields) {
+			if (field.tabIndex && field.tabIndex > 0) {
+				inputFieldsSorted[parseInt(field.tabIndex)] = field;
+				/** Ordinary input field */
+				if (field.dataset.slo == undefined) {
+					field.addEventListener("keydown", function (e) {
+						if (e.key === "Enter") {
+							if (e.ctrlKey) {
+								postTransaction();
+								return;
+							}
+							if (this.value.trim() == "") {
+								return;
+							}
+							let nextField = findNextInputField(this);
+							if (nextField) {
+								nextField.focus({ focusVisible: true })
+							}
+						}
+					});
+				}
+			}
+		}
+
+
+
+
+		slo_input = $("#js-ref_form-main [data-slo]").not("#js-defines");
+
+		slo_objects = slo_input.slo({
+			onselect: function (e) {
+			}, onkeydown: function (e) {
+				if (this.stamped && e.key == "Enter") {
+					if (e.ctrlKey) {
+						postTransaction();
+						return;
+					}
+					let nextField = findNextInputField(this.object);
+					if (nextField) {
+						nextField.focus({ focusVisible: true })
+					}
+				}
+			}
+		});
 		description_field = document.getElementById('description');
 		value_field = document.getElementById('value');
+
 
 		$("[name=value]").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
 			OnlyFloat(this, null, 0);
 		});
 
-		if (form_main == null) {
-			return
-		}
+
 		document.getElementById("js-input_submit").addEventListener("click", () => {
 			postTransaction();
 		});
@@ -40,11 +103,8 @@ $(document).ready(function (e) {
 			return false;
 		});
 
-		description_field.addEventListener("keydown", function (e) {
-			if (e.ctrlKey && e.key == "Enter") {
-				postTransaction();
-			}
-		});
+
+
 		slo_objects.getElementById("individual").slo.events.onselect = function (data) {
 			slo_objects.getElementById("beneficiary").slo.set(data.hidden, data.value);
 			$("#beneficiary").prop("readonly", true).prop("disabled", true);
@@ -75,17 +135,16 @@ $(document).ready(function (e) {
 
 		slo_objects.getElementById("target-account").slo.focus();
 	}
-	disableForm = (state) => {
+	const disableForm = (state) => {
 		$("#js-ref_form-main input, #js-ref_form-main textarea, #js-ref_form-main button").prop('disabled', state);
 		overlay.state(state);
 	}
-	validateFields = () => {
+	const validateFields = () => {
 		let thrownerror = {
 			occured: false,
 			message: "",
 			object: undefined
 		};
-
 
 		for (const reqmark of document.querySelectorAll("label>h1")) {
 			reqmark.classList.remove("required");
@@ -100,6 +159,7 @@ $(document).ready(function (e) {
 				}
 			}
 		});
+
 		if (isNaN(parseFloat(value_field.value))) {
 			value_field.parentNode.parentNode.querySelector("h1").classList.add("required");
 			if (!thrownerror.occured) {
@@ -116,8 +176,6 @@ $(document).ready(function (e) {
 				thrownerror.object = description_field;
 			}
 		}
-
-
 		if (thrownerror.occured) {
 			thrownerror.object.focus();
 			throw (thrownerror.message);
@@ -130,14 +188,15 @@ $(document).ready(function (e) {
 		description_field.value = "";
 	}
 	postTransaction = async () => {
+		if (busy)
+			return;
 		try {
 			validateFields();
 		} catch (e) {
 			messagesys.failure(e);
 			return false;
 		}
-		alert("Attemping");
-		return;
+		busy = true;
 		try {
 			const formData = new FormData(form_main);
 			disableForm(true)
@@ -156,7 +215,8 @@ $(document).ready(function (e) {
 			disableForm(false);
 
 			if (response.ok) {
-				const payload = await response.json()
+				const payload = await response.json();
+				busy=false;
 				if (payload.result == true) {
 					messagesys.success("Transaction `" + payload.insert_id + "` posted successfully");
 					$("#jQoutput").prepend(
@@ -185,7 +245,7 @@ $(document).ready(function (e) {
 			}
 
 		} catch (error) {
-			console.log(error)
+			busy=false;
 			messagesys.failure("Request failed, internal client error");
 		}
 	}

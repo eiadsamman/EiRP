@@ -1,14 +1,14 @@
 <?php
 
-if ($app->xhttp) {
+if ($app->xhttp) {	
 	if (isset($_POST['request'], $_POST['verb-exchange-sell']) && $_POST['request'] == "update") {
 		if (is_null($app->currency)) {
-			header("HTTP_RESPONSE: SYSTEM");
+			header("UPDATE_STATUS: SYSTEM");
 			exit;
 		}
 		foreach ($_POST['verb-exchange-sell'] as $cur_id => $cur_value) {
 			if ((float) $cur_value == 0) {
-				header("HTTP_RESPONSE: ZERO");
+				header("UPDATE_STATUS: ZERO");
 				exit;
 			}
 		}
@@ -20,22 +20,21 @@ if ($app->xhttp) {
 		if ($r) {
 			foreach ($_POST['verb-exchange-sell'] as $cur_id => $cur_value) {
 				$cur_value = (float) $cur_value;
-				echo $cur_value;
+
 				$r &= $app->db->query("INSERT INTO currency_exchange (curexg_from,curexg_to,curexg_value) VALUES ({$cur_id} , {$app->currency->id} , {$cur_value})  ON DUPLICATE KEY UPDATE curexg_value={$cur_value};");
 			}
 		}
-
 		if ($r) {
-			header("HTTP_RESPONSE: SUCCESS");
+			header("UPDATE_STATUS: SUCCESS");
 			$app->db->commit();
 		} else {
-			header("HTTP_RESPONSE: DBERR");
+			header("UPDATE_STATUS: DBERR");
 			$app->db->rollback();
 		}
 		exit;
 	}
 
-	header("HTTP_RESPONSE: BAD_REQUEST");
+	header("UPDATE_STATUS: BAD_REQUEST");
 	exit;
 }
 
@@ -140,7 +139,7 @@ unset($grem);
 				type: "POST",
 				data: $("#js-form").serialize()
 			}).done(function (o, textStatus, request) {
-				let response = request.getResponseHeader('HTTP_RESPONSE');
+				let response = request.getResponseHeader('UPDATE_STATUS');
 				if (response == "ZERO") {
 					messagesys.failure("All currencies rates are required");
 				} else if (response == "BAD_REQUEST") {

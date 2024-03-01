@@ -1,22 +1,18 @@
 <?php
 use System\Template\Gremium;
+use System\Template\PanelNavigator\PanelStatements;
 
 $perpage_val = 20;
-$id = isset($_REQUEST['id']) ? (int) $_REQUEST['id'] : 0;
+$id = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
 $statement = new System\Finance\Transaction\Statement($app);
-$read = $statement->read($id);
+$read = $statement->read($id ?? 0);
 
 if (!$app->xhttp) { ?>
 	<div class="split-view">
 		<div class="panel">
 			<?php
-			$grem_panel = new Gremium\Gremium(true, true, false, "PanelNavigator-Scroll");
-			$grem_panel->base = "0px";
-			$grem_panel->header()->serve("<h1>Statements</h1>");
-			$grem_panel->menu()->serve("<span class=\"flex\" id=\"PanelNavigator-TotalRecords\"></span><input class=\"edge-left\" type=\"button\" value=\"Search\" /><button id=\"js-input_btunew\">New</button>");
-			$grem_panel->article("PanelNavigator-Window")->options(array("nopadding"))->serve();
-			$grem_panel->title("PanelNavigator-Informative")->serve("<div style=\"text-align:center;font-size:0.8em\">No more records</div>");
-			$grem_panel->terminate();
+			$panelNavigator = new PanelStatements($app);
+			$panelNavigator->SidePanelHTML();
 			?>
 		</div>
 		<div class="body" id="PanelNavigator-Body">
@@ -25,113 +21,150 @@ if (!$app->xhttp) { ?>
 		<?php
 		if ($read) {
 			$grem = new Gremium\Gremium(true);
-			$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
-			$grem->menu()->serve("<span class=\"small-media-hide flex\"></span><button id=\"js-input_print\" " . ($read ? "" : "disabled") . " class=\"edge-left\" tabindex=\"-1\">Print</button>");
-			$grem->title()->serve("<span class=\"flex\">Statement details</span>");
-			$grem->article()->open(); ?>
-			<div class="form predefined">
-				<label style="min-width:200px;">
-					<h1>Statement ID</h1>
-					<div class="btn-set">
-						<span>
-							<?= $read->id; ?>
-						</span>
-					</div>
-				</label>
-				<label>
-					<h1>Post Date</h1>
-					<div class="btn-set">
-						<span>
-							<?= $read->dateTime->format("Y-m-d"); ?>
-						</span>
-					</div>
-				</label>
-			</div>
-			<div class="form predefined">
-				<label style="min-width:200px;">
-					<h1>Value</h1>
-					<div class="btn-set">
-						<span>
-							<?= $read->currency->shortname . " " . number_format($read->value, 2); ?>
-						</span>
-					</div>
-				</label>
-				<label style="min-width:200px;">
-					<h1>Type</h1>
-					<div class="btn-set">
-						<span>
-							<?= $read->type->name; ?>
-						</span>
-					</div>
-				</label>
-			</div>
-			<div class="form predefined">
-				<label style="min-width:200px;">
-					<h1>Beneficiary</h1>
-					<div class="btn-set">
-						<span>
-							<?= $read->beneficiary; ?>
-						</span>
-					</div>
-				</label>
-			</div>
-			<div class="form predefined">
-				<label style="min-width:200px;">
-					<h1>Creditor</h1>
-					<div class="btn-set">
-						<span>
-							<?= "[" . $read->creditor->currency->shortname . "] " . $read->creditor->company->name . ": " . $read->creditor->name; ?>
-						</span>
-					</div>
-				</label>
-				<label>
-					<h1>Debitor</h1>
-					<div class="btn-set">
-						<span>
-							<?= "[" . $read->debitor->currency->shortname . "] " . $read->debitor->company->name . ": " . $read->debitor->name; ?>
-						</span>
-					</div>
-				</label>
-			</div>
-			<?php if (sizeof($read->attachments) > 0) { ?>
+			if (empty($read->debitor) && empty($read->creditor)) {
+
+				$grem->header()->status(Gremium\Status::Exclamation)->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
+				$grem->menu()->serve("<span class=\"small-media-hide\">Requested document is forbidden</span>");
+				$grem->article()->serve(
+					<<<HTML
+				<ul>
+					<li>Permission denied or not enough privileges to proceed with this document</li>
+					<li>Document is locked or out of scope</li>
+					<li>Your account doesn't have premissions for neither `Creditor` and `Debitor` accounts</li>
+					<li>Contact system administrator for further assistance</li>
+				</ul>
+				HTML
+				);
+				unset($grem);
+			} else {
+
+				$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
+				$grem->menu()->serve("<span class=\"small-media-hide flex\"></span><button id=\"js-input_print\" " . ($read ? "" : "disabled") . " class=\"edge-left\" tabindex=\"-1\">Print</button>");
+				$grem->title()->serve("<span class=\"flex\">Statement details</span>");
+				$grem->article()->open(); ?>
 				<div class="form predefined">
-					<label style="min-width:200px;">
-						<h1>Attachments</h1>
-						<div style="padding:5px 10px;" class="attachments-view">
-							<?php
-							foreach ($read->attachments as $file) {
-								echo "<a title=\"{$file->name}\" href=\"{$fs(187)->dir}?id={$file->id}&pr=v\" target=\"_blank\"><img src=\"{$fs(187)->dir}?id={$file->id}&pr=t\" /></a>";
-							}
-							?>
+					<label>
+						<h1>Statement ID</h1>
+						<div class="btn-set">
+							<span>
+								<?= $read->id; ?>
+							</span>
+						</div>
+					</label>
+					<label>
+						<h1>Post Date</h1>
+						<div class="btn-set">
+							<span>
+								<?= $read->dateTime->format("Y-m-d"); ?>
+							</span>
 						</div>
 					</label>
 				</div>
-			<?php } ?>
-
-
-			<div class="form predefined">
-				<label style="min-width:200px;">
-					<h1>Description</h1>
-					<div style="padding:5px 10px;line-height:1.7em">
-						<?= nl2br($read->description ?? ""); ?>
+				<div class="form predefined">
+					<label>
+						<h1>Value</h1>
+						<div class="btn-set">
+							<span>
+								<?= $read->currency->shortname . " " . number_format($read->value, 2); ?>
+							</span>
+						</div>
+					</label>
+					<label>
+						<h1>Type</h1>
+						<div class="btn-set">
+							<span>
+								<?= $read->type->name; ?>
+							</span>
+						</div>
+					</label>
+				</div>
+				<div class="form predefined">
+					<label>
+						<h1>Beneficiary</h1>
+						<div class="btn-set">
+							<span>
+								<?= $read->beneficiary; ?>
+							</span>
+						</div>
+					</label>
+				</div>
+				<div class="form predefined">
+					<label>
+						<h1>Creditor</h1>
+						<div class="btn-set">
+							<span <?= ($app->user->account && $read->creditor && $app->user->account->id != $read->creditor->id ? "style=\"color: var(--root-font-lightcolor)\"" : "") ?>>
+								<?= ($read->creditor ? "[" . $read->creditor->currency->shortname . "] " . $read->creditor->company->name . ": " . $read->creditor->name : "-"); ?>
+							</span>
+						</div>
+						<?php if ($read->creditor->currency->id != $read->debitor->currency->id) { ?>
+							<div class="btn-set">
+								<span <?= ($app->user->account && $read->creditor && $app->user->account->id != $read->creditor->id ? "style=\"color: var(--root-font-lightcolor)\"" : "") ?>>
+									<?= $read->creditor->currency->shortname . " " . ($read->creditor ? number_format($read->creditAmount, 2) : "-"); ?>
+								</span>
+							</div>
+						<?php } ?>
+					</label>
+					<label>
+						<h1>Debitor</h1>
+						<div class="btn-set">
+							<span <?= ($app->user->account && $read->debitor && $app->user->account->id != $read->debitor->id ? "style=\"color: var(--root-font-lightcolor)\"" : "") ?>>
+								<?= ($read->debitor ? "[" . $read->debitor->currency->shortname . "] " . $read->debitor->company->name . ": " . $read->debitor->name : "-"); ?>
+							</span>
+						</div>
+						<?php if ($read->creditor->currency->id != $read->debitor->currency->id) { ?>
+							<div class="btn-set">
+								<span <?= ($app->user->account && $read->debitor && $app->user->account->id != $read->debitor->id ? "style=\"color: var(--root-font-lightcolor)\"" : "") ?>>
+									<?= $read->debitor->currency->shortname . " " . ($read->debitor ? number_format($read->debitAmount, 2) : "-"); ?>
+								</span>
+							</div>
+						<?php } ?>
+					</label>
+				</div>
+				<?php if (sizeof($read->attachments) > 0) { ?>
+					<div class="form predefined">
+						<label>
+							<h1>Attachments</h1>
+							<div style="padding:5px 10px;" class="attachments-view">
+								<?php
+								foreach ($read->attachments as $file) {
+									echo "<a title=\"{$file->name}\" href=\"{$fs(187)->dir}?id={$file->id}&pr=v\" target=\"_blank\"><img src=\"{$fs(187)->dir}?id={$file->id}&pr=t\" /></a>";
+								}
+								?>
+							</div>
+						</label>
 					</div>
-				</label>
-			</div>
+				<?php } ?>
 
-			<?php
-			$grem->getLast()->close();
-			$grem->terminate();
+
+				<div class="form predefined">
+					<label>
+						<h1>Description</h1>
+						<div style="padding:5px 10px;line-height:1.7em">
+							<?= nl2br($read->description ?? ""); ?>
+						</div>
+					</label>
+				</div>
+
+				<?php
+				$grem->getLast()->close();
+				$grem->terminate();
+				unset($grem);
+			}
+		} elseif ($id == null) {
+			$grem = new Gremium\Gremium(true);
+			$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1>");
+			$grem->menu()->serve("<span class=\"small-media-hide\">No selected documents</span>");
 			unset($grem);
-
 		} else {
 			$grem = new Gremium\Gremium(true);
 			$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1>");
-			$grem->menu()->serve("<span class=\"small-media-hide flex\"></span>");
+			$grem->menu()->serve("<span class=\"small-media-hide\">Requested document is not available</span>");
 			$grem->article()->serve(
 				<<<HTML
 				<ul>
 					<li>No statement selected or selected statement number is invalid</li>
 					<li>Permission denied or not enough privileges to proceed with this document</li>
+					<li>Contact system administrator for further assistance</li>
 				</ul>
 				HTML
 			);
@@ -154,7 +187,6 @@ if (!$app->xhttp) { ?>
 		unset($grem);
 		?>
 	</div>
-
 	<script type="text/javascript">
 		let pageConfig = {
 			method: "new",
@@ -171,11 +203,12 @@ if (!$app->xhttp) { ?>
 	<script type="text/javascript" src="static/javascript/Navigator.js"></script>
 	<script type="text/javascript" src="static/javascript/PanelNavigator.js"></script>
 	<script type="text/javascript">
-
 		let pn = new PanelNavigator();
 		pn.sourceUrl = '<?= $fs(121)->dir ?>';
 		pn.itemPerRequest = <?= (int) $perpage_val; ?>;
+		pn.classList = ["statment-panel"];
 
+		if(document.getElementById("js-input_btunew"))
 		document.getElementById("js-input_btunew").addEventListener("click", function () {
 			pn.clearActiveItem();
 			pn.navigator.setProperty("id", null);

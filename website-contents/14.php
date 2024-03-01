@@ -1,10 +1,7 @@
 <?php
 use System\Personalization\Bookmark;
-
 $bookmarks = new Bookmark($app);
 $limit = 0;
-
-
 foreach ($bookmarks->list() as $bookmark) {
 	if ($limit >= 5)
 		break;
@@ -12,10 +9,8 @@ foreach ($bookmarks->list() as $bookmark) {
 		echo "<div class=\"links\"><div>";
 	}
 	echo "<a href=\"{$bookmark['trd_directory']}\">";
-
 	echo "<span style=\"color:var(--root-font-color);background-color:var(--static-bgcolor);\">&#xe{$bookmark['trd_attrib4']};</span>";//background-color:#{$bookmark['trd_attrib5']}
 	echo "<div>{$bookmark['pfl_value']}</div>";
-
 	echo "</a>";
 	$limit++;
 }

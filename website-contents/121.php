@@ -5,6 +5,19 @@ $perpage_val = 20;
 if ($app->xhttp) {
 	$request = json_decode(file_get_contents('php://input'), true);
 	if (!empty($request['method']) && $request['method'] == "fetch") {
+		$json_output = array(
+			"headers" => array(
+				"count" => 0,/* Total count of records */
+				"pages" => 0,/* Total number of pages */
+				"current" => 0,/* Current navigation position on pages variable */
+			),
+			"contents" => array()
+		);
+		if(!$app->user->account){
+			echo json_encode($json_output);
+			exit;
+		}
+
 		$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 
 		$controller->criteria->setRecordsPerPage($perpage_val);
@@ -17,7 +30,7 @@ if ($app->xhttp) {
 		$count = is_null($count) ? 0 : $count;
 		$pages = ceil($count / $controller->criteria->getRecordsPerPage());
 
-
+		
 		if (isset($request['page']) && $user_current > 0) {
 			if ($user_current > $pages) {
 				$controller->criteria->setCurrentPage($pages);
@@ -28,14 +41,11 @@ if ($app->xhttp) {
 			$controller->criteria->setCurrentPage(1);
 		}
 
-		$json_output = array(
-			"headers" => array(
-				"count" => $count,/* Total count of records */
-				"pages" => $pages,/* Total number of pages */
-				"current" => $controller->criteria->getCurrentPage(),/* Current navigation position on pages variable */
-			),
-			"contents" => array()
-		);
+		$json_output['headers']['count'] = $count;
+		$json_output['headers']['pages'] = $pages;
+		$json_output['headers']['current'] = $controller->criteria->getCurrentPage();
+
+
 
 		if ($count > 0) {
 			$mysqli_result = $controller->chunk(false);

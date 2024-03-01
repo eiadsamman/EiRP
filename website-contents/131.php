@@ -319,12 +319,10 @@ if ($app->xhttp) {
 $grem = new Gremium\Gremium(false);
 
 $grem->header()->serve("<h1>{$fs()->title}</h1>");
-
 $grem->menu()->open();
 echo "<button id=\"jQreport\" type=\"button\">Update Report</button>";
-echo "<button id=\"jQexport\" disabled=\"disabled\" type=\"button\">Export</button>";
+echo "<input type=\"button\" id=\"jQexport\" disabled=\"disabled\" class=\"edge-right\" value=\"Export\" />";
 $grem->getLast()->close();
-
 $grem->title()->serve("<span class=\"flex\">Filter query</span>");
 $grem->article()->width("660px")->open();
 

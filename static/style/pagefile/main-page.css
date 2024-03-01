@@ -115,6 +115,7 @@
 .dashboard>div.full-chart {
 	background: rgb(18, 123, 124);
 	background: linear-gradient(150deg, rgba(18, 123, 124, 1) 0%, rgba(96, 65, 0, 1) 100%);
+	height: 180px;
 }
 
 .dashboard>div.full-chart>div.chart {

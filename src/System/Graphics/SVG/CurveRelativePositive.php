@@ -12,7 +12,6 @@ class CurveRelativePositive extends SVG
 	private int $x_shift = 5;
 	private float $y_shift = 3;
 	private float $bez = 0;
-
 	private array $temp = [];
 
 	function __construct(public int $wavelength = 4, public int $magnitude = 3, public float $beziers_amp = -0.3)
@@ -25,8 +24,6 @@ class CurveRelativePositive extends SVG
 	{
 		return "0 0 " . ($this->wavelength * $size + ($this->x_shift * 2)) . " " . (($this->magnitude) + (2 * $this->y_shift));
 	}
-
-
 
 	public function XMLCurve(array $arr): string
 	{
@@ -71,7 +68,6 @@ class CurveRelativePositive extends SVG
 				//SVG XML
 				$plot .= "S $x2 $y2, $x $y ";
 			}
-
 		}
 		$plot .= "";
 		return $plot;
@@ -82,25 +78,19 @@ class CurveRelativePositive extends SVG
 		return " x1=" . $this->x_shift . " y1=" . ($this->magnitude + $this->y_shift) . " x2=" . ($this->wavelength * $size + $this->x_shift) . " y2=" . ($this->magnitude + $this->y_shift);
 	}
 
-
-
-	public function XMLPoints(array $arr): \Generator
+	public function XMLPoints(array $arr): array
 	{
+		$output = array();
 		reset($arr);
 		$i = 0;
 		foreach ($arr as $key => $point) {
 			if (is_null($point)) {
-				yield $key => null;
+				$output[$key] = null;
 			} else {
-				yield $key => (
-					new \System\Graphics\Points2D(
-						$i * $this->wavelength + $this->x_shift,
-						($this->magnitude * -floatval($point)) + $this->magnitude + $this->y_shift
-					)
-				);
+				$output[$key] = new \System\Graphics\Points2D($i * $this->wavelength + $this->x_shift, ($this->magnitude * -floatval($point)) + $this->magnitude + $this->y_shift);
 			}
 			$i++;
 		}
-		return;
+		return $output;
 	}
 }

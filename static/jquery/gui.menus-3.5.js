@@ -190,7 +190,7 @@ $(document).ready(function (e) {
 				jqroot_com.html("N/A");
 			}
 			if (json.group != undefined && json.name != undefined && json.group != false && json.name != false) {
-				jqroot_sec.html(json.group + ": " + json.name);
+				jqroot_sec.html("<span class=\"mediabond-hide\">" + json.group + ": </span>" + json.name);
 			} else {
 				jqroot_sec.html("N/A");
 			}

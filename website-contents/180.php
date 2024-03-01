@@ -4,10 +4,10 @@ if ($app->user->account) {
 
 	echo json_encode(array(
 		'company' => $app->user->company ? $app->user->company->name : false,
-		'group' => isset($app->user->account) ? $app->user->account->type->name : false,
-		'name' => isset($app->user->account) ? $app->user->account->name : false,
-		'currency' => isset($app->user->account) ? $app->user->account->currency->shortname : false,
-		'value' => (isset($app->user->account) && $app->user->account->balance != null ?
+		'group' => !empty($app->user->account) ? $app->user->account->type->name : false,
+		'name' => !empty($app->user->account) ? $app->user->account->name : false,
+		'currency' => !empty($app->user->account) ? $app->user->account->currency->shortname : false,
+		'value' => (!empty($app->user->account) && $app->user->account->balance != null ?
 			($app->user->account->balance < 0 ?
 				"(" . number_format(abs($app->user->account->balance), 2, ".", ",") . ")" :
 				number_format(abs($app->user->account->balance), 2, ".", ","))
@@ -15,7 +15,7 @@ if ($app->user->account) {
 	));
 } else {
 	echo json_encode(array(
-		'company' => "N/A",
+		'company' => $app->user->company ? $app->user->company->name : "N/A",
 		'group' => "",
 		'name' => "N/A",
 		'currency' => "N/A",

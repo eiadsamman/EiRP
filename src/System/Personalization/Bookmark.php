@@ -5,10 +5,9 @@ namespace System\Personalization;
 
 class Bookmark extends Personalization
 {
-	protected int $identifier = Identifiers::SystemUserBookmark->value;
-
 	public function __construct(protected \System\App $app)
 	{
+		$this->identifier = Identifiers::SystemUserBookmark->value;
 	}
 
 	public function update(array $order_array): bool

@@ -1,9 +1,9 @@
 <?php
+declare(strict_types=1);
 namespace System\Personalization;
 
 abstract class Personalization
 {
-
 	protected int $identifier;
 	public function __construct(protected \System\App $app)
 	{

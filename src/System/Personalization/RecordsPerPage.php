@@ -3,12 +3,11 @@ namespace System\Personalization;
 
 class RecordsPerPage extends Personalization
 {
-	protected int $identifier = Identifiers::AccountCustomePerpage->value;
 	private int $default = 25;
 
 	public function __construct(protected \System\App $app)
 	{
-
+		$this->identifier = Identifiers::AccountCustomePerpage->value;
 	}
 
 	public function register(?int $id, ?int $perpage = 25): bool|null

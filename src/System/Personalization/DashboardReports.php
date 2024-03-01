@@ -5,24 +5,24 @@ namespace System\Personalization;
 
 class DashboardReports extends Personalization
 {
-	protected int $identifier = Identifiers::SystemDashboard->value;
 
 	public function __construct(protected \System\App $app)
 	{
+		$this->identifier = Identifiers::SystemDashboard->value;
 	}
 
 	public function update(array $order_array): bool
 	{
-		$stmt  = $this->app->db->prepare(
+		$stmt = $this->app->db->prepare(
 			"INSERT INTO user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value, usrset_time) 
 			VALUES ({$this->app->user->info->id}, {$this->identifier}, ? , ?, ?) 
 			ON DUPLICATE KEY UPDATE usrset_value = ? , usrset_time = ?;"
 		);
 		$order = $pageid = $state = 0;
-		$stmt->bind_param("iiiii", $pageid, $order, $state, $order, $state);
+		$stmt->bind_param("iisis", $pageid, $order, $state, $order, $state);
 		foreach ($order_array as $v) {
 			$pageid = (int) $v[0];
-			$state  = (int) $v[1] == 1 ? 0 : null;
+			$state = (int) $v[1] == 1 ? "2000-01-01 00:00:00" : null;
 			$order++;
 			$stmt->execute();
 		}

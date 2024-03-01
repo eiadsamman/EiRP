@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace System\Finance\Transaction;
 
-
+use System\Exceptions\Finance\AccountNotFoundException;
 use System\Exceptions\Finance\TransactionException;
 use System\Finance\Account;
+use System\Finance\AccountRole;
 use System\Finance\Currency;
 use System\Individual\PersonData;
-
 
 
 class Statement
@@ -17,7 +17,6 @@ class Statement
 	public function __construct(protected \System\App &$app)
 	{
 	}
-
 
 	public function read(int $id): StatementProperty|bool
 	{
@@ -60,6 +59,7 @@ class Statement
 			)
 		) {
 			if ($row = $r->fetch_assoc()) {
+
 				$result = new StatementProperty();
 				$result->id = (int) $row['acm_id'];
 				$result->canceled = (int) $row['acm_rejected'] == 1;
@@ -69,7 +69,6 @@ class Statement
 				$result->description = $row['acm_comments'];
 				$result->beneficiary = $row['acm_beneficial'];
 				$result->value = (float) $row['acm_realvalue'];
-
 				if (empty($row['acm_usr_id'])) {
 					$result->individual = null;
 				} else {
@@ -94,30 +93,39 @@ class Statement
 
 	private function pairs(StatementProperty &$statementProperty)
 	{
+		$statementProperty->creditor = null;
+		$statementProperty->debitor = null;
+		$statementProperty->creditAmount = 0;
+		$statementProperty->debitAmount = 0;
+		$view_role = new AccountRole();
+		$view_role->view = true;
 		if (
 			$r = $this->app->db->query(
 				"SELECT 
 					atm_account_id, atm_value, atm_dir
 				FROM
-					acc_temp 
+					acc_temp JOIN view_financial_accounts ON prt_id = atm_account_id
 				WHERE
 					atm_main = {$statementProperty->id}"
 			)
 		) {
 			while ($row = $r->fetch_assoc()) {
-				if ((int) $row['atm_dir'] == 0) {
-					/* Creditor */
-					$statementProperty->creditor = new Account($this->app, (int) $row['atm_account_id']);
-				} else {
-					/* Debitor */
-					$statementProperty->debitor = new Account($this->app, (int) $row['atm_account_id']);
+				try {
+					if ((int) $row['atm_dir'] == 0) {
+						$statementProperty->creditAmount = (float) $row['atm_value'];
+						$statementProperty->creditor = new Account($this->app, (int) $row['atm_account_id'], $view_role);
+					} else {
+						$statementProperty->debitAmount = (float) $row['atm_value'];
+						$statementProperty->debitor = new Account($this->app, (int) $row['atm_account_id'], $view_role);
+					}
+				} catch (AccountNotFoundException $e) {
 				}
 			}
 		}
 	}
 	private function getAttachements(StatementProperty &$statementProperty)
 	{
-		$statementProperty->attachments= array();
+		$statementProperty->attachments = array();
 		if (
 			$r = $this->app->db->query(
 				"SELECT 

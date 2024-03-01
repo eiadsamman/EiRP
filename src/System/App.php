@@ -23,9 +23,9 @@ class App
 	public bool $xhttp = false;
 	public \System\Log\ErrorHandler $errorHandler;
 	public const PERMA_ID = array(
-		"index"    => 19,
-		"login"    => 20,
-		"slo"      => 3,
+		"index" => 19,
+		"login" => 20,
+		"slo" => 3,
 		"download" => 187,
 	);
 	public string $root;
@@ -39,13 +39,12 @@ class App
 
 	function __construct(string $root, string $settings_file, ?bool $cache = true)
 	{
-
 		/* Set file system root */
 		$this->root = $root . DIRECTORY_SEPARATOR;
 
 		/* Create HTTP response status code instance */
 		$this->responseStatus = new ResponseStatus();
-		$this->errorHandler = new \System\Log\ErrorHandler( $this->root . "/admin/error.log");
+		$this->errorHandler = new \System\Log\ErrorHandler($this->root . "/admin/error.log");
 
 
 		/* Get System settings */
@@ -55,6 +54,7 @@ class App
 			$this->responseStatus->InternalServerError->response();
 		}
 
+		$subdomain = trim($this->settings->site['subdomain']);
 		/* Set http root */
 		$this->http_root =
 			(
@@ -62,10 +62,10 @@ class App
 				"https" :
 				"http"
 			) .
-			"://{$_SERVER['SERVER_NAME']}/" . trim($this->settings->site['subdomain']) . "/";
+			"://{$_SERVER['SERVER_NAME']}/" . ($subdomain == "" ? "" : $subdomain . "/");
 
 		$this->subdomain = ltrim(trim($this->settings->site['subdomain']), "/");
-		
+
 		/* Start session */
 		session_start();
 
@@ -104,7 +104,7 @@ class App
 
 	public function register(string $route): bool
 	{
-		$route       = $this->prepareURI($route);
+		$route = $this->prepareURI($route);
 		$this->route = $route == "" ? $this->settings->site['index'] : $route;
 
 		return true;
@@ -130,11 +130,11 @@ class App
 		$stmt = $this->db->prepare("SELECT cur_id,cur_name,cur_shortname,cur_symbol FROM currencies WHERE cur_default=1;");
 		if ($stmt->execute() && $rec = $stmt->get_result()) {
 			if ($rec->num_rows > 0 && $row = $rec->fetch_assoc()) {
-				$this->currency            = new Finance\Currency();
-				$this->currency->id        = (int) $row['cur_id'];
-				$this->currency->name      = $row['cur_name'];
+				$this->currency = new Finance\Currency();
+				$this->currency->id = (int) $row['cur_id'];
+				$this->currency->name = $row['cur_name'];
 				$this->currency->shortname = $row['cur_shortname'];
-				$this->currency->symbol    = $row['cur_symbol'];
+				$this->currency->symbol = $row['cur_symbol'];
 			}
 		}
 		return false;
@@ -146,9 +146,9 @@ class App
 		$stmt = $this->db->prepare("SELECT per_id,per_title,per_order FROM permissions");
 		if ($stmt->execute() && $rec = $stmt->get_result()) {
 			while ($row = $rec->fetch_assoc()) {
-				$this->permissions_array[$row['per_id']]        = new Permission();
-				$this->permissions_array[$row['per_id']]->id    = $row['per_id'];
-				$this->permissions_array[$row['per_id']]->name  = $row['per_title'];
+				$this->permissions_array[$row['per_id']] = new Permission();
+				$this->permissions_array[$row['per_id']]->id = $row['per_id'];
+				$this->permissions_array[$row['per_id']]->name = $row['per_title'];
 				$this->permissions_array[$row['per_id']]->level = $row['per_order'];
 			}
 		}
@@ -198,7 +198,7 @@ class App
 	public function build_prefix_list(): bool
 	{
 		$this->prefixList = array();
-		$r                = $this->db->query("SELECT prx_id, prx_value, prx_placeholder FROM system_prefix;");
+		$r = $this->db->query("SELECT prx_id, prx_value, prx_placeholder FROM system_prefix;");
 		if ($r) {
 			while ($row = $r->fetch_assoc()) {
 				$this->prefixList[$row['prx_id']] = array($row['prx_value'], (int) $row['prx_placeholder']);
@@ -232,8 +232,8 @@ class App
 
 	public function formatTime(int $time, ?bool $include_seconds = true): string
 	{
-		$neg    = $time < 0;
-		$time   = abs($time);
+		$neg = $time < 0;
+		$time = abs($time);
 		$output = ($neg ? "(" : "") .
 			sprintf('%02d', floor($time / 60 / 60)) .
 			":" .
@@ -261,7 +261,6 @@ class App
 
 	public function user_init(): int
 	{
-
 		/* Session handler */
 		if (isset($_SESSION["sur"])) {
 			$stmt = $this->db->prepare(

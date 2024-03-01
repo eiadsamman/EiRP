@@ -4,11 +4,12 @@ namespace System\Personalization;
 class ThemeDarkMode extends Personalization
 {
 
-	protected int $identifier = Identifiers::SystemDarkMode->value;
+	
 
 	public string $mode = "light";
 	public function __construct(protected \System\App $app)
 	{
+		$this->identifier = Identifiers::SystemDarkMode->value;
 		$this->getMode();
 	}
 	public function register(int $id): bool

@@ -1,9 +1,9 @@
 class PanelNavigator {
 	constructor() {
-		this.placeholderTemplate = "<div class=\"panel-item place-holder statment-panel\" />";
 		this.sourceUrl = "";
 		this.itemPerRequest = 20;
 		this.navigator = new Navigator({}, '');
+		this.classList = [];
 
 		this.runtime = new Object();
 		this.runtime.isLoading = false;
@@ -14,7 +14,6 @@ class PanelNavigator {
 		this.runtime.activeItem = null;
 		this.runtime.scrollArea = document.getElementById("PanelNavigator-Scroll");
 		this.runtime.container = document.getElementById("PanelNavigator-Window");
-
 		this.runtime.loadingScreen = document.getElementById("PanelNavigator-LoadingScreen");
 		this.runtime.outputScreen = document.getElementById("PanelNavigator-Body");
 		this.runtime.informative = document.getElementById("PanelNavigator-Informative").querySelector("div");
@@ -146,17 +145,18 @@ class PanelNavigator {
 
 
 		if (response.ok) {
-			const payload = await response.json()
+			const payload = await response.json();
 			this.runtime.totalPages = parseInt(payload.headers.pages);
-			document.getElementById("PanelNavigator-TotalRecords").innerText = payload.headers.count + " records"
+			if (document.getElementById("PanelNavigator-TotalRecords"))
+				document.getElementById("PanelNavigator-TotalRecords").innerText = payload.headers.count + " records"
 			payload.contents.forEach(element => {
-				let freeObject = this.getFreePlaceholder();
-				if (freeObject) {
-					freeObject.classList.remove("place-holder");
-					this.buildItem(freeObject, element);
+				let freePlaceholder = this.getFreePlaceholder();
+				if (freePlaceholder) {
+					freePlaceholder.classList.remove("place-holder");
+					this.buildItem(freePlaceholder, element);
+					this.assigneEvents(freePlaceholder);
 				}
 			});
-			this.assigneEvents();
 			this.runtime.isFinished = !this.checkAvailability() && this.clearEmptyPlaceholders() > 0;
 			if (this.runtime.isFinished) {
 				this.runtime.informative.innerText = "No more records";
@@ -176,7 +176,11 @@ class PanelNavigator {
 		if (this.runtime.isLoading) return;
 		this.runtime.isLoading = true;
 		for (let i = 0; i < this.itemPerRequest; i++) {
-			this.runtime.container.innerHTML += this.placeholderTemplate;
+			var content = document.createElement("div");
+			content.classList.add("panel-item")
+			content.classList.add("place-holder")
+			content.classList.add(...this.classList);
+			this.runtime.container.append(content);
 		}
 	}
 
@@ -194,31 +198,31 @@ class PanelNavigator {
 		}
 	}
 
-	assigneEvents = function () {
+	assigneEvents = function (element) {
 		let instance = this;
-		let listitems = this.runtime.scrollArea.querySelectorAll(".panel-item:not(.place-holder)");
-		listitems.forEach(element => {
-			element.addEventListener("click", function () {
-				if (instance.runtime.activeItem != null) {
-					if (instance.runtime.activeItem.dataset.listitem_id === this.dataset.listitem_id)
-						return;
-					instance.clearActiveItem()
-				}
-				instance.navigator.history_vars.method = "view";
-				instance.setActiveItem(this);
-				instance.onclick(this);
-			});
+		element.addEventListener("click", function () {
+			if (instance.runtime.activeItem != null) {
+				if (instance.runtime.activeItem.dataset.listitem_id === this.dataset.listitem_id)
+					return;
+				instance.clearActiveItem()
+			}
+			instance.navigator.history_vars.method = "view";
+			instance.setActiveItem(this);
+			instance.onclick(this);
 		});
 	}
 
 	buildItem = function (obj, data = {}) {
 		obj.dataset.listitem_id = data.id;
-		obj.innerHTML = this.listitemHandler(data);
+		obj.innerHTML = (this.listitemHandler(data));
+
 	}
 
 	checkAvailability = function () {
 		return (this.runtime.currentPage < this.runtime.totalPages);
 	}
+
+
 
 	loader = function (url, title, options = {}, callback) {
 		this.runtime.isContentLoading = true;
