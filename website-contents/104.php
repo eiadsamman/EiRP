@@ -96,7 +96,7 @@ if (!$app->xhttp) { ?>
 								<?= ($read->creditor ? "[" . $read->creditor->currency->shortname . "] " . $read->creditor->company->name . ": " . $read->creditor->name : "-"); ?>
 							</span>
 						</div>
-						<?php if ($read->creditor->currency->id != $read->debitor->currency->id) { ?>
+						<?php if ($read->creditor && $read->debitor && $read->creditor->currency->id !=  $read->debitor->currency->id) { ?>
 							<div class="btn-set">
 								<span <?= ($app->user->account && $read->creditor && $app->user->account->id != $read->creditor->id ? "style=\"color: var(--root-font-lightcolor)\"" : "") ?>>
 									<?= $read->creditor->currency->shortname . " " . ($read->creditor ? number_format($read->creditAmount, 2) : "-"); ?>
@@ -111,7 +111,7 @@ if (!$app->xhttp) { ?>
 								<?= ($read->debitor ? "[" . $read->debitor->currency->shortname . "] " . $read->debitor->company->name . ": " . $read->debitor->name : "-"); ?>
 							</span>
 						</div>
-						<?php if ($read->creditor->currency->id != $read->debitor->currency->id) { ?>
+						<?php if ($read->creditor && $read->debitor && $read->creditor->currency->id != $read->debitor->currency->id) { ?>
 							<div class="btn-set">
 								<span <?= ($app->user->account && $read->debitor && $app->user->account->id != $read->debitor->id ? "style=\"color: var(--root-font-lightcolor)\"" : "") ?>>
 									<?= $read->debitor->currency->shortname . " " . ($read->debitor ? number_format($read->debitAmount, 2) : "-"); ?>
