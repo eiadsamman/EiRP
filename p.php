@@ -127,6 +127,7 @@ if ($app->user->info) {
 			}
 		}
 		/* Account selection page */
+		
 		if ($_GET['--sys_sel-change'] == "account" && $fs()->id != 3) {
 			$r = $app->db->query("SELECT prt_name,prt_id,cur_symbol,cur_name,cur_id,cur_shortname FROM `acc_accounts` LEFT JOIN currencies ON cur_id=prt_currency JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . $app->user->info->id . ";");
 			if ($r) {

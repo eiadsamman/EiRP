@@ -1,4 +1,5 @@
 <?php
+use System\Finance\AccountRole;
 use System\Finance\Transaction\Receipt;
 use System\Personalization\FrequentAccountUse;
 use System\Template\Gremium;
@@ -19,12 +20,16 @@ if ($app->xhttp) {
 			"result" => false,
 			"errno" => 0,
 			"error" => '',
-			'insert_id' => 0
+			'insert_id' => 0,
+			"debug" => ""
 		);
 		try {
-			$transaction = new Payment($app);
+			$accountRole = new AccountRole();
+			$accountRole->outbound = true;
+
+			$transaction = new Receipt($app);
 			$transaction->issuerAccount($app->user->account);
-			$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1]));
+			$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1], $accountRole));
 			$transaction->date($_POST['date'][0]);
 			$transaction->category($_POST['category'][1] ?? 0);
 			$transaction->beneficiary($_POST['beneficiary'][0] ?? "");
@@ -58,7 +63,7 @@ if ($app->xhttp) {
 			$result['error'] = $e->getMessage();
 		} catch (System\Exceptions\Finance\AccountNotFoundException $e) {
 			$result['errno'] = 203;
-			$result['error'] = "Select a valid account";
+			$result['error'] = $e->getMessage();
 		} catch (System\Exceptions\Finance\ForexException $e) {
 			$result['errno'] = 300;
 			$result['error'] = "Forex conversion failed";
@@ -70,7 +75,6 @@ if ($app->xhttp) {
 		echo json_encode($result);
 		exit;
 	}
-
 }
 
 $SmartListObject = new SmartListObject($app);
@@ -279,7 +283,6 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		unset($grem);
 		?>
 	</div>
-
 	<script type="text/javascript">
 		let pageConfig = {
 			method: "new",
@@ -301,17 +304,17 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		pn.itemPerRequest = <?= (int) $perpage_val; ?>;
 		pn.classList = ["statment-panel"];
 
-		if(document.getElementById("js-input_btunew"))
-		document.getElementById("js-input_btunew").addEventListener("click", function () {
-			pn.clearActiveItem();
-			pn.navigator.setProperty("id", null);
-			pn.navigator.history_vars.method = "new";
-			pn.navigator.history_vars.url = '<?= $fs(91)->dir; ?>';
-			pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(91)->title; ?>';
-			pn.navigator.url = '<?= $fs(91)->dir; ?>';
-			pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "new", "id": null }, () => { initInvokers() });
-			pn.navigator.pushState();
-		});
+		if (document.getElementById("js-input_btunew"))
+			document.getElementById("js-input_btunew").addEventListener("click", function () {
+				pn.clearActiveItem();
+				pn.navigator.setProperty("id", null);
+				pn.navigator.history_vars.method = "new";
+				pn.navigator.history_vars.url = '<?= $fs(91)->dir; ?>';
+				pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(91)->title; ?>';
+				pn.navigator.url = '<?= $fs(91)->dir; ?>';
+				pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "new", "id": null }, () => { initInvokers() });
+				pn.navigator.pushState();
+			});
 
 
 		pn.onclick = function (event) {

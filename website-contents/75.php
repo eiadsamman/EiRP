@@ -87,7 +87,7 @@ if (!$app->xhttp && $app->user->company->id) {
 
 		$curvePoints = $curve->XMLPoints($plot_points);
 		foreach ($curvePoints as $k => $v) {
-			if ($values_array[$k] > 0) {
+			if ($values_array[$k] > 0 && $v !== null) {
 				echo "<g class=\"svg-plot_point\">";
 				echo "<rect x=\"0\" y=\"0\" rx=\"5\" width=\"150\" height=\"60\"></rect>";
 				echo "<text x=\"10\" y=\"25\">" . ($values_array[$k]) . " Employees</text>";

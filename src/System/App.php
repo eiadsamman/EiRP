@@ -30,9 +30,7 @@ class App
 	);
 	public string $root;
 	public string $http_root;
-
 	public Settings $settings;
-
 
 	protected array $permissions_array = array();
 	private string|null $route = null;
@@ -90,7 +88,6 @@ class App
 
 	}
 
-
 	private function prepareURI(string $uri): string
 	{
 		$uri = explode("?", $uri)[0];
@@ -115,8 +112,6 @@ class App
 		return $this->route;
 	}
 
-
-
 	public function permission(int $id): Permission|bool
 	{
 		if (array_key_exists($id, $this->permissions_array)) {
@@ -139,7 +134,6 @@ class App
 		}
 		return false;
 	}
-
 
 	public function initializePermissions(): void
 	{

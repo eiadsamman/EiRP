@@ -246,7 +246,7 @@ $(document).ready(function (e) {
 
 		} catch (error) {
 			busy=false;
-			messagesys.failure("Request failed, internal client error");
+			messagesys.failure(error);
 		}
 	}
 

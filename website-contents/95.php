@@ -1,4 +1,5 @@
 <?php
+use System\Finance\AccountRole;
 use System\Finance\Transaction\Payment;
 use System\Personalization\FrequentAccountUse;
 use System\Template\Gremium;
@@ -13,17 +14,22 @@ $accounting = new \System\Finance\Accounting($app);
 $perpage_val = 20;
 
 if ($app->xhttp) {
-	$result = array(
-		"result" => false,
-		"errno" => 0,
-		"error" => '',
-		'insert_id' => 0
-	);
 	if (isset($_POST['objective']) && $_POST['objective'] == 'transaction') {
+		header("Content-Type: application/json; charset=utf-8");
+		$result = array(
+			"result" => false,
+			"errno" => 0,
+			"error" => '',
+			'insert_id' => 0,
+			"debug" => ""
+		);
 		try {
+			$accountRole = new AccountRole();
+			$accountRole->inbound = true;
+
 			$transaction = new Payment($app);
 			$transaction->issuerAccount($app->user->account);
-			$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1]));
+			$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1], $accountRole));
 			$transaction->date($_POST['date'][0]);
 			$transaction->category($_POST['category'][1] ?? 0);
 			$transaction->beneficiary($_POST['beneficiary'][0] ?? "");
@@ -255,7 +261,7 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 				?>
 			</datalist>
 			<datalist id="js-ref_creditor-list" style="display: none;">
-				<?= $SmartListObject->userAccountsOutbound(null, [$app->user->account->id], \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
+				<?= $SmartListObject->userAccountsInbound(null, [$app->user->account->id], \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
 			</datalist>
 			<datalist id="jQcategoryList">
 				<?= $SmartListObject->financialCategories(); ?>
@@ -267,7 +273,6 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 		<?php if (!$app->xhttp) { ?>
 		</div>
 	</div>
-
 	<div id="PanelNavigator-LoadingScreen">
 		<?php
 		$grem = new Gremium\Gremium(true);
@@ -278,7 +283,6 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 		unset($grem);
 		?>
 	</div>
-
 	<script type="text/javascript">
 		let pageConfig = {
 			method: "new",
@@ -305,8 +309,8 @@ if (is_null($app->user->account) || !$app->user->account->role->outbound) {
 				pn.clearActiveItem();
 				pn.navigator.setProperty("id", null);
 				pn.navigator.history_vars.method = "new";
-				pn.navigator.history_vars.url = '<?= $fs(91)->dir; ?>';
-				pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(91)->title; ?>';
+				pn.navigator.history_vars.url = '<?= $fs(95)->dir; ?>';
+				pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(95)->title; ?>';
 				pn.navigator.url = '<?= $fs(91)->dir; ?>';
 				pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "new", "id": null }, () => { initInvokers() });
 				pn.navigator.pushState();

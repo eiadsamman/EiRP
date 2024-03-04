@@ -150,40 +150,39 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 	if ($arrparser['result']) {
 		$app->db->autocommit(false);
 		$q = sprintf(
-			"
-				INSERT INTO 
-					users
-				(
-					usr_id,
-					usr_username,
-					usr_password,
-					usr_firstname,
-					usr_lastname,
-					usr_gender,
-					usr_phone_list,
-					usr_activate,
-					usr_birthdate,
-					usr_privileges
-					) VALUES 
-				(	%8\$s,
-					'%1\$s',
-					'%2\$s',
-					%3\$s,
-					%4\$s,
-					%5\$d,
-					%6\$s,
-					0,
-					%7\$s,
-					$defaultPermissionID
-				)
-				 ON DUPLICATE KEY UPDATE usr_id=LAST_INSERT_ID(usr_id),
-					usr_firstname=%3\$s,
-					usr_lastname=%4\$s,
-					usr_gender=%5\$d,
-					usr_phone_list=%6\$s,
-					usr_birthdate=%7\$s
-				 	;
-				",
+			"INSERT INTO 
+				users
+			(
+				usr_id,
+				usr_username,
+				usr_password,
+				usr_firstname,
+				usr_lastname,
+				usr_gender,
+				usr_phone_list,
+				usr_activate,
+				usr_birthdate,
+				usr_privileges
+				) VALUES 
+			(	%8\$s,
+				'%1\$s',
+				'%2\$s',
+				%3\$s,
+				%4\$s,
+				%5\$d,
+				%6\$s,
+				0,
+				%7\$s,
+				$defaultPermissionID
+			)
+				ON DUPLICATE KEY UPDATE usr_id=LAST_INSERT_ID(usr_id),
+				usr_firstname=%3\$s,
+				usr_lastname=%4\$s,
+				usr_gender=%5\$d,
+				usr_phone_list=%6\$s,
+				usr_birthdate=%7\$s
+				;
+			",
 			/*username*/
 			uniqid(),
 			/*password*/
@@ -241,45 +240,44 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 
 			if ($arrparser['result']) {
 				$q_labour_insert = sprintf(
-					"
-						INSERT INTO 
-							labour 
-								(
-									lbr_id,
-									lbr_type,
-									lbr_shift,
-									lbr_fixedtime,
-									lbr_workingdays,
-									lbr_residential,
-									lbr_registerdate,
-									lbr_socialnumber,
-									lbr_nationality,
-									lbr_payment_method,
-									lbr_workingtimes,
-									lbr_transportation,
-									lbr_resigndate,
-									lbr_company
-									" . ($fs(229)->permission->edit ? ",lbr_fixedsalary,lbr_variable,lbr_allowance" : "") . "
-									,lbr_role
-									) VALUES 
-								(
-									%1\$d,
-									%2\$d,
-									%3\$d,
-									NULL,
-									NULL,
-									%4\$d,
-									%5\$s,
-									%6\$s,
-									%7\$d,
-									%8\$d,
-									%9\$s,
-									%10\$d,
-									%11\$s,
-									%12\$d
-									" . ($fs(229)->permission->edit ? ",%13\$s,%14\$s,%15\$s" : "") . "
-									,%16\$d
-								)
+					"INSERT INTO 
+						labour 
+							(
+								lbr_id,
+								lbr_type,
+								lbr_shift,
+								lbr_fixedtime,
+								lbr_workingdays,
+								lbr_residential,
+								lbr_registerdate,
+								lbr_socialnumber,
+								lbr_nationality,
+								lbr_payment_method,
+								lbr_workingtimes,
+								lbr_transportation,
+								lbr_resigndate,
+								lbr_company
+								" . ($fs(229)->permission->edit ? ",lbr_fixedsalary,lbr_variable,lbr_allowance" : "") . "
+								,lbr_role
+								) VALUES 
+							(
+								%1\$d,
+								%2\$d,
+								%3\$d,
+								NULL,
+								NULL,
+								%4\$d,
+								%5\$s,
+								%6\$s,
+								%7\$d,
+								%8\$d,
+								%9\$s,
+								%10\$d,
+								%11\$s,
+								%12\$d
+								" . ($fs(229)->permission->edit ? ",%13\$s,%14\$s,%15\$s" : "") . "
+								,%16\$d
+							)
 						 ON DUPLICATE KEY UPDATE lbr_id=LAST_INSERT_ID(lbr_id),
 						 	lbr_type=%2\$d,
 							lbr_shift=%3\$d,
@@ -494,7 +492,8 @@ echo "</form>";
 				domhandler: $("#UploadPersonalDOMHandler"),
 				align: "right",
 				onupload: function (output) { }
-			}).update();
+			});
+			UploadUserPersonalImage.update();
 
 
 			var UploadUserSocialID = $.Upload({
@@ -509,7 +508,8 @@ echo "</form>";
 				inputname: "social_id_image",
 				align: "right",
 				domhandler: $("#UploadSocialDOMHandler"),
-			}).update();
+			});
+			UploadUserSocialID.update();
 
 			var slotype = $("#slotype").slo({
 				onselect: function (value) {
@@ -520,27 +520,13 @@ echo "</form>";
 				},
 				'limit': 10
 			}),
-				sloshif = $("#sloshift").slo({
-					'limit': 10
-				}),
-				sloresi = $("#sloresidence").slo({
-					'limit': 10
-				}),
-				slogend = $("#slogender").slo({
-					'limit': 10
-				}),
-				sloregister = $("#sloregdate").slo({
-					'limit': 5
-				}),
-				sloresister = $("#sloresdate").slo({
-					'limit': 5
-				}),
-				slorbirthdate = $("#slobirthdate").slo({
-					'limit': 10
-				}),
-				slocompany = $("#slocompany").slo({
-					'limit': 10
-				}),
+				sloshif = $("#sloshift").slo(),
+				sloresi = $("#sloresidence").slo(),
+				slogend = $("#slogender").slo(),
+				sloregister = $("#sloregdate").slo(),
+				sloresister = $("#sloresdate").slo(),
+				slorbirthdate = $("#slobirthdate").slo(),
+				slocompany = $("#slocompany").slo(),
 				sloworktimes = $("#sloworkingtimes").slo({
 					onselect: function (value) {
 						get_salary_information();
@@ -559,12 +545,8 @@ echo "</form>";
 					},
 					'limit': 10
 				}),
-				slortransportation = $("#slortransportation").slo({
-					'limit': 10
-				}),
-				slonationality = $("#slonationality").slo({
-					'limit': 10
-				});
+				slortransportation = $("#slortransportation").slo(),
+				slonationality = $("#slonationality").slo();
 
 			<?php if ($fs(229)->permission->edit) { ?>
 				$(".derive_function").on('change', function () { var $this = $(this); var _result = $this.prop("checked"); $this.parent().prev().prop("disabled", _result); if (_result) { $("[name=" + $this.attr('data-rel') + "]").val($("input[name=" + $this.attr('data-rel') + "]").attr("data-basicvalue")); } else { $("[name=" + $this.attr('data-rel') + "]").val("0.00"); } });
