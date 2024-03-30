@@ -21,13 +21,13 @@ if ($doc_id) {
 		$doc_mr = $invoice->GetMaterialRequestDoc($doc_id);
 
 
-		$_TEMPLATE->Title("Material Request Record", null, $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']));
+		$_TEMPLATE->Title("Material Request Record", null, $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']));
 
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
 		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/\" class=\"bnt-back\"></a>";
 
-		echo "<span>" . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . "</span>";
+		echo "<span>" . $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . "</span>";
 
 		echo "<span class=\"gap\"></span>";
 		if (is_null($doc_mr['po_close_date'])) {
@@ -45,7 +45,7 @@ if ($doc_id) {
 		$_TEMPLATE->NewFrameBody('
 			<div class="template-gridLayout">
 				<div><span>Cost Center</span><div>' . $doc_mr['ccc_name'] . '</div></div>
-				<div><span>Number</span><div>' . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . '</div></div>
+				<div><span>Number</span><div>' . $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . '</div></div>
 				<div><span>Title</span><div>' . $doc_mr['po_title'] . '</div></div>
 			</div>
 			<div class="template-gridLayout">
@@ -56,7 +56,7 @@ if ($doc_id) {
 			<div class="template-gridLayout">
 				<div>
 					<span>Placed By</span>
-					<div>' . $app->translate_prefix(11, $doc_mr['po_att_id']) . ' - ' . $doc_mr['po_att_name'] . '</div>
+					<div>' . $app->translatePrefix(11, $doc_mr['po_att_id']) . ' - ' . $doc_mr['po_att_name'] . '</div>
 				</div>
 			</div>
 			<div class="template-gridLayout">
@@ -123,7 +123,7 @@ if ($doc_id) {
 				echo "<tr>";
 
 				echo "<td><a href=\"" . $fs(234)->dir . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">";
-				echo $app->translate_prefix($pq_type, $row['po_serial']);
+				echo $app->translatePrefix($pq_type, $row['po_serial']);
 				echo "</a></td>";
 
 				echo "<td>{$row['doc_usr_name']}</td>";

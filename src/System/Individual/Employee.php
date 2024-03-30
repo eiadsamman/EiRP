@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace System\Individual;
 
-class Employee extends Person
+class Employee extends Individual
 {
 	public function GetRunningAttendance(): array
 	{

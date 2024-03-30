@@ -12,11 +12,12 @@ class SmartListObject
 	{
 		$this->app = $app;
 	}
-	private function template(string $id, string $value, string $keywords = null, bool $selected = false): string
+	private function template(string $id, string $value, string $keywords = null, bool $selected = false, ?string $customFields = ""): string
 	{
 		$output = "<option" . ($selected ? " selected=\"selected\"" : "") . "";
 		$output .= " data-id=\"" . htmlentities($id, ENT_QUOTES, "UTF-8", false) . "\"";
 		$output .= !is_null($keywords) ? " data-keywords=\"" . htmlentities($keywords, ENT_QUOTES, "UTF-8", false) . "\"" : "";
+		$output .= $customFields;
 		$output .= ">";
 		$output .= htmlentities($value, ENT_QUOTES, "UTF-8", false);
 		$output .= "</option>";
@@ -67,7 +68,7 @@ class SmartListObject
 			if (
 				$r = $this->app->db->query(
 					"SELECT 
-				prt_id, comp_name, ptp_name, prt_name, cur_name, cur_shortname, usrset_value
+				prt_id, comp_name, ptp_name, prt_name, cur_id, cur_shortname, usrset_value
 			FROM
 				view_financial_accounts
 				JOIN user_partition ON prt_id = upr_prt_id AND upr_usr_id=" . $this->app->user->info->id . (!is_null($role) ? " AND " . $role->sqlClause() : "") . "
@@ -85,7 +86,8 @@ class SmartListObject
 						$row['prt_id'],
 						"[" . $row['cur_shortname'] . "] " . ($company_id != null ? "" : $row['comp_name'] . ": ") . $row['ptp_name'] . ": " . $row['prt_name'],
 						"",
-						$select == $row['prt_id']
+						$select == $row['prt_id'],
+						" data-curId=\"{$row['cur_id']}\" "
 					);
 				}
 			}

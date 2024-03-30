@@ -10,4 +10,5 @@ use System\Exceptions\Finance\Finance;
 
 class AccountNotFoundException extends Finance
 {
+	protected $message = "Account not found";
 }

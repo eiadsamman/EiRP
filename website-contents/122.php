@@ -208,16 +208,16 @@ $(document).ready(function(e) {
 	$("#jQoutput").on('click',".jQdr",function(){
 		if(_regdate==null){return false;}
 		var $this=$(this);
-		popup.show("Loading");
+		popup.content("Loading").show();
 		var $ajax=$.ajax({
 			type:"POST",
 			url:"<?php echo $fs()->dir;?>",
 			data:{'detailed-report':_regdate,'usr_id':$this.attr("data-usrid")}
 		}).done(function(data){
 			if(data==""){
-				popup.show("No entries found!");
+				popup.content("No entries found!").show();
 			}else{
-				popup.show(data);
+				popup.content(data).show();
 			}
 		});
 	});

@@ -191,15 +191,15 @@ if ($q) {
 				}
 			}).done(function(data) {
 				overlay.hide();
-				popup.show(data);
+				popup.content(data).show();
 
-				popup.self().find("#jQcancel").on('click', function() {
-					popup.hide();
+				$(popup.controller()).find("#jQcancel").on('click', function() {
+					popup.close();
 				});
-				popup.self().find("#jQcancel").focus();
+				$(popup.controller()).find("#jQcancel").focus();
 
 
-				popup.self().find("#jQform").on('submit', function(e) {
+				$(popup.controller()).find("#jQform").on('submit', function(e) {
 					e.preventDefault();
 					var _ser = $(this).serialize();
 
@@ -208,7 +208,7 @@ if ($q) {
 						url: '<?php echo $fs()->dir; ?>',
 						data: _ser,
 					}).done(function(data) {
-						popup.hide();
+						popup.close();
 
 						if (data == "true") {
 							messagesys.success("Salary updated successfully");

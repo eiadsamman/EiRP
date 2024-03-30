@@ -1,16 +1,12 @@
 <?php
 use System\Finance\AccountRole;
-use System\Finance\Transaction\Receipt;
-use System\Personalization\FrequentAccountUse;
 use System\Template\Gremium;
 use System\Finance\Account;
 use System\SmartListObject;
-use System\Template\PanelNavigator\PanelStatements;
 
-
-$predefined = new \System\Finance\PredefinedRules($app);
-$defines = $predefined->incomeRules();
-$accounting = new \System\Finance\Accounting($app);
+$predefined  = new \System\Finance\PredefinedRules($app);
+$defines     = $predefined->incomeRules();
+$accounting  = new \System\Finance\Accounting($app);
 $perpage_val = 20;
 
 if ($app->xhttp) {
@@ -24,10 +20,10 @@ if ($app->xhttp) {
 			"debug" => ""
 		);
 		try {
-			$accountRole = new AccountRole();
+			$accountRole           = new AccountRole();
 			$accountRole->outbound = true;
 
-			$transaction = new Receipt($app);
+			$transaction = new System\Finance\Transaction\Receipt($app);
 			$transaction->issuerAccount($app->user->account);
 			$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1], $accountRole));
 			$transaction->date($_POST['date'][0]);
@@ -44,11 +40,11 @@ if ($app->xhttp) {
 			}
 
 			if ($transaction->post()) {
-				$result['result'] = true;
+				new System\Personalization\FrequentAccountUse($app, (int) $_POST['target-account'][1]);
+				$result['result']    = true;
 				$result['insert_id'] = $transaction->insert_id;
-				$result['balance'] = number_format($app->user->account->getBalance(), 2);
-				$result['currency'] = $app->user->account->currency->shortname;
-				new FrequentAccountUse($app, (int) $_POST['target-account'][1]);
+				$result['balance']   = number_format($app->user->account->getBalance(), 2);
+				$result['currency']  = $app->user->account->currency->shortname;
 			} else {
 				$result['errno'] = 300;
 				$result['error'] = "Transaction posting failed";
@@ -75,15 +71,14 @@ if ($app->xhttp) {
 		echo json_encode($result);
 		exit;
 	}
-}
 
-$SmartListObject = new SmartListObject($app);
-if (is_null($app->user->account) || !$app->user->account->role->inbound) {
-	$grem = new Gremium\Gremium();
-	$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>Invalid inbound account!</h1>");
-	$grem->legend()->serve("<span class=\"flex\">Selected account is not valid for inbound operations:</span>");
-	$grem->article()->serve(
-		<<<HTML
+	$SmartListObject = new SmartListObject($app);
+	if (is_null($app->user->account) || !$app->user->account->role->inbound) {
+		$grem = new Gremium\Gremium();
+		$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>Invalid inbound account!</h1>");
+		$grem->legend()->serve("<span class=\"flex\">Selected account is not valid for inbound operations:</span>");
+		$grem->article()->serve(
+			<<<HTML
 		<ul>
 			<li>Receipts require an account with inbound rules, chose a valid account and try again</li>
 			<li>Contact system adminstration for further assistance</li>
@@ -95,26 +90,12 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 			<li>Goto <a href="{$fs(95)->dir}">New Payment</a></li>
 		</ul>
 		HTML
-	);
-	unset($grem);
-	exit;
-
-}
-?>
-
-<?php if (!$app->xhttp) { ?>
-	<div class="split-view">
-		<div class="panel">
-			<?php
-			$panelNavigator = new PanelStatements($app);
-			$panelNavigator->SidePanelHTML();
-			?>
-		</div>
-		<div class="body" id="PanelNavigator-Body">
-		<?php } ?>
-		<?php
+		);
+		unset($grem);
+	} else {
 		$grem = new Gremium\Gremium(true);
-		$grem->header()->prev($fs(179)->dir)->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Receipt</button></div>");
+		$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite></cite>
+		<div class=\"btn-set\"><button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Receipt</button></div>");
 		if (sizeof($defines) > 0) {
 			$grem->menu()->sticky(false)->open();
 			echo "<input placeholder=\"Actions...\" type=\"text\" id=\"js-defines\" data-slo=\":LIST\" tabindex=\"-1\" data-list=\"defines\" />";
@@ -181,6 +162,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 				<label>
 					<h1>Value</h1>
 					<div class="btn-set">
+						<?= "<span>{$app->user->account->currency->shortname}</span>" ?>
 						<input type="number" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
 					</div>
 				</label>
@@ -199,7 +181,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 									<tbody>
 										<?php
 										$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
-										$r_release = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
+										$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
 										if ($r_release) {
 											while ($row_release = $r_release->fetch_assoc()) {
 												echo \System\Attachment\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
@@ -270,73 +252,7 @@ if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 				<?= $SmartListObject->financialBeneficiary(); ?>
 			</datalist>
 		</div>
-		<?php if (!$app->xhttp) { ?>
-		</div>
-	</div>
-	<div id="PanelNavigator-LoadingScreen">
 		<?php
-		$grem = new Gremium\Gremium(true);
-		$grem->header()->serve("<span class=\"loadingScreen-placeholder header\">&nbsp;</span>");
-		$grem->menu()->serve("<span class=\"\">&nbsp;</span>");
-		$grem->title()->serve("<span class=\"loadingScreen-placeholder title\">&nbsp;</span>");
-		$grem->article()->serve("<span class=\"loadingScreen-placeholderBody\"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>");
-		unset($grem);
-		?>
-	</div>
-	<script type="text/javascript">
-		let pageConfig = {
-			method: "new",
-			url: '<?= $fs()->dir ?>',
-			title: '<?= $app->settings->site['title']; ?> - <?= $fs()->title ?>',
-			id: <?= !empty($_GET['id']) ? (int) $_GET['id'] : "null"; ?>,
-			upload: {
-				url: "<?= $fs(186)->dir ?>",
-				identifier: <?= \System\Attachment\Type::FinanceRecord->value; ?>
-			}
-		}
-	</script>
-	<script type="text/javascript" src="static/javascript/Transactions.js"></script>
-	<script type="text/javascript" src="static/javascript/Navigator.js"></script>
-	<script type="text/javascript" src="static/javascript/PanelNavigator.js"></script>
-	<script type="text/javascript">
-		let pn = new PanelNavigator();
-		pn.sourceUrl = '<?= $fs(121)->dir ?>';
-		pn.itemPerRequest = <?= (int) $perpage_val; ?>;
-		pn.classList = ["statment-panel"];
-
-		if (document.getElementById("js-input_btunew"))
-			document.getElementById("js-input_btunew").addEventListener("click", function () {
-				pn.clearActiveItem();
-				pn.navigator.setProperty("id", null);
-				pn.navigator.history_vars.method = "new";
-				pn.navigator.history_vars.url = '<?= $fs(91)->dir; ?>';
-				pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(91)->title; ?>';
-				pn.navigator.url = '<?= $fs(91)->dir; ?>';
-				pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "new", "id": null }, () => { initInvokers() });
-				pn.navigator.pushState();
-			});
-
-
-		pn.onclick = function (event) {
-			pn.navigator.setProperty("id", event.dataset.listitem_id);
-			pn.navigator.history_vars.method = "view";
-			pn.navigator.history_vars.url = '<?= $fs(104)->dir; ?>';
-			pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(104)->title; ?>';
-			pn.navigator.url = '<?= $fs(104)->dir; ?>';
-			pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "view", "id": event.dataset.listitem_id });
-			pn.navigator.pushState();
-		}
-
-		pn.listitemHandler = function (data) {
-			let statementTypeIcon = data.positive ? `<span class="stm inc active"></span>` : `<span class="stm pay active"></span>`;
-			let lockIcon = `<span class="stt chk"></span>`;
-			let attachments = parseInt(data.attachements) > 0 ? `<span class="atch"></span>` : "";
-			return `<div><h1>${data.beneficial}</h1><cite>${data.id}</cite></div>` +
-				`<div><h1>${data.value}</h1><cite>${data.date}</cite></div>` +
-				`<div><h1>${data.category}</h1><cite>${attachments}${statementTypeIcon}</cite></div>` +
-				`<div><h1 class=\"description\">${data.details}</h1></div>`;
-		}
-		pn.init();
-	</script>
-
-<?php } ?>
+	}
+}
+?>

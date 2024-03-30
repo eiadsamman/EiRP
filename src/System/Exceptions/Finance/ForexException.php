@@ -9,4 +9,5 @@ use System\Exceptions\Finance\Finance;
 
 class ForexException extends Finance
 {
+	protected $message = "Forex exception failed";
 }

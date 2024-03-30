@@ -197,7 +197,7 @@ class Header extends Blocks
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top});\" " : "");
 			echo ">\n";
 
-			echo $this->prev == null ? "" : "\t<a href=\"$this->prev\" class=\"previous\"></a>\n";
+			echo $this->prev == null ? "" : "\t<a href=\"$this->prev\" class=\"previous\" data-role=\"previous\"></a>\n";
 			echo $this->status == null ? "" : "\t<span class=\"$this->status\"></span>\n";
 			$this->opened = true;
 		}
@@ -276,13 +276,11 @@ class Article extends Blocks
 			echo (empty($this->fxwidth) ? "" : " style=\"width:{$this->fxwidth};\" ");
 			echo is_array($this->options) && in_array("nobg", $this->options) ? " class=\"nobg\" " : "";
 			echo is_array($this->options) && in_array("nopadding", $this->options) ? " class=\"nopadding\" " : "";
-
 			echo ">\n";
 			$this->opened = true;
 		}
 		return $this;
 	}
-
 }
 
 
@@ -333,7 +331,7 @@ class Gremium
 	public function __construct(bool $limit_width = true, ?bool $legends_stackable = true, ?bool $omit_html = false, ?string $html_id = null)
 	{
 		$this->legends_stackable = $legends_stackable;
-		$this->stack = array();
+		$this->stack             = array();
 		if (!$omit_html)
 			echo "<div " . (!is_null($html_id) ? " id=\"$html_id\" " : "") . " class=\"gremium " . ($limit_width ? "limit-width" : "") . "\">\n\n\n\n";
 	}

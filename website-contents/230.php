@@ -398,11 +398,11 @@ $_TEMPLATE->TailGap();
 					"qty": qty
 				}
 			}).done(function(output) {
-				popup.show(output);
-				popup.self().find(".jQcheckB").on('click', function() {
+				popup.content(output).show();
+				$(popup.controller()).find(".jQcheckB").on('click', function() {
 					var _stat = $(this).prop("checked");
 					var _type = $(this).attr("data-rel");
-					popup.self().find("input[data-lev=" + _type + "]").prop("checked", _stat);
+					$(popup.controller()).find("input[data-lev=" + _type + "]").prop("checked", _stat);
 				});
 			});
 		}
@@ -417,7 +417,7 @@ $_TEMPLATE->TailGap();
 				$jQbomSelector.clear();
 				$jQbomSelector.focus();
 				$jQbomQuantity.val("");
-				popup.hide();
+				popup.close();
 			});
 		}
 		var fnInsertMaterial = function() {
@@ -469,10 +469,10 @@ $_TEMPLATE->TailGap();
 
 
 
-		$(popup.self()).on("click", "#jQpopBtnCancle", function() {
-			popup.hide();
+		$($(popup.controller())).on("click", "#jQpopBtnCancle", function() {
+			popup.close();
 		});
-		$(popup.self()).on("click", "#jQpopBtnSubmit", function() {
+		$($(popup.controller())).on("click", "#jQpopBtnSubmit", function() {
 			fnFormSubmit();
 		});
 		$($jQBuilder).on("click", ".op-remove", function() {

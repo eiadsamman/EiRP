@@ -279,7 +279,7 @@
 	display: block;
 	position: absolute;
 	content: " ";
-	border: solid 3px var(--input-border);
+	border: solid 3px var(--input_border-color);
 	border-radius: 10px;
 	width: 10px;
 	height: 10px;
@@ -288,7 +288,7 @@
 
 .bom-table>tbody>tr>td.checkbox>label>input:hover::before {
 	background-color: var(--bomtable-background-color);
-	border-color: var(--input_hover-color);
+	border-color: var(--input-hover_border-color);
 }
 
 

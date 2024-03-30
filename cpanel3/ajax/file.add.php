@@ -144,7 +144,7 @@ if($_POST['method']=='edit'){
 						"title"=>false,
 					),
 					"Customized"=>array(
-						30=>array("Custom file","i","__page-loader","File name inside `website-contents` directory"),
+						30=>array("View handler","i","__page-loader","Custom View handler name"),
 						"title"=>false,
 					),
 					"Redirect"=>array(

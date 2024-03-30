@@ -9,8 +9,8 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 
 	/* Date input processing */
-	$date_start = isset($_POST['from']) ? $app->date_validate($_POST['from']) : false;
-	$date_end = isset($_POST['to']) ? $app->date_validate($_POST['to'], true) : false;
+	$date_start = isset($_POST['from']) ? $app->dateValidate($_POST['from']) : false;
+	$date_end = isset($_POST['to']) ? $app->dateValidate($_POST['to'], true) : false;
 	$user_current = abs((int) $_POST['page']);
 	if (($date_start && $date_end) && $date_start > $date_end) {
 		header("VENDOR_RESULT: DATE_CONFLICT");
@@ -142,8 +142,8 @@ if (is_null($app->user->account)) {
 
 
 $initial_values = array(
-	'from' => isset($_GET['from']) && $app->date_validate($_GET['from']) ? date("Y-m-d", $app->date_validate($_GET['from'])) : "",
-	'to' => isset($_GET['to']) && $app->date_validate($_GET['to']) ? date("Y-m-d", $app->date_validate($_GET['to'])) : "",
+	'from' => isset($_GET['from']) && $app->dateValidate($_GET['from']) ? date("Y-m-d", $app->dateValidate($_GET['from'])) : "",
+	'to' => isset($_GET['to']) && $app->dateValidate($_GET['to']) ? date("Y-m-d", $app->dateValidate($_GET['to'])) : "",
 	"page" => isset($_GET['page']) ? abs((int) $_GET['page']) : 0
 );
 
@@ -379,7 +379,7 @@ unset($grem);
 	<input type="hidden" name="from" value="" />
 	<input type="hidden" name="to" value="" />
 </form>
-<script type="text/javascript" src="static\javascript\Navigator.js"></script>
+<script type="text/javascript" src="static/javascript/Navigator.js"></script>
 <script type="text/javascript">
 	const drainurl = '<?= $fs()->dir ?>';
 	const exporturl = '<?= $fs(13)->dir ?>';
@@ -389,4 +389,4 @@ unset($grem);
 		"to": "",
 	}, drainurl);
 </script>
-<script type="text/javascript" src="static\javascript\Finance.Statement.js"></script>
+<script type="text/javascript" src="static/javascript/accounting/Finance.Statement.js"></script>

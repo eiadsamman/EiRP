@@ -6,7 +6,9 @@ namespace System;
 
 use System\Exceptions\HR\InactiveAccountException;
 use System\Exceptions\HR\InvalidLoginException;
-
+use System\Finance\Currency;
+use System\Views\PanelView\TransactionView;
+use System\Views\Views;
 
 //$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);
 class App
@@ -14,7 +16,9 @@ class App
 	public MySQL $db;
 	public Individual\User $user;
 
-	public Finance\Currency|null $currency;
+	public Currency $currency;
+	public ?array $currencies;
+
 	public $prefixList = array();
 
 	public string $subdomain;
@@ -32,6 +36,9 @@ class App
 	public string $http_root;
 	public Settings $settings;
 
+	public ?Views $view;
+
+	public \System\FileSystem\Page $fileSystem;
 	protected array $permissions_array = array();
 	private string|null $route = null;
 
@@ -42,7 +49,7 @@ class App
 
 		/* Create HTTP response status code instance */
 		$this->responseStatus = new ResponseStatus();
-		$this->errorHandler = new \System\Log\ErrorHandler($this->root . "/admin/error.log");
+		$this->errorHandler   = new \System\Log\ErrorHandler($this->root . "/admin/error.log");
 
 
 		/* Get System settings */
@@ -50,6 +57,14 @@ class App
 		if (!$this->settings->read()) {
 			$this->errorHandler->customError("Reading setting file failed");
 			$this->responseStatus->InternalServerError->response();
+		}
+
+		if ($this->settings->site['environment'] === "development") {
+			error_reporting(E_ALL);
+			ini_set('display_errors', 'On');
+		} else {
+			error_reporting(0);
+			ini_set('display_errors', 'Off');
 		}
 
 		$subdomain = trim($this->settings->site['subdomain']);
@@ -101,7 +116,7 @@ class App
 
 	public function register(string $route): bool
 	{
-		$route = $this->prepareURI($route);
+		$route       = $this->prepareURI($route);
 		$this->route = $route == "" ? $this->settings->site['index'] : $route;
 
 		return true;
@@ -120,34 +135,42 @@ class App
 		return false;
 	}
 
-	public function initializeSystemCurrency(): bool
+	public function build(): bool
 	{
-		$stmt = $this->db->prepare("SELECT cur_id,cur_name,cur_shortname,cur_symbol FROM currencies WHERE cur_default=1;");
+		$this->getBasePermission();
+		$this->setTimezone($this->settings->site['timezone']);
+		$this->initializePermissions();
+		$this->currencies = array();
+		$stmt             = $this->db->prepare("SELECT cur_id,cur_name,cur_shortname,cur_symbol,cur_default FROM currencies;");
 		if ($stmt->execute() && $rec = $stmt->get_result()) {
 			if ($rec->num_rows > 0 && $row = $rec->fetch_assoc()) {
-				$this->currency = new Finance\Currency();
-				$this->currency->id = (int) $row['cur_id'];
-				$this->currency->name = $row['cur_name'];
-				$this->currency->shortname = $row['cur_shortname'];
-				$this->currency->symbol = $row['cur_symbol'];
+				$cur            = new Currency();
+				$cur->id        = (int) $row['cur_id'];
+				$cur->name      = $row['cur_name'];
+				$cur->shortname = $row['cur_shortname'];
+				$cur->symbol    = $row['cur_symbol'];
+				array_push($this->currencies, $cur);
+				if ((int) $row['cur_default'] == 1) {
+					$this->currency = $cur;
+				}
 			}
 		}
 		return false;
 	}
 
-	public function initializePermissions(): void
+	private function initializePermissions(): void
 	{
 		$stmt = $this->db->prepare("SELECT per_id,per_title,per_order FROM permissions");
 		if ($stmt->execute() && $rec = $stmt->get_result()) {
 			while ($row = $rec->fetch_assoc()) {
-				$this->permissions_array[$row['per_id']] = new Permission();
-				$this->permissions_array[$row['per_id']]->id = $row['per_id'];
-				$this->permissions_array[$row['per_id']]->name = $row['per_title'];
+				$this->permissions_array[$row['per_id']]        = new Permission();
+				$this->permissions_array[$row['per_id']]->id    = $row['per_id'];
+				$this->permissions_array[$row['per_id']]->name  = $row['per_title'];
 				$this->permissions_array[$row['per_id']]->level = $row['per_order'];
 			}
 		}
 	}
-	public function database_connect(string $host, string $user, string $pass, string $database)
+	public function databaseConnect(string $host, string $user, string $pass, string $database)
 	{
 		try {
 			$this->db = new MySQL($host, $user, $pass, $database);
@@ -165,7 +188,7 @@ class App
 			$this->responseStatus->NotFound->response();
 		}
 	}
-	public function set_timezone($timezone): void
+	public function setTimezone($timezone): void
 	{
 		try {
 			date_default_timezone_set($timezone);
@@ -174,7 +197,7 @@ class App
 			$this->responseStatus->InternalServerError->response();
 		}
 	}
-	public function get_base_permission(): bool
+	public function getBasePermission(): bool
 	{
 		$lowsetlevel = $this->db->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
 		if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
@@ -189,10 +212,10 @@ class App
 		}
 		return false;
 	}
-	public function build_prefix_list(): bool
+	public function buildPrefixList(): bool
 	{
 		$this->prefixList = array();
-		$r = $this->db->query("SELECT prx_id, prx_value, prx_placeholder FROM system_prefix;");
+		$r                = $this->db->query("SELECT prx_id, prx_value, prx_placeholder FROM system_prefix;");
 		if ($r) {
 			while ($row = $r->fetch_assoc()) {
 				$this->prefixList[$row['prx_id']] = array($row['prx_value'], (int) $row['prx_placeholder']);
@@ -201,7 +224,8 @@ class App
 		return true;
 	}
 
-	public function translate_prefix(int $type, int $number): string
+
+	public function translatePrefix(int $type, int $number): string
 	{
 		if (!is_array($this->prefixList) || sizeof($this->prefixList) == 0) {
 			return (string) $number;
@@ -212,7 +236,7 @@ class App
 		}
 		return (string) $number;
 	}
-	public function padding_prefix(int $type, int $number): string
+	public function paddingPrefix(int $type, int $number): string
 	{
 		if (!is_array($this->prefixList) || sizeof($this->prefixList) == 0) {
 			return (string) $number;
@@ -226,8 +250,8 @@ class App
 
 	public function formatTime(int $time, ?bool $include_seconds = true): string
 	{
-		$neg = $time < 0;
-		$time = abs($time);
+		$neg    = $time < 0;
+		$time   = abs($time);
 		$output = ($neg ? "(" : "") .
 			sprintf('%02d', floor($time / 60 / 60)) .
 			":" .
@@ -239,7 +263,7 @@ class App
 		return $output;
 	}
 
-	public function date_validate(string $query, ?bool $end_of_day = false): int|bool
+	public function dateValidate(string $query, ?bool $end_of_day = false): int|bool
 	{
 		if (preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $query, $match)) {
 			if (checkdate((int) $match[2], (int) $match[3], (int) $match[1])) {
@@ -253,7 +277,7 @@ class App
 		return false;
 	}
 
-	public function user_init(): int
+	public function userInit(): int
 	{
 		/* Session handler */
 		if (isset($_SESSION["sur"])) {
@@ -317,5 +341,15 @@ class App
 			}
 		}
 		return 0;
+	}
+
+	public function viewFactory(string $viewName): bool
+	{
+		if (class_exists('System\\Views\\' . $viewName)) {
+			$className  = 'System\\Views\\' . $viewName;
+			$this->view = new $className($this);
+			return true;
+		}
+		return false;
 	}
 }

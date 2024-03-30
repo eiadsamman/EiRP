@@ -28,14 +28,14 @@ if ($doc_id) {
 			$excrate = $accounting->currency_exchange($doc_rfq['po_cur_id'], $_syscur['id']);
 		}
 
-		$_TEMPLATE->Title("Request for Quotation Record", null, $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']));
+		$_TEMPLATE->Title("Request for Quotation Record", null, $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']));
 
 
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
 		echo "<a style=\"color:#333;\" href=\"" . $fs(234)->dir . "/\" class=\"bnt-back\"></a>";
-		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
-		echo "<span>" . $app->translate_prefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</span>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
+		echo "<span>" . $app->translatePrefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</span>";
 		echo "<span class=\"gap\"></span>";
 		if (is_null($doc_rm['po_close_date'])) {
 			echo "<button>Cancel Quotation</button>";
@@ -61,7 +61,7 @@ if ($doc_id) {
 		echo $_TEMPLATE->NewFrameBodyStart();
 		echo '<div class="template-gridLayout">
 				<div><span>Cost Center</span><div>' . $doc_rfq['ccc_name'] . '</div></div>
-				<div><span>Number</span><div>' . $app->translate_prefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . '</div></div>
+				<div><span>Number</span><div>' . $app->translatePrefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . '</div></div>
 				<div><span>Title</span><div>' . $doc_rfq['po_title'] . '</div></div>
 				
 			</div>
@@ -76,7 +76,7 @@ if ($doc_id) {
 				<div></div>
 			</div>
 			<div class="template-gridLayout">
-				<div><span>Placed By</span><div>' . $app->translate_prefix(11, $doc_rfq['doc_usr_id']) . ' - ' . $doc_rfq['po_usr_name'] . '</div></div>
+				<div><span>Placed By</span><div>' . $app->translatePrefix(11, $doc_rfq['doc_usr_id']) . ' - ' . $doc_rfq['po_usr_name'] . '</div></div>
 				<div></div>
 			</div>
 			<div class="template-gridLayout">
@@ -206,7 +206,7 @@ if ($doc_id) {
 			$rowsploted++;
 			echo "<tr>";
 			echo "<td>{$row['ccc_name']}</td>";
-			echo "<td><a href=\"" . $fs(234)->dir . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['PUR_QUT'], $row['po_serial']) . "</a></td>";
+			echo "<td><a href=\"" . $fs(234)->dir . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">" . $app->translatePrefix(Invoice::map['PUR_QUT'], $row['po_serial']) . "</a></td>";
 			echo "<td></td>";
 			echo "<td>{$row['po_title']}</td>";
 			echo "<td>{$row['po_date']}</td>";

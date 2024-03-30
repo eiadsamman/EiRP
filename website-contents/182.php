@@ -225,7 +225,7 @@ $grem->getLast()->close();
 		$("#jQoutput").on("click", ".jq_frame_image", function (e) {
 			e.preventDefault();
 			var viewsrc = $(this).attr("data-href");
-			popup.show("<img style=\"max-width:100%;width:100%;margin-bottom:15px;\" src=\"" + viewsrc + "\" />");
+			popup.content("<img style=\"max-width:100%;width:100%;margin-bottom:15px;\" src=\"" + viewsrc + "\" />").show();
 		});
 
 		let clear = function () {
@@ -254,7 +254,7 @@ $grem->getLast()->close();
 		$(".jq_frame_image").on("click", function (e) {
 			e.preventDefault();
 			var path = $(this).attr("data-href");
-			popup.show("<img src=\"" + path + "\" />");
+			popup.content("<img src=\"" + path + "\" />").show();
 			return false;
 		});
 		var fn_fetchfile = function (_pushState = true) {

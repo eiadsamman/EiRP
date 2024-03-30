@@ -1,6 +1,7 @@
 class PanelNavigator {
 	constructor() {
 		this.sourceUrl = "";
+		this.onClickUrl = "";
 		this.itemPerRequest = 20;
 		this.navigator = new Navigator({}, '');
 		this.classList = [];
@@ -63,7 +64,6 @@ class PanelNavigator {
 		this.runtime.scrollArea.tabIndex = 0;
 		this.runtime.scrollArea.autofocus = true;
 		this.runtime.scrollArea.addEventListener("keydown", (e) => {
-
 			if (e.key == "ArrowDown") {
 				e.preventDefault();
 				if (this.runtime.activeItem != null && !this.runtime.isContentLoading) {
@@ -80,14 +80,12 @@ class PanelNavigator {
 					}
 				}
 				return false;
-			}
-			if (e.key == "ArrowUp") {
+			} else if (e.key == "ArrowUp") {
 				e.preventDefault();
 				if (this.runtime.activeItem != null && !this.runtime.isContentLoading) {
 					let listitem = this.runtime.scrollArea.querySelector(`.panel-item[data-listitem_id="${this.runtime.activeItem.dataset.listitem_id}"]`);
 					if (listitem) {
 						let previousSibling = listitem.previousSibling;
-
 						if (previousSibling && previousSibling.dataset != undefined && previousSibling.dataset.listitem_id != undefined) {
 							this.clearActiveItem()
 							this.navigator.history_vars.method = "view";
@@ -98,6 +96,16 @@ class PanelNavigator {
 					}
 				}
 				return false;
+			} else if (e.key == "Enter") {
+				e.preventDefault()
+				let activeElement = document.activeElement;
+				if (activeElement.classList.contains("panel-item")) {
+					this.clearActiveItem()
+					this.navigator.history_vars.method = "view";
+					this.setActiveItem(activeElement);
+					this.onclick(activeElement);
+					activeElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
+				}
 			}
 		});
 	}
@@ -162,21 +170,22 @@ class PanelNavigator {
 				this.runtime.informative.innerText = "No more records";
 				return;
 			}
-			if (this.checkAvailability() && (this.runtime.scrollArea.scrollHeight <= this.runtime.scrollArea.clientHeight)) {
+			/* if (this.checkAvailability() &&
+				this.runtime.scrollArea.scrollHeight > 0 &&
+				this.runtime.scrollArea.clientHeight > 0 &&
+				(this.runtime.scrollArea.scrollHeight <= this.runtime.scrollArea.clientHeight)) {
 				this.runtime.currentPage += 1;
 				this.xhttp_request();
-			}
+			} */
 			this.runtime.isLoading = false;
 		}
-
-
 	}
 
 	generatePlaceholders = function () {
 		if (this.runtime.isLoading) return;
 		this.runtime.isLoading = true;
 		for (let i = 0; i < this.itemPerRequest; i++) {
-			var content = document.createElement("div");
+			var content = document.createElement("a");
 			content.classList.add("panel-item")
 			content.classList.add("place-holder")
 			content.classList.add(...this.classList);
@@ -200,7 +209,8 @@ class PanelNavigator {
 
 	assigneEvents = function (element) {
 		let instance = this;
-		element.addEventListener("click", function () {
+		element.addEventListener("click", function (e) {
+			e.preventDefault();
 			if (instance.runtime.activeItem != null) {
 				if (instance.runtime.activeItem.dataset.listitem_id === this.dataset.listitem_id)
 					return;
@@ -209,13 +219,14 @@ class PanelNavigator {
 			instance.navigator.history_vars.method = "view";
 			instance.setActiveItem(this);
 			instance.onclick(this);
+			return false;
 		});
 	}
 
 	buildItem = function (obj, data = {}) {
 		obj.dataset.listitem_id = data.id;
 		obj.innerHTML = (this.listitemHandler(data));
-
+		obj.href = this.onClickUrl + "/?id=" + data.id;
 	}
 
 	checkAvailability = function () {
@@ -231,7 +242,7 @@ class PanelNavigator {
 		this.runtime.outputScreen.classList.add("busy");
 		this.latency = setTimeout(() => {
 			this.runtime.outputScreen.innerHTML = this.runtime.loadingScreen.innerHTML;
-		}, 400);
+		}, 500);
 
 		for (var key in options) {
 			formData.append(key, options[key]);
@@ -258,8 +269,9 @@ class PanelNavigator {
 			}
 			this.runtime.outputScreen.classList.remove("busy");
 			this.runtime.isContentLoading = false;
-			document.title = title;
-			this.runtime.outputScreen.innerHTML = (body);
+			if (title != null)
+				document.title = title;
+			this.runtime.outputScreen.innerHTML = body;
 
 			if (typeof callback === "function") {
 				callback.call(this);

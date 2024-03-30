@@ -732,7 +732,6 @@ class SmartListObject {
 
 
 		this.init = function () {
-			const _parent = this;
 			$jq.each(function () {
 				//#region - Initialize
 				this.slo = new SmartListObject(this);

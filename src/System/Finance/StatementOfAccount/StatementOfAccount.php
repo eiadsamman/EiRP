@@ -25,7 +25,6 @@ class StatementOfAccount
 		 */
 
 		$sort_direction = ($sort_ascending ? "ASC" : "DESC");
-		$s = microtime(true);
 		$query = "SELECT * 
 		FROM ( 
 			SELECT 
@@ -71,7 +70,6 @@ class StatementOfAccount
 		LIMIT {$this->criteria->limit()}
 		;";
 		//$this->app->errorHandler->customError((string) (microtime(true) - $s));
-
 		$stmt = $this->app->db->prepare($query);
 		$stmt->execute();
 		return $stmt->get_result();

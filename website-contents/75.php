@@ -23,34 +23,38 @@ if (!$app->xhttp && $app->user->company->id) {
 	/* Count attendance of current month */
 	$r = (
 		"SELECT 
-		COUNT(ltr_id), integers.pr_day 
-	FROM
-		(
-			SELECT
-				DATE('{$date_start->format("Y-m-d")}' + INTERVAL (t1 + t2 * 10) DAY) AS pr_day
-			FROM
-				(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
-				(select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2
+			COUNT(DISTINCT sub_location.ltr_usr_id), integers.pr_day
+		FROM
+			(
+				SELECT
+					DATE('{$date_start->format("Y-m-d")}' + INTERVAL (t1 + t2 * 10) DAY) AS pr_day
+				FROM
+					(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+					(select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2
 
-			HAVING pr_day <= '{$date_end->format("Y-m-d")}'
-		) AS integers 
-		JOIN
-			(SELECT comp_id FROM companies 
-			JOIN user_company ON urc_usr_id=" . $app->user->info->id . " AND urc_usr_comp_id = comp_id AND comp_id ={$app->user->company->id}) AS sub_companies
-			
-		LEFT JOIN 
-				(SELECT ltr_ctime,ltr_otime,ltr_id,prt_company_id FROM labour_track JOIN acc_accounts ON ltr_prt_id = prt_id) AS sub_location ON 
-					DATE(sub_location.ltr_ctime) <= integers.pr_day AND 
-					(DATE(sub_location.ltr_otime) >= '{$date_start->format("Y-m-d")}' OR sub_location.ltr_otime IS NULL) AND
-					(pr_day <= DATE(sub_location.ltr_otime) OR sub_location.ltr_otime IS NULL) AND
-					sub_location.prt_company_id = comp_id
-	GROUP BY
-		comp_id, pr_day 
-	ORDER BY
-		comp_id,integers.pr_day
-"
+				HAVING pr_day <= '{$date_end->format("Y-m-d")}'
+			) AS integers 
+			JOIN
+				(SELECT comp_id FROM companies 
+				JOIN user_company ON urc_usr_id = {$app->user->info->id} AND urc_usr_comp_id = comp_id AND comp_id = {$app->user->company->id}) AS sub_companies
+				
+			LEFT JOIN 
+					(
+						SELECT 
+							ltr_ctime, ltr_otime, ltr_id, prt_company_id, ltr_usr_id
+						FROM 
+							labour_track 
+								JOIN acc_accounts ON ltr_prt_id = prt_id
+					) AS sub_location ON 
+						DATE(sub_location.ltr_ctime) <= integers.pr_day AND 
+						(DATE(sub_location.ltr_otime) >= '{$date_start->format("Y-m-d")}' OR sub_location.ltr_otime IS NULL) AND
+						(pr_day <= DATE(sub_location.ltr_otime) OR sub_location.ltr_otime IS NULL) AND
+						sub_location.prt_company_id = comp_id
+		GROUP BY
+			comp_id, pr_day
+		ORDER BY
+			comp_id, integers.pr_day ;"
 	);
-
 	$r = $app->db->query($r);
 
 	/* Store count result */

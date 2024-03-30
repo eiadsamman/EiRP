@@ -21,7 +21,6 @@ if (isset($_POST['method']) && $_POST['method'] == 'save') {
 		$app->db->autocommit(false);
 
 		$rbool &= $app->db->query("DELETE FROM mat_bom WHERE mat_bom_mat_id={$matid};");
-
 		$stmt = $app->db->prepare("INSERT INTO mat_bom (mat_bom_mat_id, mat_bom_part_id, mat_bom_quantity, mat_bom_level) VALUES (?,?,?,1);");
 		$stmt->bind_param("iid", $material_id, $material_part_id, $material_quantity);
 		foreach ($_POST['bom_material'] as $lvl1_k => $lvl1_v) {
@@ -156,7 +155,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "show") {
 			</div>';
 		}
 	}
-	echo "<div><table class=\"bom-table\" id=\"bom-contents\">";
+	echo "<div><table class=\"bom-table form-table\" id=\"bom-contents\">";
 	echo "
 		<thead>
 			<tr>
@@ -256,10 +255,11 @@ echo "<input type=\"text\" data-slo=\"BOM\" class=\"flex\" id=\"jQmaterialSelect
 echo "<button type=\"button\" id=\"jQsubmit\">Save material build</button>";
 $grem->getLast()->close();
 
-$grem->legend()->serve("<span class=\"flex\">Material desciprtion</span>");
+$grem->title()->serve("<span class=\"flex\">Material desciprtion</span>");
 $grem->article()->serve("<div id=\"jQdesc\"></div>");
 
-$grem->legend()->serve("<span class=\"flex\">Bill of materials</span><button type=\"button\" style=\"display:none;\" id=\"jqAddmaterial\">Add material</button>");
+$grem->title()->serve("Bill of materials");
+$grem->legend()->serve("<span class=\"flex\"></span><button type=\"button\" disabled class=\"edge-left\" id=\"jqAddmaterial\">Add material</button>");
 $grem->article()->serve("<form action=\"\" id=\"jQmainform\"><input type=\"hidden\" name=\"method\" value=\"save\" /><div id=\"jQmain\"></div></form>");
 unset($grem);
 ?>
@@ -338,13 +338,13 @@ unset($grem);
 					$(".material-qty").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
 						OnlyFloat(this, null, 0);
 					});
-					$("#jqAddmaterial").show();
+					$("#jqAddmaterial").prop("disabled", false)
 				});
 			},
 			ondeselect: function () {
 				$("#jQmain").html("");
 				$("#jQdesc").html("");
-				$("#jqAddmaterial").hide();
+				$("#jqAddmaterial").prop("disabled", true)
 			}
 		});
 

@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace System\Finance\Transaction;
 
 use System\Exceptions\Finance\AccountNotFoundException;
-use System\Exceptions\Finance\TransactionException;
 use System\Finance\Account;
 use System\Finance\AccountRole;
 use System\Finance\Currency;
-use System\Individual\PersonData;
+use System\Profiles\IndividualProfile;
 
 
 class Statement
@@ -34,8 +33,11 @@ class Statement
 				acm_category,
 				_category.accgrp_name,_category.acccat_name,
 
-				CONCAT_WS(' ',COALESCE(_usr.usr_firstname,''),IF(NULLIF(_usr.usr_lastname, '') IS NULL, NULL, _usr.usr_lastname)) AS _usrname,
-				CONCAT_WS(' ',COALESCE(_editor.usr_firstname,''),IF(NULLIF(_editor.usr_lastname, '') IS NULL, NULL, _editor.usr_lastname)) AS _editorname,
+				_usr.usr_firstname AS ben_usr_firstname,
+				_usr.usr_lastname AS ben_usr_lastname,
+
+				_editor.usr_firstname AS edt_usr_firstname,
+				_editor.usr_lastname AS edt_usr_lastname,
 
 				acm_rejected,
 				acm_realvalue, 
@@ -72,14 +74,18 @@ class Statement
 				if (empty($row['acm_usr_id'])) {
 					$result->individual = null;
 				} else {
-					$result->individual = new PersonData();
+					$result->individual = new IndividualProfile();
 					$result->individual->id = (int) $row['acm_usr_id'];
-					$result->individual->name = $row['_usrname'];
+					$result->individual->firstname = $row['ben_usr_firstname'];
+					$result->individual->lastname = $row['ben_usr_lastname'];
 				}
 
-				$result->editor = new PersonData();
+				$result->editor = new IndividualProfile();
 				$result->editor->id = (int) $row['acm_editor_id'];
-				$result->editor->name = $row['_editorname'];
+
+				$result->editor->firstname = $row['edt_usr_firstname'];
+				$result->editor->lastname = $row['edt_usr_lastname'];
+				
 				$result->category = new StatementCategoryProperty((int) $row['acm_category'], $row['accgrp_name'], $row['acccat_name']);
 				$result->currency = new Currency((int) $row['cur_id'], $row['cur_name'], $row['cur_symbol'], $row['cur_shortname']);
 				$this->pairs($result);

@@ -6,9 +6,7 @@ namespace System\Finance\Transaction;
 
 use System\Finance\Account;
 use System\Finance\Currency;
-use System\Finance\Forex;
-use System\Individual\PersonData;
-use System\Individual\User;
+use System\Profiles\IndividualProfile;
 
 
 class StatementCategoryProperty
@@ -41,9 +39,9 @@ class StatementProperty
 	public ?string $reference;
 
 	public ?int $relation;
-	public ?PersonData $individual;
+	public ?IndividualProfile $individual;
 
-	public PersonData $editor;
+	public IndividualProfile $editor;
 
 	public array $attachments;
 

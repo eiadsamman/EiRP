@@ -60,7 +60,7 @@ if (isset($_GET['id'])) {
 			echo "<tr><th>Job</th><td width=\"100%\">{$row['lsc_name']} - {$row['lty_name']}</td></tr>";
 			echo "<tr><th>Shift</th><td width=\"100%\">" . ($row['lsf_id'] == null ? "" : $row['lsf_name']) . "</td></tr>";
 			
-			echo "<tr><th colspan=\"3\"><div class=\"btn-set\" style=\"justify-content:center\"><button id=\"jQclosePopup\" onclick=\"popup.hide();\" type=\"button\">&nbsp;&nbsp;Close&nbsp;&nbsp;</button></div></th></tr>";
+			echo "<tr><th colspan=\"3\"><div class=\"btn-set\" style=\"justify-content:center\"><button id=\"jQclosePopup\" onclick=\"popup.close();\" type=\"button\">&nbsp;&nbsp;Close&nbsp;&nbsp;</button></div></th></tr>";
 			echo "</tbody></table></form>";
 		} else {
 			echo "Employee Not found";

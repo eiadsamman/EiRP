@@ -38,9 +38,9 @@ if ($doc_id) {
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
 		echo "<a style=\"color:#333;\" href=\"" . $fs(237)->dir . "/\" class=\"bnt-back\"></a>";
-		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
-		echo "<a style=\"color:#333;\" href=\"" . $fs(234)->dir . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
-		echo "<span>" . $app->translate_prefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</span>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(234)->dir . "/?docid={$chain[1]}&token=" . md5("sysdoc_" . $chain[1] . session_id()) . "\">" . $app->translatePrefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</a>";
+		echo "<span>" . $app->translatePrefix(Invoice::map['PUR_ORD'], $doc_po['po_serial']) . "</span>";
 		echo "<span class=\"gap\"></span>";
 		echo "<a href=\"" . $fs(250)->dir . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-green\">Proccess Payment</a>";
 		echo "<a href=\"" . $fs(253)->dir . "/?docid={$chain[2]}&token=" . md5("sysdoc_" . $chain[2] . session_id()) . "\" class=\"clr-green\">Release Invoice</a>";

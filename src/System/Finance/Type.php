@@ -9,6 +9,4 @@ class Type
 	public KeyTerm|null $keyTerm;
 	public int $id;
 	public string $name;
-
-	
 }

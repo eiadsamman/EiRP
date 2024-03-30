@@ -1,17 +1,12 @@
 <?php
 use System\Personalization\DashboardReports;
 use System\Template\Gremium;
-
 $debug = $app->user->info->id == 1;
 $debugarr = [];
-
 $dashboard = new DashboardReports($app);
 $grem = new Gremium\Gremium(false);
-
-$grem->header()->sticky(false)->serve("<h1><span style=\"color:var(--input_hover-color)\">Welcome </span> {$app->user->info->name}</h1>");
-
+$grem->header()->sticky(false)->serve("<h1><span style=\"color:var(--input-hover_border-color)\">Welcome </span> {$app->user->info->fullName()}</h1>");
 unset($grem);
-
 echo "<div class=\"dashboard\">";
 foreach ($dashboard->overview(true) as $item) {
 	if ($debug)
@@ -21,7 +16,6 @@ foreach ($dashboard->overview(true) as $item) {
 	}
 }
 echo "</div>";
-
 $atleastone = false;
 echo "<div class=\"dashboard\">";
 foreach ($dashboard->list(true) as $item) {
@@ -40,8 +34,6 @@ if (!$atleastone) {
 </ul>
 HTML;
 }
-
-
 if ($debug) {
 	echo "<div style=\"position:fixed;top:0px;left:0px;\">" . implode("-", $debugarr) . "</div>";
 }
@@ -64,7 +56,6 @@ if ($debug) {
 		}).then(body => {
 			container.innerHTML = body;
 		}).catch(response => {
-
 		})
 	}
 	document.addEventListener('DOMContentLoaded', function () {
@@ -76,5 +67,4 @@ if ($debug) {
 			}
 		});
 	}, false);
-
 </script>

@@ -14,8 +14,8 @@ function getAttendanceReport(&$app, $dateFrom, $dateTo, $employeeID)
 if ($app->xhttp) {
 	if (isset($_POST['method'], $_POST['dateTo'], $_POST['dateFrom'], $_POST['employeeID']) && $_POST['method'] == 'fetchattendance') {
 		$employeeID = (int) $_POST['employeeID'];
-		$dateFrom = $app->date_validate($_POST['dateFrom'], false) ?? time();
-		$dateTo = $app->date_validate($_POST['dateTo'], true) ?? time();
+		$dateFrom = $app->dateValidate($_POST['dateFrom'], false) ?? time();
+		$dateTo = $app->dateValidate($_POST['dateTo'], true) ?? time();
 		if ($dateFrom <= $dateTo) {
 			getAttendanceReport($app, $dateFrom, $dateTo, $employeeID);
 		} else {
@@ -27,8 +27,8 @@ if ($app->xhttp) {
 
 	if (isset($_POST['method'], $_POST['employeeID'], $_POST['dateFrom'], $_POST['dateTo']) && $_POST['method'] == "fetchrecord") {
 		$employeeID = (int) $_POST['employeeID'];
-		$dateFrom = $app->date_validate($_POST['dateFrom'], false) ?? time();
-		$dateTo = $app->date_validate($_POST['dateTo'], true) ?? time();
+		$dateFrom = $app->dateValidate($_POST['dateFrom'], false) ?? time();
+		$dateTo = $app->dateValidate($_POST['dateTo'], true) ?? time();
 
 
 		if ($dateTo - $dateFrom > 86400 * 62) {
@@ -179,7 +179,7 @@ $grem->terminate();
 			}
 		});
 		<?php if ($fs()->permission->edit) { ?>
-			$("#jQoutput").on('clickx', '.css_attendanceBlocks > div', function () { var idint = $(this).attr("data-clsid"); if (idint == 0) { return } if ($ajax != null) { $ajax.abort(); } $ajax = $.ajax({ data: { 'method': 'edit', 'id': idint }, url: "<?= $fs(78)->dir ?>", type: "POST" }).done(function (data) { if (data != "") { popup.show(data); } else { popup.hide(); messagesys.failure("Failed to retreive editing information") } }).fail(function () { popup.hide(); }); });
+			$("#jQoutput").on('clickx', '.css_attendanceBlocks > div', function () { var idint = $(this).attr("data-clsid"); if (idint == 0) { return } if ($ajax != null) { $ajax.abort(); } $ajax = $.ajax({ data: { 'method': 'edit', 'id': idint }, url: "<?= $fs(78)->dir ?>", type: "POST" }).done(function (data) { if (data != "") { popup.content(data).show(); } else { popup.close(); messagesys.failure("Failed to retreive editing information") } }).fail(function () { popup.close(); }); });
 		<?php } ?>
 
 		var fn_timetable = function () {

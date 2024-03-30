@@ -76,6 +76,14 @@
 	position: relative;
 }
 
+.gremium>header>ul>li>a {
+	color: var(--root-font-lightcolor);
+}
+
+.gremium>header>ul>li>a:hover {
+	color: var(--root-link-color);
+}
+
 .gremium>header>ul>li::before {
 	display: block;
 	position: absolute;
@@ -231,7 +239,6 @@
 .gremium>article>h1 {
 	font-weight: normal;
 	font-family: Optima, Segoe, Segoe UI, Candara, Calibri, Arial, sans-serif;
-
 	background-color: var(--root-background-color_backdrop);
 	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 	/* backdrop-filter: blur(6px);
@@ -272,7 +279,7 @@
 	color: var(--root-font-color);
 	padding: 20px;
 	border-radius: 7px;
-	background-color: var(--input-bgcolor);
+	background-color: var(--input_background-color);
 	margin: 10px;
 	border: none;
 	box-shadow: 1px 2px 6px 0px rgba(0, 0, 0, 0.1);

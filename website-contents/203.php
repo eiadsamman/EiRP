@@ -340,11 +340,10 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 			limit: 7,
 		});
 		var $jQbomQuantity = $("#jQbomqty");
-
-		$(popup.self()).on("click", "#jQpopBtnCancle", function() {
-			popup.hide();
+		$(popup.controller()).on("click", "#jQpopBtnCancle", function() {
+			popup.close();
 		});
-		$(popup.self()).on("click", "#jQpopBtnSubmit", function() {
+		$(popup.controller()).on("click", "#jQpopBtnSubmit", function() {
 			$.ajax({
 				url: "<?= $fs(203)->dir ?>",
 				type: "POST",
@@ -354,7 +353,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 				$jQbomSelector.clear();
 				$jQbomQuantity.val("");
 				$jQbomQuantity.focus();
-				popup.hide();
+				popup.close();
 			});
 		});
 		$($jQBuilder).on("click", ".op-remove", function() {
@@ -370,11 +369,11 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 					"qty": qty
 				}
 			}).done(function(output) {
-				popup.show(output);
-				popup.self().find(".jQcheckB").on('click', function() {
+				popup.content(output).show();
+				$(popup.controller()).find(".jQcheckB").on('click', function() {
 					var _stat = $(this).prop("checked");
 					var _type = $(this).attr("data-rel");
-					popup.self().find("input[data-lev=" + _type + "]").prop("checked", _stat);
+					$(popup.controller()).find("input[data-lev=" + _type + "]").prop("checked", _stat);
 				});
 			});
 		}

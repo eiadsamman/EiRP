@@ -276,7 +276,7 @@
 	color: #fff;
 	border-radius: 12px;
 	margin-bottom: 12px;
-	border: solid 1px var(--input-border);
+	border: solid 1px var(--input_border-color);
 	/* background-image: linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.4)); */
 	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }

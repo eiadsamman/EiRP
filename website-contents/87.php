@@ -39,17 +39,12 @@ if ($app->xhttp) {
 }
 
 use System\Template\Gremium;
-
 $grem = new Gremium\Gremium(true);
-
 $grem->header()->serve("<h1>{$fs()->title}</h1>");
-
-
 $grem->menu()->open();
 echo "<span class=\"gap\"></span>";
 echo "<button class=\"edge-left\" id=\"js-button-update\" type=\"button\">Update rates table</button>";
 $grem->getLast()->close();
-
 $grem->article()->open();
 ?>
 	<div class="form predefined">
@@ -70,13 +65,13 @@ $grem->article()->open();
 $grem->getLast()->close();
 
 echo "<br />";
-$grem->title()->serve("<span class=\"flex\">Exchange rates table</span>");
+$grem->title()->serve("<span class=\"flex\">Rates conversion</span>");
 $grem->article()->open();
 
 echo <<<HTML
 <form id="js-form">
 	<input type="hidden" name="request" value="update" />
-	<table class="bom-table">
+	<table class="bom-table form-table">
 		<thead style="display:none;">
 			<tr>
 				<td>Sell</td>
@@ -96,7 +91,9 @@ if ($r) {
 		echo <<<HTML
 		<tr>
 			<td class="btn-set">
-				<label style="min-width:54px">{$row['cur_shortname']}</label>
+				<span style="width:50px;">1.00</span>
+				<span style="min-width:50px;font-weight:bold">{$row['cur_shortname']}</span>
+				<span style="width:40px;text-align:center">=</span>
 				<input 
 					title = "{$row['cur_name']}" 
 					type = "text" 
@@ -106,6 +103,7 @@ if ($r) {
 					/>
 				<span>{$app->currency->shortname}</span>
 			</td>
+			<td width="100%"></td>
 		</tr>
 		HTML;
 	}

@@ -172,14 +172,15 @@ if ($_SHIFT) {
 		$(".popupInfo > a").on('click', function(e) {
 			e.preventDefault();
 			var $this = $(this);
-			popup.show("Loading");
+			overlay.show();
 
 			var $ajax = $.ajax({
 				type: "POST",
 				url: $this.attr("href") + "&ajax",
 				data: ""
 			}).done(function(data) {
-				popup.show(data);
+				overlay.hide();
+				popup.content(data).show();
 				$("#jQclosePopup").focus();
 			});
 			return false;

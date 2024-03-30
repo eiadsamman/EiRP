@@ -219,9 +219,9 @@ if ($statement) { ?>
 					<div class="o-flex right">
 						<div class="o-title">التاريــــــــــــــــــــــــــخ</div>
 						<div class="o-content"><?php echo date("Y-m-d", $statement['acm_ctime']); ?></div>
-						<div style="flex:1;text-align: center;"><img src="<?= $app->http_root . $fs(15)->dir . "/?c=" . $app->translate_prefix(13, $statement['acm_id']) . "&f=1&t=20"; ?>" /></div>
+						<div style="flex:1;text-align: center;"><img src="<?= $app->http_root . $fs(15)->dir . "/?c=" . $app->translatePrefix(13, $statement['acm_id']) . "&f=1&t=20"; ?>" /></div>
 						<div class="o-title" style="min-width:auto;">رقم</div>
-						<div class="o-content"><?php echo $app->translate_prefix(13, $statement['acm_id']); ?></div>
+						<div class="o-content"><?php echo $app->translatePrefix(13, $statement['acm_id']); ?></div>
 
 					</div>
 				</td>
@@ -281,7 +281,7 @@ if ($statement) { ?>
 
 						<div style="flex: 1;"></div>
 						<div class="o-title">رقم الحساب</div>
-						<div class="o-content"><?php echo $app->padding_prefix(10, $statement['comp_id']) . "-" . $app->padding_prefix(12, $statement['atm_account_id']) . "-" . $app->padding_prefix(14, $app->user->account->currency->id); ?></div>
+						<div class="o-content"><?php echo $app->paddingPrefix(10, $statement['comp_id']) . "-" . $app->paddingPrefix(12, $statement['atm_account_id']) . "-" . $app->paddingPrefix(14, $app->user->account->currency->id); ?></div>
 					</div>
 				</td>
 			</tr>

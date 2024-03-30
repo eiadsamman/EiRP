@@ -6,7 +6,11 @@ namespace System\Finance;
 
 class Currency
 {
-	public function __construct(public ?int $id = null, public ?string $name = null, public ?string $symbol = null, public ?string $shortname = null)
-	{
+	public function __construct(
+		public ?int $id = null,
+		public ?string $name = null,
+		public ?string $symbol = null,
+		public ?string $shortname = null
+	) {
 	}
 }

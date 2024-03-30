@@ -1,34 +1,84 @@
-/* CSS Document */
-.jqpopup {
-	display: none;
-	position: fixed;
-	inset: 0 0 0 0;
-	padding-top: 80px;
-	background-color: var(--root-modal-background-color);
-	z-index: 39;
+@keyframes hide {
+	0% {
+		display: flex;
+	}
 
+	100% {
+		display: none;
+		opacity: 0;
+	}
+}
+
+@keyframes show {
+	0% {
+		opacity: 0;
+		display: flex;
+	}
+}
+
+.appHtmlPopup {
+	position: fixed;
+	display: none;
+	align-items: start;
+	justify-content: center;
+	inset: var(--root--menubar-height) 0 0 0;
+	padding-top: 20px;
+	min-height: 200px;
+	overflow-y: hidden;
+	z-index: 39;
+	background-color: var(--root-modal-background-color);
 	backdrop-filter: blur(4px);
 	-webkit-backdrop-filter: blur(4px);
 	-moz-backdrop-filter: blur(4px);
-	padding-bottom: 300px;
+	animation: hide var(--transition-speed) forwards;
+}
+
+.appHtmlPopup[open] {
+	animation: show var(--transition-speed) forwards;
+	display: flex;
+	opacity: 1;
+}
+
+.appHtmlPopup>form {
 	overflow-y: auto;
-}
-
-.jqpopup>span {
-	display: inline-block;
-	vertical-align: top;
-}
-
-.jqpopup>div {
-	display: inline-block;
-	vertical-align: middle;
-	padding: 15px;
-	border: solid 1px var(--root-ribbon-border-color);
-	min-width: 400px;
-	max-width: var(--dim-max-width);
-
-	background-color: var(--root-modal-background-color);
+	overflow-x: auto;
 	text-align: left;
-	box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.2);
+	margin: 0px;
+	min-width: 250px;
+	max-width: var(--dim-max-width);
+	max-height: calc(100% - 20px);
 
+	box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.2);
+	border: solid 1px var(--root-ribbon-border-color);
+	background-color: var(--root-background-color_backdrop);
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+}
+
+
+.appHtmlPopup>form::-webkit-scrollbar {
+	width: 5px;
+}
+
+.appHtmlPopup>form:hover::-webkit-scrollbar-thumb {
+	background-color: var(--input-hover_border-color);
+}
+
+.appHtmlPopup>form::-webkit-scrollbar-thumb {
+	background-color: var(--input_border-color);
+}
+
+@media only screen and (max-width: 624px) {
+	.appHtmlPopup {
+		padding-top: 0px;
+	}
+
+	.appHtmlPopup>form {
+		flex: 1;
+		height: 100% !important;
+		max-height: 100%;
+		box-shadow: none;
+		border: none;
+	}
 }

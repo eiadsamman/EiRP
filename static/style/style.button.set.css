@@ -77,8 +77,8 @@
 .btn-set>input,
 .btn-set>textarea {
 	max-width: 100%;
-	border-bottom: solid 2px var(--input-border);
-	border-color: var(--input-border);
+	border-bottom: solid 2px var(--input_border-color);
+	border-color: var(--input_border-color);
 }
 
 .btn-set>a:hover,
@@ -86,7 +86,7 @@
 .btn-set>label:hover,
 .btn-set>textarea:hover {
 	text-decoration: none;
-	border-color: var(--input_hover-color);
+	border-color: var(--input-hover_border-color);
 	z-index: 12;
 
 }
@@ -95,7 +95,7 @@
 .btn-set>input:focus,
 .btn-set>label:focus,
 .btn-set>textarea:focus {
-	border-color: var(--input_active-color);
+	border-color: var(--input-active_border-color);
 	/* -webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	box-shadow: 0 0 4px rgba(82, 168, 236, .7); */
@@ -137,21 +137,21 @@
 	padding: 0px 15px;
 	font-size: 1em;
 	cursor: pointer;
-	border: solid 1px var(--input-border);
-	background-color: var(--input-bgcolor);
+	border: solid 1px var(--input_border-color);
+	background-color: var(--input_background-color);
 }
 
 .btn-set>input[type=button]:hover {
-	border-color: var(--input_hover-color);
+	border-color: var(--input-hover_border-color);
 }
 
 .btn-set>input[type=button]:active {
-	background-color: var(--input_focus-color);
+	background-color: var(--input-focus_border-color);
 }
 
 .btn-set>input[type=button]:active,
 .btn-set>input[type=button]:focus {
-	border-color: var(--input_active-color);
+	border-color: var(--input-active_border-color);
 	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
@@ -177,27 +177,27 @@
 
 .btn-set>button:first-child,
 .btn-set>*.edge-left {
-	border-top-left-radius: var(--input-border-radius);
-	border-bottom-left-radius: var(--input-border-radius);
+	border-top-left-radius: var(--input_border-radius);
+	border-bottom-left-radius: var(--input_border-radius);
 }
 
 .btn-set>button:last-child,
 .btn-set>*.edge-right {
-	border-top-right-radius: var(--input-border-radius);
-	border-bottom-right-radius: var(--input-border-radius);
+	border-top-right-radius: var(--input_border-radius);
+	border-bottom-right-radius: var(--input_border-radius);
 }
 
 .btn-set>span.slo-wrap:first-child>button,
 .btn-set>span.slo-wrap.edge-left>button {
-	border-top-left-radius: var(--input-border-radius);
-	border-bottom-left-radius: var(--input-border-radius);
+	border-top-left-radius: var(--input_border-radius);
+	border-bottom-left-radius: var(--input_border-radius);
 	padding-left: 10px;
 }
 
 .btn-set>span.slo-wrap:last-child>button,
 .btn-set>span.slo-wrap.edge-right>button {
-	border-top-right-radius: var(--input-border-radius);
-	border-bottom-right-radius: var(--input-border-radius);
+	border-top-right-radius: var(--input_border-radius);
+	border-bottom-right-radius: var(--input_border-radius);
 	padding-right: 10px;
 }
 
@@ -321,6 +321,10 @@
 	height: 30px;
 }
 
+.btn-set>label.disabled {
+	color: var(--root-font-lightcolor) !important;
+}
+
 .btn-set>label>input[type=checkbox] {
 	appearance: none;
 	padding-right: 20px;
@@ -330,7 +334,7 @@
 	content: " ";
 	display: block;
 	position: absolute;
-	border: solid 3px var(--input-border);
+	border: solid 3px var(--input_border-color);
 	border-radius: 10px;
 	height: 10px;
 	width: 10px;
@@ -350,7 +354,11 @@
 
 .btn-set>label>input[type=checkbox]:hover::before {
 	background-color: var(--bomtable-background-color);
-	border-color: var(--input_hover-color);
+	border-color: var(--input-hover_border-color);
+}
+
+.btn-set>label>input[type=checkbox]:disabled::before {
+	border-color: var(--input_border-color) !important;
 }
 
 .btn-set>label>input[type=checkbox]::after {
@@ -363,7 +371,7 @@
 	width: 6px;
 	height: 6px;
 	transform: scale(0);
-	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 
 .btn-set>label>input[type=checkbox]:checked::before {
@@ -374,6 +382,9 @@
 	transform: scale(1);
 }
 
+.btn-set>label>input[type=checkbox]:disabled::after {
+	background-color: var(--input_border-color)
+}
 
 /* #endregion - Checkbox*/
 

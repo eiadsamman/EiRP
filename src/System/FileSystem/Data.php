@@ -20,7 +20,7 @@ class Data
 	public string $parameters = "";
 	public array $headers = array();
 	public array $cdns = array();
-	public int $loader = 0;
+	public ?string $loader = null;
 
 	public Permission $permission;
 }

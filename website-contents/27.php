@@ -51,7 +51,7 @@ $grem->article()->width("600px")->serve(
 		<label>
 			<h1>Name</h1>
 			<div class="btn-set">
-				<input type="text" class="flex" tabindex="-1" value="{$app->user->info->name}" readonly="readonly" />
+				<input type="text" class="flex" tabindex="-1" value="{$app->user->info->firstname} {$app->user->info->lastname}" readonly="readonly" />
 			</div>
 		</label>
 	</div>

@@ -30,11 +30,11 @@ if (isset($_POST['serial'])) {
 		if ($ratt) {
 			header("ATT_RESULT: OK");
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
-			echo $att->info->name;
+			echo $att->info->fullName();
 		} else {
 			header("ATT_RESULT: FAIL");
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
-			echo $att->info->name;
+			echo $att->info->fullName();
 		}
 	} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
 		header("ATT_RESULT: NOTFOUND");
@@ -42,7 +42,7 @@ if (isset($_POST['serial'])) {
 	} catch (System\Individual\Attendance\ExceptionCheckedout $e) {
 		header("ATT_RESULT: DUPLICATE");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
-		echo $att->info->name;
+		echo $att->info->fullName();
 	}
 	exit;
 }

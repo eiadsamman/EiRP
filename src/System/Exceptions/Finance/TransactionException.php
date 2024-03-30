@@ -10,4 +10,5 @@ use System\Exceptions\Finance\Finance;
 
 class TransactionException extends Finance
 {
+	protected $message = "Transaction posting failed";
 }

@@ -1,59 +1,161 @@
-(function ($) {
-	$.popup = function (options) {
-		var settings = jQuery.extend({
-			onshow: function () { },
-			onhide: function () { },
-			onboundaryclick: function (fn) {
-				fn.hide();
-			},
-			loading: "Loading..."
-		}, options);
-		var container = $("<span />"),
-			vertical = $("<span />"),
-			content = $("<div />")
-		var hide = function () {
-			if (typeof (settings.onhide) == "function") {
-				settings.onhide.call(this);
-			}
-		}
-		var output = {
-			'show': function (data) {
-				content.html(data);
-				container.show();
-				return output;
-			},
-			'hide': function () {
-				content.empty();
-				container.hide();
-				return output;
-			},
-			'self': function () {
-				return content;
-			},
-			'onboundaryclick': function (fn) {
-				settings.onouterareaclick = fn;
-			},
-			'init': function () {
-				var _this = this;
-				container.addClass("jqpopup");
-				container.append(vertical);
-				container.append(content);
+class Modals extends EventTarget {
+	static #queue = [];
+	static #isRaised = false;
 
-				$("body").prepend(container);
-				if (1 == 1) {/*Disable close on clicking out of window*/
-					container.on('click', function (e) {
-						if (e.target == container[0]) {
-							settings.onboundaryclick.call(this, _this);
-						}
-					});
+	isOpen = false;
+	controlContainer;
+	controlContent;
+
+	#eventClose = new Event("close");
+	#eventShow = new Event("show");
+	#eventSubmit = new Event("submit");
+
+	constructor() { super(); }
+	static raiseEvents() {
+		if (Modals.#isRaised) return;
+		Modals.#isRaised = true;
+		document.addEventListener("keydown", (e) => {
+			if (e.key == "Escape") {
+				const queueObject = Modals.#getObject();
+				if (queueObject) {
+					queueObject.close();
 				}
-				content.html("");
 			}
+		});
+	}
+	static #getObject() {
+		if (Modals.#queue.length > 0) {
+			const que = Modals.#queue.pop();
+			if (que.isOpen) {
+				return que;
+			}
+			Modals.#getObject();
 		}
-		output.init();
-		return output;
-	};
+		return false;
+	}
+	static add(object) {
+		Modals.#queue.push(object);
+	}
 
+	controller() {
+		return this.controlContainer;
+	}
+	content(data) {
+		this.controlContent.innerHTML = data;
+		return this;
+	}
+	destroy() {
+		this.isOpen = null;
+		setTimeout(() => {
+			this.controlContent.remove();
+			this.controlContainer.remove();
+		}, 300);
+	}
+
+	dispatchSubmitEvent() {
+		this.controlContent.addEventListener("submit", (e) => {
+			e.preventDefault();
+			this.dispatchEvent(this.#eventSubmit);
+			return false;
+		});
+	}
+	height(height) {
+		this.controlContent.style.height = height;
+	}
+	show() {
+		this.isOpen = true;
+		let controlPreviousBtn = this.controlContent.querySelectorAll("[data-role=\"previous\"]");
+		if (controlPreviousBtn) {
+			controlPreviousBtn.forEach((e) => {
+				e.addEventListener("click", (e) => {
+					e.preventDefault();
+					this.close();
+					return false;
+				})
+			});
+		}
+
+		Modals.add(this);
+		this.dispatchEvent(this.#eventShow);
+	}
+	close() {
+		this.isOpen = false;
+		this.dispatchEvent(this.#eventClose);
+	}
+
+}
+class Dialog extends Modals {
+	constructor(elementId = null) {
+		super();
+		if (elementId == null) {
+			this.controlContainer = document.createElement("dialog");
+			document.body.appendChild(this.controlContainer);
+		} else {
+			this.controlContainer = document.getElementById(elementId);
+			this.controlContainer.classList.add("appHtmlDialog");
+			this.controlContent = this.controlContainer.querySelector("div");
+		}
+		this.controlContainer.classList.add("appHtmlDialog");
+		Modals.raiseEvents();
+		return this;
+	}
+	show() {
+		super.show();
+		this.controlContainer.showModal();
+		return this;
+	}
+	close() {
+		super.close();
+		this.controlContainer.close();
+		return this;
+	}
+}
+
+class Popup extends Modals {
+	constructor(elementId = null) {
+		super();
+		this.controlContainer = document.createElement("span");
+		this.controlContainer.classList.add("appHtmlPopup");
+		document.body.appendChild(this.controlContainer);
+
+		if (elementId == null) {
+			this.controlContent = document.createElement("form");
+			this.controlContainer.appendChild(this.controlContent);
+
+		} else {
+			this.controlContent = document.getElementById(elementId);
+			this.controlContainer.appendChild(this.controlContent);
+		}
+
+		if (this.controlContent.tagName == "FORM") {
+			super.dispatchSubmitEvent();
+		}
+		Modals.raiseEvents();
+		return this;
+	}
+
+	show() {
+		super.show();
+		this.controlContainer.setAttribute("open", null);
+		return this;
+	}
+	close() {
+		super.close();
+		this.controlContainer.removeAttribute("open");
+		return this;
+	}
+}
+document.addEventListener('DOMContentLoaded', () => {
+	const popup = new Popup();
+}, false);
+
+
+
+
+
+
+
+(function ($) {
 	$.msgsys = function (options) {
 		var settings = jQuery.extend({
 			fadeuration: 300,
@@ -182,12 +284,10 @@
 })(jQuery);
 
 
-
-var popup = null;
 var messagesys = null;
 var overlay = null;
+
 $(document).ready(function () {
-	popup = $.popup();
 	messagesys = $.msgsys();
 	overlay = $.overlay();
 });

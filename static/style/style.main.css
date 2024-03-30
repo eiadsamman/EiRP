@@ -54,11 +54,11 @@
 /* #region Global Configs*/
 :root {
 	--font: Verdana, 'Noto', 'Galada', sans-serif;
-	--dim-max-width: 1400px;
+	--dim-max-width: 1200px;
 	--font-size: 13px;
 	--root--menubar-height: 49px;
 	--gremium-header-height: 0px;
-	--transition-speed: 0.5s;
+	--transition-speed: .3s;
 }
 
 pre {
@@ -141,16 +141,12 @@ select {
 	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }
 
-
 input[type=text]::placeholder,
 input[type=number]::placeholder,
 input[type=password]::placeholder,
 textarea::placeholder {
-	color: var(--input-placeholder-color);
+	color: var(--input-placeholder_color);
 }
-
-
-
 
 button,
 input[type=button] {
@@ -160,9 +156,6 @@ input[type=button] {
 	border: solid 1px var(--root-button-border-color);
 	background-color: var(--root-button-background-color);
 }
-
-
-
 
 input[type=text]:disabled,
 input[type=number]:disabled {
@@ -225,9 +218,9 @@ body::-webkit-scrollbar-track {
 } */
 
 body::-webkit-scrollbar-thumb {
-	border-right: solid 1px var(--input-border);
-	background-color: var(--input_hover-color);
-	/* background-color: var(--input_hover-color); */
+	border-right: solid 1px var(--input_border-color);
+	background-color: var(--input-hover_border-color);
+	/* background-color: var(--input-hover_border-color); */
 }
 
 /* #endregion */
@@ -307,13 +300,12 @@ span.header-menu {
 span.header-menu.show {
 	top: 48px;
 	visibility: visible;
-	opacity: 1;
-	/* transition: visibility 0.05s, opacity 0.05s linear, top 0.05s; */
+	opacity: .95;
 }
 
 span.header-menu.hide {
 	visibility: hidden;
-	/* transition: .5s; */
+	opacity: 0;
 }
 
 span.header-menu>div {
@@ -336,7 +328,22 @@ span.header-menu>div>div {
 	box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 	border: solid 1px var(--root-ribbon-border-color);
 	background: var(--root-ribbon-menu-background-color);
+	overscroll-behavior: contain
 }
+
+span.header-menu>div>div::-webkit-scrollbar {
+	width: 5px;
+}
+
+span.header-menu>div>div:hover::-webkit-scrollbar-thumb {
+	background-color: var(--input-hover_border-color);
+}
+
+span.header-menu>div>div::-webkit-scrollbar-thumb {
+	background-color: var(--input_border-color);
+}
+
+
 
 span.header-menu>div>div>div.menu-items {
 	text-align: left;
@@ -366,7 +373,7 @@ span.header-menu.lefthand>div>div>div.menu-items b {
 	display: block;
 	padding: 14px;
 	position: relative;
-	color: var(--input_hover-color);
+	color: var(--input-hover_border-color);
 }
 
 span.header-menu.lefthand>div>div>div.menu-items b.nested:before {
@@ -768,6 +775,7 @@ span.vs-remove {
 
 /* #endregion General*/
 
+
 /* #region Split View */
 .split-view {
 	display: flex;
@@ -778,6 +786,13 @@ span.vs-remove {
 	flex: 2;
 	position: relative;
 	max-width: 400px;
+	overflow-x: hidden;
+	transition: width 0.3s ease, max-width 0.3s ease;
+}
+
+.split-view>div.panel.hide {
+	max-width: 0px;
+	width: 0px;
 }
 
 .split-view>div.body {
@@ -793,58 +808,67 @@ span.vs-remove {
 }
  */
 
-div#PanelNavigator-Scroll {
+.split-view>div.panel>div {
 	top: var(--root--menubar-height);
 	position: sticky;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
 	/* scrollbar-width: thin; */
 	outline: none;
 	max-height: calc(100vh - var(--root--menubar-height));
 	margin-right: 10px;
 	scroll-padding-top: 115px;
+	min-width: 200px;
 }
 
-div#PanelNavigator-Scroll::-webkit-scrollbar {
+.split-view>div.panel>div::-webkit-scrollbar {
 	width: 5px;
 }
 
-div#PanelNavigator-Scroll:hover::-webkit-scrollbar-thumb {
-	background-color: var(--input_hover-color);
+.split-view>div.panel>div:hover::-webkit-scrollbar-thumb {
+	background-color: var(--input-hover_border-color);
 }
 
-div#PanelNavigator-Scroll::-webkit-scrollbar-thumb {
-	background-color: var(--input-border);
+.split-view>div.panel>div::-webkit-scrollbar-thumb {
+	background-color: var(--input_border-color);
 }
 
-div#PanelNavigator-Scroll div.panel-item {
+.split-view>div.panel>div a.panel-item {
+	display: block;
 	border-bottom: solid 1px var(--bomtable-border-color);
 	min-height: 100px;
 	padding: 10px;
 	position: relative;
 	cursor: default;
 	transition: background-color 0.2s ease;
+	color: var(--root-font-color);
 }
 
-div#PanelNavigator-Scroll div.panel-item.active {
+.split-view>div.panel>div a.panel-item:not(.place-holder) {
+	cursor: pointer;
+}
 
+.split-view>div.panel>div a.panel-item.active {
 	background-color: var(--bomtable-hover-color);
 }
 
-div#PanelNavigator-Scroll div.panel-item:not(.place-holder):hover {
+.split-view>div.panel>div a.panel-item:not(.place-holder):hover,
+.split-view>div.panel>div a.panel-item:not(.place-holder):active,
+.split-view>div.panel>div a.panel-item:not(.place-holder):focus {
 	outline: solid 2px var(--button-border);
 	border-radius: 2px;
 	text-decoration: none;
 	z-index: 2;
 }
 
-div#PanelNavigator-Scroll div.panel-item:last-child {
+.split-view>div.panel>div a.panel-item:last-child {
 	border-bottom: none;
 	margin-bottom: 0;
 }
 
-div#PanelNavigator-Scroll div.panel-item.place-holder::after,
-div#PanelNavigator-Scroll div.panel-item.place-holder::before {
+.split-view>div.panel>div a.panel-item.place-holder::after,
+.split-view>div.panel>div a.panel-item.place-holder::before {
 	height: 12px;
 	display: inline-block;
 	content: " ";
@@ -859,18 +883,16 @@ div#PanelNavigator-Scroll div.panel-item.place-holder::before {
 	position: absolute;
 }
 
-div#PanelNavigator-Scroll div.panel-item.place-holder::after {
+.split-view>div.panel>div a.panel-item.place-holder::after {
 	top: 15px;
 	width: 100px;
 }
 
-div#PanelNavigator-Scroll div.panel-item.place-holder::before {
+.split-view>div.panel>div a.panel-item.place-holder::before {
 	top: 37px;
 	left: 10px;
 	right: 10px;
 }
-
-
 
 
 div#PanelNavigator-LoadingScreen {
@@ -967,13 +989,11 @@ span.loadingScreen-placeholderBody>span:last-child {
 
 /* #endregion */
 
-
-
-
 /* #region Media*/
 @media only screen and (max-width: 1080px) {
 	.split-view>div.panel {
-		display: none;
+		width: 0px;
+		max-width: 0px;
 	}
 }
 
@@ -1027,6 +1047,22 @@ span.loadingScreen-placeholderBody>span:last-child {
 
 	span.header-menu.lefthand>div>div>div.menu-items b.nested:before {
 		top: 17px;
+	}
+
+	span.header-menu.lefthand>div>div,
+	span.header-menu.righthand>div>div {
+		left: 0px;
+		right: 0px;
+	}
+
+	span.header-menu>div>div {
+		padding: 0;
+		margin: 0;
+		max-height: 100%;
+		height: 100%;
+		position: fixed;
+		border: none;
+		inset: var(--root--menubar-height) 0px 0px 0px;
 	}
 }
 

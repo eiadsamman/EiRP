@@ -24,24 +24,34 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "update") {
 	$employeeID = (int) $_POST['id'];
 	$r = $app->db->query(
 		"SELECT
-			usr_firstname,usr_lastname,
-			usr_id,usr_username,usr_phone_list,
-			gnd_name,gnd_id,
-			lsf_id,lsf_name,
-			lty_id,lty_name,lsc_name,
-			ldn_id,ldn_name,
-			DATE_FORMAT(usr_birthdate,'%d %M, %Y') AS usr_birthdate_format,
+			usr_firstname,
+			usr_lastname,
+			usr_id,
+			usr_username,
+			usr_phone_list,
 			usr_birthdate,
-			DATE_FORMAT(lbr_registerdate,'%d %M, %Y') AS lbr_registerdate_format,
-			lbr_registerdate AS lbr_registerdate,
-			DATE_FORMAT(lbr_resigndate,'%d %M, %Y') AS lbr_resigndate_format,
-			lbr_resigndate AS lbr_resigndate,
+
+			lbr_registerdate,
+			lbr_resigndate,
 			lbr_socialnumber,
+			
+			comp_id,
+			comp_name,
+			
+			gnd_name,
+			gnd_id,
+
+			lsf_id,lsf_name,
+			lty_id,lty_name,
+			lsc_name,
+			
+			ldn_id,ldn_name,
+
+			
 			trans_name,trans_id,lbr_mth_name,lbr_mth_id,lwt_name,lwt_id,
 			lbr_id,up_id,cntry_name,cntry_id,
 			lbr_fixedsalary,lbr_variable,lbr_allowance,lbr_trans_allowance,
 			lbr_typ_sal_basic_salary,lbr_typ_sal_variable,lbr_typ_sal_allowance,lbr_typ_sal_transportation,
-			comp_id,comp_name,
 			lbr_role
 		FROM
 			labour
@@ -98,7 +108,6 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 	$grem->title()->serve("<span class=\"flex\">Personal Information</span>");
 	$grem->article()->open();
 	?>
-
 	<?php if ($arr_array_input != false) { ?>
 		<div class="form predefined">
 			<label>
@@ -130,11 +139,10 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 		<label>
 			<h1>Birthdate</h1>
 			<div class="btn-set">
-				<input type="text" name="birthdate" class="flex" id="slobirthdate" data-slo="BIRTHDATE" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_birthdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['usr_birthdate']}\" " : ""; ?>>
+				<input type="text" name="birthdate" class="flex" id="slobirthdate" data-slo="BIRTHDATE" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_birthdate'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['usr_birthdate']}\" " : ""; ?>>
 			</div>
 		</label>
 	</div>
-
 	<div class="form predefined">
 		<label>
 			<h1>Nationality</h1>
@@ -142,12 +150,16 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<input type="text" name="nationality" id="slonationality" class="flex" data-slo="COUNTRIES" value="<?php echo $arr_array_input != false ? $arr_array_input['cntry_name'] : ""; ?>" <?php echo $arr_array_input != false ? "data-slodefaultid=\"{$arr_array_input['cntry_id']}\" " : ""; ?>>
 			</div>
 		</label>
+		<label>
+			<h1>Contact number</h1>
+			<div class="btn-set">
+				<input name="phone_list" id="phone_list" class="flex" value="<?php echo $arr_array_input != false ? $arr_array_input['usr_phone_list'] : ""; ?>" />
+			</div>
+		</label>
 	</div>
-
-
 	<div class="form predefined">
 		<label for="">
-			<h1>Identification</h1>
+			<h1>ID Card</h1>
 			<div class="btn-set">
 				<span id="js_upload_count_1" class="js_upload_count"><span>0</span></span>
 				<input type="button" id="js_upload_trigger_1" class="js_upload_trigger" data-db_rel="usr_attrib_s2" value="Upload" />
@@ -171,8 +183,6 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 			</div>
 		</label>
 	</div>
-
-
 	<div class="form predefined">
 		<label for="">
 			<h1>Personal photo</h1>
@@ -198,18 +208,6 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 			</div>
 		</label>
 	</div>
-
-
-	<div class="form predefined">
-		<label>
-			<h1>Phone numbers</h1>
-			<div class="btn-set">
-				<textarea name="phone_list" id="phone_list" style="width:100%;height:66px;"><?php echo $arr_array_input != false ? $arr_array_input['usr_phone_list'] : ""; ?></textarea>
-			</div>
-		</label>
-	</div>
-
-
 	<div class="form predefined">
 		<label>
 			<h1>Residence</h1>
@@ -226,7 +224,6 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 			</div>
 		</label>
 	</div>
-
 	<?php
 	$grem->getLast()->close();
 } ?>
@@ -247,14 +244,20 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 				<input type="text" class="flex" name="company" id="slocompany" data-slo="COMPANY_USER" value="<?php echo $arr_array_input != false ? $arr_array_input['comp_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['comp_id']}\" " : ""; ?>>
 			</div>
 		</label>
+		<label>
+			<h1>Job title</h1>
+			<div class="btn-set">
+				<input type="text" name="jobtitle" class="flex" id="slotype" data-slo="E002A" value="<?php echo $arr_array_input != false ? $arr_array_input['lsc_name'] . ", " . $arr_array_input['lty_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lty_id']}\" " : ""; ?>>
+			</div>
+		</label>
 	</div>
 
-	<div class="form predefined">
+	<div class="form predefined" style="display:none">
 		<label for="">
 			<h1>Role</h1>
 			<div class="btn-set">
 				<?php
-				$r = array(1 => false, 2 => false, 3 => false);
+				$r = array(0 => 0, 1 => false, 2 => false, 3 => false);
 				$r[1] = isset($_POST['frole']) && $_POST['frole'] == 1 ? true : false;
 				$r[2] = isset($_POST['frole']) && $_POST['frole'] == 2 ? true : false;
 				$r[3] = isset($_POST['frole']) && $_POST['frole'] == 3 ? true : false;
@@ -262,20 +265,20 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 				$r[2] = $arr_array_input == false ? $r[2] : (sprintf('%03b', $arr_array_input['lbr_role'])[1] == "1" ? true : false);
 				$r[3] = $arr_array_input == false ? $r[3] : (sprintf('%03b', $arr_array_input['lbr_role'])[0] == "1" ? true : false);
 				?>
-				<label class="btn-checkbox"><input type="checkbox" name="role[1]" <?php echo $r[1] ? "checked=\"checked\"" : ""; ?> /> <span>Employee</span></label>
-				<label class="btn-checkbox"><input type="checkbox" name="role[2]" <?php echo $r[2] ? "checked=\"checked\"" : ""; ?> /> <span>Client</span></label>
-				<label class="btn-checkbox"><input type="checkbox" name="role[3]" <?php echo $r[3] ? "checked=\"checked\"" : ""; ?> /> <span>Vendor</span></label>
-
+				<label class="btn-checkbox">
+					<input type="checkbox" name="role[1]" <?php echo $r[1] ? " checked=\"checked\" " : ""; ?> /><span>Employee</span>
+				</label>
+				<label class="btn-checkbox"><input type="checkbox" name="role[2]" <?php echo $r[2] ? "checked=\"checked\"" : ""; ?> /><span>Client</span></label>
+				<label class="btn-checkbox"><input type="checkbox" name="role[3]" <?php echo $r[3] ? "checked=\"checked\"" : ""; ?> /><span>Vendor</span></label>
 			</div>
 		</label>
 	</div>
-
 
 	<div class="form predefined">
 		<label>
 			<h1>Register date</h1>
 			<div class="btn-set">
-				<input type="text" name="regdate" class="flex" id="sloregdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_registerdate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_registerdate']}\" " : ""; ?>>
+				<input type="text" name="regdate" class="flex" id="sloregdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_registerdate'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_registerdate']}\" " : ""; ?>>
 			</div>
 		</label>
 
@@ -283,7 +286,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 			<label>
 				<h1>Resign date</h1>
 				<div class="btn-set">
-					<input type="text" name="resdate" class="flex" id="sloresdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_resigndate_format'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_resigndate']}\" " : ""; ?>>
+					<input type="text" name="resdate" class="flex" id="sloresdate" data-slo="DATE" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_resigndate'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_resigndate']}\" " : ""; ?>>
 
 				</div>
 			</label>
@@ -294,12 +297,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 
 
 	<div class="form predefined">
-		<label>
-			<h1>Job title</h1>
-			<div class="btn-set">
-				<input type="text" name="jobtitle" class="flex" id="slotype" data-slo="E002A" value="<?php echo $arr_array_input != false ? $arr_array_input['lsc_name'] . ", " . $arr_array_input['lty_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lty_id']}\" " : ""; ?>>
-			</div>
-		</label>
+
 
 		<label>
 			<h1>Payment method</h1>
@@ -307,11 +305,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 				<input type="text" name="payment" class="flex" id="slopayment" data-slo="SALARY_PAYMENT_METHOD" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_mth_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_mth_id']}\" " : ""; ?>>
 			</div>
 		</label>
-	</div>
 
-
-
-	<div class="form predefined">
 		<label>
 			<h1>Working shift</h1>
 			<div class="btn-set">

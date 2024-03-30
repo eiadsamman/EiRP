@@ -195,7 +195,7 @@ if ($doc_id) {
 
 		echo $_TEMPLATE->CommandBarStart();
 		echo "<div class=\"btn-set\">";
-		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/?docid={$doc_mr['po_id']}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . "</a>";
+		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/?docid={$doc_mr['po_id']}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . "</a>";
 		echo "<span>New Quotation</span>";
 		echo "<span class=\"gap\"></span>";
 		if (is_null($doc_mr['po_close_date'])) {
@@ -211,7 +211,7 @@ if ($doc_id) {
 		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Material Request Information</span>");
 		$_TEMPLATE->NewFrameBody('
 			<div class="template-gridLayout">
-				<div><span>Number</span><div>' . $app->translate_prefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . '</div></div>
+				<div><span>Number</span><div>' . $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_mr['po_serial']) . '</div></div>
 				<div><span>Title</span><div>' . $doc_mr['po_title'] . '</div></div>
 				<div></div>
 			</div>

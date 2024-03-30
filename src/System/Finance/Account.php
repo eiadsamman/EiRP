@@ -3,22 +3,14 @@ declare(strict_types=1);
 
 namespace System\Finance;
 
-use System\Company;
 use System\Exceptions\Finance\AccountNotFoundException;
+use System\Profiles\CompanyProfile;
+use System\Profiles\AccountProfile;
 
 
-class Account
+class Account extends AccountProfile
 {
-	public int $id;
-	public string $name;
-	public float|null $balance;
-
-	public Type $type;
-	public Currency $currency;
-	public AccountRole $role;
-	public Company $company;
-
-
+	private ?AccountRole $accessRole;
 
 	public function __toString(): string
 	{
@@ -32,13 +24,21 @@ class Account
 		], true);
 	}
 
-	public function __construct(private \System\App &$app, int $account_id, ?AccountRole $role = null)
+	public function __construct(protected \System\App &$app, int $accountId, ?AccountRole $role = null)
 	{
-
 		if ($role == null) {
-			$role = new AccountRole();
-			$role->access = true;
+			$this->accessRole         = new AccountRole();
+			$this->accessRole->access = true;
+		} else {
+			$this->accessRole = $role;
 		}
+
+		$this->load($accountId);
+	}
+
+
+	public function load(int $accountId): bool
+	{
 		if (
 			$mysqli_result = $this->app->db->query(
 				"SELECT 
@@ -48,43 +48,45 @@ class Account
 				FROM 
 					acc_accounts
 						JOIN currencies ON cur_id = prt_currency
-						JOIN user_partition ON upr_prt_id = prt_id AND upr_usr_id = {$this->app->user->info->id} AND {$role->sqlClause()}
+						JOIN user_partition ON upr_prt_id = prt_id AND upr_usr_id = {$this->app->user->info->id} AND {$this->accessRole->sqlClause()}
 						JOIN acc_accounttype ON ptp_id = prt_type
 						JOIN companies ON comp_id = prt_company_id
 				WHERE 
-					prt_id = $account_id;"
+					prt_id = $accountId;"
 			)
 		) {
 
 			if ($mysqli_result->num_rows > 0 && $row = $mysqli_result->fetch_assoc()) {
-				$this->currency = new \System\Finance\Currency();
-				$this->role = new \System\Finance\AccountRole();
-				$this->id = (int) $row['prt_id'];
-				$this->name = $row['prt_name'];
-				$this->company = new Company();
-				$this->company->id = (int) $row['prt_company_id'];
-				$this->company->name = $row['comp_name'];
-				$this->currency->id = (int) $row['cur_id'];
-				$this->currency->name = $row['cur_name'] ?? "";
-				$this->currency->symbol = $row['cur_symbol'] ?? "";
+				$this->internalId          = (int) $row['prt_id'];
+				$this->id                  = (int) $row['prt_id'];
+				$this->currency            = new \System\Finance\Currency();
+				$this->role                = new \System\Finance\AccountRole();
+				$this->company             = new CompanyProfile();
+				$this->type                = new Type();
+
+				$this->name                = $row['prt_name'];
+				$this->company->id         = (int) $row['prt_company_id'];
+				$this->company->name       = $row['comp_name'];
+				$this->currency->id        = (int) $row['cur_id'];
+				$this->currency->name      = $row['cur_name'] ?? "";
+				$this->currency->symbol    = $row['cur_symbol'] ?? "";
 				$this->currency->shortname = $row['cur_shortname'] ?? "";
-				$this->role->inbound = isset($row['upr_prt_inbound']) && (int) $row['upr_prt_inbound'] == 1 ? true : false;
-				$this->role->outbound = isset($row['upr_prt_outbound']) && (int) $row['upr_prt_outbound'] == 1 ? true : false;
-				$this->role->access = isset($row['upr_prt_fetch']) && (int) $row['upr_prt_fetch'] == 1 ? true : false;
-				$this->role->view = isset($row['upr_prt_view']) && (int) $row['upr_prt_view'] == 1 ? true : false;
-				$this->balance = $this->role->view ? $this->getBalance() : null;
-				$this->type = new Type();
-				$this->type->id = (int) $row['ptp_id'];
-				$this->type->name = $row['ptp_name'];
-				$this->type->keyTerm = is_null($row['prt_ale']) ? null : KeyTerm::tryFrom($row['prt_ale']);
+				$this->role->inbound       = isset($row['upr_prt_inbound']) && (int) $row['upr_prt_inbound'] == 1 ? true : false;
+				$this->role->outbound      = isset($row['upr_prt_outbound']) && (int) $row['upr_prt_outbound'] == 1 ? true : false;
+				$this->role->access        = isset($row['upr_prt_fetch']) && (int) $row['upr_prt_fetch'] == 1 ? true : false;
+				$this->role->view          = isset($row['upr_prt_view']) && (int) $row['upr_prt_view'] == 1 ? true : false;
+				$this->balance             = $this->role->view ? $this->getBalance() : null;
+				$this->type->id            = (int) $row['ptp_id'];
+				$this->type->name          = $row['ptp_name'];
+				$this->type->keyTerm       = is_null($row['prt_ale']) ? null : KeyTerm::tryFrom($row['prt_ale']);
 			} else {
-				throw new AccountNotFoundException("Account not found");
+				throw new AccountNotFoundException("Account not found or insufficient privileges");
 			}
 		} else {
 			throw new AccountNotFoundException("Database error");
 		}
+		return true;
 	}
-
 	public function getBalance(): float|bool
 	{
 		if (!isset($this->id)) {

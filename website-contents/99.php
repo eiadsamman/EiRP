@@ -1008,7 +1008,8 @@ unset($grem);
 					"statement_id": acm_id
 				}
 			}).done(function (output) {
-				popup.show(output);
+				popup.content(output);
+				popup.show();
 			}).fail(function (a, b, c) {
 				messagesys.failure(c);
 			});
@@ -1107,15 +1108,16 @@ unset($grem);
 				type: 'POST'
 			}).done(function (data) {
 				overlay.hide();
-				popup.show(data);
-				var $save_form = popup.self().find("#jQsaveform");
+				popup.content(data);
+				popup.show();
+				var $save_form = $(popup.controller()).find("#jQsaveform");
 
-				var $save_name = popup.self().find("#jQsave_name");
+				var $save_name = $(popup.controller()).find("#jQsave_name");
 				$save_name.focus();
-				popup.self().find("#jQsave_cancel").on('click', function () {
-					popup.hide();
+				$(popup.controller()).find("#jQsave_cancel").on('click', function () {
+					popup.close();
 				});
-				popup.self().find("#jQsave_submit").on('click', function () {
+				$(popup.controller()).find("#jQsave_submit").on('click', function () {
 					$save_form.submit();
 
 				});
@@ -1142,7 +1144,7 @@ unset($grem);
 						}
 						if (json.result) {
 							messagesys.success(json.message);
-							popup.hide();
+							popup.close();
 						} else {
 							messagesys.failure(json.message);
 						}
@@ -1164,12 +1166,13 @@ unset($grem);
 				type: 'POST'
 			}).done(function (data) {
 				overlay.hide();
-				popup.show(data);
-				popup.self().find("#jQload_cancel").focus();
-				popup.self().find("#jQload_cancel").on('click', function () {
-					popup.hide();
+				popup.content(data);
+				popup.show();
+				$(popup.controller()).find("#jQload_cancel").focus();
+				$(popup.controller()).find("#jQload_cancel").on('click', function () {
+					popup.close();
 				});
-				popup.self().find(".jQload_query").on('click', function () {
+				$(popup.controller()).find(".jQload_query").on('click', function () {
 					var $tr = $(this).closest("tr");
 					var _id = $tr.attr("data-id");
 					overlay.show();
@@ -1219,7 +1222,7 @@ unset($grem);
 								}
 							}
 							fetch();
-							popup.hide();
+							popup.close();
 						} else {
 							messagesys.failure("Parsing query failed");
 						}
@@ -1229,7 +1232,7 @@ unset($grem);
 				});
 
 
-				popup.self().find(".jQremove_query").on('click', function () {
+				$(popup.controller()).find(".jQremove_query").on('click', function () {
 					var $tr = $(this).closest("tr");
 					var _id = $tr.attr("data-id");
 					overlay.show();
@@ -1411,7 +1414,8 @@ unset($grem);
 				url: $this.attr("href") + "&ajax",
 				data: ""
 			}).done(function (data) {
-				popup.show(data);
+				popup.content(data);
+				popup.show();
 			}).always(function () {
 				$("#jQtracer").find(" > div.overlay").css({
 					'display': 'none'
@@ -1430,7 +1434,8 @@ unset($grem);
 				url: $this.attr("href") + "&ajax",
 				data: ""
 			}).done(function (data) {
-				popup.show(data);
+				popup.content(data);
+				popup.show();
 			}).always(function () {
 				$("#jQtracer").find(" > div.overlay").css({
 					'display': 'none'

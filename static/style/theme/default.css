@@ -18,7 +18,7 @@
 	--root-input-background-color: white;
 	--root-button-background-color: white;
 
-	--root-modal-background-color: rgba(238, 238, 245, .6);
+	--root-modal-background-color: rgba(247, 247, 250, .7);
 
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
@@ -26,14 +26,14 @@
 	--bomtable-stripes-color: #fafafc;
 
 
-	--input-border-radius: 5px;
-	--input-font-color: rgb(33, 37, 41);
-	--input-bgcolor: white;
-	--input-border: #ddd;
-	--input_hover-color: rgb(153, 153, 157);
-	--input_focus-color: hsl(210, 30%, 95%);
-	--input_active-color: dodgerblue;
-	--input-placeholder-color: rgb(180, 180, 180);
+	--input_border-radius: 5px;
+	--input_color: rgb(33, 37, 41);
+	--input_background-color: white;
+	--input_border-color: #ddd;
+	--input-hover_border-color: rgb(153, 153, 157);
+	--input-focus_border-color: hsl(210, 30%, 95%);
+	--input-active_border-color: dodgerblue;
+	--input-placeholder_color: rgb(180, 180, 180);
 
 
 	--static-bgcolor: #fbfbfe;
@@ -61,17 +61,17 @@
 }
 
 .theme-default.dark {
-	--root-background-color: rgb(21, 25, 40, 1);
-	--root-background-color_backdrop: rgb(21, 25, 40, 1);
+	--root-background-color: rgb(21, 25, 30, 1);
+	--root-background-color_backdrop: rgb(21, 25, 30, 1);
 
 	--root-font-color: #eee;
 	--root-font-lightcolor: hsl(200, 13%, 65%);
 	--root-link-color: hsl(206, 100%, 65%);
-	--root-ribbon-background-color: #202940;
+	--root-ribbon-background-color: hsl(223, 22%, 15%);
 	--root-ribbon-border-color: #5c5c67;
 	--root-ribbon-font-color: white;
-	--root-ribbon-menu-background-color: hsl(223, 38%, 15%);
-	--root-ribbon-menu-header-background-color: #202940;
+	--root-ribbon-menu-background-color: hsl(223, 22%, 15%);
+	--root-ribbon-menu-header-background-color: hsl(223, 22%, 15%);
 	--root-ribbon-menu-itemhover-background-color: rgb(80, 80, 100);
 
 	--root-input-background-color: white;
@@ -87,18 +87,18 @@
 	--bomtable-stripes-color: #202940;
 
 
-	--input-border-radius: 5px;
-	--input-font-color: rgb(33, 37, 41);
-	--input-bgcolor: rgb(32, 41, 64);
-	--input-border: rgb(90, 90, 105);
-	--input_hover-color: rgb(153, 153, 175);
-	--input_focus-color: hsl(223, 33%, 13%);
-	--input_active-color: dodgerblue;
-	--input-placeholder-color: rgb(100, 100, 100);
+	--input_border-radius: 5px;
+	--input_color: rgb(33, 37, 41);
+	--input_background-color: rgb(32, 41, 64);
+	--input_border-color: rgb(90, 90, 105);
+	--input-hover_border-color: rgb(153, 153, 175);
+	--input-focus_border-color: hsl(223, 33%, 13%);
+	--input-active_border-color: dodgerblue;
+	--input-placeholder_color: rgb(100, 100, 100);
 
 
 	--static-bgcolor: rgb(25, 34, 57);
-	--static-border: var(--input-border);
+	--static-border: var(--input_border-color);
 	--static_hover-border: var(--bomtable-border-color);
 
 	--button-font-color: white;
@@ -121,20 +121,3 @@
 }
 
 @media (prefers-color-scheme: dark) {}
-
-/* #664B86 #BB86FC */
-/* 
-
---color-background: #1A1A1B;
---color-font: rgb(220, 220, 220);
---color-ribbon_font: white;
---color-controls: #333F44;
---color-controls_border: #333F44;
---color-faint-gray: rgb(251, 251, 254);
---color-soft-gray: #333F44;
---color-faint-white: rgb(252, 252, 254);
---color-table-borders: #333F44;
---color-link: lightblue;
-
-
-*/

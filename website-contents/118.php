@@ -17,11 +17,11 @@ if (isset($_POST['serial'])) {
 		if ($ratt) {
 			header("ATT_RESULT: OK");
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
-			echo $att->info->name;
+			echo $att->info->fullName();
 		} else {
 			header("ATT_RESULT: FAIL");
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
-			echo $att->info->name;
+			echo $att->info->fullName();
 		}
 	} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
 		header("ATT_RESULT: NOTFOUND");
@@ -29,18 +29,18 @@ if (isset($_POST['serial'])) {
 	} catch (\System\Exceptions\HR\PersonResignedException $e) {
 		header("ATT_RESULT: RESIGNED");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
-		echo $att->info->name;
+		echo $att->info->fullName();
 	} catch (\System\Individual\Attendance\ExceptionNotSignedIn $e) {
 		header("ATT_RESULT: NOTSIGEND");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
-		echo $att->info->name;
+		echo $att->info->fullName();
 	} catch (\System\Individual\Attendance\LocationInvalid $e) {
 		header("ATT_RESULT: SECTOR");
 		header("ATT_IMAGE_ID: 0");
 	} catch (\System\Individual\Attendance\ExceptionTimeLimit $e) {
 		header("ATT_RESULT: TIMELIMIT");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
-		echo $att->info->name;
+		echo $att->info->fullName();
 	}
 
 	exit;

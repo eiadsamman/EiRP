@@ -140,7 +140,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'editstatement') {
 	$creditor_account = new Account($app, (int) $_POST['creditor']);
 	$debitor_account = new Account($app, (int) $_POST['creditor']);
 
-	$date = $app->date_validate($_POST['trandate']);
+	$date = $app->dateValidate($_POST['trandate']);
 	if (!$date) {
 		_JSON_output(false, "Select transaction date", "jQdate");
 	}
@@ -567,7 +567,7 @@ $SmartListObject = new SmartListObject($app);
 			if ($ajax != null) {
 				$ajax.abort();
 			}
-			popup.hide();
+			popup.close();
 		});
 		$jQcreditor.focus();
 	});

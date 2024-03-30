@@ -33,7 +33,7 @@
 .empCard[data-checked=true] {
 	background-color: rgb(204, 232, 255);
 	border: solid 1px #99d1ff;
-	color:var(--input-font-color)
+	color:var(--input_color)
 }
 
 .empCard[data-checked=true]:hover {

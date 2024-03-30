@@ -629,22 +629,23 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				url: '<?php echo $fs()->dir; ?>',
 				type: 'POST'
 			}).done(function (data) {
-				popup.show(data);
+				popup.content(data);
+				popup.show();
 				overlay.hide();
 
-				popup.self().find("#jQcancel").on('click', function () {
-					popup.hide();
+				$(popup.controller()).find("#jQcancel").on('click', function () {
+					popup.close();
 				});
-				popup.self().find(".jQalter_checkbox").on('change', function () {
+				$(popup.controller()).find(".jQalter_checkbox").on('change', function () {
 					var $checkbox = $(this);
 					$checkbox.closest("div").find("input[type=text]").prop("disabled", !$checkbox.prop("checked"));
 				});
 
-				popup.self().find(".jQBulkSLOField").slo({
+				$(popup.controller()).find(".jQBulkSLOField").slo({
 					limit: 10
 				}).disable();
 
-				popup.self().find("#jQsubmit_bulk").on('click', function () {
+				$(popup.controller()).find("#jQsubmit_bulk").on('click', function () {
 					let ajaxdata = {};
 					let fields = {};
 
@@ -668,7 +669,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 							messagesys.success("Nothing to edit");
 						} else if (bulkboutput == "success") {
 							messagesys.success("Employees information edited successfully");
-							popup.hide();
+							popup.close();
 							ajaxcall();
 						} else if (bulkboutput == "fail") {
 							messagesys.failure("Edting employees information failed");
@@ -795,14 +796,16 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		$("#jQoutput").on('click', ".op-display > a", function (e) {
 			e.preventDefault();
 			var $this = $(this);
-			popup.show("Loading");
+			overlay.show();
 
 			var $ajax = $.ajax({
 				type: "POST",
 				url: $this.attr("href") + "&ajax",
 				data: ""
 			}).done(function (data) {
-				popup.show(data);
+				overlay.hide()
+				popup.content(data);
+				popup.show();
 			});
 			return false;
 		});

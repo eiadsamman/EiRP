@@ -62,8 +62,8 @@
 	position: relative;
 	outline: none;
 	border: none;
-	border-bottom: solid 2px var(--input-border);
-	border-color: var(--input-border);
+	border-bottom: solid 2px var(--input_border-color);
+	border-color: var(--input_border-color);
 	transition: border 0.2s ease-out;
 	width: 100%;
 	color: var(--root-font-color);
@@ -76,7 +76,7 @@
 .slo-wrap>input[type=number]:not(:disabled):hover,
 .slo-wrap>input[type=password]:not(:disabled):hover,
 .slo-wrap>input[type=date]:not(:disabled):hover {
-	border-color: var(--input_hover-color);
+	border-color: var(--input-hover_border-color);
 	z-index: 12;
 }
 
@@ -85,7 +85,7 @@
 .slo-wrap>input[type=number]:not(:disabled):focus,
 .slo-wrap>input[type=password]:not(:disabled):focus,
 .slo-wrap>input[type=date]:not(:disabled):focus {
-	border-color: var(--input_active-color);
+	border-color: var(--input-active_border-color);
 	/* -webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	box-shadow: 0 0 4px rgba(82, 168, 236, .7); */

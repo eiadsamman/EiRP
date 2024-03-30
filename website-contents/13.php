@@ -23,8 +23,8 @@ if (isset($_POST['method']) && $_POST['method'] == "statement_export") {
 	$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 
 	/* Date input processing */
-	$date_start = isset($_POST['from']) ? $app->date_validate($_POST['from']) : false;
-	$date_end = isset($_POST['to']) ? $app->date_validate($_POST['to'], true) : false;
+	$date_start = isset($_POST['from']) ? $app->dateValidate($_POST['from']) : false;
+	$date_end = isset($_POST['to']) ? $app->dateValidate($_POST['to'], true) : false;
 	$user_current = abs((int) $_POST['page']);
 	if (($date_start && $date_end) && $date_start > $date_end) {
 		exit;

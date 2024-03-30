@@ -258,7 +258,9 @@
 					var viewsrc = $(this).attr("data-href");
 					if (mime == "image") {
 						e.preventDefault();
-						popup.show("<div style=\"text-align:center\"><img style=\"max-width:600px;\" src=\"" + viewsrc + "\" /></div>");
+
+						popup.content("<div style=\"text-align:center\"><img style=\"max-width:600px;\" src=\"" + viewsrc + "\" /></div>");
+						popup.show()
 						return false;
 					}
 				});

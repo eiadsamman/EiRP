@@ -14,9 +14,7 @@ $__side_panel = false;
 if (isset($fs()->parameters) && preg_match("/help([0-9]+)/", $fs()->parameters, $match)) {
 	$__helper = $fs((int) $match[1]);
 }
-if (isset($fs()->parameters) && preg_match("/side-panel([0-9]+)/", $fs()->parameters, $match)) {
-	$__side_panel = $fs((int) $match[1]);
-}
+
 
 
 $__workingaccount = false;
@@ -49,6 +47,7 @@ $SmartListObject = new SmartListObject($app);
 	<link media="screen,print" rel="stylesheet" href="static/style/style.bom-table.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.checkbox.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.popup.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/style.dialog.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.ios-checkbox.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.template.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css<?= $_v ?>" />
@@ -66,9 +65,7 @@ $SmartListObject = new SmartListObject($app);
 	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js<?= $_v ?>"></script>
 	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js<?= $_v ?>"></script>
 	<script type="text/javascript" src="static/jquery/slo-1.4.js<?= $_v ?>"></script>
-	<?php if ($__side_panel && $__side_panel->permission->deny == false) {
-		echo '<script type="text/javascript" src="static/javascript/template.sidepanel.js"></script>';
-	} ?>
+	
 	<?php
 	if (array_key_exists('js', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['js']);
@@ -83,6 +80,7 @@ $SmartListObject = new SmartListObject($app);
 
 <body class="theme-default <?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>" data-mode="<?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>">
 	<a href="" id="PFTrigger" style="display: none;"></a>
+	
 	<span class="header-ribbon noprint">
 		<div>
 			<div class="btnheader-set" style="white-space:nowrap">
@@ -280,7 +278,7 @@ $SmartListObject = new SmartListObject($app);
 						$bookmark = new Bookmark($app);
 						$bookmarked = $bookmark->isBookmarked($fs()->id);
 
-						echo "<div>" . $app->user->info->name . "</div>";
+						echo "<div>{$app->user->info->fullName()}</div>";
 						echo "<a href=\"user-account/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Preferences & Security\">&#xe971;</span><span>Preferences & Security</span></a>";
 						echo "<a href=\"\" class=\"js-input_darkmode-toggle\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Toggle Dark Mode\">&#xe9d4;</span><span>Toggle Dark Mode</span></a>";
 						echo "<a href=\"{$fs(263)->dir}\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Bookmarks\">&#xe9d9;</span><span>Bookmarks</span></a>"; //e9d7
@@ -313,7 +311,4 @@ $SmartListObject = new SmartListObject($app);
 
 	<article>
 		<div id="body-content">
-			<?php if ($__side_panel && !$__side_panel->permission->deny && is_file("website-contents/" . $__side_panel->id . ".php")) {
-				$__side_panel->id;
-				include_once("website-contents/" . $__side_panel->id . ".php");
-			} ?>
+			

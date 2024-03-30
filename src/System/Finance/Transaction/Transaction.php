@@ -324,11 +324,11 @@ abstract class Transaction extends Instructions
 
 	public function post(): bool
 	{
-
 		$this->integrity();
 		$this->app->db->autocommit(false);
 		if ($this->process()) {
 			$this->app->db->commit();
+			$this->app->db->autocommit(true);
 			return true;
 		} else {
 			$this->app->db->rollback();
