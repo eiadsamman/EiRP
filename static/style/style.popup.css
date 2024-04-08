@@ -31,6 +31,8 @@
 	-webkit-backdrop-filter: blur(4px);
 	-moz-backdrop-filter: blur(4px);
 	animation: hide var(--transition-speed) forwards;
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
 }
 
 .appHtmlPopup[open] {
@@ -44,7 +46,7 @@
 	overflow-x: auto;
 	text-align: left;
 	margin: 0px;
-	min-width: 250px;
+	min-width: 600px;
 	max-width: var(--dim-max-width);
 	max-height: calc(100% - 20px);
 
@@ -56,6 +58,37 @@
 	overscroll-behavior: contain;
 }
 
+
+.appHtmlPopup>form [data-role="submit"] {
+	background: none;
+	margin-top: -5px;
+	border: none;
+	margin-right: 10px;
+	padding: 10px 15px;
+	cursor: pointer;
+}
+
+.appHtmlPopup>form [data-role="submit"]:active,
+.appHtmlPopup>form [data-role="submit"]:focus {
+	outline: solid 2px var(--root-link-color);
+	border-radius: 2px;
+	text-decoration: none;
+	z-index: 2;
+}
+
+.appHtmlPopup>form [data-role="submit"]::before {
+	font-family: icomoon2;
+	content: "\f00c";
+	color: var(--root-font-lightcolor);
+	font-size: 1.4em;
+	transition: color var(--transition-speed) ease;
+}
+
+.appHtmlPopup>form [data-role="submit"]:active::before,
+.appHtmlPopup>form [data-role="submit"]:focus::before,
+.appHtmlPopup>form [data-role="submit"]:hover::before {
+	color: var(--root-link-color);
+}
 
 .appHtmlPopup>form::-webkit-scrollbar {
 	width: 5px;
@@ -69,12 +102,14 @@
 	background-color: var(--input_border-color);
 }
 
+
 @media only screen and (max-width: 624px) {
 	.appHtmlPopup {
 		padding-top: 0px;
 	}
 
 	.appHtmlPopup>form {
+		min-width: auto;
 		flex: 1;
 		height: 100% !important;
 		max-height: 100%;

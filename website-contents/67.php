@@ -158,7 +158,7 @@ unset($grem);
 
 		$("#js-input_filter-list").slo({
 			onselect: function (e) {
-				navigator.historyState.group = e.hidden;
+				navigator.historyState.group = e.key;
 				currentgourp = navigator.historyState.group;
 				history.pushState(navigator.historyState, "<?= $fs()->title; ?>", "<?= $fs()->dir; ?>" + "/?" + navigator.uribuild());
 				populate();

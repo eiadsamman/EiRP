@@ -168,7 +168,7 @@ unset($grem);
 					url: '<?= $fs()->dir ?>',
 					type: 'POST',
 					data: {
-						"add": o.hidden
+						"add": o.key
 					}
 				}).done(function (data, textStatus, request) {
 					let response = request.getResponseHeader('QUERY_RESULT');

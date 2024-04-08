@@ -379,7 +379,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 		}
 
 		$("#jQaddItem").on("click", function() {
-			if (~~$jQbomSelector.hidden[0].val() == 0 || ~~$jQbomQuantity.val() == 0) {
+			if (~~$jQbomSelector.key[0].val() == 0 || ~~$jQbomQuantity.val() == 0) {
 				messagesys.failure("Material item and Quantity are required");
 				return;
 			}
@@ -388,7 +388,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 				type: "POST",
 				data: {
 					"method": "checkitem",
-					"id": $jQbomSelector.hidden[0].val(),
+					"id": $jQbomSelector.key[0].val(),
 					"qty": $jQbomQuantity.val()
 				}
 			}).done(function(output) {

@@ -403,7 +403,7 @@ if (isset($_POST['delete-employee-hir']) && isset($_POST['lbr'])) {
 					onselect: function(output) {
 						var me = $(output.object[0]);
 						var branch_id = me.attr("data-id");
-						var job_id = output.hidden;
+						var job_id = output.key;
 						$.ajax({
 							url: "<?php echo $fs()->dir; ?>",
 							type: "POST",
@@ -427,7 +427,7 @@ if (isset($_POST['delete-employee-hir']) && isset($_POST['lbr'])) {
 					onselect: function(output) {
 						var me = $(output.object[0]);
 						var branch_id = me.attr("data-id");
-						var lbr_id = output.hidden;
+						var lbr_id = output.key;
 						$.ajax({
 							url: "<?php echo $fs()->dir; ?>",
 							type: "POST",

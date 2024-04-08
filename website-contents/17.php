@@ -151,7 +151,7 @@ unset($grem);
 			onselect: function (e) {
 				$.ajax({
 					url: "<?= $fs()->dir; ?>",
-					data: { "pagepage": e.hidden },
+					data: { "pagepage": e.key },
 					type: "POST"
 				});
 			}

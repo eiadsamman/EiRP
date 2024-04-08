@@ -7,7 +7,7 @@ namespace System\Finance\Transaction;
 
 enum Nature: int 
 {
-	case Income = 1;
+	case Receipt = 1;
 	case Payment = 2;
 	case Transfer = 3;
 	case Exchange = 4;
@@ -31,7 +31,7 @@ enum Nature: int
 	public function toString(): string
 	{
 		return match ($this) {
-			self::Income => 'Income',
+			self::Receipt => 'Receipt',
 			self::Payment => 'Payment',
 			self::Transfer => 'Transfer',
 			self::Exchange => 'Exchange',

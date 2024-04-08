@@ -268,12 +268,15 @@
 .btn-set>*.success:before,
 .btn-set>*.plus:before,
 .btn-set>*.error:before {
+	display: inline-block;
 	font-family: icomoon2;
 }
 
 .btn-set>*.success:before {
 	content: "\f00c";
 	color: rgb(30, 160, 40);
+	position: relative;
+	top: 1px;
 }
 
 .btn-set>*.plus:before {

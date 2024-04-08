@@ -29,7 +29,7 @@ unset($grem);
 	$(document).ready(function (e) {
 		$("#compslo").slo({
 			onselect: function (data) {
-				$("#triggerselector").attr("href", "<?php echo $fs()->dir; ?>/?--sys_sel-change=company_commit&i=" + data.hidden);
+				$("#triggerselector").attr("href", "<?php echo $fs()->dir; ?>/?--sys_sel-change=company_commit&i=" + data.key);
 				$("#triggerselector")[0].click();
 			}
 		}).focus();

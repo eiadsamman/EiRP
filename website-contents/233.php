@@ -433,7 +433,7 @@ if ($doc_id) {
 				$("#jQinputCompany").slo({
 					'onselect': function(o) {
 						slocontact.setparam({
-							"slocompany": o.hidden
+							"slocompany": o.key
 						});
 					},
 					'ondeselect': function() {

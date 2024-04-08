@@ -36,6 +36,7 @@ class ListHandler extends SmartListObjectHandler {
 		let buffer = [];
 		let selected_buffer = false;
 		this.dropdown = false;
+
 		initial.children('option').each(function () {
 			buffer.push({
 				id: this.dataset.id ?? "",
@@ -621,7 +622,7 @@ class SmartListObject {
 			this.events.ondeselect.call(this, {
 				object: this.htmltext,
 				value: this.htmltext.val(),
-				hidden: this.htmlhidden.val(),
+				key: this.htmlhidden.val(),
 			});
 		}
 	}
@@ -631,7 +632,7 @@ class SmartListObject {
 				/* this: _parent, */
 				object: this.htmltext,
 				value: this.htmltext.val(),
-				hidden: this.htmlhidden.val(),
+				key: this.htmlhidden.val(),
 				text: $(this.selection).find("span").html(),
 			});
 		}
@@ -670,7 +671,7 @@ class SmartListObject {
 
 		let safeClearTrigger = false;
 		this.input = [];
-		this.hidden = [];
+		this.key = [];
 
 		//#region - Controlers
 		this.change = function (role) {
@@ -766,10 +767,12 @@ class SmartListObject {
 				}).on('keydown', (e) => {
 					slosettings.onkeydown.call(slo, e);
 					if (e.code === "Escape") {
+						if (this.slo.htmltext.prop("readonly")) {
+							return true
+						}
 						if (this.slo.htmltext.val() == "") {
 							this.slo.stamp(stamp.empty);
 							this.slo.hide();
-
 							return true;
 						}
 						e.preventDefault();
@@ -826,6 +829,7 @@ class SmartListObject {
 					slo.hadfocus = false;
 					return;
 				}).on('keyup', (e) => {
+					slosettings.onkeyup.call(slo, e);
 					if ((e.code === "Enter" || e.code === "NumpadEnter") && this.enter_key_event) {
 						this.slo.stamp(stamp.valid);
 						this.slo.call_onselect();

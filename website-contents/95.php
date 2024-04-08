@@ -103,8 +103,8 @@ if ($app->xhttp) {
 		}
 		$grem->title()->serve("<span class=\"flex\">Transaction details</span>");
 		$grem->article()->open();
-		$curreny_date = new DateTime();
-		$curreny_date = $curreny_date->format("Y-m-d");
+		$current_date = new DateTime();
+		$current_date = $current_date->format("Y-m-d");
 		?>
 		<form name="js-ref_form-main" id="js-ref_form-main" action="<?= $fs()->dir; ?>">
 			<input type="hidden" name="challenge" value="<?= uniqid(); ?>" />
@@ -135,8 +135,8 @@ if ($app->xhttp) {
 				<label style="min-width:150px">
 					<h1>Date</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2" name="date" data-required />
-						<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value="" data-rangeend="<?= $curreny_date ?>" tabindex="-1" name="duedate" />
+						<input type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date" data-required />
+						<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value="" data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
 					</div>
 				</label>
 				<label style="min-width:300px">
@@ -152,20 +152,21 @@ if ($app->xhttp) {
 				<label style="flex-basis:0%">
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Beneficiary name" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
+						<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
 						<input type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
 					</div>
 				</label>
 			</div>
 
 			<div class="form">
-				<label>
-					<h1>Value</h1>
+				<label style="min-width:300px">
+					<h1>Amount</h1>
 					<div class="btn-set">
-						<?= "<span>{$app->user->account->currency->shortname}</span>" ?>
 						<input type="number" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
+						<?= "<span>{$app->user->account->currency->shortname}</span>" ?>
 					</div>
 				</label>
+				<label style="min-width:300px"></label>
 			</div>
 
 			<div class="form">

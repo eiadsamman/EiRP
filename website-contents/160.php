@@ -319,7 +319,7 @@ unset($grem);
 				$.ajax({
 					url: "",
 					type: "POST",
-					data: { "id": selected_bom.hidden, "method": "show" }
+					data: { "id": selected_bom.key, "method": "show" }
 				}).done(function (o, textStatus, request) {
 					$data = $(o);
 					$childs = [];
@@ -327,7 +327,7 @@ unset($grem);
 					$childs[1] = $childs[0].next();
 					$childs[1].find("input[data-slo]").slo({
 						onselect: function (data) {
-							getUnit(data.hidden, $(this).closest("tr").find(".mat-unit"));
+							getUnit(data.key, $(this).closest("tr").find(".mat-unit"));
 						}, ondeselect: function () {
 							clearUnit($(this).closest("tr").find(".mat-unit"));
 						}
@@ -364,7 +364,7 @@ unset($grem);
 
 			$temp.find("input[data-slo]").slo({
 				onselect: function (data) {
-					getUnit(data.hidden, $temp.find(".mat-unit"));
+					getUnit(data.key, $temp.find(".mat-unit"));
 				}, ondeselect: function () {
 					clearUnit($(this).closest("tr").find(".mat-unit"));
 				}

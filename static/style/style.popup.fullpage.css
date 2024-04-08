@@ -1,0 +1,76 @@
+@keyframes hide {
+	0% {
+		display: flex;
+	}
+
+	100% {
+		display: flex;
+		opacity: 0;
+		left: 20%;
+	}
+}
+
+@keyframes show {
+	0% {
+		opacity: 0;
+		left: 20%;
+		display: flex;
+	}
+	100% {
+		opacity: 1;
+		left: 0px;
+	}
+}
+
+
+.jqpopup {
+	display: none;
+	position: fixed;
+	inset: var(--root--menubar-height) 0 0 0;
+	width: 100%;
+	background-color: var(--root-modal-background-color);
+	z-index: 39;
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(2px);
+	-moz-backdrop-filter: blur(2px);
+	overflow-y: hidden;
+	justify-content: right;
+	align-items: start;
+}
+
+.jqpopup.hidden {
+	animation: hide 0.2s ease-in;
+}
+
+.jqpopup.active {
+	animation: show 0.2s ease-out;
+	display: flex;
+	opacity: 1;
+	left: 0px;
+}
+
+.jqpopup>div {
+	width: 100%;
+	height: 100%;
+	min-width: 400px;
+	overflow-y: auto;
+	overflow-x: auto;
+	background-color: var(--root-background-color_backdrop);
+	text-align: left;
+	box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.2);
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+}
+
+
+.jqpopup>div::-webkit-scrollbar {
+	width: 5px;
+}
+
+.jqpopup>div:hover::-webkit-scrollbar-thumb {
+	background-color: var(--input-hover_border-color);
+}
+
+.jqpopup>div::-webkit-scrollbar-thumb {
+	background-color: var(--input_border-color);
+}

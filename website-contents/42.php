@@ -211,7 +211,7 @@ if (isset($_POST['shift'])) {
 				if ($ajax != null) {
 					$ajax.abort();
 				}
-				addemployee(data.hidden);
+				addemployee(data.key);
 			}
 		});
 		var SLOSHIFT = $("#shift").slo({
@@ -220,7 +220,7 @@ if (isset($_POST['shift'])) {
 				if ($ajax != null) {
 					$ajax.abort();
 				}
-				addshift(data.hidden);
+				addshift(data.key);
 			}
 		});
 

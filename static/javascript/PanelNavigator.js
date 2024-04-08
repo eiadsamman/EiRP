@@ -4,6 +4,7 @@ class PanelNavigator {
 		this.onClickUrl = "";
 		this.itemPerRequest = 20;
 		this.navigator = new Navigator({}, '');
+		this.refreshFunction = function () { };
 		this.classList = [];
 
 		this.runtime = new Object();
@@ -41,7 +42,6 @@ class PanelNavigator {
 		this.xhttp_request();
 		this.navigator.history_state.id = pageConfig.id;
 		this.navigator.history_vars.id = pageConfig.id;
-		this.navigator.history_vars.method = pageConfig.method;
 		this.navigator.history_vars.url = pageConfig.url;
 		this.navigator.history_vars.title = pageConfig.title;
 		this.navigator.replaceVariableState();
@@ -49,10 +49,9 @@ class PanelNavigator {
 			this.loader(
 				event.state.url,
 				event.state.title,
-				{ "method": event.state.method, "id": event.state.id },
-				(event.state.method == "new" ? function () { initInvokers() } : null)
+				{ "id": event.state.id }
 			);
-			if (event.state.method == "view") {
+			if (event.state.id != undefined) {
 				let listitem = this.runtime.scrollArea.querySelector(`.panel-item[data-listitem_id="${event.state.id}"]`);
 				if (listitem) {
 					this.clearActiveItem();
@@ -72,10 +71,12 @@ class PanelNavigator {
 						let nextSibling = listitem.nextSibling;
 						if (nextSibling && nextSibling.dataset != undefined && nextSibling.dataset.listitem_id != undefined) {
 							this.clearActiveItem()
-							this.navigator.history_vars.method = "view";
 							this.setActiveItem(nextSibling);
 							this.onclick(nextSibling);
-							nextSibling.scrollIntoView({ behavior: "smooth", block: "nearest" });
+							nextSibling.scrollIntoView({
+								behavior: "smooth",
+								block: "nearest"
+							});
 						}
 					}
 				}
@@ -88,10 +89,13 @@ class PanelNavigator {
 						let previousSibling = listitem.previousSibling;
 						if (previousSibling && previousSibling.dataset != undefined && previousSibling.dataset.listitem_id != undefined) {
 							this.clearActiveItem()
-							this.navigator.history_vars.method = "view";
 							this.setActiveItem(previousSibling);
 							this.onclick(previousSibling);
-							previousSibling.scrollIntoView({ behavior: "smooth", block: "nearest" });
+							previousSibling.scrollIntoView({
+								behavior: "smooth",
+								block: "nearest"
+							});
+
 						}
 					}
 				}
@@ -101,10 +105,12 @@ class PanelNavigator {
 				let activeElement = document.activeElement;
 				if (activeElement.classList.contains("panel-item")) {
 					this.clearActiveItem()
-					this.navigator.history_vars.method = "view";
 					this.setActiveItem(activeElement);
 					this.onclick(activeElement);
-					activeElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
+					activeElement.scrollIntoView({
+						behavior: "smooth",
+						block: "nearest"
+					});
 				}
 			}
 		});
@@ -121,7 +127,7 @@ class PanelNavigator {
 
 	clearEmptyPlaceholders = function () {
 		let emptyPlaceholders = this.runtime.scrollArea.querySelectorAll(".panel-item.place-holder");
-		let emptyPlaceholdersCount = emptyPlaceholders.length
+		let emptyPlaceholdersCount = emptyPlaceholders.length;
 		emptyPlaceholders.forEach(element => {
 			element.remove();
 		});
@@ -216,7 +222,6 @@ class PanelNavigator {
 					return;
 				instance.clearActiveItem()
 			}
-			instance.navigator.history_vars.method = "view";
 			instance.setActiveItem(this);
 			instance.onclick(this);
 			return false;
@@ -233,9 +238,9 @@ class PanelNavigator {
 		return (this.runtime.currentPage < this.runtime.totalPages);
 	}
 
+	after
 
-
-	loader = function (url, title, options = {}, callback) {
+	loader = function (url, title, options = {}) {
 		this.runtime.isContentLoading = true;
 		var formData = new FormData();
 
@@ -273,9 +278,20 @@ class PanelNavigator {
 				document.title = title;
 			this.runtime.outputScreen.innerHTML = body;
 
-			if (typeof callback === "function") {
-				callback.call(this);
-			}
+			this.runtime.outputScreen.querySelectorAll("[data-href]").forEach(el => {
+				el.addEventListener("click", (e) => {
+					e.preventDefault();
+					this.navigator.history_vars.url = el.dataset.href;
+					this.navigator.history_vars.title = pageConfig.apptitle + " - " + el.dataset.targettitle;
+					this.navigator.url = el.dataset.href;
+					this.loader(el.dataset.href, el.dataset.targettitle, { id: el.dataset.targetid });
+					this.navigator.pushState();
+					return false;
+				});
+			});
+
+
+			this.refreshFunction();
 		}).catch(response => {
 			this.runtime.isContentLoading = false;
 			messagesys.failure("Server response `" + response.statusText + "`");

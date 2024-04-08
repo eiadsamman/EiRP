@@ -68,7 +68,7 @@ unset($grem);
 	$(document).ready(function (e) {
 		$("#sectorslo").slo({
 			onselect: function (data) {
-				$("#triggerselector").attr("href", "<?php echo $fs()->dir; ?>/?--sys_sel-change=account_commit&i=" + data.hidden);
+				$("#triggerselector").attr("href", "<?php echo $fs()->dir; ?>/?--sys_sel-change=account_commit&i=" + data.key);
 				$("#triggerselector")[0].click();
 			}
 		}).focus();

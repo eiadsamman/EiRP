@@ -252,7 +252,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 		</label>
 	</div>
 
-	<div class="form predefined" style="display:none">
+	<div class="form predefined" >
 		<label for="">
 			<h1>Role</h1>
 			<div class="btn-set">
@@ -265,9 +265,7 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 				$r[2] = $arr_array_input == false ? $r[2] : (sprintf('%03b', $arr_array_input['lbr_role'])[1] == "1" ? true : false);
 				$r[3] = $arr_array_input == false ? $r[3] : (sprintf('%03b', $arr_array_input['lbr_role'])[0] == "1" ? true : false);
 				?>
-				<label class="btn-checkbox">
-					<input type="checkbox" name="role[1]" <?php echo $r[1] ? " checked=\"checked\" " : ""; ?> /><span>Employee</span>
-				</label>
+				<label class="btn-checkbox"><input type="checkbox" name="role[1]" <?php echo $r[1] ? " checked=\"checked\" " : ""; ?> /><span>Employee</span></label>
 				<label class="btn-checkbox"><input type="checkbox" name="role[2]" <?php echo $r[2] ? "checked=\"checked\"" : ""; ?> /><span>Client</span></label>
 				<label class="btn-checkbox"><input type="checkbox" name="role[3]" <?php echo $r[3] ? "checked=\"checked\"" : ""; ?> /><span>Vendor</span></label>
 			</div>
@@ -294,25 +292,19 @@ if (($arr_array_input != false && $fs(228)->permission->edit) || ($arr_array_inp
 	</div>
 
 
-
-
 	<div class="form predefined">
-
-
 		<label>
 			<h1>Payment method</h1>
 			<div class="btn-set">
 				<input type="text" name="payment" class="flex" id="slopayment" data-slo="SALARY_PAYMENT_METHOD" value="<?php echo $arr_array_input != false ? $arr_array_input['lbr_mth_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lbr_mth_id']}\" " : ""; ?>>
 			</div>
 		</label>
-
 		<label>
 			<h1>Working shift</h1>
 			<div class="btn-set">
 				<input type="text" name="shift" class="flex" id="sloshift" data-slo="E003" value="<?php echo $arr_array_input != false ? $arr_array_input['lsf_name'] : ""; ?>" <?php echo $arr_array_input != false ? " data-slodefaultid=\"{$arr_array_input['lsf_id']}\" " : ""; ?>>
 			</div>
 		</label>
-
 		<label>
 			<h1>Time group</h1>
 			<div class="btn-set">

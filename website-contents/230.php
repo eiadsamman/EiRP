@@ -421,7 +421,7 @@ $_TEMPLATE->TailGap();
 			});
 		}
 		var fnInsertMaterial = function() {
-			if (~~$jQbomSelector.hidden[0].val() == 0 || ~~$jQbomQuantity.val() == 0) {
+			if (~~$jQbomSelector.key[0].val() == 0 || ~~$jQbomQuantity.val() == 0) {
 				messagesys.failure("Material item and Quantity are required");
 				return;
 			}
@@ -430,7 +430,7 @@ $_TEMPLATE->TailGap();
 				type: "POST",
 				data: {
 					"method": "checkitem",
-					"id": $jQbomSelector.hidden[0].val(),
+					"id": $jQbomSelector.key[0].val(),
 					"qty": $jQbomQuantity.val()
 				}
 			}).done(function(output) {
@@ -460,7 +460,7 @@ $_TEMPLATE->TailGap();
 
 					$jQbomQuantity.val("");
 				} else if (json.result == 1) {
-					DisplayBOM($jQbomSelector.hidden[0].val(), $jQbomQuantity.val());
+					DisplayBOM($jQbomSelector.key[0].val(), $jQbomQuantity.val());
 				} else {
 					messagesys.failure("Adding material failed, material not found");
 				}

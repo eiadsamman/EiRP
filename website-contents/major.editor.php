@@ -38,7 +38,8 @@ function UploadDOM($fileID, $fileMime, $fileTitle, $fileSelected = false, $domFi
 		<tr>
 		<td class=\"checkbox\"><label><input name=\"{$domField}[]\" value=\"$fileID\" type=\"checkbox\"" . ($fileSelected ? "checked=\"checked\"" : "") . " /></label></td>
 		<td class=\"op-remove\" data-id=\"$fileID\"><span></span></td>
-		<td class=\"content\"><a class=\"js_upload_view\" target=\"_blank\" data-mime=\"$fileMime\" href=\"download/?id=$fileID&amp;pr=v\" data-href=\"download/?pr=v&amp;id=$fileID\">$fileTitle</a></td>
+		<td class=\"content\"><a class=\"js_upload_view\" target=\"_blank\" data-mime=\"$fileMime\" href=\"download/?id=$fileID&pr=v\" 
+		>$fileTitle</a></td>
 	</tr>";
 }
 
@@ -300,16 +301,16 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 	$grem->header()->prev($fs()->dir)->serve(
 		"<h1>{$fs()->title}</h1>" .
 		((int) $_POST['id'] != 0 ? "<ul class=\"small-media-hide\"><li>{$_POST['id']}</li></ul>" : "") .
-		"<cite><button type=\"submit\" id=\"jQsubmit\"></button></cite>"
+		"<cite><button type=\"submit\" data-role=\"submit\" id=\"jQsubmit\"></button></cite>"
 	);
-	$grem->article()->width("500px")->open();
-
+	$grem->article()->width("auto")->open();
+	$autofocus = "autofocus";
 	foreach ($database['fields'] as $fieldk => $fieldv) {
 		if ($fieldv[4] == 'text') {
 			echo "<div class=\"form\"><label>
 					<h1>{$fieldv[1]}</h1>
 					<div class=\"btn-set\">
-						<input type=\"text\" id=\"{$database['hash']['r'][$fieldk]}\" class=\"flex\" name=\"{$database['hash']['r'][$fieldk]}\" class=\"text\" 
+						<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" class=\"flex\" name=\"{$database['hash']['r'][$fieldk]}\" class=\"text\" 
 							style=\"min-width:250px;\"
 							" . (isset($fieldv[6]) && $fieldv[6] == false ? " readonly=\"readonly\" " : "") . "
 							value=\"" . (isset($cleaned[$fieldk]) ? htmlspecialchars($cleaned[$fieldk], ENT_QUOTES) : "") . "\" 
@@ -322,7 +323,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 			echo "<div class=\"form\"><label>
 					<h1>{$fieldv[1]}</h1>
 					<div class=\"btn-set\">
-						<input type=\"text\" id=\"{$database['hash']['r'][$fieldk]}\" data-slo=\"{$fieldv[7]}\" class=\"flex\" style=\"min-width:250px;\"
+						<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" data-slo=\"{$fieldv[7]}\" class=\"flex\" style=\"min-width:250px;\"
 							" . (isset($cleaned[$fieldk]) ? " value=\"" . $cleaned[$fieldk] . "\" " : "") . " " . (isset($cleaned[$fieldv[8]]) ? " data-slodefaultid=\"" . $cleaned[$fieldv[8]] . "\" " : "") . " name=\"{$database['hash']['r'][$fieldk]}\" />
 					</div>
 				</label>
@@ -333,7 +334,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 					<h1>{$fieldv[1]}</h1>
 					<div class=\"btn-set\">
 						<label>
-							<input type=\"checkbox\" id=\"{$database['hash']['r'][$fieldk]}\" name=\"{$database['hash']['r'][$fieldk]}\" " . (isset($cleaned[$fieldk]) && (int) $cleaned[$fieldk] == 1 ? " checked=\"checked\" " : "") . " />
+							<input type=\"checkbox\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" name=\"{$database['hash']['r'][$fieldk]}\" " . (isset($cleaned[$fieldk]) && (int) $cleaned[$fieldk] == 1 ? " checked=\"checked\" " : "") . " />
 						</label>
 					</div>
 				</label>
@@ -343,7 +344,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 			echo "<div class=\"form\"><label>
 					<h1>{$fieldv[1]}</h1>
 					<div class=\"btn-set\">
-						<textarea id=\"{$database['hash']['r'][$fieldk]}\" class=\"flex\" style=\"min-width:250px;height:100px\" name=\"{$database['hash']['r'][$fieldk]}\" class=\"text\" 
+						<textarea id=\"{$database['hash']['r'][$fieldk]}\" $autofocus class=\"flex\" style=\"min-width:250px;height:100px\" name=\"{$database['hash']['r'][$fieldk]}\" class=\"text\" 
 							 " . (isset($fieldv[11]) && $fieldv[11] && $op_type == "edit" ? " readonly=\"readonly\" " : "") . ">" . (isset($cleaned[$fieldk]) ? $cleaned[$fieldk] : "") . "</textarea>
 					</div>
 				</label>
@@ -496,8 +497,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 				up_pagefile = {$fieldv[5]} 
 			GROUP BY 
 				up_rel
-		) AS {$fieldk} ON {$fieldk}.up_rel = {$database['primary']} 
-	";
+		) AS {$fieldk} ON {$fieldk}.up_rel = {$database['primary']} ";
 		} else {
 			$database['query'] .= $smart . "\n\t" . (isset($fieldv[0]) && $fieldv[0] != null ? "{$fieldv[0]} AS " : "") . "$fieldk";
 		}
@@ -589,36 +589,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		border-color: #333;
 	}
 
-	#jQsubmit {
-		background: none;
-		margin-top: -5px;
-		border: none;
-		margin-right: 10px;
-		padding: 10px 15px;
-		cursor: pointer;
-	}
-
-	#jQsubmit:active,
-	#jQsubmit:focus {
-		outline: solid 2px var(--root-link-color);
-		border-radius: 2px;
-		text-decoration: none;
-		z-index: 2;
-	}
-
-	#jQsubmit::before {
-		font-family: icomoon2;
-		content: "\f00c";
-		color: var(--root-font-lightcolor);
-		font-size: 1.4em;
-		transition: color var(--transition-speed) ease;
-	}
-
-	#jQsubmit:active::before,
-	#jQsubmit:focus::before,
-	#jQsubmit:hover::before {
-		color: var(--root-link-color);
-	}
+	
 </style>
 <?php
 $addButton = (!isset($database['readonly']) || (isset($database['readonly']) && !$database['readonly']) ?
@@ -636,8 +607,8 @@ $grem_main->menu()->open();
 <!-- <input disabled="disabled" id="jQnavFirst" type="button" value="First" class="edge-left" /> -->
 <input disabled="disabled" class="pagination prev edge-left" value="&#xE618;" id="jQnavPrev" type="button" />
 <input type="text" id="js-input_page-current" placeholder="#" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0" data-rangeend="1" />
-<input disabled="disabled" class="pagination next" value="&#xE61B;" id="jQnavNext" type="button" value="Next" />
-<input type="button" style="text-align:center;" class="edge-right" id="jQnavTitle" value="0 pages" />
+<input disabled="disabled" class="pagination next edge-right" value="&#xE61B;" id="jQnavNext" type="button" value="Next" />
+<input type="button" style="text-align:center;display:none" id="jQnavTitle" value="0 pages" />
 <span type="text" style="text-align:center;min-width:80px;" readonly id="jQnavTotal">0 records</span>
 
 <span class="gap"></span>
@@ -652,7 +623,7 @@ $grem_main->article()->open();
 
 <table class="bom-table hover" id="jQmtable" style="margin-top:1px;">
 	<thead>
-		<tr data-id="0">
+		<tr data-id="0" style="position: sticky; top: calc(var(--root--menubar-height) + 115px - var(--gremium-header-toggle));">
 			<?php
 			$colspan = 0
 				+ ($fs()->permission->delete && !(isset($database['disable-delete']) && $database['disable-delete']) ? 1 : 0)
@@ -685,9 +656,9 @@ unset($grem);
 	$grem->base = "0px";
 	$grem->header()->serve("<h1 style=\"padding-left:20px;\">Delete confirmation!</h1>");
 
-	$grem->article()->width("350px")->open();
+	$grem->article()->width("auto")->open();
 	echo "Are you sure you want to delete this record?";
-	echo "<div style=\"margin-top:20px\" class=\"btn-set right\"><button type=\"submit\">Ok</button><input type=\"button\" data-role=\"previous\" value=\"Cancel\" class=\"edge-right\" /></div>";
+	echo "<div style=\"margin-top:20px\" class=\"btn-set right\"><button type=\"submit\">Delete</button><input type=\"button\" autofocus data-role=\"previous\" value=\"Cancel\" class=\"edge-right\" /></div>";
 	$grem->getLast()->close();
 	$grem->terminate();
 	unset($grem);
@@ -700,19 +671,21 @@ unset($grem);
 	$grem->base = "0px";
 	$grem->header()->prev($fs()->dir)->serve(
 		"<h1>Filter</h1>" .
-		"<cite><button type=\"submit\" id=\"jQsubmit\"></button></cite>"
+		"<cite><button data-role=\"submit\" type=\"submit\" id=\"jQsubmit\"></button></cite>"
 	);
-	$grem->article()->width("500px")->open();
+	$grem->article()->width("auto")->open();
+	$autofocus = "autofocus";
 	foreach ($database['fields'] as $fieldk => $fieldv) {
 		if ($fieldv[4] == 'text' || $fieldv[4] == 'primary') {
-			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input type=\"text\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" class=\"text\" /></div></label></div>";
+			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input $autofocus type=\"text\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" class=\"text\" /></div></label></div>";
 		} elseif ($fieldv[4] == 'slo') {
-			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input type=\"text\" data-slo=\"{$fieldv[7]}\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" /></div></label></div>";
+			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input $autofocus type=\"text\" data-slo=\"{$fieldv[7]}\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" /></div></label></div>";
 		} elseif ($fieldv[4] == 'bool') {
-			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><label><input type=\"checkbox\" name=\"search_{$database['hash']['r'][$fieldk]}\" />{$fieldv[1]}</label></div></label></div>";
+			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><label><input $autofocus type=\"checkbox\" name=\"search_{$database['hash']['r'][$fieldk]}\" />{$fieldv[1]}</label></div></label></div>";
 		} elseif ($fieldv[4] == 'textarea') {
-			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><textarea class=\"flex\" style=\"min-width:300px;height:100px\" name=\"search_{$database['hash']['r'][$fieldk]}\" class=\"text\"></textarea></div></label></div>";
+			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><textarea $autofocus class=\"flex\" style=\"min-width:300px;height:100px\" name=\"search_{$database['hash']['r'][$fieldk]}\" class=\"text\"></textarea></div></label></div>";
 		}
+		$autofocus = "";
 	}
 	$grem->getLast()->close();
 	$grem->terminate();
@@ -745,7 +718,7 @@ unset($grem);
 		nav.replaceVariableState();
 		let slo_page_current = $("#js-input_page-current").slo({
 			onselect: function (e) {
-				nav.setProperty("page", e.hidden);
+				nav.setProperty("page", e.key);
 				nav.pushState();
 				Populate()
 			}
@@ -753,6 +726,7 @@ unset($grem);
 
 
 		searchPopup.addEventListener("submit", function (e) {
+			slo_page_current.set(1, 1);
 			nav.setProperty("page", 1);
 			nav.setProperty("search", $(this.controlContent).serialize().replace(/[^&]+=\.?(?:&|$)/g, ''));
 			nav.pushState();
@@ -766,24 +740,16 @@ unset($grem);
 				nav.setProperty("page", e.state.page);
 				slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"));
 			}
-
-			if (e.state && e.state.search) {
-				nav.setProperty("search", e.state.search);
-			}
+			if (e.state && e.state.search) { nav.setProperty("search", e.state.search); }
 			Populate();
 		});
 		slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"));
 
-		$("#appPopupSearch").find("[data-slo]").each(function () {
-			$(this).slo();
-		});
-
-		$("#jQbtnRefresh").on("click", function (e) {
-			Populate();
-		});
+		$(searchPopup.controller()).find("[data-slo]").each(function () { $(this).slo(); });
 
 
 		$("#jQButtonSearchClear").on("click", function () {
+			slo_page_current.set(1, 1);
 			nav.setProperty("page", 1);
 			nav.setProperty("search", "");
 			nav.pushState();
@@ -902,28 +868,25 @@ unset($grem);
 							$("#" + el.attr('id')).slo();
 						});
 					});
-
 					modal.content(data).show();
-
-
 					<?php
 					foreach ($database['fields'] as $fieldk => $fieldv) {
 						if ($fieldv[4] == 'file') {
 							echo '
-						$.Upload({
-							objectHandler:$("#up_list' . $fieldk . '"),
-							domselector:$("#up_btn' . $fieldk . '"),
-							dombutton:$("#up_trigger' . $fieldk . '"),
-							list_button:$("#up_count' . $fieldk . '"),
-							emptymessage:"[No files uploaded]",
-							delete_method:"permanent",
-							upload_url:"' . $fs(186)->dir . '",
-							relatedpagefile:' . (int) $fieldv[5] . ',
-							multiple:true,
-							inputname:"attachments[' . $fieldk . ']",
-							domhandler:$("#up_handler' . $fieldk . '"),
-							}
-						).update();';
+								$.Upload({
+									objectHandler:$("#up_list' . $fieldk . '"),
+									domselector:$("#up_btn' . $fieldk . '"),
+									dombutton:$("#up_trigger' . $fieldk . '"),
+									list_button:$("#up_count' . $fieldk . '"),
+									emptymessage:"[No files uploaded]",
+									delete_method:"permanent",
+									upload_url:"' . $fs(186)->dir . '",
+									relatedpagefile:' . (int) $fieldv[5] . ',
+									multiple:true,
+									inputname:"attachments[' . $fieldk . ']",
+									domhandler:$("#up_handler' . $fieldk . '"),
+									}
+								).update();';
 						}
 					}
 					?>
@@ -989,27 +952,35 @@ unset($grem);
 		<?php } ?>
 
 		<?php if ($fs()->permission->delete) { ?>
+
+			confirmPopup.addEventListener("submit", (e) => {
+				var $ajax = $.ajax({
+					type: 'POST',
+					url: '<?= $fs()->dir; ?>',
+					data: {
+						'id': e.detail.id,
+						'method': 'delete'
+					}
+				}).done(function (data) {
+					if (data == "1") {
+						e.detail.caller.closest("tr").remove();
+						messagesys.success("Record deleted successfully");
+						confirmPopup.close();
+					} else {
+						messagesys.failure("Deleting requested record failed");
+					}
+				}).fail(function (a, b, c) {
+					messagesys.failure("Request execution failed, " + b);
+				});
+			});
+
 			$("#jQmtable").on('click', ".op-remove", function () {
 				var $this = $(this);
 				var _id = $this.closest("tr").attr("data-id");
-				confirmPopup.show().addEventListener("submit", (e) => {
-					var $ajax = $.ajax({
-						type: 'POST',
-						url: '<?= $fs()->dir; ?>',
-						data: {
-							'id': _id,
-							'method': 'delete'
-						}
-					}).done(function (data) {
-						if (data == "1") {
-							$this.closest("tr").remove();
-							messagesys.success("Record delete successfully");
-						} else {
-							messagesys.failure("Unable to delete requested record");
-						}
-					}).fail(function (a, b, c) {
-						messagesys.failure("Unable to execute your request, " + b);
-					});
+
+				confirmPopup.show({
+					id: parseInt(_id),
+					caller: $this
 				});
 			});
 		<?php } ?>

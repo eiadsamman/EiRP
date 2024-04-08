@@ -15,7 +15,7 @@ class Receipt extends Transaction
 	public function __construct(protected \System\App &$app)
 	{
 		parent::__construct($app);
-		$this->nature_id = Nature::Income->value;
+		$this->nature_id = Nature::Receipt->value;
 	}
 	protected function releaseStatementPairs(int $ownerID): bool
 	{

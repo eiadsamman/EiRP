@@ -463,7 +463,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						url: '<?php echo $fs()->dir . "?modify-user={$modify_user->info->id}&token=" . session_id(); ?>',
 						data: {
 							"invoke": "add-account",
-							"id": value.hidden,
+							"id": value.key,
 							"relative": <?php echo $modify_user->info->id; ?>
 						}
 					}).done(function (data) {
@@ -499,7 +499,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						url: '<?php echo $fs()->dir . "?modify-user={$modify_user->info->id}&token=" . session_id(); ?>',
 						data: {
 							"invoke": "add-costcenter",
-							"id": value.hidden,
+							"id": value.key,
 							"relative": <?php echo $modify_user->info->id; ?>
 						}
 					}).done(function (data) {
@@ -534,7 +534,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						url: '<?php echo $fs()->dir . "?modify-user={$modify_user->info->id}&token=" . session_id(); ?>',
 						data: {
 							"invoke": "add-company",
-							"id": value.hidden,
+							"id": value.key,
 							"relative": <?php echo $modify_user->info->id; ?>
 						}
 					}).done(function (data) {
@@ -785,7 +785,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 
 		var userinput = $("#inpUserSelection").slo({
 			onselect: function (value) {
-				$("#ModifyUser").val(value.hidden);
+				$("#ModifyUser").val(value.key);
 				$("#frmUserSelection").submit();
 			},
 			ondeselect: function () {

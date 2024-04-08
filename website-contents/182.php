@@ -51,7 +51,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			$socialidphotos = "";
 			if (isset($arr_socialids[\System\Attachment\Type::HrID->value])) {
 				foreach ($arr_socialids[\System\Attachment\Type::HrID->value] as $k_socialid => $v_socialid) {
-					$socialidphotos .= "<a href=\"download/?id={$k_socialid}\" class=\"jq_frame_image\" data-href=\"download/?id={$k_socialid}&pr=v\">view</a>";
+					$socialidphotos .= "<a href=\"download/?id={$k_socialid}\" class=\"jq_frame_image\" >view</a>";
 				}
 			}
 
@@ -240,9 +240,9 @@ $grem->getLast()->close();
 			onselect: function (value) {
 				history.pushState({
 					'method': 'view',
-					'id': value.hidden,
+					'id': value.key,
 					'name': value.value
-				}, "<?= $fs(182)->title ?>", "<?= $fs(182)->dir ?>/?id=" + value.hidden);
+				}, "<?= $fs(182)->title ?>", "<?= $fs(182)->dir ?>/?id=" + value.key);
 				fn_fetchfile();
 			},
 			ondeselect: function () {

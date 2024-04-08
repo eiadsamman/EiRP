@@ -1,40 +1,39 @@
 class Modals extends EventTarget {
-	static #queue = [];
-	static #isRaised = false;
+	static queue = [];
+	static isRaised = false;
 
 	isOpen = false;
 	controlContainer;
 	controlContent;
-
-	#eventClose = new Event("close");
-	#eventShow = new Event("show");
-	#eventSubmit = new Event("submit");
+	#sourceRequestEventDetail = {};
+	#eventClose = new CustomEvent("close");
+	#eventShow = new CustomEvent("show");
 
 	constructor() { super(); }
 	static raiseEvents() {
-		if (Modals.#isRaised) return;
-		Modals.#isRaised = true;
+		if (Modals.isRaised) return;
+		Modals.isRaised = true;
 		document.addEventListener("keydown", (e) => {
 			if (e.key == "Escape") {
-				const queueObject = Modals.#getObject();
+				const queueObject = Modals.getObject();
 				if (queueObject) {
 					queueObject.close();
 				}
 			}
 		});
 	}
-	static #getObject() {
-		if (Modals.#queue.length > 0) {
-			const que = Modals.#queue.pop();
+	static getObject() {
+		if (Modals.queue.length > 0) {
+			const que = Modals.queue.pop();
 			if (que.isOpen) {
 				return que;
 			}
-			Modals.#getObject();
+			Modals.getObject();
 		}
 		return false;
 	}
 	static add(object) {
-		Modals.#queue.push(object);
+		Modals.queue.push(object);
 	}
 
 	controller() {
@@ -55,14 +54,17 @@ class Modals extends EventTarget {
 	dispatchSubmitEvent() {
 		this.controlContent.addEventListener("submit", (e) => {
 			e.preventDefault();
-			this.dispatchEvent(this.#eventSubmit);
+			this.dispatchEvent(new CustomEvent("submit", {
+				detail: this.#sourceRequestEventDetail,
+			}));
 			return false;
 		});
 	}
 	height(height) {
 		this.controlContent.style.height = height;
 	}
-	show() {
+	show(eventData = {}) {
+		this.#sourceRequestEventDetail = eventData;
 		this.isOpen = true;
 		let controlPreviousBtn = this.controlContent.querySelectorAll("[data-role=\"previous\"]");
 		if (controlPreviousBtn) {
@@ -73,6 +75,11 @@ class Modals extends EventTarget {
 					return false;
 				})
 			});
+		}
+		let autoFocus = this.controlContent.querySelector("[autofocus]");
+		if (autoFocus) {
+			autoFocus.focus();
+			autoFocus.select();
 		}
 
 		Modals.add(this);
@@ -99,9 +106,9 @@ class Dialog extends Modals {
 		Modals.raiseEvents();
 		return this;
 	}
-	show() {
-		super.show();
+	show(eventData = {}) {
 		this.controlContainer.showModal();
+		super.show(eventData);
 		return this;
 	}
 	close() {
@@ -124,6 +131,9 @@ class Popup extends Modals {
 
 		} else {
 			this.controlContent = document.getElementById(elementId);
+			if (this.controlContent == null || this.controlContent == undefined) {
+				this.controlContent = document.createElement("form");
+			}
 			this.controlContainer.appendChild(this.controlContent);
 		}
 
@@ -134,9 +144,9 @@ class Popup extends Modals {
 		return this;
 	}
 
-	show() {
-		super.show();
+	show(eventData = {}) {
 		this.controlContainer.setAttribute("open", null);
+		super.show(eventData);
 		return this;
 	}
 	close() {

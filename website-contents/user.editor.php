@@ -423,12 +423,12 @@ echo "</form>";
 				$("#employeIDFormSearch").css("cursor", "wait");
 				history.pushState({
 					'method': 'update',
-					'id': value.hidden,
+					'id': value.key,
 					'name': value.value
-				}, null, "<?= $fs(134)->dir ?>/?method=update&id=" + value.hidden);
-				Loader("update", value.hidden);
+				}, null, "<?= $fs(134)->dir ?>/?method=update&id=" + value.key);
+				Loader("update", value.key);
 				js_output_headertitle.html("Edit employee");
-				js_output_headercite.html("<li>" + value.hidden + "</li>");
+				js_output_headercite.html("<li>" + value.key + "</li>");
 			},
 			ondeselect: function () {
 				$("#employeIDFormSearch").css("cursor", "wait");

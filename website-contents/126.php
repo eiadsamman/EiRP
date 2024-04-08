@@ -446,7 +446,7 @@ if (isset($_POST['submit-new-absence-request'])) {
 
 		$("#jQlbr").slo({
 			onselect: function(data) {
-				selected_employee = data.hidden;
+				selected_employee = data.key;
 				update_view();
 			},
 			ondeselect: function(data) {

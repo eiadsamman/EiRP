@@ -2,13 +2,13 @@
 use System\Template\Gremium;
 
 $perpage_val = 20;
-$id          = !empty ($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
+$id          = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
 $statement   = new System\Finance\Transaction\Statement($app);
 $read        = $statement->read($id ?? 0);
 
 if ($read) {
 	$grem = new Gremium\Gremium(true);
-	if (empty ($read->debitor) && empty ($read->creditor)) {
+	if (empty($read->debitor) && empty($read->creditor)) {
 		$grem->header()->status(Gremium\Status::Exclamation)->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
 		$grem->menu()->serve("<span class=\"small-media-hide\">Requested document is forbidden</span>");
 		$grem->article()->serve(
@@ -24,7 +24,11 @@ if ($read) {
 		unset($grem);
 	} else {
 		$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
-		$grem->menu()->serve("<span class=\"small-media-hide flex\"></span><button id=\"js-input_print\" " . ($read ? "" : "disabled") . " class=\"edge-left\" tabindex=\"-1\">Print</button>");
+		$grem->menu()->serve(
+			"<span class=\"small-media-hide flex\"></span>" .
+			($fs(101)->permission->edit ? "<input type=\"button\" data-targettitle=\"{$fs(101)->title}\" data-href=\"{$fs(101)->dir}\" data-targetid=\"$read->id\" id=\"js-input_edit\" value=\"Edit\" " . ($read ? "" : "disabled") . " class=\"edge-left\" tabindex=\"-1\" />" : "") .
+			"<button id=\"js-input_print\" " . ($read ? "" : "disabled") . " class=\"edge-right\" tabindex=\"-1\">Print</button>"
+		);
 		$grem->title()->serve("<span class=\"flex\">Statement details</span>");
 		$grem->article()->open(); ?>
 		<div class="form predefined">
@@ -119,8 +123,6 @@ if ($read) {
 				</label>
 			</div>
 		<?php } ?>
-
-
 		<div class="form predefined">
 			<label>
 				<h1>Description</h1>
@@ -129,7 +131,6 @@ if ($read) {
 				</div>
 			</label>
 		</div>
-
 		<?php
 		$grem->getLast()->close();
 		$grem->terminate();
@@ -142,12 +143,12 @@ if ($read) {
 	unset($grem);
 } else {
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1>");
+	$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>$id</cite>");
 	$grem->menu()->serve("<span class=\"small-media-hide\">Requested document is not available</span>");
 	$grem->article()->serve(
 		<<<HTML
 		<ul>
-			<li>No statement selected or selected statement number is invalid</li>
+			<li>Document `$id` is not valid or doesn't exists on the current company scope</li>
 			<li>Permission denied or not enough privileges to proceed with this document</li>
 			<li>Contact system administrator for further assistance</li>
 		</ul>

@@ -103,8 +103,8 @@ if ($app->xhttp) {
 		}
 		$grem->title()->serve("<span class=\"flex\">Transaction details</span>");
 		$grem->article()->open();
-		$curreny_date = new DateTime();
-		$curreny_date = $curreny_date->format("Y-m-d");
+		$current_date = new DateTime();
+		$current_date = $current_date->format("Y-m-d");
 		?>
 		<form name="js-ref_form-main" id="js-ref_form-main" action="<?= $fs()->dir; ?>">
 			<input type="hidden" name="challenge" value="<?= uniqid(); ?>" />
@@ -135,8 +135,8 @@ if ($app->xhttp) {
 				<label style="min-width:150px">
 					<h1>Date</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $curreny_date ?>" data-rangeend="<?= $curreny_date ?>" tabindex="2" name="date" data-required />
-						<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value="" data-rangeend="<?= $curreny_date ?>" tabindex="-1" name="duedate" />
+						<input type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date" data-required />
+						<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value="" data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
 					</div>
 				</label>
 				<label style="min-width:300px">
@@ -148,24 +148,27 @@ if ($app->xhttp) {
 			</div>
 			<!-- <hr style="border:none;border-top:solid 1px rgb(230,230,230);margin:20px 0px 30px 0px" /> -->
 
+
 			<div class="form">
 				<label style="flex-basis:0%">
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Beneficiary name" data-required class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
+						<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
 						<input type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
+						<input type="button" value="New" class="edge-right" style="display:none" id="js-input_add-benif">
 					</div>
 				</label>
 			</div>
 
 			<div class="form">
-				<label>
-					<h1>Value</h1>
+				<label style="min-width:300px">
+					<h1>Amount</h1>
 					<div class="btn-set">
-						<?= "<span>{$app->user->account->currency->shortname}</span>" ?>
 						<input type="number" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
+						<?= "<span>{$app->user->account->currency->shortname}</span>" ?>
 					</div>
 				</label>
+				<label style="min-width:300px"></label>
 			</div>
 
 			<div class="form">
@@ -234,6 +237,55 @@ if ($app->xhttp) {
 		$grem->terminate();
 		unset($grem);
 		?>
+		<form id="appPopupAddBenif" style="display:none">
+			<?php
+			$grem       = new Gremium\Gremium(false);
+			$grem->base = "0px";
+			$grem->header()->prev($fs()->dir)->serve(
+				"<h1>Add new beneficiary</h1>" .
+				"<cite><button type=\"submit\" data-role=\"submit\"></button></cite>"
+			);
+			$grem->article()->width("auto")->open();
+			$autofocus = "autofocus"; ?>
+			<div class="form predefined">
+				<label style="min-width:200px;">
+					<div class="btn-set">
+						<label class="btn-checkbox"><input type="checkbox" name="role[1]" <?php echo $r[1] ? " checked=\"checked\" " : ""; ?> /><span>Employee</span></label>
+						<label class="btn-checkbox"><input type="checkbox" name="role[2]" <?php echo $r[2] ? "checked=\"checked\"" : ""; ?> /><span>Client</span></label>
+						<label class="btn-checkbox"><input type="checkbox" name="role[3]" <?php echo $r[3] ? "checked=\"checked\"" : ""; ?> /><span>Vendor</span></label>
+					</div>
+				</label>
+			</div>
+			<div class="form predefined">
+				<label style="min-width:200px;">
+					<h1>Name</h1>
+					<div class="btn-set">
+						<input class="flex" type="text" name="">
+					</div>
+				</label>
+			</div>
+
+			<div class="form predefined">
+				<label style="min-width:200px;">
+					<h1>Company</h1>
+					<div class="btn-set">
+						<input class="flex" type="text" name="">
+					</div>
+				</label>
+				<label style="min-width:200px;">
+					<h1>Job Title</h1>
+					<div class="btn-set">
+						<input class="flex" type="text" name="">
+					</div>
+				</label>
+			</div>
+
+			<?php
+			$grem->getLast()->close();
+			$grem->terminate();
+			unset($grem);
+			?>
+		</form>
 		<div>
 			<datalist id="defines">
 				<?php

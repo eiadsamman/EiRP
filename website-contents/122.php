@@ -197,7 +197,7 @@ $(document).ready(function(e) {
 	$("#jQmonth").slo({
 		onselect:function(value){
 			_pos=0;
-			fetch(value.hidden,false,true);
+			fetch(value.key,false,true);
 			value.object.blur();
 		},ondeselect:function(){
 			_regdate=null;

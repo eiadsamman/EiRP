@@ -50,7 +50,7 @@ if (isset($_POST['method']) && $_POST['method'] == "updatepermissions") {
 					type: "POST",
 					data: {
 						'method': 'updatepermissions',
-						'permission': data.hidden,
+						'permission': data.key,
 						'usr_id': data.object.attr("data-usr_id")
 					}
 				}).done(function(data) {

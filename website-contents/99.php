@@ -1044,8 +1044,8 @@ unset($grem);
 				var rel = (data.object.attr("data-rel"));
 				var list = $(".slo_list[data-role=" + rel + "]");
 
-				if (list.find("span[data-id=" + data.hidden + "]").length == 0) {
-					list.prepend('<span data-id="' + data.hidden + '"><b>&#xea0f;</b><span>' + data.value + '</span><input type="hidden" name="' + rel + '[' + indexing + ']" value="' + data.hidden + '" /><label>Exclude<input name="' + rel + '_exclude[' + indexing + ']" type="checkbox" ><span></span></label></span>');
+				if (list.find("span[data-id=" + data.key + "]").length == 0) {
+					list.prepend('<span data-id="' + data.key + '"><b>&#xea0f;</b><span>' + data.value + '</span><input type="hidden" name="' + rel + '[' + indexing + ']" value="' + data.key + '" /><label>Exclude<input name="' + rel + '_exclude[' + indexing + ']" type="checkbox" ><span></span></label></span>');
 					data.this.clear();
 				} else {
 					data.this.clear();

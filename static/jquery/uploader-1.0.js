@@ -48,7 +48,7 @@
 			const clone = itemtemplate.clone();
 			clone.find(".checkbox input").prop("checked", checked).attr("name", settings.inputname + "[]").val(id);
 			clone.find(".op-remove").attr("data-id", id);
-			clone.find(".content").html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + mime + "\" href=\"download/?id=" + id + "&pr=v\" data-href=\"download/?pr=v&id=" + id + "\">" + name + "</a>");
+			clone.find(".content").html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + mime + "\" href=\"download/?id=" + id + "&pr=v\">" + name + "</a>");
 			containerbody.prepend(clone);
 			updateCount();
 		}
@@ -255,12 +255,13 @@
 
 				containerbody.on('click', '.js_upload_view', function (e) {
 					var mime = $(this).attr("data-mime");
-					var viewsrc = $(this).attr("data-href");
+					var viewsrc = $(this).prop("href");
+					
 					if (mime == "image") {
 						e.preventDefault();
-
-						popup.content("<div style=\"text-align:center\"><img style=\"max-width:600px;\" src=\"" + viewsrc + "\" /></div>");
-						popup.show()
+						const preview = new Popup();
+						preview.content("<div style=\"text-align: center;padding: 10px\"><img style=\"max-width:600px;\" src=\"" + viewsrc + "\" /></div>");
+						preview.show()
 						return false;
 					}
 				});

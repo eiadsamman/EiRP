@@ -786,7 +786,6 @@ span.vs-remove {
 	flex: 2;
 	position: relative;
 	max-width: 400px;
-	overflow-x: hidden;
 	transition: width 0.3s ease, max-width 0.3s ease;
 }
 
@@ -994,6 +993,7 @@ span.loadingScreen-placeholderBody>span:last-child {
 	.split-view>div.panel {
 		width: 0px;
 		max-width: 0px;
+		overflow-x: hidden;
 	}
 }
 

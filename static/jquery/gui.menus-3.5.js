@@ -46,7 +46,7 @@ $(document).ready(function (e) {
 	}
 
 	$(document).on('keydown', function (e) {
-		if ((e.metaKey || e.ctrlKey) && (String.fromCharCode(e.which).toLowerCase() === 'm')) {
+		if ((e.metaKey || e.ctrlKey) && e.code === "Slash") {
 			e.preventDefault();
 			RootHeaderMenuToggle(!MenuVisible, true, RootHeaderMenu);
 		}
@@ -85,7 +85,7 @@ $(document).ready(function (e) {
 
 	RootHeaderPFSelector.slo({
 		onselect: function (data) {
-			RootHeaderPFTrigger.attr("href", data.hidden);
+			RootHeaderPFTrigger.attr("href", data.key);
 			RootHeaderPFTrigger[0].click();
 		},
 		limit: 5
@@ -93,14 +93,14 @@ $(document).ready(function (e) {
 
 	$("#account-menu-slo").slo({
 		onselect: function (data) {
-			RootHeaderPFTrigger.attr("href", data.object.attr("data-url") + "?--sys_sel-change=account_commit&i=" + data.hidden);
+			RootHeaderPFTrigger.attr("href", data.object.attr("data-url") + "?--sys_sel-change=account_commit&i=" + data.key);
 			RootHeaderPFTrigger[0].click();
 		},
 		limit: 7
 	});
 	$("#company-menu-slo").slo({
 		onselect: function (data) {
-			RootHeaderPFTrigger.attr("href", data.object.attr("data-url") + "?--sys_sel-change=company_commit&i=" + data.hidden);
+			RootHeaderPFTrigger.attr("href", data.object.attr("data-url") + "?--sys_sel-change=company_commit&i=" + data.key);
 			RootHeaderPFTrigger[0].click();
 		},
 		limit: 7
@@ -238,11 +238,6 @@ $(document).ready(function (e) {
 
 
 
-
-
-
-
-
 	Array.from(document.getElementsByClassName("js-input_darkmode-toggle")).forEach((elem) => {
 		elem.addEventListener("click", (e) => {
 			e.preventDefault();
@@ -251,7 +246,6 @@ $(document).ready(function (e) {
 		});
 	});
 });
-
 
 
 let darkmodeevent = null;

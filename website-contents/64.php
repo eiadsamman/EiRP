@@ -115,7 +115,7 @@ if (isset($_POST['method'], $_POST['xtrd'], $_POST['xper']) && $_POST['method'] 
 					url: "<?php echo $fs()->dir; ?>",
 					type: "POST",
 					data: {
-						'permission': data.hidden
+						'permission': data.key
 					}
 				}).done(function(data) {
 					$("#jQoutput").html(data);

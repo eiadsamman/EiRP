@@ -32,9 +32,17 @@ class User extends Individual
 		return false;
 	}
 
+	public function findAssosiateAccount(int $accountId): bool|AccountProfile
+	{
+		if (array_key_exists($accountId, $this->assosiateAccounts)) {
+			return $this->assosiateAccounts[$accountId];
+		}
+		return false;
+	}
+
 	private function loadAssosiateAccounts(): void
 	{
-		$this->assosiateAccounts=array();
+		$this->assosiateAccounts = array();
 		if (
 			$r = $this->app->db->query(
 				"SELECT 
@@ -60,22 +68,22 @@ class User extends Individual
 				$accProf->company  = new CompanyProfile();
 				$accProf->type     = new Type();
 
-				$accProf->name                = $row['prt_name'];
-				$accProf->company->id         = (int) $row['prt_company_id'];
-				$accProf->company->name       = $row['comp_name'];
-				$accProf->currency->id        = (int) $row['cur_id'];
-				$accProf->currency->name      = $row['cur_name'] ?? "";
-				$accProf->currency->symbol    = $row['cur_symbol'] ?? "";
-				$accProf->currency->shortname = $row['cur_shortname'] ?? "";
-				$accProf->role->inbound       = isset($row['upr_prt_inbound']) && (int) $row['upr_prt_inbound'] == 1 ? true : false;
-				$accProf->role->outbound      = isset($row['upr_prt_outbound']) && (int) $row['upr_prt_outbound'] == 1 ? true : false;
-				$accProf->role->access        = isset($row['upr_prt_fetch']) && (int) $row['upr_prt_fetch'] == 1 ? true : false;
-				$accProf->role->view          = isset($row['upr_prt_view']) && (int) $row['upr_prt_view'] == 1 ? true : false;
-				$accProf->balance             = null;
-				$accProf->type->id            = (int) $row['ptp_id'];
-				$accProf->type->name          = $row['ptp_name'];
-				$accProf->type->keyTerm       = is_null($row['prt_ale']) ? null : KeyTerm::tryFrom($row['prt_ale']);
-				array_push( $this->assosiateAccounts, $accProf);
+				$accProf->name                         = $row['prt_name'];
+				$accProf->company->id                  = (int) $row['prt_company_id'];
+				$accProf->company->name                = $row['comp_name'];
+				$accProf->currency->id                 = (int) $row['cur_id'];
+				$accProf->currency->name               = $row['cur_name'] ?? "";
+				$accProf->currency->symbol             = $row['cur_symbol'] ?? "";
+				$accProf->currency->shortname          = $row['cur_shortname'] ?? "";
+				$accProf->role->inbound                = isset($row['upr_prt_inbound']) && (int) $row['upr_prt_inbound'] == 1 ? true : false;
+				$accProf->role->outbound               = isset($row['upr_prt_outbound']) && (int) $row['upr_prt_outbound'] == 1 ? true : false;
+				$accProf->role->access                 = isset($row['upr_prt_fetch']) && (int) $row['upr_prt_fetch'] == 1 ? true : false;
+				$accProf->role->view                   = isset($row['upr_prt_view']) && (int) $row['upr_prt_view'] == 1 ? true : false;
+				$accProf->balance                      = null;
+				$accProf->type->id                     = (int) $row['ptp_id'];
+				$accProf->type->name                   = $row['ptp_name'];
+				$accProf->type->keyTerm                = is_null($row['prt_ale']) ? null : KeyTerm::tryFrom($row['prt_ale']);
+				$this->assosiateAccounts[$accProf->id] = $accProf;
 			}
 		}
 	}
@@ -139,7 +147,7 @@ class User extends Individual
 				)
 			) {
 				if ($mysqli_result->num_rows > 0 && $row = $mysqli_result->fetch_row()) {
-					$this->account  = new Account($this->app, (int) $row[0]);
+					$this->account = new Account($this->app, (int) $row[0]);
 				}
 			}
 		} catch (AccountNotFoundException $e) {

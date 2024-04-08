@@ -1,0 +1,78 @@
+@keyframes keyframeDialogHide {
+	0% {
+		opacity: 1;
+		display: block;
+	}
+
+	100% {
+		display: none;
+		opacity: 0;
+	}
+}
+
+@keyframes keyframeDialogShow {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+
+}
+
+
+dialog.appHtmlDialog {
+	padding: 0;
+	outline: none;
+	inset: 0 0 0 0;
+
+
+	min-width: 400px;
+	text-align: left;
+	max-width: var(--dim-max-width);
+	border: solid 1px var(--root-ribbon-border-color);
+	background-color: var(--root-background-color_backdrop);
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+	animation: keyframeDialogHide .2s forwards;
+	opacity: 0;
+}
+
+dialog.appHtmlDialog[open] {
+	opacity: 1;
+	animation: keyframeDialogShow .2s forwards;
+}
+
+dialog.appHtmlDialog::backdrop {
+	background-color: var(--root-modal-background-color);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	-moz-backdrop-filter: blur(2px);
+	opacity: 0;
+}
+
+dialog.appHtmlDialog[open]::backdrop {
+	animation: keyframeDialogShow .2s forwards;
+	opacity: 1;
+}
+
+dialog.appHtmlDialog:not([open])::backdrop {
+	display: block;
+	background-color: red;
+}
+
+
+
+
+dialog.appHtmlDialog::-webkit-scrollbar {
+	width: 5px;
+}
+
+dialog.appHtmlDialog:hover::-webkit-scrollbar-thumb {
+	background-color: var(--input-hover_border-color);
+}
+
+dialog.appHtmlDialog::-webkit-scrollbar-thumb {
+	background-color: var(--input_border-color);
+}

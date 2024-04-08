@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace System;
 
-
+#[\System\Finance\Account]
 class SmartListObject
 {
 	protected App $app;
@@ -18,6 +18,7 @@ class SmartListObject
 		$output .= " data-id=\"" . htmlentities($id, ENT_QUOTES, "UTF-8", false) . "\"";
 		$output .= !is_null($keywords) ? " data-keywords=\"" . htmlentities($keywords, ENT_QUOTES, "UTF-8", false) . "\"" : "";
 		$output .= $customFields;
+		//$output .= " data-highlight=\"Highlights\" ";
 		$output .= ">";
 		$output .= htmlentities($value, ENT_QUOTES, "UTF-8", false);
 		$output .= "</option>";

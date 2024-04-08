@@ -82,7 +82,6 @@ class Statement
 
 				$result->editor = new IndividualProfile();
 				$result->editor->id = (int) $row['acm_editor_id'];
-
 				$result->editor->firstname = $row['edt_usr_firstname'];
 				$result->editor->lastname = $row['edt_usr_lastname'];
 				
@@ -99,8 +98,8 @@ class Statement
 
 	private function pairs(StatementProperty &$statementProperty)
 	{
-		$statementProperty->creditor = null;
-		$statementProperty->debitor = null;
+		$statementProperty->creditor = false;
+		$statementProperty->debitor = false;
 		$statementProperty->creditAmount = 0;
 		$statementProperty->debitAmount = 0;
 		$view_role = new AccountRole();
@@ -119,10 +118,10 @@ class Statement
 				try {
 					if ((int) $row['atm_dir'] == 0) {
 						$statementProperty->creditAmount = (float) $row['atm_value'];
-						$statementProperty->creditor = new Account($this->app, (int) $row['atm_account_id'], $view_role);
+						$statementProperty->creditor = $this->app->user->findAssosiateAccount((int) $row['atm_account_id']);
 					} else {
 						$statementProperty->debitAmount = (float) $row['atm_value'];
-						$statementProperty->debitor = new Account($this->app, (int) $row['atm_account_id'], $view_role);
+						$statementProperty->debitor = $this->app->user->findAssosiateAccount((int) $row['atm_account_id']);
 					}
 				} catch (AccountNotFoundException $e) {
 				}

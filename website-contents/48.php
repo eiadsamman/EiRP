@@ -172,7 +172,7 @@ $grem->menu()->open();
 		let group_cmd = null;
 		$("#js-input-list_group").slo({
 			onselect: function (e) {
-				group_cmd = (e.hidden);
+				group_cmd = (e.key);
 				ajaxcall();
 			},
 			ondeselect: function () {
