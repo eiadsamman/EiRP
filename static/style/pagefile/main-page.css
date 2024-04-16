@@ -114,7 +114,7 @@
 
 .dashboard>div.full-chart {
 	background: rgb(18, 123, 124);
-	background: linear-gradient(150deg, rgba(18, 123, 124, 1) 0%, rgba(96, 65, 0, 1) 100%);
+	background: linear-gradient(150deg, rgb(18, 123, 124) 0%, rgb(96, 65, 0) 100%);
 	height: 180px;
 }
 
@@ -314,8 +314,7 @@
 .dashboard>div.account-ticket {
 	height: 180px;
 	background: rgb(0, 0, 0);
-	background: linear-gradient(155deg, hsla(229, 50%, 20%, 0.95) 0%, hsl(229, 34%, 10%) 90%);
-
+	background: linear-gradient(150deg, rgb(34, 18, 104) 0%, rgb(0, 96, 96) 100%);
 	/* background: rgb(1, 20, 28);
 	background: linear-gradient(149deg, rgba(1, 20, 28, 1) 0%, rgba(41, 10, 34, 1) 90%); */
 }

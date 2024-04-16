@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace System\Views\PanelView;
+namespace System\Views;
 
 use System\App;
 use System\Template\Gremium\Gremium;

@@ -588,8 +588,6 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 		background-color: rgba(255, 255, 255, 0.5);
 		border-color: #333;
 	}
-
-	
 </style>
 <?php
 $addButton = (!isset($database['readonly']) || (isset($database['readonly']) && !$database['readonly']) ?
@@ -650,52 +648,56 @@ $grem_main->terminate();
 unset($grem);
 ?>
 
-<form id="appPopupDelConfirm">
-	<?php
-	$grem       = new Gremium(false);
-	$grem->base = "0px";
-	$grem->header()->serve("<h1 style=\"padding-left:20px;\">Delete confirmation!</h1>");
+<div style="display:none">
+	<form id="appPopupDelConfirm">
+		<?php
+		$grem       = new Gremium(false);
+		$grem->base = "0px";
+		$grem->header()->serve("<h1 style=\"padding-left:20px;\">Delete confirmation!</h1>");
 
-	$grem->article()->width("auto")->open();
-	echo "Are you sure you want to delete this record?";
-	echo "<div style=\"margin-top:20px\" class=\"btn-set right\"><button type=\"submit\">Delete</button><input type=\"button\" autofocus data-role=\"previous\" value=\"Cancel\" class=\"edge-right\" /></div>";
-	$grem->getLast()->close();
-	$grem->terminate();
-	unset($grem);
-	?>
-</form>
+		$grem->article()->width("auto")->open();
+		echo "Are you sure you want to delete this record?";
+		echo "<div style=\"margin-top:20px\" class=\"btn-set right\"><button type=\"submit\">Delete</button><input type=\"button\" autofocus data-role=\"previous\" value=\"Cancel\" class=\"edge-right\" /></div>";
+		$grem->getLast()->close();
+		$grem->terminate();
+		unset($grem);
+		?>
+	</form>
 
-<form id="appPopupSearch">
-	<?php
-	$grem       = new Gremium(false);
-	$grem->base = "0px";
-	$grem->header()->prev($fs()->dir)->serve(
-		"<h1>Filter</h1>" .
-		"<cite><button data-role=\"submit\" type=\"submit\" id=\"jQsubmit\"></button></cite>"
-	);
-	$grem->article()->width("auto")->open();
-	$autofocus = "autofocus";
-	foreach ($database['fields'] as $fieldk => $fieldv) {
-		if ($fieldv[4] == 'text' || $fieldv[4] == 'primary') {
-			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input $autofocus type=\"text\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" class=\"text\" /></div></label></div>";
-		} elseif ($fieldv[4] == 'slo') {
-			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input $autofocus type=\"text\" data-slo=\"{$fieldv[7]}\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" /></div></label></div>";
-		} elseif ($fieldv[4] == 'bool') {
-			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><label><input $autofocus type=\"checkbox\" name=\"search_{$database['hash']['r'][$fieldk]}\" />{$fieldv[1]}</label></div></label></div>";
-		} elseif ($fieldv[4] == 'textarea') {
-			echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><textarea $autofocus class=\"flex\" style=\"min-width:300px;height:100px\" name=\"search_{$database['hash']['r'][$fieldk]}\" class=\"text\"></textarea></div></label></div>";
+	<form id="appPopupSearch">
+		<?php
+		$grem       = new Gremium(false);
+		$grem->base = "0px";
+		$grem->header()->prev($fs()->dir)->serve(
+			"<h1>Filter</h1>" .
+			"<cite><button data-role=\"submit\" type=\"submit\" id=\"jQsubmit\"></button></cite>"
+		);
+		$grem->article()->width("auto")->open();
+		$autofocus = "autofocus";
+		foreach ($database['fields'] as $fieldk => $fieldv) {
+			if ($fieldv[4] == 'text' || $fieldv[4] == 'primary') {
+				echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input $autofocus type=\"text\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" class=\"text\" /></div></label></div>";
+			} elseif ($fieldv[4] == 'slo') {
+				echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input $autofocus type=\"text\" data-slo=\"{$fieldv[7]}\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" /></div></label></div>";
+			} elseif ($fieldv[4] == 'bool') {
+				echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><label><input $autofocus type=\"checkbox\" name=\"search_{$database['hash']['r'][$fieldk]}\" />{$fieldv[1]}</label></div></label></div>";
+			} elseif ($fieldv[4] == 'textarea') {
+				echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><textarea $autofocus class=\"flex\" style=\"min-width:300px;height:100px\" name=\"search_{$database['hash']['r'][$fieldk]}\" class=\"text\"></textarea></div></label></div>";
+			}
+			$autofocus = "";
 		}
-		$autofocus = "";
-	}
-	$grem->getLast()->close();
-	$grem->terminate();
-	unset($grem);
-	?>
-</form>
+		$grem->getLast()->close();
+		$grem->terminate();
+		unset($grem);
+		?>
+	</form>
+</div>
 
 
-<script type="text/javascript" src="static/javascript/Navigator.js"></script>
-<script type="text/javascript">
+<script type="module">
+	import { Navigator } from './static/javascript/modules/app.js';
+	import { Popup } from './static/javascript/modules/gui/popup.js';
+
 	var nav = new Navigator({
 		'page': 1,
 		'search': ''

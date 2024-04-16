@@ -21,12 +21,12 @@ class SmartListObjectHandler {
 	toString() {
 		return (this.output === false) ? "" : this.output;
 	}
-	itemGenerator(title = "", return_id = "", return_value = "", highlight = "") {
-		return `<div data-return_id="${return_id}">
-			<div>${title}</div>
-			<span>${highlight}</span>
-			<p>${return_value}</p>
-		</div>`;
+	itemGenerator(title = "", return_id = "", return_value = "", highlight = null) {
+		let output = `<div data-return_id="${return_id}"><div>${title}</div>`;
+		output += highlight != null && highlight != "" ? `<span>${highlight}</span>` : "";
+		output += `<p>${return_value}</p>`;
+		output += `</div>`;
+		return output;
 	}
 }
 

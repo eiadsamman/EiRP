@@ -1,10 +1,11 @@
-class PanelNavigator {
+import { Navigator } from "./app.js";
+export class PanelNavigator {
 	constructor() {
 		this.sourceUrl = "";
 		this.onClickUrl = "";
 		this.itemPerRequest = 20;
 		this.navigator = new Navigator({}, '');
-		this.refreshFunction = function () { };
+		this.entityModule = null;
 		this.classList = [];
 
 		this.runtime = new Object();
@@ -29,7 +30,13 @@ class PanelNavigator {
 				this.xhttp_request();
 			}
 		});
+		window.addEventListener("keydown", (e) => {
+			if (e.key == "F8") {
+				this.fetchNewItems();
+			}
+		});
 		return this;
+
 	}
 
 	onclick = function () {
@@ -176,13 +183,13 @@ class PanelNavigator {
 				this.runtime.informative.innerText = "No more records";
 				return;
 			}
-			/* if (this.checkAvailability() &&
+			if (this.checkAvailability() &&
 				this.runtime.scrollArea.scrollHeight > 0 &&
 				this.runtime.scrollArea.clientHeight > 0 &&
 				(this.runtime.scrollArea.scrollHeight <= this.runtime.scrollArea.clientHeight)) {
 				this.runtime.currentPage += 1;
 				this.xhttp_request();
-			} */
+			}
 			this.runtime.isLoading = false;
 		}
 	}
@@ -238,7 +245,12 @@ class PanelNavigator {
 		return (this.runtime.currentPage < this.runtime.totalPages);
 	}
 
-	after
+	fetchNewItems = function () {
+		let fisrtNode = this.runtime.container.firstElementChild;
+		if (fisrtNode && fisrtNode.dataset.listitem_id) {
+			console.log(fisrtNode.dataset.listitem_id);
+		}
+	}
 
 	loader = function (url, title, options = {}) {
 		this.runtime.isContentLoading = true;
@@ -252,6 +264,7 @@ class PanelNavigator {
 		for (var key in options) {
 			formData.append(key, options[key]);
 		}
+
 		fetch(url, {
 			method: 'POST',
 			mode: "cors",
@@ -289,10 +302,10 @@ class PanelNavigator {
 					return false;
 				});
 			});
+			this.entityModule.run();
 
-
-			this.refreshFunction();
 		}).catch(response => {
+			console.log(response)
 			this.runtime.isContentLoading = false;
 			messagesys.failure("Server response `" + response.statusText + "`");
 		})

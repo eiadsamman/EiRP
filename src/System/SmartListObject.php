@@ -285,8 +285,4 @@ class SmartListObject
 		}
 		return $output;
 	}
-
-
-
-
 }

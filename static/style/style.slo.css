@@ -43,7 +43,9 @@
 }
 
 .slo-container>div>span {
-	color: #777;
+	color: var(--root-font-lightcolor);
+	display: block;
+	padding-top: 8px;
 }
 
 .slo-wrap,

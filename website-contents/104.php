@@ -23,14 +23,19 @@ if ($read) {
 		);
 		unset($grem);
 	} else {
-		$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
-		$grem->menu()->serve(
-			"<span class=\"small-media-hide flex\"></span>" .
-			($fs(101)->permission->edit ? "<input type=\"button\" data-targettitle=\"{$fs(101)->title}\" data-href=\"{$fs(101)->dir}\" data-targetid=\"$read->id\" id=\"js-input_edit\" value=\"Edit\" " . ($read ? "" : "disabled") . " class=\"edge-left\" tabindex=\"-1\" />" : "") .
-			"<button id=\"js-input_print\" " . ($read ? "" : "disabled") . " class=\"edge-right\" tabindex=\"-1\">Print</button>"
-		);
+		$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>{$read->id}</cite>");
+		$grem->menu()->open();
+		echo "<span class=\"small-media-hide flex\"></span>";
+		if ($fs(101)->permission->edit) {
+			echo "<input type=\"button\" data-targettitle=\"{$fs(101)->title}\" data-href=\"{$fs(101)->dir}\" data-targetid=\"{$read->id}\" id=\"js-input_edit\" value=\"Edit\" class=\"edge-left\" tabindex=\"-1\" />";
+			echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs(142)->dir}\" id=\"js-input_print\" class=\"edge-right\" tabindex=\"-1\">Print</button>";
+		} else {
+			echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs(142)->dir}\" id=\"js-input_print\" class=\"edge-right edge-left\" tabindex=\"-1\">Print</button>";
+		}
+		$grem->getLast()->close();
 		$grem->title()->serve("<span class=\"flex\">Statement details</span>");
 		$grem->article()->open(); ?>
+		<iframe id="plot-iframe" name="plot-iframe" style="display:none;"></iframe>
 		<div class="form predefined">
 			<label>
 				<h1>Statement ID</h1>
@@ -113,10 +118,10 @@ if ($read) {
 			<div class="form predefined">
 				<label>
 					<h1>Attachments</h1>
-					<div style="padding:5px 10px;" class="attachments-view">
+					<div style="padding:5px 10px;" class="attachments-view" id="transAttachementsList">
 						<?php
 						foreach ($read->attachments as $file) {
-							echo "<a title=\"{$file->name}\" href=\"{$fs(187)->dir}?id={$file->id}&pr=v\" target=\"_blank\"><img src=\"{$fs(187)->dir}?id={$file->id}&pr=t\" /></a>";
+							echo "<a title=\"{$file->name}\" href=\"{$fs(187)->dir}?id={$file->id}&pr=v\" ><img src=\"{$fs(187)->dir}?id={$file->id}&pr=t\" /></a>";
 						}
 						?>
 					</div>

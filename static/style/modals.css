@@ -1,4 +1,4 @@
-@keyframes hide {
+@keyframes keyframePopupHide {
 	0% {
 		display: flex;
 	}
@@ -9,12 +9,36 @@
 	}
 }
 
-@keyframes show {
+@keyframes keyframePopupShow {
 	0% {
 		opacity: 0;
 		display: flex;
 	}
 }
+
+@keyframes keyframeDialogHide {
+	0% {
+		opacity: 1;
+		display: block;
+	}
+
+	100% {
+		display: none;
+		opacity: 0;
+	}
+}
+
+@keyframes keyframeDialogShow {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+
+}
+
 
 .appHtmlPopup {
 	position: fixed;
@@ -30,13 +54,13 @@
 	backdrop-filter: blur(4px);
 	-webkit-backdrop-filter: blur(4px);
 	-moz-backdrop-filter: blur(4px);
-	animation: hide var(--transition-speed) forwards;
+	animation: keyframePopupHide var(--transition-speed) forwards;
 	-webkit-overflow-scrolling: touch;
 	overscroll-behavior: contain;
 }
 
 .appHtmlPopup[open] {
-	animation: show var(--transition-speed) forwards;
+	animation: keyframePopupShow var(--transition-speed) forwards;
 	display: flex;
 	opacity: 1;
 }
@@ -57,7 +81,6 @@
 	-webkit-overflow-scrolling: touch;
 	overscroll-behavior: contain;
 }
-
 
 .appHtmlPopup>form [data-role="submit"] {
 	background: none;
@@ -101,6 +124,113 @@
 .appHtmlPopup>form::-webkit-scrollbar-thumb {
 	background-color: var(--input_border-color);
 }
+
+
+dialog.appHtmlDialog {
+	padding: 0;
+	outline: none;
+	inset: 0 0 0 0;
+	min-width: 400px;
+	text-align: left;
+	max-width: var(--dim-max-width);
+	border: solid 1px var(--root-ribbon-border-color);
+	background-color: var(--root-background-color_backdrop);
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+	animation: keyframeDialogHide .2s forwards;
+	opacity: 0;
+}
+
+dialog.appHtmlDialog[open] {
+	opacity: 1;
+	animation: keyframeDialogShow .2s forwards;
+}
+
+dialog.appHtmlDialog::backdrop {
+	background-color: var(--root-modal-background-color);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	-moz-backdrop-filter: blur(2px);
+	opacity: 0;
+}
+
+dialog.appHtmlDialog[open]::backdrop {
+	animation: keyframeDialogShow .2s forwards;
+	opacity: 1;
+}
+
+dialog.appHtmlDialog:not([open])::backdrop {
+	display: block;
+	background-color: red;
+}
+
+dialog.appHtmlDialog::-webkit-scrollbar {
+	width: 5px;
+}
+
+dialog.appHtmlDialog:hover::-webkit-scrollbar-thumb {
+	background-color: var(--input-hover_border-color);
+}
+
+dialog.appHtmlDialog::-webkit-scrollbar-thumb {
+	background-color: var(--input_border-color);
+}
+
+
+
+.messagesys {
+	position: fixed;
+	top: 23px;
+	left: 0px;
+	right: 0px;
+	text-align: center;
+	pointer-events: none;
+	z-index: 110;
+}
+
+.messagesys>div {
+	display: inline-block;
+	max-width: 700px;
+	min-width: 100px;
+	padding: 20px 30px;
+	border: none;
+	text-align: left;
+	pointer-events: all;
+	cursor: default;
+	color: #fff;
+}
+
+.messagesys>div>span,
+.messagesys>div>div {
+	display: inline-block;
+	vertical-align: top;
+	white-space: normal;
+}
+
+.messagesys>div>span:before {
+	font-family: icomoon2;
+	margin-right: 10px;
+	position: relative;
+	top: 0px;
+}
+
+.messagesys>div.success>span:before {
+	content: "\f00c";
+}
+
+.messagesys>div.success {
+	background-color: rgb(60, 180, 60)
+}
+
+.messagesys>div.failure>span:before {
+	content: "\f00d";
+}
+
+.messagesys>div.failure {
+	background-color: rgb(220, 60, 60);
+}
+
+
 
 
 @media only screen and (max-width: 624px) {

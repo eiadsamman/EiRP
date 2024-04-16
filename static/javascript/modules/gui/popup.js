@@ -43,12 +43,29 @@ class Modals extends EventTarget {
 		this.controlContent.innerHTML = data;
 		return this;
 	}
+
+	contentForm(header = {}, data = "") {
+		header.title = header.title ?? "";
+		this.controlContent.innerHTML = `
+			<div class="gremium">
+				<header style="position:sticky; top: calc(0px);">
+					<a href="#" class="previous" data-role="previous"></a>
+					<h1>${header.title}</h1>
+				</header>
+				<article style="width:auto;">
+					${data}
+				</article>
+			</div>`;
+		//<cite><button data-role="submit" type="submit" id="jQsubmit"></button></cite>
+		return this;
+	}
+
 	destroy() {
 		this.isOpen = null;
 		setTimeout(() => {
 			this.controlContent.remove();
 			this.controlContainer.remove();
-		}, 300);
+		}, 1000);
 	}
 
 	dispatchSubmitEvent() {
@@ -144,6 +161,7 @@ class Popup extends Modals {
 		Modals.raiseEvents();
 		return this;
 	}
+
 
 	show(eventData = {}) {
 		this.controlContainer.setAttribute("open", null);

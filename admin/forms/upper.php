@@ -40,16 +40,11 @@ $SmartListObject = new SmartListObject($app);
 		<?= "{$app->settings->site['title']} - {$fs()->title}" ?>
 	</title>
 	<link media="screen,print" rel="stylesheet" href="static/style/theme/default.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.main.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.messagesys.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/base.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/modals.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.button.set.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.slo.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.bom-table.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.checkbox.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.popup.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.dialog.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.ios-checkbox.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.template.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css<?= $_v ?>" />
 	<?php
 	if (array_key_exists('css', $fs()->cdns)) {

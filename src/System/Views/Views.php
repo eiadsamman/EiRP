@@ -5,9 +5,6 @@ namespace System\Views;
 
 use System\App;
 
-
-
-
 interface Views
 {
 
@@ -15,4 +12,5 @@ interface Views
 	public function __construct(App &$app);
 
 	public function render(): void;
+
 }

@@ -72,6 +72,8 @@ if ($app->xhttp) {
 		exit;
 	}
 
+
+	
 	$SmartListObject = new SmartListObject($app);
 	if (is_null($app->user->account) || !$app->user->account->role->inbound) {
 		$grem = new Gremium\Gremium();

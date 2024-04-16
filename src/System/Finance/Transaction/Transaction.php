@@ -15,6 +15,7 @@ class Instructions
 	protected Account $target_account;
 
 	protected int $category;
+	protected bool $open = true;
 	protected float $value;
 	protected \DateTime $dateTime;
 	protected string $beneficiary;
@@ -24,6 +25,7 @@ class Instructions
 	protected ?int $individual = null;
 	protected ?array $attachments = null;
 	public ?int $insert_id = null;
+
 
 	public function __construct(protected \System\App &$app)
 	{
@@ -93,7 +95,6 @@ class Instructions
 
 	public function individual(string|int|null $id = null): self
 	{
-
 		if (gettype($id) == "integer") {
 			if ($id > 0) {
 				$this->individual = $id;
@@ -113,7 +114,6 @@ class Instructions
 
 	public function relation(string|int|null $id = null): self
 	{
-
 		if (gettype($id) == "integer") {
 			if ($id > 0) {
 				$this->relation = $id;
@@ -159,6 +159,11 @@ class Instructions
 		$this->accountConflict();
 		return $this;
 	}
+	public function openState(bool $isOpen): self
+	{
+		$this->open = $isOpen;
+		return $this;
+	}
 
 	public function targetAccount(Account $account): self
 	{
@@ -197,15 +202,16 @@ class Instructions
 		return print_r([
 			"Issuer Account" => $this->issuer_account->id . ": " . $this->issuer_account->currency->shortname . " " . $this->issuer_account->name,
 			"Target Account" => $this->target_account->id . ": " . $this->target_account->currency->shortname . " " . $this->target_account->name,
-			"Date"           => $this->dateTime->format("Y-m-d"),
-			"Beneficiary"    => $this->beneficiary,
-			"Value"          => $this->value,
-			"Category"       => $this->category,
-			"Description"    => $this->description,
-			"Individual"     => "(" . gettype($this->individual) . ") " . $this->individual,
-			"Reference"      => "(" . gettype($this->reference) . ") " . $this->reference,
-			"Relation"       => "(" . gettype($this->relation) . ") " . $this->relation,
-			"Attachments"    => $this->attachments,
+			"Date" => $this->dateTime->format("Y-m-d"),
+			"IsOpen" => $this->open ? "Yes" : "No",
+			"Beneficiary" => $this->beneficiary,
+			"Value" => $this->value,
+			"Category" => $this->category,
+			"Description" => $this->description,
+			"Individual" => "(" . gettype($this->individual) . ") " . $this->individual,
+			"Reference" => "(" . gettype($this->reference) . ") " . $this->reference,
+			"Relation" => "(" . gettype($this->relation) . ") " . $this->relation,
+			"Attachments" => $this->attachments,
 		], true);
 	}
 }
@@ -239,28 +245,85 @@ abstract class Transaction extends Instructions
 		return true;
 	}
 
-	private function process(): bool
+	private function clearStatementSlips(int $statementID): bool
 	{
-		$stmt = $this->app->db->prepare("INSERT INTO acc_main (
-			acm_usr_id,
-			acm_editor_id,
-			acm_ctime,
-			acm_time,
-			acm_type,
-			acm_beneficial,
+		$stmt = $this->app->db->prepare("DELETE FROM acc_temp WHERE atm_main = ?;");
+		$stmt->bind_param("i", $statementID);
+		if (!$stmt->execute())
+			return false;
 
-			acm_category,
-			acm_comments,
-			acm_reference,
-			acm_realvalue,
-			acm_realcurrency,
-			
-			acm_forex_rate,
-			acm_rel,
-			acm_party
-			) VALUES (?,?,?,?,?,? ,?,?,?,?,?, ?,?,?);");
+		$stmt = $this->app->db->prepare("UPDATE uploads SET up_rel = null WHERE up_rel = ?;");
+		$stmt->bind_param("i", $statementID);
+		return $stmt->execute();
 
+	}
+	private function processEdit(int $statementID): bool
+	{
+		$stmt = $this->app->db->prepare(
+			"UPDATE acc_main SET
+				acm_usr_id = ?,
+				acm_editor_id = ?,
+				acm_ctime = ?,
+				acm_time = ?,
+				acm_type = ?,
+				acm_beneficial = ?,
+				acm_category = ?,
+				acm_comments = ?,
+				acm_reference = ?,
+				acm_realvalue = ?,
+				acm_realcurrency = ?,
+				acm_forex_rate = ?,
+				acm_rel = ?,
+				acm_party = ?,
+				acm_rejected = ?
+			WHERE
+				acm_id = ?;"
+		);
 
+		$dateTime       = $this->dateTime->format("Y-m-d");
+		$timeStamp      = (new \DateTime("now"))->format("Y-m-d H:i:s");
+		$openState      = $this->open ? 0 : 1;
+		$forex_exchange = $this->forex->exchange(
+			$this->issuer_account->currency->id,
+			$this->target_account->currency->id,
+			1
+		);
+		$stmt->bind_param(
+			"iissisissdidiiii",
+
+			$this->individual,
+			$this->app->user->info->id,
+			$dateTime,
+			$timeStamp,
+			$this->nature_id,
+			$this->beneficiary,
+			$this->category,
+			$this->description,
+			$this->reference,
+			$this->value,
+			$this->issuer_account->currency->id,
+			$forex_exchange,
+			$this->relation,
+			$this->app->user->company->id,
+			$openState,
+			$statementID
+		);
+
+		if ($stmt->execute()) {
+			$this->insert_id = $statementID;
+			if ($this->clearStatementSlips($this->insert_id) && $this->releaseStatementPairs($this->insert_id)) {
+				return $this->linkAttachments($this->insert_id);
+			}
+		}
+		return false;
+	}
+
+	private function processPost(): bool
+	{
+		$stmt           = $this->app->db->prepare(
+			"INSERT INTO acc_main (acm_usr_id,acm_editor_id,acm_ctime,acm_time,acm_type,acm_beneficial,acm_category,acm_comments,acm_reference,acm_realvalue,acm_realcurrency,acm_forex_rate,acm_rel,acm_party
+			) VALUES (?,?,?,?,?,? ,?,?,?,?,?, ?,?,?);"
+		);
 		$dateTime       = $this->dateTime->format("Y-m-d");
 		$timeStamp      = (new \DateTime("now"))->format("Y-m-d H:i:s");
 		$forex_exchange = $this->forex->exchange(
@@ -270,25 +333,21 @@ abstract class Transaction extends Instructions
 		);
 		$stmt->bind_param(
 			"iissisissdidii",
-
 			$this->individual,
 			$this->app->user->info->id,
 			$dateTime,
 			$timeStamp,
 			$this->nature_id,
 			$this->beneficiary,
-
 			$this->category,
 			$this->description,
 			$this->reference,
 			$this->value,
 			$this->issuer_account->currency->id,
-
 			$forex_exchange,
 			$this->relation,
 			$this->app->user->company->id
 		);
-
 		if ($stmt->execute()) {
 			$this->insert_id = $stmt->insert_id;
 			if ($this->releaseStatementPairs($this->insert_id)) {
@@ -326,7 +385,21 @@ abstract class Transaction extends Instructions
 	{
 		$this->integrity();
 		$this->app->db->autocommit(false);
-		if ($this->process()) {
+		if ($this->processPost()) {
+			$this->app->db->commit();
+			$this->app->db->autocommit(true);
+			return true;
+		} else {
+			$this->app->db->rollback();
+			return false;
+		}
+	}
+
+	public function edit(int $transactionID): bool
+	{
+		$this->integrity();
+		$this->app->db->autocommit(false);
+		if ($this->processEdit($transactionID)) {
 			$this->app->db->commit();
 			$this->app->db->autocommit(true);
 			return true;

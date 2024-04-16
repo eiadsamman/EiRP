@@ -331,6 +331,7 @@
 .btn-set>label>input[type=checkbox] {
 	appearance: none;
 	padding-right: 20px;
+	outline: none
 }
 
 .btn-set>label>input[type=checkbox]::before {
@@ -343,6 +344,7 @@
 	width: 10px;
 	left: 10px;
 	top: 6px;
+	outline: none;
 	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }
 

@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace System\Views\PanelView;
+namespace System\Views\Finance;
 
 use System\App;
 use System\Template\Gremium\Gremium;
 
-class TransactionView extends PanelView
+class TransactionView extends \System\Views\PanelView
 {
 	private int $perpage_val = 20;
 
@@ -43,17 +43,18 @@ class TransactionView extends PanelView
 				}
 			</script>";
 
-		echo "<script type=\"text/javascript\" src=\"static/javascript/accounting/Transactions.js\"></script>";
-		echo "<script type=\"text/javascript\" src=\"static/javascript/Navigator.js\"></script>";
-		echo "<script type=\"text/javascript\" src=\"static/javascript/PanelNavigator.js\"></script>";
-		echo "<script type=\"text/javascript\">";
+		echo "<script type=\"module\">";
 		echo <<<HTML
+
+				import { PanelNavigator } from './static/javascript/modules/panel-navigator.js';
+				import Transaction from './static/javascript/modules/finance/transaction.js';
+
 				let pn = new PanelNavigator();
 				pn.sourceUrl = "{$fs(121)->dir}";
 				pn.onClickUrl = "{$fs(104)->dir}";
 				pn.itemPerRequest = {$this->perpage_val};
 				pn.classList = ["statment-panel"];
-				pn.refreshFunction = () => { initInvokers() };
+				pn.entityModule = new Transaction();
 
 				pn.onclick = function (event) {
 					pn.navigator.setProperty("id", event.dataset.listitem_id);

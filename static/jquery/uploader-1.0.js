@@ -15,7 +15,8 @@
 			delete_method: "permanent", /*recycle|permanent*/
 			listfiles: {},
 			domhandler: null,
-			align: "left"
+			align: "left",
+			popupview: null
 
 		}, options);
 
@@ -256,12 +257,13 @@
 				containerbody.on('click', '.js_upload_view', function (e) {
 					var mime = $(this).attr("data-mime");
 					var viewsrc = $(this).prop("href");
-					
+
 					if (mime == "image") {
 						e.preventDefault();
-						const preview = new Popup();
-						preview.content("<div style=\"text-align: center;padding: 10px\"><img style=\"max-width:600px;\" src=\"" + viewsrc + "\" /></div>");
-						preview.show()
+						if (settings.popupview != null) {
+							settings.popupview.contentForm({ title: "Attachement preview" }, "<div style=\"text-align: center;\"><img style=\"max-width:600px;width:100%;\" src=\"" + viewsrc + "\" /></div>");
+							settings.popupview.show();
+						}
 						return false;
 					}
 				});

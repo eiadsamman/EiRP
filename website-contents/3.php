@@ -1,34 +1,35 @@
 <?php
-function replaceARABIC($str){
-	$str=str_replace(["أ","إ","آ"],"[أإاآ]+",$str);
-	$str=str_replace(["ة","ه"],"[ةه]+",$str);
-	$str=str_replace(["ى","ي"],"[يى]+",$str);
+function replaceARABIC($str)
+{
+	$str = str_replace(["أ", "إ", "آ"], "[أإاآ]+", $str);
+	$str = str_replace(["ة", "ه"], "[ةه]+", $str);
+	$str = str_replace(["ى", "ي"], "[يى]+", $str);
 	return $str;
 }
 
 if (!isset($_POST['limit']) || !isset($_POST['role'])) {
 	exit;
 }
-$role = $_POST['role'];
-$limit = (int)$_POST['limit'];
+$role  = $_POST['role'];
+$limit = (int) $_POST['limit'];
 if ($limit > 15) {
 	$limit = 15;
 }
 
 $rl = array();
-require_once("website-contents/slo.database.php");
+require_once ("website-contents/slo.database.php");
 if (!isset($rl[$role])) {
 	exit;
 }
 
 //Initiate startup variables
-$q		= preg_replace('/[^\p{Arabic}\da-z_\- ]/ui', " ", $_POST['query']);
-$sq 	= ' ';
-$i		= 0;
-$sJS	= "";
-$cols	= $rl[$role]['search'];
-$q		= trim($q);
-$smart  = "";
+$q     = preg_replace('/[^\p{Arabic}\da-z_\- ]/ui', " ", $_POST['query']);
+$sq    = ' ';
+$i     = 0;
+$sJS   = "";
+$cols  = $rl[$role]['search'];
+$q     = trim($q);
+$smart = "";
 //Handle various search keys
 if ($q == "") {
 	$sq .= "(";
@@ -68,7 +69,7 @@ if (sizeof($select_statment) == 0) {
 	exit;
 }
 $selectquery = "";
-$smart = "";
+$smart       = "";
 foreach ($select_statment as $k => $v) {
 	if ($k == $v) {
 		$selectquery .= $smart . $k;
@@ -97,12 +98,12 @@ $q =
 
 if ($r = $app->db->query($q)) {
 	while ($row = $r->fetch_assoc()) {
-		$cute = "";
+		$cute      = "";
 		$return_id = "";
 		foreach ($rl[$role]['return_id'] as $msel => $msev) {
 			if (isset($row[$msel])) {
 				$return_id .= $cute . $row[$msel];
-				$cute = ", ";
+				$cute      = ", ";
 			}
 		}
 
@@ -119,15 +120,18 @@ if ($r = $app->db->query($q)) {
 		}
 		echo "</div>";
 
-		$cute = "";
-		echo "<span>";
-		foreach ($rl[$role]['minselect'] as $msel => $msev) {
-			if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
-				echo $cute . $row[$msel];
-				$cute = ", ";
+
+		if (sizeof($rl[$role]['minselect']) > 0) {
+			$cute = "";
+			echo "<span>";
+			foreach ($rl[$role]['minselect'] as $msel => $msev) {
+				if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
+					echo $cute . $row[$msel];
+					$cute = ", ";
+				}
 			}
+			echo "</span>";
 		}
-		echo "</span>";
 
 
 		$cute = "";

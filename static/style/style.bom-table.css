@@ -253,7 +253,7 @@
 	user-select: none;
 }
 
-.bom-table>tbody>tr>td.checkbox>label:hover {
+.bom-table>tbody>tr>td.checkbox:not(.disabled)>label:hover {
 	outline: solid 2px var(--button-border);
 	z-index: 1;
 	border-radius: 2px;
@@ -286,7 +286,7 @@
 	transition: border-color 0.2s ease-out;
 }
 
-.bom-table>tbody>tr>td.checkbox>label>input:hover::before {
+.bom-table>tbody>tr>td.checkbox>label>input:not(:disabled)::before {
 	background-color: var(--bomtable-background-color);
 	border-color: var(--input-hover_border-color);
 }

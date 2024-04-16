@@ -15,7 +15,7 @@ $app->databaseConnect($app->settings->database['host'], $app->settings->database
 $app->build();
 $app->register($_SERVER['REQUEST_URI']);
 
-$access_error = $app->userInit();
+$access_error    = $app->userInit();
 $app->fileSystem = new System\FileSystem\Page($app);
 $fs              = $app->fileSystem;
 $dir             = $fs->dir($app->resolve());
@@ -80,13 +80,10 @@ if ($app->user->info) {
 	$themeDarkMode = new System\Personalization\ThemeDarkMode($app);
 	$frequentVisit->register($fs()->id);
 
-	if ($app->xhttp) {
-		if (isset($_POST['--toggle-theme-mode'])) {
-			$mode = $_POST['--toggle-theme-mode'] === "dark" ? 1 : 0;
-			$themeDarkMode->register($mode);
-
-			exit;
-		}
+	if ($app->xhttp && isset($_POST['--toggle-theme-mode'])) {
+		$mode = $_POST['--toggle-theme-mode'] === "dark" ? 1 : 0;
+		$themeDarkMode->register($mode);
+		exit;
 	}
 
 	if (isset($_GET['--sys_sel-change'])) {
