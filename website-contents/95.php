@@ -15,8 +15,9 @@ if ($app->xhttp) {
 		$result = array(
 			"result" => false,
 			"errno" => 0,
-			"error" => '',
-			'insert_id' => 0,
+			"error" => "",
+			"insert_id" => 0,
+			"type" => "insert",
 			"debug" => ""
 		);
 		try {
@@ -152,8 +153,10 @@ if ($app->xhttp) {
 				<label style="flex-basis:0%">
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary" />
+						<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
+							data-source="_/financeBeneficiaryList/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" name="beneficiary" id="beneficiary" />
 						<input type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
+						<input type="button" value="New" class="edge-right" style="display:none" id="js-input_add-benif">
 					</div>
 				</label>
 			</div>
@@ -248,9 +251,6 @@ if ($app->xhttp) {
 			</datalist>
 			<datalist id="jQcategoryList">
 				<?= $SmartListObject->financialCategories(); ?>
-			</datalist>
-			<datalist id="js-ref_beneficiary-list">
-				<?= $SmartListObject->financialBeneficiary(); ?>
 			</datalist>
 		</div>
 

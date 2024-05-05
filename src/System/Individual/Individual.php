@@ -43,7 +43,7 @@ class Individual
 					LEFT JOIN permissions ON per_id = usr_privileges
 					LEFT JOIN uploads on lbr_id = up_rel AND up_deleted = 0 AND up_pagefile = " . \System\Attachment\Type::HrPerson->value . " AND 1
 			WHERE
-				lbr_id='" . (int) $person_id . "';"
+				lbr_id = " . (int) $person_id . ";"
 		);
 
 		if ($query && $row = $query->fetch_assoc()) {
@@ -66,5 +66,14 @@ class Individual
 		} else {
 			throw new \System\Exceptions\HR\PersonNotFoundException("Profile doesn't exists", 21001);
 		}
+	}
+
+	public function __toString(): string
+	{
+		return print_r([
+			'id' => $this->info->id,
+			'name' => $this->info->fullName(),
+			'permissions' => $this->info->permissions,
+		], true);
 	}
 }

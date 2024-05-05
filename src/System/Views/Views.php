@@ -8,7 +8,6 @@ use System\App;
 interface Views
 {
 
-
 	public function __construct(App &$app);
 
 	public function render(): void;

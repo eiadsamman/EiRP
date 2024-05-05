@@ -23,7 +23,7 @@ if ($read) {
 		);
 		unset($grem);
 	} else {
-		$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>{$read->id}</cite>");
+		$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 		$grem->menu()->open();
 		echo "<span class=\"small-media-hide flex\"></span>";
 		if ($fs(101)->permission->edit) {
@@ -35,13 +35,13 @@ if ($read) {
 		$grem->getLast()->close();
 		$grem->title()->serve("<span class=\"flex\">Statement details</span>");
 		$grem->article()->open(); ?>
-		<iframe id="plot-iframe" name="plot-iframe" style="display:none;"></iframe>
+		<iframe id="plot-iframe" name="plot-iframe" style="display:block;width:0;height:0px;visibility: hidden"></iframe>
 		<div class="form predefined">
 			<label>
 				<h1>Statement ID</h1>
 				<div class="btn-set">
 					<span>
-						<?= $read->id; ?>
+						<?= $app->prefixList[13][0] . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT); ?>
 					</span>
 				</div>
 			</label>

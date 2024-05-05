@@ -2,19 +2,17 @@
 import { Popup } from '../gui/popup.js';
 
 export default class Transaction {
+	busy = null;
+	addwin = null;
 	formMain = null;
 	inputFields = null;
 	slo_input = null;
-	inputFieldsSorted = null;
 	slo_objects = null;
 	value_field = null;
-	description_field = null;
-	busy = null;
-
 	uploadController = null;
-	addwin = null;
+	inputFieldsSorted = null;
+	description_field = null;
 	constructor() {
-
 	}
 
 	run = function () {
@@ -25,11 +23,10 @@ export default class Transaction {
 		document.getElementById("js-input_print")?.addEventListener("click", function () {
 			const objPrintFrame = window.frames['plot-iframe'];
 			objPrintFrame.location = this.dataset.ploturl + "/?id=" + this.dataset.key;
-			overlay.show();
+			overlay.show(true);
 			document.getElementById("plot-iframe").onload = function () {
-				overlay.hide();
 				objPrintFrame.focus();
-				objPrintFrame.print();
+				setTimeout(() => { overlay.hide();objPrintFrame.print(); }, 100);
 			}
 		});
 
@@ -114,6 +111,7 @@ export default class Transaction {
 						_instance.post();
 						return;
 					}
+
 					let nextField = _instance.findNextInputField(this.object);
 					if (nextField) {
 						nextField.focus({ focusVisible: true })
@@ -123,7 +121,6 @@ export default class Transaction {
 		});
 		this.description_field = document.getElementById('description');
 		this.value_field = document.getElementById('value');
-
 
 		$("[name=value]").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
 			OnlyFloat(this, null, 0);
@@ -144,17 +141,18 @@ export default class Transaction {
 			return false;
 		});
 
-		this.slo_objects.getElementById("individual").slo.events.onselect = function (data) {
+		this.slo_objects.getElementById("individual").slo.events.onselect = (data) => {
 			this.slo_objects.getElementById("beneficiary").slo.set(data.key, data.value);
 			$("#beneficiary").prop("readonly", true);
+			/* this.value_field.focus(); */
 		}
 
-		this.slo_objects.getElementById("target-account").slo.events.onselect = function (data) {
-			console.log(data);
+		this.slo_objects.getElementById("target-account").slo.events.onselect = (data) => {
 		}
 
-		this.slo_objects.getElementById("individual").slo.events.ondeselect = function () {
+		this.slo_objects.getElementById("individual").slo.events.ondeselect = () => {
 			$("#beneficiary").prop("readonly", false);
+			this.slo_objects.getElementById("beneficiary").slo.clear();
 		};
 
 		$("#js-defines").slo({
@@ -184,6 +182,7 @@ export default class Transaction {
 			if (located) {
 				return this.inputFieldsSorted[i];
 			}
+
 			if (this.inputFieldsSorted[i] == target) {
 				located = true;
 			}
@@ -201,6 +200,8 @@ export default class Transaction {
 	clearFields = function () {
 		if (this.slo_objects) {
 			this.slo_objects.getElementById("beneficiary").slo.clear(false);
+			this.slo_objects.getElementById("individual").slo.clear(false);
+			$("#beneficiary").prop("readonly", false);
 			this.value_field.value = "";
 			this.description_field.value = "";
 		}
@@ -271,59 +272,59 @@ export default class Transaction {
 		}
 		this.busy = true;
 
-		// try {
-		const formData = new FormData(this.formMain);
-		this.disableForm(true)
-		let response = await fetch(this.formMain.action, {
-			method: 'POST',
-			mode: "cors",
-			cache: "no-cache",
-			credentials: "same-origin",
-			referrerPolicy: "no-referrer",
-			headers: {
-				"Application-From": "same",
-				"X-Requested-With": "fetch",
-			},
-			body: formData,
-		});
-		this.disableForm(false);
+		try {
+			const formData = new FormData(this.formMain);
+			this.disableForm(true)
+			let response = await fetch(this.formMain.action, {
+				method: 'POST',
+				mode: "cors",
+				cache: "no-cache",
+				credentials: "same-origin",
+				referrerPolicy: "no-referrer",
+				headers: {
+					"Application-From": "same",
+					"X-Requested-With": "fetch",
+				},
+				body: formData,
+			});
+			this.disableForm(false);
 
-		if (response.ok) {
-			const payload = await response.json();
-			this.busy = false;
-
-			console.log(payload);
-
-			return
-			if (payload.result == true) {
-				messagesys.success("Transaction `" + payload.insert_id + "` posted successfully");
-				$("#jQoutput").prepend(
-					"<tr>" +
-					"<td>" + payload.insert_id + "</td>" +
-					"<td align=\"right\">" + this.value_field.value + "</td>" +
-					"<td>" + this.slo_objects.getElementById("beneficiary").slo.get()['value'] + "</td>" +
-					"</tr>"
-				);
-				this.clearFields();
-				this.uploadController.clean();
-				this.slo_objects.getElementById("beneficiary").slo.focus();
-				$("#issuer-account-balance").html(payload.balance);
-				$("#jqroot_bal").html(payload.balance + " " + payload.currency);
-			} else {
-				messagesys.failure(payload.error);
-				if (payload.errno <= 199) {
-					$("[data-touch=" + payload.errno + "]").slo.focus();
-					alert(payload.errno);
-				} else if (payload.errno <= 299) {
-					$("[data-touch=200]").focus();
-				} else if (payload.errno <= 399) {
-					$("#js-input_submit").focus();
+			if (response.ok) {
+				const payload = await response.json();
+				this.busy = false;
+				if (payload.result == true) {
+					if (payload.type == "insert") {
+						messagesys.success("Transaction `" + payload.insert_id + "` posted successfully");
+						$("#jQoutput").prepend(
+							"<tr>" +
+							"<td>" + payload.insert_id + "</td>" +
+							"<td align=\"right\">" + this.value_field.value + "</td>" +
+							"<td>" + this.slo_objects.getElementById("beneficiary").slo.get()['value'] + "</td>" +
+							"</tr>"
+						);
+						this.clearFields();
+						this.uploadController.clean();
+						this.slo_objects.getElementById("beneficiary").slo.focus();
+					} else {
+						messagesys.success("Transaction `" + payload.insert_id + "` modified successfully");
+					}
+					$("#issuer-account-balance").html(payload.balance);
+					$("#jqroot_bal").html(payload.balance + " " + payload.currency);
+				} else {
+					messagesys.failure(payload.error);
+					if (payload.errno <= 199) {
+						$("[data-touch=" + payload.errno + "]").slo.focus();
+						alert(payload.errno);
+					} else if (payload.errno <= 299) {
+						$("[data-touch=200]").focus();
+					} else if (payload.errno <= 399) {
+						$("#js-input_submit").focus();
+					}
 				}
 			}
+		} catch (error) {
+			this.busy = false;
+			messagesys.failure(error);
 		}
-		// } catch (error) {
-		// 	this.busy = false;
-		// 	messagesys.failure(error);
-		// }
 	}
 }

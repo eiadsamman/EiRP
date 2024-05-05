@@ -46,12 +46,15 @@ $(document).ready(function (e) {
 	}
 
 	$(document).on('keydown', function (e) {
-		if ((e.metaKey || e.ctrlKey) && e.code === "Slash") {
+		//if (e.code === "Slash" && (e.target.tagName != "INPUT" && e.target.tagName != "TEXTAREA")) {
+		if ((e.metaKey || e.ctrlKey) && e.key === "m") {
 			e.preventDefault();
 			RootHeaderMenuToggle(!MenuVisible, true, RootHeaderMenu);
 		}
 		if (e.which == 27 && MenuVisible) {
+			e.preventDefault();
 			RootHeaderMenuToggle(false);
+			return false;
 		}
 	});
 
@@ -107,18 +110,7 @@ $(document).ready(function (e) {
 	});
 
 
-	$("#header-menu > div > div b").on("click", function (e) {
-		if (e.target.tagName != "A") {
-			var $nextElem = $(this).next();
-			if ($nextElem.is("div")) {
-				if ($nextElem.css("display") == "none") {
-					$nextElem.css("display", "block");
-				} else {
-					$nextElem.css("display", "none");
-				}
-			}
-		}
-	});
+	
 
 	$("#bookmark-button").on("click", function (e) {
 		if (e.target.dataset.target_id == null || e.target.dataset.role == null) { return; };
@@ -172,6 +164,7 @@ $(document).ready(function (e) {
 
 
 	const BALANCE_UPDATE = function () {
+		return;
 		$.ajax({
 			data: {},
 			url: "acc/report/balupd",
@@ -196,7 +189,6 @@ $(document).ready(function (e) {
 			}
 		});
 	}
-
 
 	setInterval(function () { BALANCE_UPDATE(); }, 10000);
 
@@ -238,13 +230,7 @@ $(document).ready(function (e) {
 
 
 
-	Array.from(document.getElementsByClassName("js-input_darkmode-toggle")).forEach((elem) => {
-		elem.addEventListener("click", (e) => {
-			e.preventDefault();
-			toggleThemeMode();
-			return false;
-		});
-	});
+	
 });
 
 

@@ -22,7 +22,9 @@ class SmartListObjectHandler {
 		return (this.output === false) ? "" : this.output;
 	}
 	itemGenerator(title = "", return_id = "", return_value = "", highlight = null) {
-		let output = `<div data-return_id="${return_id}"><div>${title}</div>`;
+		let output = "";
+		output += `<div data-return_id="${return_id}">`;
+		output += `<div>${title}</div>`;
 		output += highlight != null && highlight != "" ? `<span>${highlight}</span>` : "";
 		output += `<p>${return_value}</p>`;
 		output += `</div>`;
@@ -31,27 +33,52 @@ class SmartListObjectHandler {
 }
 
 class ListHandler extends SmartListObjectHandler {
+	isLoading = true;
+	dataset = [];
 	constructor(initial = null, start = null, end = null) {
 		super(initial, start, end);
 		let buffer = [];
 		let selected_buffer = false;
+		let dataSourceUrl = initial[0].dataset.source;
 		this.dropdown = false;
 
-		initial.children('option').each(function () {
-			buffer.push({
-				id: this.dataset.id ?? "",
-				value: this.value,
-				keywords: this.dataset.keywords ?? "",
-				highlight: this.dataset.highlight ?? "",
-				selected: this.getAttribute("selected") == null ? false : true
-			});
-			if (this.getAttribute("selected") != null) {
-				selected_buffer = buffer[buffer.length - 1]
-			}
+		if (dataSourceUrl) {
+			fetch(dataSourceUrl, {
+				method: 'GET',
+				cache: "force-cache",
+				mode: "same-origin",
+				headers: {
+					'Accept': "application/json",
+					"Content-Type": "application/json",
+				},
+			})
+				.then(response => response.json())
+				.then((payload) => {
+					this.dataset = payload;
+					this.isLoading = false;
+				}).catch(error => {
+					initial[0].style.background = "yellow";
+					initial[0].value = error;
+				});
 
-		});
-		this.current = selected_buffer;
-		this.dataset = buffer;
+		} else {
+			this.isLoading = false;
+			$("#" + initial.attr("data-list")).children('option').each(function () {
+				buffer.push({
+					id: this.dataset.id ?? "",
+					value: this.value,
+					keywords: this.dataset.keywords ?? "",
+					highlight: this.dataset.highlight ?? "",
+					selected: this.getAttribute("selected") == null ? false : true
+				});
+				if (this.getAttribute("selected") != null) {
+					selected_buffer = buffer[buffer.length - 1]
+				}
+			});
+			this.current = selected_buffer;
+			this.dataset = buffer;
+		}
+
 	}
 	specialChars(str) {
 		let output = str;
@@ -66,6 +93,7 @@ class ListHandler extends SmartListObjectHandler {
 		return "";
 	}
 	validate(input, exact = false) {
+		if (this.isLoading) return;
 		if (exact)
 			if (this.current !== false) {
 				return true;
@@ -94,7 +122,7 @@ class ListHandler extends SmartListObjectHandler {
 				for (let chunk of chunks) {
 					if (chunk.trim() == "") continue;
 					regeexp = new RegExp('.*' + this.specialChars(chunk) + '.*', 'gi');
-					if (regeexp.test(listitem.id + " " + listitem.value + " " + listitem.keywords)) {
+					if (regeexp.test((listitem.id ?? "") + " " + listitem.value + " " + listitem.keywords)) {
 						chunk_found &= true;
 					} else {
 						chunk_found &= false;
@@ -114,10 +142,12 @@ class ListHandler extends SmartListObjectHandler {
 		}
 	}
 	generate() {
+		if (this.isLoading) return "";
 		let buffer = "";
 		if (this.output !== false) {
 			this.output.forEach(listitem => {
-				buffer += super.itemGenerator(listitem.value, listitem.id, listitem.value, listitem.highlight);
+				/* Use `value` instead of `id` when chuck loader dosen't provide an `id` field*/
+				buffer += super.itemGenerator(listitem.value, listitem.id ?? listitem.value, listitem.value, listitem.highlight);
 			});
 		}
 		return buffer;
@@ -480,11 +510,11 @@ class SmartListObject {
 		} else if (this.role == ":DATE") {
 			handler = new DateHandler(this.htmltext.val() ?? null, this.htmltext.attr("data-rangestart") ?? null, this.htmltext.attr("data-rangeend") ?? null);
 		} else if (this.role == ":LIST") {
-			handler = new ListHandler($("#" + this.htmltext.attr("data-list")));
+			handler = new ListHandler(this.htmltext);
 		} else if (this.role == ":SELECT") {
 			this.container.addClass("slo-select");
 			this.htmltext.prop("readonly", true);
-			handler = new ListHandler($("#" + this.htmltext.attr("data-list")));
+			handler = new ListHandler(this.htmltext);
 			this.is_selectobject = true;
 			handler.dropdown = true;
 		}

@@ -1,6 +1,65 @@
-export default class App {
-	constructor() {
+export class Application {
+	id = "129-j1f2";
 
+	constructor() {
+		document.addEventListener("DOMContentLoaded", async () => {
+			await this.chunkLoaders();
+			this.dispatchEvents();
+
+		});
+	}
+
+	async chunkLoaders() {
+		let chunkElements = document.querySelectorAll("[data-chunk_source]");
+
+		await Promise.all([...chunkElements].map(async (el) => {
+			let url = (el.dataset.chunk_source);
+			let content_type = (el.dataset.content_type);
+			await this.chunkFetch(el, url, content_type);
+		}));
+	}
+	chunkFetch(sourceObject, url, content_type) {
+		let isTypeJson = content_type == "json" ? true : false;
+		return new Promise((resolve) => {
+			fetch(url, {
+				method: 'GET',
+				cache: "force-cache",//default
+				mode: "same-origin",
+				headers: {
+					'Accept': isTypeJson ? "application/json" : "text/html",
+					"Content-Type": isTypeJson ? "application/json" : "text/html",
+				},
+			})
+				.then(response => response.text())
+				.then((payload) => {
+					if (isTypeJson) {
+					} else {
+						sourceObject.innerHTML = (payload);
+					}
+					resolve(url)
+				});
+		});
+	}
+
+	dispatchEvents() {
+		document.getElementById("header-menu")?.addEventListener("click", (e) => {
+			if (e.target.tagName === "A")
+				return true;
+			if (e.target.tagName === "B") {
+				let menuContainer = e.target.nextElementSibling;
+				if (menuContainer.tagName === "DIV") {
+					menuContainer.style.display = menuContainer.style.display == "block" ? "none" : "block";
+				}
+			}
+		});
+
+		Array.from(document.getElementsByClassName("js-input_darkmode-toggle")).forEach((elem) => {
+			elem.addEventListener("click", (e) => {
+				e.preventDefault();
+				toggleThemeMode();
+				return false;
+			});
+		});
 	}
 }
 
@@ -66,3 +125,7 @@ export class Navigator {
 	}
 
 }
+const App = new Application();
+
+export default App;
+

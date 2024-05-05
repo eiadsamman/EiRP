@@ -1,7 +1,6 @@
 <?php
 use System\Template\Gremium;
 use System\SmartListObject;
-use System\Template\PanelNavigator\PanelStatements;
 
 $accounting  = new \System\Finance\Accounting($app);
 $perpage_val = 20;
@@ -11,12 +10,6 @@ $SmartListObject = new SmartListObject($app);
 
 <?php if (!$app->xhttp) { ?>
 	<div class="split-view">
-		<div class="panel hide">
-			<?php
-			$panelNavigator = new PanelStatements($app);
-			$panelNavigator->SidePanelHTML();
-			?>
-		</div>
 		<div class="body" id="PanelNavigator-Body">
 		<?php } ?>
 
@@ -24,18 +17,6 @@ $SmartListObject = new SmartListObject($app);
 		$grem = new Gremium\Gremium(true);
 		$grem->header()->serve("<h1>{$fs()->title}</h1><cite>{$app->user->account->name}</cite>");
 		$grem->article()->open();
-
-
-
-
-
-
-
-
-
-
-
-
 
 		$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 

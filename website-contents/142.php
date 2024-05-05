@@ -2,15 +2,15 @@
 
 function numtotext($numberValue)
 {
-	$textResult = '';
-	$numberValue = (int)$numberValue;
+	$textResult  = '';
+	$numberValue = (int) $numberValue;
 	$numberValue = "$numberValue";
 	if ($numberValue[0] == '-') {
 		$textResult .= 'سالب ';
 		$numberValue = substr($numberValue, 1);
 	}
 	$numberValue = (int) $numberValue;
-	$def = array("0" => 'صفر', "1" => 'واحد', "2" => 'اثنان', "3" => 'ثلاث', "4" => 'اربع', "5" => 'خمس', "6" => 'ست', "7" => 'سبع', "8" => 'ثماني', "9" => 'تسع', "10" => 'عشر', "11" => 'أحد عشر', "12" => 'اثنا عشر', "100" => 'مائة', "200" => 'مئتان', "1000" => 'ألف', "2000" => 'ألفين', "1000000" => 'مليون', "2000000" => 'مليونان');
+	$def         = array("0" => 'صفر', "1" => 'واحد', "2" => 'اثنان', "3" => 'ثلاث', "4" => 'اربع', "5" => 'خمس', "6" => 'ست', "7" => 'سبع', "8" => 'ثماني', "9" => 'تسع', "10" => 'عشر', "11" => 'أحد عشر', "12" => 'اثنا عشر', "100" => 'مائة', "200" => 'مئتان', "1000" => 'ألف', "2000" => 'ألفين', "1000000" => 'مليون', "2000000" => 'مليونان');
 	if (isset($def[$numberValue])) {
 		if ($numberValue < 11 && $numberValue > 2) {
 			$textResult .= $def[$numberValue] . 'ة';
@@ -18,7 +18,7 @@ function numtotext($numberValue)
 			$textResult .= $def[$numberValue];
 		}
 	} else {
-		$tensCheck = $numberValue % 10;
+		$tensCheck   = $numberValue % 10;
 		$numberValue = "$numberValue";
 
 		for ($x = strlen($numberValue); $x > 0; $x--) {
@@ -27,70 +27,70 @@ function numtotext($numberValue)
 		switch (count($places)) {
 			case 2: // 2 numbers
 			case 1: // or 1 number
-				{
-					$textResult .= ($places[1] != 0) ? $def[$places[1]] . (($places[1] > 2 || $places[2] == 1) ? 'ة' : '') . (($places[2] != 1) ? ' و' : ' ') : '';
-					$textResult .= (($places[2] > 2) ? $def[$places[2]] . 'ون' : $def[10] . (($places[2] != 2) ? '' : 'ون'));
-				}
+			{
+				$textResult .= ($places[1] != 0) ? $def[$places[1]] . (($places[1] > 2 || $places[2] == 1) ? 'ة' : '') . (($places[2] != 1) ? ' و' : ' ') : '';
+				$textResult .= (($places[2] > 2) ? $def[$places[2]] . 'ون' : $def[10] . (($places[2] != 2) ? '' : 'ون'));
+			}
 				break;
 			case 3: // 3 numbers
-				{
-					$lastTwo = (int) $places[2] . $places[1];
-					$textResult .= ($places[3] > 2) ? $def[$places[3]] . ' ' . $def[100] : $def[(int) $places[3] . "00"];
-					if ($lastTwo != 0) {
-						$textResult .= ' و' . numtotext($lastTwo);
-					}
+			{
+				$lastTwo    = (int) $places[2] . $places[1];
+				$textResult .= ($places[3] > 2) ? $def[$places[3]] . ' ' . $def[100] : $def[(int) $places[3] . "00"];
+				if ($lastTwo != 0) {
+					$textResult .= ' و' . numtotext($lastTwo);
 				}
+			}
 				break;
 			case 4: // 4 numbrs
-				{
-					$lastThree = (int) $places[3] . $places[2] . $places[1];
-					$textResult .= ($places[4] > 2) ? $def[$places[4]] . 'ة الاف' : $def[(int) $places[4] . "000"];
-					if ($lastThree != 0) {
-						$textResult .= ' و' . numtotext($lastThree);
-					}
+			{
+				$lastThree  = (int) $places[3] . $places[2] . $places[1];
+				$textResult .= ($places[4] > 2) ? $def[$places[4]] . 'ة الاف' : $def[(int) $places[4] . "000"];
+				if ($lastThree != 0) {
+					$textResult .= ' و' . numtotext($lastThree);
 				}
+			}
 				break;
 			case 5: // 5 numbers
-				{
-					$lastThree = (int) $places[3] . $places[2] . $places[1];
-					$textResult .= numtotext((int) $places[5] . $places[4]) . ((((int) $places[5] . $places[4]) != 10) ? ' الفاً' : ' الاف');
-					if ($lastThree != 0) {
-						$textResult .= ' و' . numtotext($lastThree);
-					}
+			{
+				$lastThree  = (int) $places[3] . $places[2] . $places[1];
+				$textResult .= numtotext((int) $places[5] . $places[4]) . ((((int) $places[5] . $places[4]) != 10) ? ' الفاً' : ' الاف');
+				if ($lastThree != 0) {
+					$textResult .= ' و' . numtotext($lastThree);
 				}
+			}
 				break;
 			case 6: // 6 numbers
-				{
-					$lastThree = (int) $places[3] . $places[2] . $places[1];
-					$textResult .= numtotext((int) $places[6] . $places[5] . $places[4]) . ((((int) $places[5] . $places[4]) != 10) ? ' الفاً' : ' الاف');
-					if ($lastThree != 0) {
-						$textResult .= ' و' . numtotext($lastThree);
-					}
+			{
+				$lastThree  = (int) $places[3] . $places[2] . $places[1];
+				$textResult .= numtotext((int) $places[6] . $places[5] . $places[4]) . ((((int) $places[5] . $places[4]) != 10) ? ' الفاً' : ' الاف');
+				if ($lastThree != 0) {
+					$textResult .= ' و' . numtotext($lastThree);
 				}
+			}
 				break;
 			case 7: // 7 numbers 1 mill
-				{
-					$textResult .= ($places[7] > 2) ? $def[$places[7]] . ' ملايين' : $def[(int) $places[7] . "000000"];
-					$textResult .= ' و';
-					$textResult .= numtotext((int) $places[6] . $places[5] . $places[4] . $places[3] . $places[2] . $places[1]);
-				}
+			{
+				$textResult .= ($places[7] > 2) ? $def[$places[7]] . ' ملايين' : $def[(int) $places[7] . "000000"];
+				$textResult .= ' و';
+				$textResult .= numtotext((int) $places[6] . $places[5] . $places[4] . $places[3] . $places[2] . $places[1]);
+			}
 				break;
 			case 8: // 8 numbers 10 mill
 			case 9: // 9 numbers 100 mill
-				{
-					$places[9] = (isset($places[9])) ? $places[9] : '';
-					$firstThree = (int) $places[9] . $places[8] . $places[7];
-					$textResult .=     numtotext($firstThree);
-					$textResult .=    ($firstThree < 11) ? ' ملايين ' : ' مليونا ';
-					if (((int) $places[6] . $places[5] . $places[4] . $places[3] . $places[2] . $places[1]) != 0) {
-						$textResult .= ' و';
-						$textResult .=    numtotext((int) $places[6] . $places[5] . $places[4] . $places[3] . $places[2] . $places[1]);
-					}
+			{
+				$places[9]  = (isset($places[9])) ? $places[9] : '';
+				$firstThree = (int) $places[9] . $places[8] . $places[7];
+				$textResult .= numtotext($firstThree);
+				$textResult .= ($firstThree < 11) ? ' ملايين ' : ' مليونا ';
+				if (((int) $places[6] . $places[5] . $places[4] . $places[3] . $places[2] . $places[1]) != 0) {
+					$textResult .= ' و';
+					$textResult .= numtotext((int) $places[6] . $places[5] . $places[4] . $places[3] . $places[2] . $places[1]);
 				}
+			}
 				break;
 			default: {
-					$textResult = '!';
-				}
+				$textResult = '!';
+			}
 		}
 	}
 	return $textResult;
@@ -104,8 +104,8 @@ $statement_type = array(
 
 $statement = false;
 if (isset($_GET['id'])) {
-	$_GET['id'] = (int)$_GET['id'];
-	$r = $app->db->query(
+	$_GET['id'] = (int) $_GET['id'];
+	$r          = $app->db->query(
 		"SELECT 
 			acm_id,
 			CONCAT_WS(' ',COALESCE(_editor.usr_firstname,''),IF(NULLIF(_editor.usr_lastname, '') IS NULL, NULL, _editor.usr_lastname)) AS _usr_editor_name,
@@ -133,181 +133,168 @@ if (isset($_GET['id'])) {
 		$statement = $row;
 	}
 }
-
+/* @font-face {
+				font-family: 'ge_ss_two';
+				src: url('<?= $app->http_root; ?>static/fonts/ge-ss-two-bold.otf');
+				font-weight: bold;
+				font-style: normal;
+			} */
 if ($statement) { ?>
+	<!DOCTYPE html>
+	<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
 
-	<style type="text/css">
-		@font-face {
-			font-family: 'Urd';
-			src: url('<?= $app->http_root; ?>static/fonts/UrdType.ttf');
-			src: url('<?= $app->http_root; ?>static/fonts/UrdType.ttf') format('truetype');
-			font-weight: normal;
-			font-style: normal;
-		}
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Statement printing </title>
+		<style type="text/css">
+			@font-face {
+				font-family: 'ge_ss_two';
+				src: url('<?= $app->http_root; ?>static/fonts/ge-ss-two-light.otf');
+				font-weight: lighter;
+				font-style: normal;
+			}
 
-		@font-face {
-			font-family: 'ge_ss_two';
-			src: url('<?= $app->http_root; ?>static/fonts/ge-ss-two-bold.otf');
-			font-weight: bold;
-			font-style: normal;
-		}
+			.o-flex {
+				display: flex;
+				align-items: center;
+				width: 100%;
+			}
 
-		@font-face {
-			font-family: 'ge_ss_two';
-			src: url('<?= $app->http_root; ?>static/fonts/ge-ss-two-light.otf');
-			font-weight: lighter;
-			font-style: normal;
-		}
+			.o-flex.right {
+				flex-direction: row-reverse;
+			}
 
+			.o-flex.top {
+				align-items: flex-start;
+			}
 
+			.o-title {
+				text-align: right;
+				font-size: 1em;
+				color: #06c;
+				font-family: ge_ss_two;
+				padding: 4px 10px;
+				min-width: 120px;
+			}
 
-		.o-flex {
-			display: flex;
-			align-items: center;
-			width: 100%;
-		}
+			.o-content {
+				font-family: Tahoma;
+				text-align: right;
+				padding: 4px 20px;
+				background-color: #eee;
+				border-radius: 4px;
+			}
 
-		.o-flex.right {
-			flex-direction: row-reverse;
-		}
+			.o-content.fill {
+				flex: 1;
+			}
+		</style>
+	</head>
 
-		.o-flex.top {
-			align-items: flex-start;
-		}
-
-
-		.o-title {
-			text-align: right;
-			font-size: 1em;
-			color: #06c;
-			font-family: ge_ss_two;
-			padding: 4px 10px;
-			min-width: 120px;
-		}
-
-		.o-content {
-			font-family: Tahoma;
-			text-align: right;
-			padding: 4px 20px;
-			background-color: #eee;
-			border-radius: 4px;
-		}
-
-		.o-content.fill {
-			flex: 1;
-		}
-	</style>
-
-	<table cellpadding="3" cellspacing="0" width="100%" style="border-collapse: collapse;font-size: 10pt;">
-		<tbody>
-			<tr>
-				<td style="height:100px">
-					<div class="o-flex right">
-						<div style="flex: 1;text-align: right;font-size: 2em;color:#111;font-family: ge_ss_two;white-space: nowrap;">
-							<?php echo $statement_type[$statement['acm_type']][0]; ?>
+	<body>
+		<table cellpadding="3" cellspacing="0" width="100%" style="border-collapse: collapse;font-size: 10pt;">
+			<tbody>
+				<tr>
+					<td style="height:100px">
+						<div class="o-flex right">
+							<div style="flex: 1;text-align: right;font-size: 2em;color:#111;font-family: ge_ss_two;white-space: nowrap;">
+								<?php echo $statement_type[$statement['acm_type']][0]; ?>
+							</div>
+							<div><?php if (!is_null($statement['up_id'])) { ?>
+									<img height="50" src="<?= $app->http_root; ?>download/?id=<?= $statement['up_id']; ?>&pr=t" />
+								<?php } ?>
+							</div>
 						</div>
-
-						<div><?php if (!is_null($statement['up_id'])) { ?>
-								<img height="50" src="<?= $app->http_root; ?>download/?id=<?= $statement['up_id']; ?>&pr=t" />
-							<?php } ?>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="o-flex right">
+							<div class="o-title">التاريــــــــــــــــــــــــــخ</div>
+							<div class="o-content"><?php echo date("Y-m-d", $statement['acm_ctime']); ?></div>
+							<div style="flex:1;text-align: center;"><img src="<?= $app->http_root . $fs(15)->dir . "/?c=" . $app->translatePrefix(13, $statement['acm_id']) . "&f=1&t=20"; ?>" /></div>
+							<div class="o-title" style="min-width:auto;">رقم</div>
+							<div class="o-content"><?php echo $app->translatePrefix(13, $statement['acm_id']); ?></div>
 						</div>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<div class="o-flex right">
-						<div class="o-title">التاريــــــــــــــــــــــــــخ</div>
-						<div class="o-content"><?php echo date("Y-m-d", $statement['acm_ctime']); ?></div>
-						<div style="flex:1;text-align: center;"><img src="<?= $app->http_root . $fs(15)->dir . "/?c=" . $app->translatePrefix(13, $statement['acm_id']) . "&f=1&t=20"; ?>" /></div>
-						<div class="o-title" style="min-width:auto;">رقم</div>
-						<div class="o-content"><?php echo $app->translatePrefix(13, $statement['acm_id']); ?></div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="o-flex right">
+							<div class="o-title"><?php echo $statement_type[$statement['acm_type']][2]; ?></div>
+							<div class="o-content fill"><?php echo $statement['acm_beneficial']; ?></div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="o-flex right">
+							<div class="o-title">مبــــــــلغاً وقـــــدره</div>
+							<div class="o-content fill"><?php echo number_format(abs($statement['acm_realvalue']), 2, ".", ","); ?><span></div>
+							<div class="o-title" style="min-width: auto"><?= $statement['cur_symbol']; ?></div>
+							<div class="o-title" style="min-width: auto">نقداً / شيك رقم</div>
+							<div class="o-content" style="min-width:130px;"><?= is_null($statement['acm_reference']) ? "&nbsp;" : $statement['acm_reference']; ?></div>
 
-					</div>
-				</td>
-			</tr>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="o-flex right">
+							<div class="o-title">&nbsp;</div>
+							<div class="o-content fill" style="border-radius:0px 4px 4px 0px"><?php echo "فقط " . numtotext($statement['acm_realvalue']); ?>&nbsp;لا غير</div>
+							<div class="o-content" style="border-radius:4px 0px 0px 4px"><?= $statement['cur_name']; ?></div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="o-flex right">
+							<div class="o-title">وذلك لقـــــــــــــــــاء</div>
+							<div class="o-content fill"><?php echo is_null($statement['acm_comments']) ? "&nbsp;" : nl2br($statement['acm_comments']); ?></div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="o-flex right">
+							<div class="o-title">المســـــــــــــــــــتلم</div>
+							<div class="o-content"><?php echo $statement['acm_type'] == 1 ? $statement['_usr_editor_name'] : $statement['acm_beneficial']; ?></div>
 
-			<tr>
-				<td>
-					<div class="o-flex right">
-						<div class="o-title"><?php echo $statement_type[$statement['acm_type']][2]; ?></div>
-						<div class="o-content fill"><?php echo $statement['acm_beneficial']; ?></div>
-					</div>
-				</td>
-			</tr>
+							<div style="flex: 1;"></div>
+							<div class="o-title">رقم الحساب</div>
+							<div class="o-content"><?php echo $app->paddingPrefix(10, $statement['comp_id']) . "-" . $app->paddingPrefix(12, $statement['atm_account_id']) . "-" . $app->paddingPrefix(14, $app->user->account->currency->id); ?></div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="o-flex right top">
+							<div class="o-title">التوقــــــــــــــــــــــيع</div>
+							<div class="o-content" style="width:20%;height:1cm">&nbsp;</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="o-flex right">
+							<div class="o-title" style="flex:1;text-align:center;color: #555;">لا تعتمد الايصالات التي لا تحمل ختم الشركة وتوقيع منظم الايصال</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
 
-			<tr>
-				<td>
-					<div class="o-flex right">
-						<div class="o-title">مبــــــــلغاً وقـــــدره</div>
-						<div class="o-content fill"><?php echo number_format(abs($statement['acm_realvalue']), 2, ".", ","); ?><span></div>
-						<div class="o-title" style="min-width: auto"><?= $statement['cur_symbol']; ?></div>
-						<div class="o-title" style="min-width: auto">نقداً / شيك رقم</div>
-						<div class="o-content" style="min-width:130px;"><?= is_null($statement['acm_reference']) ? "&nbsp;" : $statement['acm_reference']; ?></div>
-
-					</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td>
-					<div class="o-flex right">
-						<div class="o-title">&nbsp;</div>
-						<div class="o-content fill" style="border-radius:0px 4px 4px 0px"><?php echo "فقط " . numtotext($statement['acm_realvalue']); ?>&nbsp;لا غير</div>
-						<div class="o-content" style="border-radius:4px 0px 0px 4px"><?= $statement['cur_name']; ?></div>
-					</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td>
-					<div class="o-flex right">
-						<div class="o-title">وذلك لقـــــــــــــــــاء</div>
-						<div class="o-content fill"><?php echo is_null($statement['acm_comments']) ? "&nbsp;" : nl2br($statement['acm_comments']); ?></div>
-					</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td>
-				</td>
-			</tr>
-
-			<tr>
-				<td>
-					<div class="o-flex right">
-						<div class="o-title">المســـــــــــــــــــتلم</div>
-						<div class="o-content"><?php echo $statement['acm_type'] == 1 ? $statement['_usr_editor_name'] : $statement['acm_beneficial']; ?></div>
-
-						<div style="flex: 1;"></div>
-						<div class="o-title">رقم الحساب</div>
-						<div class="o-content"><?php echo $app->paddingPrefix(10, $statement['comp_id']) . "-" . $app->paddingPrefix(12, $statement['atm_account_id']) . "-" . $app->paddingPrefix(14, $app->user->account->currency->id); ?></div>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<div class="o-flex right top">
-						<div class="o-title">التوقــــــــــــــــــــــيع</div>
-						<div class="o-content" style="width:20%;height:1cm">&nbsp;</div>
-					</div>
-				</td>
-			</tr>
-
-			<tr>
-				<td>
-					<div class="o-flex right">
-						<div class="o-title" style="flex:1;text-align:center;color: #555;">لا تعتمد الايصالات التي لا تحمل ختم الشركة وتوقيع منظم الايصال</div>
-					</div>
-				</td>
-			</tr>
-
-		</tbody>
-	</table>
-
+	</html>
 <?php } else { ?>
 	<script>
-		window.onload = function() {
+		window.onload = function () {
 			alert("Invalid statement ID");
 		};
 	</script>

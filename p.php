@@ -8,20 +8,31 @@ spl_autoload_register(function ($class) {
 		include_once ($class);
 	}
 });
-
+$mt          = microtime(true);
 $performance = new System\Log\Performance(__DIR__ . "/admin/performance.log");
-$app         = new App(__DIR__, "settings.json", false);
+$app         = new App(__DIR__, "settings.json", true);
 $app->databaseConnect($app->settings->database['host'], $app->settings->database['username'], $app->settings->database['password'], $app->settings->database['name']);
 $app->build();
 $app->register($_SERVER['REQUEST_URI']);
+$access_error = $app->userInit();
 
-$access_error    = $app->userInit();
+$al = $app->resolveArray();
+if (!empty($al) && sizeof($al) > 1 && $al[0] == "_") {
+	if (class_exists('System\\Views\\Chunk\\' . $al[1])) {
+		$className  = 'System\\Views\\Chunk\\' . $al[1];
+		$chunkClass = new $className($app, $al);
+		$chunkClass->render();
+		exit;
+	}
+}
+
 $app->fileSystem = new System\FileSystem\Page($app);
 $fs              = $app->fileSystem;
-$dir             = $fs->dir($app->resolve());
+$dir = $fs->dir($app->resolve());
 if (!$dir) {
 	$app->responseStatus->NotFound->response();
 }
+
 $fs->load($dir->id);
 if ($fs()->enabled == false) {
 	$app->responseStatus->Forbidden->response();
@@ -56,6 +67,7 @@ if ($fs()->enabled == false) {
 }
 
 
+
 /* Forward */
 if ($fs()->headers['contents'] == 4) {
 	if ($fs($fs()->forward)) {
@@ -73,19 +85,7 @@ if ($fs()->id == $app::PERMA_ID['slo']) {
 	exit;
 }
 
-$app->buildPrefixList();
-
 if ($app->user->info) {
-	$frequentVisit = new System\Personalization\FrequentVisit($app);
-	$themeDarkMode = new System\Personalization\ThemeDarkMode($app);
-	$frequentVisit->register($fs()->id);
-
-	if ($app->xhttp && isset($_POST['--toggle-theme-mode'])) {
-		$mode = $_POST['--toggle-theme-mode'] === "dark" ? 1 : 0;
-		$themeDarkMode->register($mode);
-		exit;
-	}
-
 	if (isset($_GET['--sys_sel-change'])) {
 		if (isset($_GET['i']) && $_GET['--sys_sel-change'] == 'account_commit') {
 			if ($app->user->register_account((int) $_GET['i'])) {
@@ -122,7 +122,19 @@ if ($app->user->info) {
 			}
 		}
 	}
+
+	$frequentVisit = new System\Personalization\FrequentVisit($app);
+	$themeDarkMode = new System\Personalization\ThemeDarkMode($app);
+	$frequentVisit->register($fs()->id);
+	if ($app->xhttp && isset($_POST['--toggle-theme-mode'])) {
+		$mode = $_POST['--toggle-theme-mode'] === "dark" ? 1 : 0;
+		$themeDarkMode->register($mode);
+		exit;
+	}
+
 }
+
+$app->buildPrefixList();
 
 
 if ($app->xhttp) {

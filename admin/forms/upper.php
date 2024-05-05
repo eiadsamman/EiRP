@@ -2,14 +2,14 @@
 ob_start();
 ob_implicit_flush(true);
 $_v = $app->settings->site['environment'] === "development" ? "?rev=1013" . uniqid() : "";
+$_v = "";
 
-use System\FileSystem\Hierarchy;
 use System\Finance\AccountRole;
 use System\Personalization\Bookmark;
 use System\SmartListObject;
 
 
-$__helper = false;
+$__helper     = false;
 $__side_panel = false;
 if (isset($fs()->parameters) && preg_match("/help([0-9]+)/", $fs()->parameters, $match)) {
 	$__helper = $fs((int) $match[1]);
@@ -18,7 +18,7 @@ if (isset($fs()->parameters) && preg_match("/help([0-9]+)/", $fs()->parameters, 
 
 
 $__workingaccount = false;
-$SmartListObject = new SmartListObject($app);
+$SmartListObject  = new SmartListObject($app);
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
@@ -51,7 +51,7 @@ $SmartListObject = new SmartListObject($app);
 		$load = explode(";", $fs()->cdns['css']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}{$_v}\" />\n";
+				echo "\t\t<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}{$_v}\" />\n";
 		}
 	}
 	?>
@@ -60,13 +60,13 @@ $SmartListObject = new SmartListObject($app);
 	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js<?= $_v ?>"></script>
 	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js<?= $_v ?>"></script>
 	<script type="text/javascript" src="static/jquery/slo-1.4.js<?= $_v ?>"></script>
-	
+	<script type="module">import App from './static/javascript/modules/app.js';</script>
 	<?php
 	if (array_key_exists('js', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['js']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "<script type=\"text/javascript\" src=\"static/{$file}{$_v}\"></script>\n";
+				echo "\t\t<script type=\"text/javascript\" src=\"static/{$file}{$_v}\"></script>\n";
 		}
 	}
 	?>
@@ -75,7 +75,7 @@ $SmartListObject = new SmartListObject($app);
 
 <body class="theme-default <?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>" data-mode="<?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>">
 	<a href="" id="PFTrigger" style="display: none;"></a>
-	
+
 	<span class="header-ribbon noprint">
 		<div>
 			<div class="btnheader-set" style="white-space:nowrap">
@@ -93,7 +93,7 @@ $SmartListObject = new SmartListObject($app);
 
 					echo "<span class=\"gap\" style=\"text-align:right;\"></span>";
 					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=company\" tabindex=\"-1\" title=\"Running Company\" id=\"jqroot_com\">" . ($app->user->company ? $app->user->company->name : "N/A") . "</a>";
-					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($app->user->account) ? "<span class=\"mediabond-hide\">{$app->user->account->type->name}: </span>{$app->user->account->name}"  : "N/A") . "</a>";
+					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($app->user->account) ? "<span class=\"mediabond-hide\">{$app->user->account->type->name}: </span>{$app->user->account->name}" : "N/A") . "</a>";
 					if ($app->user->account && $app->user->account->role->view) {
 						echo "<span id=\"jqroot_bal\">" . ($app->user->account->balance < 0 ? "(" . number_format(abs($app->user->account->balance), 2, ".", ",") . ")" : number_format(abs($app->user->account->balance), 2, ".", ","));
 						echo " {$app->user->account->currency->shortname}</span>";
@@ -115,41 +115,9 @@ $SmartListObject = new SmartListObject($app);
 			<div>
 				<div>
 					<header>
-						<span class="btn-set">
-							<input type="text" class="flex" id="PFSelector" data-slo=":LIST" data-list="PFSelectorList" placeholder="Goto page..." />
-							<datalist id="PFSelectorList" style="display: none;">
-								<?php
-								$ident = \System\Personalization\Identifiers::SystemFrequentVisit->value;
-								$q = <<<SQL
-								SELECT 
-									trd_directory, CONCAT(trd_id,': ', pfl_value) AS pagefile_title
-								FROM 
-									pagefile 
-									JOIN pagefile_language ON pfl_trd_id = trd_id AND pfl_lng_id = 1 
-									JOIN 
-										pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id = {$app->user->info->permissions}
-											LEFT JOIN user_settings ON usrset_usr_defind_name = trd_id AND usrset_usr_id = {$app->user->info->id} 
-											AND usrset_type = {$ident}
-								WHERE 
-									trd_enable = 1 AND trd_visible = 1
-								ORDER BY
-									(usrset_value + 0) DESC, pfl_value
-								SQL;
-
-								if ($r = $app->db->query($q)) {
-									while ($row = $r->fetch_assoc()) {
-										echo "<option data-id=\"{$row['trd_directory']}\">{$row['pagefile_title']}</option>";
-									}
-								}
-								?>
-							</datalist>
-						</span>
+						<span class="btn-set"><input type="text" class="flex" id="PFSelector" data-slo=":LIST" data-source="_/menuListItems/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_listitems.a" placeholder="Goto page..." /></span>
 					</header>
-					<div style="white-space:nowrap;" class="menu-items">
-						<?php
-						echo "<b class=\"index-link\"><span style=\"color:#333;font-family:icomoon;\">&#xe600;</span><a class=\"alink\" href=\"\">Homepage</a></b>";
-						new Hierarchy($app, $app->user->info->permissions); ?>
-					</div>
+					<div style="white-space:nowrap;" class="menu-items" data-chunk_source="_/menuListItems/html/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/menu_listitems.a" data-content_type="html"></div>
 				</div>
 			</div>
 		</span>
@@ -164,7 +132,8 @@ $SmartListObject = new SmartListObject($app);
 						<datalist id="accounts-list">
 							<?php
 							if ($app->user->company) {
-								$role = new AccountRole();
+								$role         = new AccountRole();
+								$role->access = true;
 								echo $SmartListObject->userAccounts($role, $app->user->company->id);
 								unset($role);
 							}
@@ -270,7 +239,7 @@ $SmartListObject = new SmartListObject($app);
 				<div>
 					<div style="white-space:nowrap;" class="menu-items">
 						<?php
-						$bookmark = new Bookmark($app);
+						$bookmark   = new Bookmark($app);
 						$bookmarked = $bookmark->isBookmarked($fs()->id);
 
 						echo "<div>{$app->user->info->fullName()}</div>";
@@ -306,4 +275,3 @@ $SmartListObject = new SmartListObject($app);
 
 	<article>
 		<div id="body-content">
-			

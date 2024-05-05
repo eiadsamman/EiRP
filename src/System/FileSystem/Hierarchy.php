@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace System\FileSystem;
 
+use System\App;
+
 
 class Hierarchy
 {
 	private $parentList = array();
 	private $_permissions = null;
-	protected \System\App $app;
 
 
 	private function Iterate($parent, $nest = 1)
@@ -26,14 +27,17 @@ class Hierarchy
 		}
 		echo "</div>";
 	}
-	public function __construct(&$app, $permissions = null)
+	public function __construct(protected App &$app, protected ?int $permissions = null)
 	{
-		$this->app = $app;
-		if ($permissions == null) {
+		if ($this->permissions == null) {
 			$this->_permissions = 0;
 		} else {
-			$this->_permissions = (int) $permissions;
+			$this->_permissions = (int) $this->permissions;
 		}
+	}
+	public function render(): string
+	{
+
 		$r = $this->app->db->query(
 			"SELECT 
 				trd_directory, trd_id, pfl_value, trd_attrib4, trd_attrib5, trd_parent
@@ -63,7 +67,6 @@ class Hierarchy
 				}
 			}
 		}
-		
-		ob_end_flush();
+		return ob_get_clean();
 	}
 }

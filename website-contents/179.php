@@ -9,8 +9,8 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 
 	/* Date input processing */
-	$date_start = isset($_POST['from']) ? $app->dateValidate($_POST['from']) : false;
-	$date_end = isset($_POST['to']) ? $app->dateValidate($_POST['to'], true) : false;
+	$date_start   = isset($_POST['from']) ? $app->dateValidate($_POST['from']) : false;
+	$date_end     = isset($_POST['to']) ? $app->dateValidate($_POST['to'], true) : false;
 	$user_current = abs((int) $_POST['page']);
 	if (($date_start && $date_end) && $date_start > $date_end) {
 		header("VENDOR_RESULT: DATE_CONFLICT");
@@ -25,7 +25,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 
 	$count = $sum = $pages = 0;
 	$controller->summary($count, $sum);
-	$sum = is_null($sum) ? 0 : $sum;
+	$sum   = is_null($sum) ? 0 : $sum;
 	$count = is_null($count) ? 0 : $count;
 	$pages = ceil($count / $controller->criteria->getRecordsPerPage());
 
@@ -115,7 +115,7 @@ if (is_null($app->user->account)) {
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->status(Status::Exclamation)->serve("<h1>No account selected!</h1>");
 	$grem->legend()->serve("<span class=\"flex\">Access to this page requires registering a valid account:</span>");
-	$article = $grem->article();
+	$article          = $grem->article();
 	$article->message .= '<ul style="margin:0">
 		<li>Select an account from Account Selection Menu</li>
 		<li>Contact system administrator</li>
@@ -128,7 +128,7 @@ if (is_null($app->user->account)) {
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->status(Status::Exclamation)->serve("<h1>Access restricted!</h1>");
 	$grem->legend()->serve("<span class=\"flex\">Loading journal for `{$app->user->account->name}` account failed:</span>");
-	$article = $grem->article();
+	$article          = $grem->article();
 	$article->message .= '<ul style="margin:0">
 		<li>Session has expired, loing in again to your account</li>
 		<li>Database query failed, contact system administrator</li>
@@ -155,7 +155,7 @@ $grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
 	"<ul class=\"small-media-hide\"><li class=\"small-media-hide\">{$app->user->company->name}: {$app->user->account->name}</li></ul>" .
 	"<cite><span id=\"js-output-total\">0.00</span>{$app->user->account->currency->shortname}</cite>");
 
-$menu = $grem->menu()->sticky(false)->open();
+$menu         = $grem->menu()->sticky(false)->open();
 $current_date = new DateTime();
 $current_date = $current_date->format("Y-m-d");
 echo <<<HTML
@@ -379,14 +379,18 @@ unset($grem);
 	<input type="hidden" name="from" value="" />
 	<input type="hidden" name="to" value="" />
 </form>
-<script type="text/javascript" src="static/javascript/Navigator.js"></script>
+
 <script type="text/javascript">
-	const drainurl = '<?= $fs()->dir ?>';
-	const exporturl = '<?= $fs(13)->dir ?>';
-	const nav = new Navigator({
-		"page": <?= (int) $initial_values['page']; ?>,
-		"from": "",
-		"to": "",
-	}, drainurl);
+	let pageConfig = {
+		url: '<?= $fs()->dir; ?>',
+		apptitle: '<?= $app->settings->site['title']; ?>',
+		title: '<?= $app->settings->site['title'] . " - " . $fs()->title ?>',
+		exporturl: "<?= $fs(13)->dir ?>",
+		id: 0
+	}
 </script>
-<script type="text/javascript" src="static/javascript/accounting/Finance.Statement.js"></script>
+
+<script type="module">
+	import AccountStatmenet from './static/javascript/modules/finance/accountstatement.js';
+	const accountStatement = new AccountStatmenet();
+</script>

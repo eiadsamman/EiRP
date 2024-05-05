@@ -1,20 +1,21 @@
 <?php
 use System\Graphics\SVG\CurveRelativePositive;
 
+
 if (!$app->xhttp && $app->user->company->id) {
 	echo "<div class=\"full-chart\"><div class=\"chart\" data-uri=\"{$fs(75)->dir}\">";
 	echo "</div></div>";
 } elseif ($app->user->company->id) {
-	$curve = new CurveRelativePositive(20, 100, -.6);
+	$curve        = new CurveRelativePositive(20, 100, -.6);
 	$date_current = new \DateTimeImmutable();
-	$date_start = new \DateTimeImmutable("first day of this month 00:00:00");
-	$date_end = $date_start->modify("last day of this month 23:59:59");
+	$date_start   = new \DateTimeImmutable("first day of this month 00:00:00");
+	$date_end     = $date_start->modify("last day of this month 23:59:59");
 
 	try {
 		$att_reports = new System\Individual\Attendance\Reports($app);
-		$curratt = $att_reports->OngoingAttendance($app->user->company->id);
+		$curratt     = $att_reports->OngoingAttendance($app->user->company->id);
 		$ind_reports = new System\Individual\Reports($app);
-		$totindv = $ind_reports->RegisteredEmployees($app->user->company->id);
+		$totindv     = $ind_reports->RegisteredEmployees($app->user->company->id);
 	} catch (\System\Exceptions\Instance\SQLException $e) {
 		$curratt = 0;
 		$totindv = 0;
@@ -58,11 +59,11 @@ if (!$app->xhttp && $app->user->company->id) {
 	$r = $app->db->query($r);
 
 	/* Store count result */
-	$plot_points = array();
+	$plot_points  = array();
 	$values_array = array();
 	if ($r) {
 		while ($row = $r->fetch_row()) {
-			$plot_points[$row[1]] = (int) $row[0];
+			$plot_points[$row[1]]  = (int) $row[0];
 			$values_array[$row[1]] = (int) $row[0];
 		}
 	}
@@ -81,7 +82,7 @@ if (!$app->xhttp && $app->user->company->id) {
 		echo "<div class=\"chart-title\">
 		<h1>{$app->user->company->name}</h1>
 		<h2>$curratt<span>$totindv</span></h2>
-		<h3>{$date_end->format("d, M Y")}</h3>";
+		<h3>{$date_current->format("d, M Y")}</h3>";
 		echo "</div>";
 		echo "<div class=\"chart-icon\" style=\"color:#{$fs(75)->color}\">&#xe{$fs(75)->icon};</div>";
 		echo "<div class=\"plot\">";

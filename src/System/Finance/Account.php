@@ -95,13 +95,11 @@ class Account extends AccountProfile
 		if (
 			$mysqli_result = $this->app->db->query(
 				"SELECT 
-					SUM(atm_value) AS balance					
+					SUM(atm_value) AS balance
 				FROM 
 					acc_temp
-						JOIN 
-							user_partition ON atm_account_id = upr_prt_id AND upr_usr_id = {$this->app->user->info->id} AND upr_prt_view = 1
-						JOIN
-							acc_main ON acm_id = atm_main
+						JOIN user_partition ON atm_account_id = upr_prt_id AND upr_usr_id = {$this->app->user->info->id} AND upr_prt_view = 1
+						JOIN acc_main ON acm_id = atm_main
 				WHERE 
 					acm_rejected = 0 AND atm_account_id = {$this->id};"
 			)

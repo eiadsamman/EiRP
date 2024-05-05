@@ -23,6 +23,18 @@ class User extends Individual
 	public ?array $assosiateAccounts;
 	private $rememberloginage = (86400 * 7);
 
+	public function __toString(): string
+	{
+		return print_r([
+			'id' => $this->info->id,
+			'name' => $this->info->fullName(),
+			'permissions' => $this->info->permissions,
+			'company' => $this->company->id . " " . $this->company->name,
+			'account' => $this->account->id . " " . $this->account->name,
+		], true);
+	}
+
+
 	public function load(int $userid): bool
 	{
 		if (parent::load($userid)) {
@@ -88,70 +100,45 @@ class User extends Individual
 		}
 	}
 
+
+
 	private function loadSession(): void
 	{
 		$this->loadAssosiateAccounts();
-		$mysqli_result  = $this->app->db->query(
+		$mysqli_result = (
 			"SELECT 
-				comp_id, comp_name, up_id, usrset_usr_defind_name
+				comp_id, comp_name, up_id, usrset_usr_defind_name, sub_sessionAccount.session_account
 			FROM 
 				companies 
 					JOIN user_company ON urc_usr_id = {$this->app->user->info->id} AND urc_usr_comp_id = comp_id
 					LEFT JOIN user_settings ON usrset_usr_id = {$this->app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::SystemWorkingCompany->value . " AND 1
 						AND usrset_usr_defind_name = 'UNIQUE' AND usrset_value = comp_id
 					LEFT JOIN uploads ON up_rel = comp_id AND up_pagefile = " . \System\Attachment\Type::CompanyLogo->value . " AND 1
+
+					LEFT JOIN (
+						SELECT 
+							usrset_value AS session_account , usrset_usr_defind_name AS session_accountcompany
+						FROM 
+							user_settings 
+						WHERE
+							usrset_type = " . \System\Personalization\Identifiers::SystemWorkingAccount->value . " AND
+							usrset_usr_id = {$this->app->user->info->id} 
+					) AS sub_sessionAccount ON sub_sessionAccount.session_accountcompany = comp_id 
 			GROUP BY
 				comp_id
-			;"
+			ORDER BY usrset_usr_defind_name DESC
+            LIMIT 1;"
 		);
-		$default_load   = null;
-		$company_loaded = false;
+		$mysqli_result = $this->app->db->query($mysqli_result);
 		if ($mysqli_result && $mysqli_result->num_rows > 0) {
-			while ($row = $mysqli_result->fetch_assoc()) {
-				if ($default_load == null) {
-					$default_load = $row;
-				}
-				if ($row['usrset_usr_defind_name'] == "UNIQUE") {
-					$company_loaded      = true;
-					$this->company       = new CompanyProfile();
-					$this->company->id   = (int) $row['comp_id'];
-					$this->company->name = $row['comp_name'];
-					$this->company->logo = empty($row['up_id']) ? null : (int) $row['up_id'];
-					$this->loadSessionAccount();
-					break;
-				}
+			if ($row = $mysqli_result->fetch_assoc()) {
+				$this->company       = new CompanyProfile();
+				$this->company->id   = (int) $row['comp_id'];
+				$this->company->name = $row['comp_name'];
+				$this->company->logo = empty($row['up_id']) ? null : (int) $row['up_id'];
+				if ($row['session_account'] != null)
+					$this->account = new Account($this->app, (int) $row['session_account']);
 			}
-		}
-		if (!$company_loaded && $default_load != null) {
-			$this->company       = new CompanyProfile();
-			$this->company->id   = (int) $default_load['comp_id'];
-			$this->company->name = $default_load['comp_name'];
-			$this->company->logo = empty($default_load['up_id']) ? null : (int) $default_load['up_id'];
-			$this->loadSessionAccount();
-		}
-	}
-
-	private function loadSessionAccount(): void
-	{
-		try {
-			if (
-				$mysqli_result = $this->app->db->query(
-					"SELECT 
-						usrset_value
-					FROM 
-						user_settings 
-					WHERE
-						usrset_usr_id = {$this->app->user->info->id} AND 
-						usrset_type = " . \System\Personalization\Identifiers::SystemWorkingAccount->value . " AND 
-						usrset_usr_defind_name = {$this->company->id};"
-				)
-			) {
-				if ($mysqli_result->num_rows > 0 && $row = $mysqli_result->fetch_row()) {
-					$this->account = new Account($this->app, (int) $row[0]);
-				}
-			}
-		} catch (AccountNotFoundException $e) {
-
 		}
 	}
 
@@ -297,4 +284,5 @@ class User extends Individual
 		}
 		return true;
 	}
+
 }

@@ -125,13 +125,6 @@ class Body extends Config
 
 	public static function AttendanceTicketPlot($status, $image, $title, $content, $fade = false)
 	{
-		/* 
-					<div>
-						<span class="status l"><div></div></span>
-						<span class="image"></span>
-						<span class="content"><div class="employee-sid"></div><div class="employee-name">Loading...</div></span>
-					</div>
-						*/
 		echo "<div>";
 		echo $status === null ? "" : "<span class=\"status " . ($status ? "s" : "f") . "\" " . ($fade ? " style=\"color:#ccc\"" : "") . "><div>" . ($status ? "&#xf00c" : "&#xf00d") . "</div></span>";
 		echo "<span class=\"image\" style=\"background-image:url('$image');" . ($fade ? "opacity:0.5; filter: grayscale(100%);-webkit-filter: grayscale(100%);" : "") . "\"></span>

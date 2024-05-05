@@ -98,8 +98,8 @@ class App
 		/* Handle cache */
 		header('Content-Type: text/html; charset=utf-8', true);
 		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + ($cache ? 604800 : 0)) . ' GMT');
-		header("Cache-Control: " . ($cache ? "public" : "no-cache, no-store, must-revalidate"));
-		header("Pragma: " . ($cache ? "public" : "no-cache"));
+		header("Cache-Control: " . ($cache ? "public, immutable, max-age=31536000" : "no-cache, no-store, must-revalidate"));
+		header("Pragma: " . ($cache ? "cache" : "no-cache"));
 
 	}
 
@@ -111,7 +111,13 @@ class App
 			$uri = substr($uri, strlen($this->subdomain));
 		}
 		$uri = trim($uri, "/ ");
+		$uri = preg_replace("#[/]+#", "/", $uri);
 		return $uri;
+	}
+
+	public function resolveArray()
+	{
+		return explode("/", $this->route);
 	}
 
 	public function register(string $route): bool
@@ -199,18 +205,18 @@ class App
 	}
 	public function getBasePermission(): bool
 	{
-		$lowsetlevel = $this->db->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
+		/* Bypass for performance */
+		$this->base_permission = 2;
+		return true;
+		/* $lowsetlevel = $this->db->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
 		if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
 			$this->base_permission = (int) $rowlowsetlevel['per_id'];
-		}
-
-		if ($this->base_permission == 0) {
+			return true;
+		} else {
 			$this->errorHandler->customError("Failed to fetch system base permission");
 			$this->responseStatus->NotFound->response();
-		} else {
-			return true;
 		}
-		return false;
+		return false; */
 	}
 	public function buildPrefixList(): bool
 	{

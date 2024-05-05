@@ -88,14 +88,21 @@
 			timer = null,
 			hideTrigger = false;
 		var output = {
-			'show': function () {
+			'show': function (instant = false) {
 				hideTrigger = false;
-				timer = setTimeout(function () {
+				if (instant) {
 					if (!hideTrigger) {
 						settings.backgroundObject.addClass("blur");
 						container.css("display", "flex");
 					}
-				}, 300);
+				} else {
+					timer = setTimeout(function () {
+						if (!hideTrigger) {
+							settings.backgroundObject.addClass("blur");
+							container.css("display", "flex");
+						}
+					}, 300);
+				}
 				return output;
 			},
 			'hide': function () {

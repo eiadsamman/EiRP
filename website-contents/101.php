@@ -8,15 +8,16 @@ use System\SmartListObject;
 if ($app->xhttp) {
 
 	/**
-	 * Handle edting request
+	 * Edting request model
 	 */
 	if (isset($_POST['objective'], $_POST['statement-id']) && $_POST['objective'] == 'transaction' && (int) $_POST['statement-id'] != 0) {
 		header("Content-Type: application/json; charset=utf-8");
 		$result = array(
 			"result" => false,
 			"errno" => 0,
-			"error" => '',
-			'insert_id' => 0,
+			"error" => "",
+			"insert_id" => 0,
+			"type" => "update",
 			"debug" => ""
 		);
 		try {
@@ -136,7 +137,7 @@ if ($app->xhttp) {
 	$SmartListObject = new SmartListObject($app);
 
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
+	$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad(($read ? $read->id : ""), $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 
 	$grem->menu()->serve(
 		"<span class=\"small-media-hide flex\"></span>" .
@@ -157,7 +158,7 @@ if ($app->xhttp) {
 			<label style="min-width:200px;flex:2">
 				<h1>Statement ID</h1>
 				<div class="btn-set">
-					<?= $read->id; ?>
+					<?= $app->prefixList[13][0] . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT); ?>
 				</div>
 			</label>
 			<label style="min-width:200px;flex:1">
@@ -214,8 +215,9 @@ if ($app->xhttp) {
 			<label style="flex-basis:0%">
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
-					<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="5" data-slo=":LIST" data-list="js-ref_beneficiary-list" name="beneficiary" id="beneficiary"
-						value="<?= $read->beneficiary ?>" data-slodefaultid="<?= $read->beneficiary ?>" />
+					<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="5" data-slo=":LIST"
+						data-source="_/financeBeneficiaryList/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" name="beneficiary" id="beneficiary" value="<?= $read->beneficiary ?>"
+						data-slodefaultid="<?= $read->beneficiary ?>" />
 
 					<input type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" value="<?= $read->individual ? $read->individual->fullName() : ""; ?>"
 						data-slodefaultid="<?= $read->individual ? $read->individual->id : ""; ?>" />
@@ -290,7 +292,6 @@ if ($app->xhttp) {
 	$grem->getLast()->close();
 	$grem->terminate();
 	unset($grem);
-
 	?>
 	<div>
 		<datalist id="js-ref_creditor-list" style="display: none;">
@@ -301,9 +302,6 @@ if ($app->xhttp) {
 		</datalist>
 		<datalist id="jQcategoryList">
 			<?= $SmartListObject->financialCategories(); ?>
-		</datalist>
-		<datalist id="js-ref_beneficiary-list">
-			<?= $SmartListObject->financialBeneficiary(); ?>
 		</datalist>
 		<datalist id="js-ref_nature-list">
 			<?= $SmartListObject->financialTransactionNature($read->type->value); ?>

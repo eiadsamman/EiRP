@@ -12,9 +12,8 @@ class TransactionView extends \System\Views\PanelView
 
 	public function render(): void
 	{
-		$gd = (!empty ($_GET['id']) ? (int) $_GET['id'] : null);
+		$gd = !empty($_GET['id']) ? (int) $_GET['id'] : null;
 		$fs = $this->app->fileSystem;
-
 
 		echo $this->htmlWrapperSidePanel->open;
 		$grem_panel       = new Gremium(true, true, false, "PanelNavigator-Scroll");
@@ -27,7 +26,7 @@ class TransactionView extends \System\Views\PanelView
 		unset($grem_panel);
 		echo $this->htmlWrapperSidePanel->close;
 
-		 $this->contentPlaceHolder();
+		$this->contentPlaceHolder();
 
 		/* JS Payload */
 		echo "<script type=\"text/javascript\">
@@ -45,7 +44,6 @@ class TransactionView extends \System\Views\PanelView
 
 		echo "<script type=\"module\">";
 		echo <<<HTML
-
 				import { PanelNavigator } from './static/javascript/modules/panel-navigator.js';
 				import Transaction from './static/javascript/modules/finance/transaction.js';
 
