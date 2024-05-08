@@ -24,7 +24,7 @@
 		var dom_placeholder = $("<div />"),
 			_liststate = false;
 
-		const container = $("<table class=\"bom-table hover\"><tbody></tbody></table>");
+		const container = $("<table class=\"hover\"><tbody></tbody></table>");
 		let containerbody = null;
 		const itemtemplate = $(`
 			<tr>

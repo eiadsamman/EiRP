@@ -16,11 +16,11 @@ $_TEMPLATE->FrameTitlesStack(false);
 		top: 3px
 	}
 
-	.bom-table.main>tbody>tr>td>div.btn-set {
+	table.main>tbody>tr>td>div.btn-set {
 		min-width: 200px;
 	}
 
-	.bom-table.main>tbody>tr>td>div.btn-set>span {
+	table.main>tbody>tr>td>div.btn-set>span {
 		width: 50px
 	}
 
@@ -84,7 +84,7 @@ $_TEMPLATE->FrameTitlesStack(false);
 				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Solid-wall pipes</span>");
 				echo $_TEMPLATE->NewFrameBodyStart();
 				?>
-				<table class="bom-table main">
+				<table class="main">
 					<tbody>
 						<tr>
 							<td width="100%">Material type</td>
@@ -153,7 +153,7 @@ $_TEMPLATE->FrameTitlesStack(false);
 				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Structured-wall pipes <b>ISO 9969</b></span>");
 				echo $_TEMPLATE->NewFrameBodyStart();
 				?>
-				<table class="bom-table main">
+				<table class="main">
 					<tbody>
 						<tr>
 							<td width="100%">Load @ 3% (ISO 9969)</td>

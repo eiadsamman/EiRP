@@ -25,7 +25,7 @@ $issue_date = isset($_POST['esdate']) ? $_POST['esdate'] : date("d.m.Y");
 		font-size: 1em;
 	}
 </style>
-<table class="bom-table special">
+<table class="special">
 	<thead>
 		<tr>
 			<td>MATNR</td>

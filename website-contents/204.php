@@ -54,7 +54,7 @@ $fillarr['info']['wo_manager_name'] = is_null($fillarr['info']['wo_manager_id'])
 $fillarr['info']['wo_remarks'] = is_null($fillarr['info']['wo_remarks']) || trim($fillarr['info']['wo_remarks']) == "" ? "-" : $fillarr['info']['wo_remarks'];
 
 ?>
-<table class="bom-table">
+<table>
 	<tbody>
 		<tr class="special">
 			<td colspan="2">Work Order Status</td>
@@ -105,7 +105,7 @@ $fillarr['info']['wo_remarks'] = is_null($fillarr['info']['wo_remarks']) || trim
 		text-align: left;
 	}
 </style>
-<table class="bom-table CSSTablePO" style="margin-top: 15px;">
+<table class="CSSTablePO" style="margin-top: 15px;">
 	<thead>
 		<tr class="special">
 			<td colspan="13">Work Order Materials Description</td>

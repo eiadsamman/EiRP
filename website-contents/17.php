@@ -29,14 +29,14 @@ if ($app->xhttp) {
 }
 
 $grem = new Gremium\Gremium(true);
-$grem->header()->prev($fs(27)->dir)->serve("<h1>Settings</h1>");
+$grem->header()->prev("href=\"{$fs(27)->dir}\"")->serve("<h1>Settings</h1>");
 
 $grem->title()->serve("<span>System settings</span>");
 $grem->article()->open();
 
 $darkmode_checked = $themeDarkMode->mode == "light" ? "" : " checked=\"checked\" ";
 echo <<<HTML
-<table class="bom-table hover row-selector"></body>
+<table class="hover row-selector"></body>
 	<tr>
 		<th class="btn-set" id="purgeReferences"><button>Clear</button></th>
 		<td width="100%"><span style="white-space:wrap">Clear all activities history from the system, including company and selections<Br/>This process can't be undone</span></td>
@@ -62,7 +62,7 @@ $grem->article()->open();
 $firstocc = false;
 foreach ($dashboard->overview() as $item) {
 	if (!$firstocc) {
-		echo "<table class=\"bom-table hover row-selector\" id=\"dash-table\" style=\"position:relative;\"><tbody>";
+		echo "<table class=\"hover row-selector\" id=\"dash-table\" style=\"position:relative;\"><tbody>";
 		$firstocc = true;
 	}
 	echo "<tr data-pageid=\"{$item['trd_id']}\">";
@@ -85,7 +85,7 @@ $grem->article()->open();
 $firstocc = false;
 foreach ($dashboard->list() as $item) {
 	if (!$firstocc) {
-		echo "<table class=\"bom-table hover row-selector\" id=\"dash-table\" style=\"position:relative;\"><tbody>";
+		echo "<table class=\"hover row-selector\" id=\"dash-table\" style=\"position:relative;\"><tbody>";
 		$firstocc = true;
 	}
 	echo "<tr data-pageid=\"{$item['trd_id']}\">";
@@ -104,7 +104,7 @@ $grem->getLast()->close();
 $grem->title()->serve("<span>System theme</span>");
 $grem->article()->open();
 echo <<<HTML
-<table class="bom-table hover row-selector"><tbody>
+<table class="hover row-selector"><tbody>
 	<tr>
 		<td class="checkbox" style="min-width:38px;width:38px;"><label><input id="theme-default" name="theme" type="radio" checked /></label></td>
 		<td>Default theme</td>
@@ -131,7 +131,7 @@ unset($grem);
 		margin-left: -1px;
 	}
 
-	.bom-table>tbody>tr>td {
+	table>tbody>tr>td {
 		cursor: default;
 	}
 

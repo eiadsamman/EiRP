@@ -166,7 +166,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<input type="file" id="js_uploader_btn_1" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 				<span id="js_upload_list_1" class="js_upload_list">
 					<div id="UploadSocialDOMHandler">
-						<table class="bom-table hover">
+						<table class="hover">
 							<tbody>
 								<?php
 								if (isset($arr_array_uploads[190]) && is_array($arr_array_uploads[190])) {
@@ -192,7 +192,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 				<input type="file" id="js_uploader_btn" class="js_uploader_btn" accept="image/*" />
 				<span id="js_upload_list" class="js_upload_list">
 					<div id="UploadPersonalDOMHandler">
-						<table class="bom-table hover">
+						<table class="hover">
 							<tbody>
 								<?php
 								if (isset($arr_array_uploads[\System\Attachment\Type::HrPerson->value]) && is_array($arr_array_uploads[\System\Attachment\Type::HrPerson->value])) {

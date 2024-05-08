@@ -52,8 +52,8 @@ class menuListItems extends \System\Views\Chunk\Chunk
 	{
 		header('Content-Type: text/html; charset=utf-8', true);
 		header('Content-Type: text/html; charset=utf-8', true);
-		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + (true ? 604800 : 0)) . ' GMT');
-		header("Cache-Control: " . (true ? "public, immutable, max-age=31536000" : "no-cache, no-store, must-revalidate"));
+		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + (true ? 3600 : 0)) . ' GMT');
+		header("Cache-Control: " . (true ? "public, immutable, max-age=3600" : "no-cache, no-store, must-revalidate"));
 		header("Pragma: " . (true ? "cache" : "no-cache"));
 		header("Content-Encoding: gzip");
 

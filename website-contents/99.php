@@ -526,7 +526,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 		if ($r) {
 			$array_output = array();
 
-			echo "<table class=\"bom-table hover screenCols\"><thead>
+			echo "<table class=\"hover screenCols\"><thead>
 				<tr>
 					<td>ID \ Issuer</td>
 					<td align=\"right\">Value</td>
@@ -788,7 +788,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				$arr_output_raw = insert_using_keys($arr_output_raw, $arr_keys, $row['group_sum']);
 			}
 			$r->free_result();
-			echo "<table class=\"bom-table group-list screenCols\"><thead><tr>";
+			echo "<table class=\"group-list screenCols\"><thead><tr>";
 			foreach ($arr_group as $group_k => $group_v) {
 				echo "<td " . ($group_v['reference'] > 1 ? "colspan=\"" . sizeof($group_v['reference']) . "\"" : "") . ">" . $group_v['cols'] . "</td>";
 			}
@@ -820,7 +820,7 @@ unset($grem);
 ?><br />
 <iframe style="display:none;" name="iframe" id="iframe"></iframe>
 <form id="jQfilterform">
-	<table class="bom-table" style="margin-bottom:10px">
+	<table style="margin-bottom:10px">
 		<tbody>
 			<tr>
 				<th style="width:25%">Creditor account</th>
@@ -861,7 +861,7 @@ unset($grem);
 			</tr>
 		</tbody>
 	</table>
-	<table class="bom-table" style="margin-bottom:10px">
+	<table style="margin-bottom:10px">
 		<tbody>
 			<tr>
 				<th style="min-width:100px;">ID</th>
@@ -941,7 +941,7 @@ unset($grem);
 			</tr>
 		</tbody>
 	</table>
-	<table class="bom-table">
+	<table>
 		<tbody>
 			<tr>
 				<td>

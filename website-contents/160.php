@@ -155,7 +155,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "show") {
 			</div>';
 		}
 	}
-	echo "<div><table class=\"bom-table form-table\" id=\"bom-contents\">";
+	echo "<div><table class=\"form-table\" id=\"bom-contents\">";
 	echo "
 		<thead>
 			<tr>

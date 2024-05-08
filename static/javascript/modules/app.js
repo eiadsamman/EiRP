@@ -23,7 +23,7 @@ export class Application {
 		return new Promise((resolve) => {
 			fetch(url, {
 				method: 'GET',
-				cache: "force-cache",//default
+				cache: "default",/* force-cache */
 				mode: "same-origin",
 				headers: {
 					'Accept': isTypeJson ? "application/json" : "text/html",

@@ -83,12 +83,12 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 		background: #0066cc;
 	}
 
-	.bom-table>tbody>tr>th {
+	table>tbody>tr>th {
 		line-height: 1.3em;
 		min-width: 130px;
 	}
 
-	.bom-table>tbody>tr>td>div.btn-set {
+	table>tbody>tr>td>div.btn-set {
 		max-width: 340px;
 	}
 
@@ -136,7 +136,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 			display: none;
 		}
 
-		.bom-table>tbody>tr>td>div.btn-set {
+		table>tbody>tr>td>div.btn-set {
 			max-width: 100%;
 		}
 
@@ -158,7 +158,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 				<div style="position: sticky;top: 111px;">
 					<?php $_TEMPLATE->NewFrameTitle("<span class=\"flex\">Profile sketch</span>"); ?>
 					<br />
-					<table class="bom-table">
+					<table>
 	</tbody>
 	<tr>
 		<th style="min-width:100px;">Profile drawing</th>
@@ -211,7 +211,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 	<?php $_TEMPLATE->NewFrameTitle("<span class=\"flex\">Profile data for radial calculation</span>"); ?>
 	<br />
 	<div>
-		<table class="bom-table">
+		<table>
 			<tbody>
 				<tr>
 					<th>A type<br /> predeformation</th>
@@ -245,7 +245,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 		</table>
 
 		<div class="frame-title">General values</div>
-		<table class="bom-table">
+		<table>
 			<tbody>
 				<tr>
 					<th>Material density</th>
@@ -273,7 +273,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 
 
 		<div class="frame-title">Radial values</div>
-		<table class="bom-table">
+		<table>
 			<tbody>
 				<tr>
 					<th>Young's modulus</th>
@@ -323,7 +323,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 
 	<?php $_TEMPLATE->NewFrameTitle("<span class=\"flex\">Profile properties</span>"); ?>
 	<br />
-	<table class="bom-table">
+	<table>
 		<tbody>
 			<tr>
 				<th>Profile height</th>

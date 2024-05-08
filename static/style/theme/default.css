@@ -26,7 +26,7 @@
 	--bomtable-stripes-color: #fafafc;
 
 
-	--input_border-radius: 5px;
+	--input_border-radius: 3px;
 	--input_color: rgb(33, 37, 41);
 	--input_background-color: white;
 	--input_border-color: #ddd;
@@ -56,6 +56,7 @@
 	--placeholder-bgcolor: hsl(0, 0%, 94%);
 	--placeholder-sweeping-bgcolor: white;
 
+	--outline-border-color: goldenrod;
 	/* var(--root-ribbon-menu-itemhover-background-color); */
 
 }
@@ -87,7 +88,7 @@
 	--bomtable-stripes-color: #202940;
 
 
-	--input_border-radius: 5px;
+	--input_border-radius: 3px;
 	--input_color: hsl(210, 11%, 15%);
 	--input_background-color: hsl(223, 23%, 19%);
 	--input_border-color: rgb(90, 90, 105);
@@ -116,6 +117,8 @@
 
 	--placeholder-bgcolor: #202940;
 	--placeholder-sweeping-bgcolor: hsl(223, 25%, 25%);
+
+	--outline-border-color: goldenrod;
 
 
 }

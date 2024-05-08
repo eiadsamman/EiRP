@@ -28,7 +28,7 @@ GROUP BY
 ");
 
 
-echo "<table class=\"bom-table\">";
+echo "<table>";
 
 
 echo "<tbody>";

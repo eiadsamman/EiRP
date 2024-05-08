@@ -14,7 +14,7 @@ if (!$defaultcurrency) {
 } else {
 
 ?>
-	<table class="bom-table">
+	<table>
 		<thead>
 			<tr>
 				<td>Company</td>

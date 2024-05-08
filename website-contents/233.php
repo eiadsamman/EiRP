@@ -262,7 +262,7 @@ if ($doc_id) {
 			$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Materials Price Quotation</span>");
 			echo $_TEMPLATE->NewFrameBodyStart();
 			echo "<form id=\"jQpostFormMaterials\">
-					<table class=\"bom-table\">
+					<table>
 						<thead>
 							<tr>
 								<td width=\"100%\">Material</td>
@@ -383,7 +383,7 @@ if ($doc_id) {
 				} else {
 					$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Document History</span>");
 					echo $_TEMPLATE->NewFrameBodyStart();
-					echo "<table class=\"bom-table\">
+					echo "<table>
 						<thead>
 							<tr>
 								<td>Document ID</td>

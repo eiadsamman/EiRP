@@ -62,7 +62,7 @@ if (isset($_POST['fetch'])) {
 
 		$grem->article()->options(array(/* "nobg" */))->open();
 		echo "
-			<table class=\"bom-table local-mediabond-table " . (isset($_GET['view']) && $_GET['view'] == "1" ? "local-force" : "") . "\">
+			<table class=\"local-mediabond-table " . (isset($_GET['view']) && $_GET['view'] == "1" ? "local-force" : "") . "\">
 				<tbody>";
 		foreach ($groupv['dataset'] as $row) {
 			$counter++;

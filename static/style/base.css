@@ -6,7 +6,6 @@
 	font-style: normal;
 }
 
-
 @font-face {
 	font-family: 'icomoon';
 	src: url('../fonts/icomoon/icomoon.eot?se601i');
@@ -14,15 +13,6 @@
 		url('../fonts/icomoon/icomoon.woff?se601i') format('woff'),
 		url('../fonts/icomoon/icomoon.ttf?se601i') format('truetype'),
 		url('../fonts/icomoon/icomoon.svg?se601i#icomoon') format('svg');
-	font-weight: normal;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'auvelle';
-	src: url('../fonts/auvelle-regular.eot?se601i');
-	src: url('../fonts/auvelle-regular.eot') format('embedded-opentype'),
-		url('../fonts/auvelle-regular.ttf?se601i') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -855,7 +845,8 @@ span.vs-remove {
 .split-view>div.panel>div a.panel-item:not(.place-holder):hover,
 .split-view>div.panel>div a.panel-item:not(.place-holder):active,
 .split-view>div.panel>div a.panel-item:not(.place-holder):focus {
-	outline: solid 2px var(--button-border);
+	outline: solid 2px var(--outline-border-color);
+	outline-offset: 2px;
 	border-radius: 2px;
 	text-decoration: none;
 	z-index: 2;

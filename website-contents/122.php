@@ -145,7 +145,7 @@ if(isset($_POST['detailed-report']) && isset($_POST['usr_id'])){
 	background-color:#eee;
 }
 </style>
-<table class="bom-table hover" style="margin-bottom:5px;" id="jQoutput">
+<table class="hover" style="margin-bottom:5px;" id="jQoutput">
 </table>
 
 <script>

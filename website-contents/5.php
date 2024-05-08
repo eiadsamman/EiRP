@@ -273,7 +273,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 					<span class="flex">User Information</span><button id="FormInfoModifySubmitButton" type="button">Save</button>
 				</div>
 				<div style="padding-left:10px;margin-top:10px;/*overflow-y: auto;max-height: 253px;*/">
-					<table class="bom-table">
+					<table>
 						<tbody>
 							<tr>
 								<th>ID</th>
@@ -326,7 +326,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 				</div>
 
 				<div style="padding-left:10px;margin-top:10px;/*overflow-y: auto;max-height: 253px;*/">
-					<table class="bom-table hover">
+					<table class="hover">
 						<thead>
 							<tr>
 								<td></td>
@@ -363,7 +363,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 				</div>
 
 				<div style="padding-left:10px;margin-top:10px;/*overflow-y: auto;max-height: 253px;*/">
-					<table class="bom-table hover">
+					<table class="hover">
 						<thead>
 							<tr>
 								<td></td>
@@ -398,7 +398,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						id="FormAccountModifySubmitButton" type="button">Save</button>
 				</div>
 				<div style="padding-left:10px;margin-top:10px;/*overflow-y: auto;max-height: 253px;*/">
-					<table class="bom-table hover">
+					<table class="hover">
 						<thead>
 							<tr>
 								<td></td>

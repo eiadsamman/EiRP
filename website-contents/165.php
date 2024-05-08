@@ -1,4 +1,4 @@
-<table class="bom-table hover">
+<table class="hover">
 	<thead>
 		<tr>
 			<td colspan="2" style="width:300px;">Query name</td>

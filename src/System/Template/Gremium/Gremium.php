@@ -186,7 +186,7 @@ class Header extends Blocks
 	}
 	public function prev(string $prev): self
 	{
-		$this->prev = $prev;
+		$this->prev = trim($prev);
 		return $this;
 	}
 	public function open(): self
@@ -197,7 +197,7 @@ class Header extends Blocks
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top});\" " : "");
 			echo ">\n";
 
-			echo $this->prev == null ? "" : "\t<a href=\"$this->prev\" class=\"previous\" data-role=\"previous\"></a>\n";
+			echo $this->prev == null ? "" : "\t<a $this->prev class=\"previous\" data-role=\"previous\"></a>\n";
 			echo $this->status == null ? "" : "\t<span class=\"$this->status\"></span>\n";
 			$this->opened = true;
 		}

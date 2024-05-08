@@ -1,4 +1,4 @@
-<table class="bom-table">
+<table>
 	<thead>
 		<tr class="special">
 			<td colspan="3">Major information</td>

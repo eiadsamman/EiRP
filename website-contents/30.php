@@ -66,7 +66,7 @@ if (isset($_POST['bulkeditorform'])) {
 			$selectioncount = $selectioncount['selectioncount'];
 		}
 	}
-	echo "<table class=\"bom-table\"><thead><tr class=\"special\"><td colspan=\"2\">Bulk editor</td></tr></thead><tbody>";
+	echo "<table><thead><tr class=\"special\"><td colspan=\"2\">Bulk editor</td></tr></thead><tbody>";
 	foreach ($arr_feild as $k => $v) {
 		echo "<tr>
 			<td style=\"min-width:120px;\">{$v[0]}</td>
@@ -500,7 +500,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 	<input type="hidden" name="cards" id="cards" value="0" />
 	<input type="hidden" name="sort_field" id="sort_field" value="" />
 	<input type="hidden" name="sort_dir" id="sort_dir" value="" />
-	<table class="bom-table">
+	<table>
 		<tbody>
 			<tr>
 				<td>
@@ -536,7 +536,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 	</table>
 </form>
 <br />
-<table class="bom-table hover">
+<table class="hover">
 	<thead>
 		<tr class="special">
 			<td data-feild="id"><span></span></td>

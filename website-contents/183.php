@@ -7,7 +7,7 @@ $attendance = new Registration($app);
 $grem->header()->serve("<h1>{$fs()->title}</h1><ul><li>" . date("Y-m-d", time()) . "</li></ul>");
 $grem->title()->serve("<span class=\"flex\">Attendance report</span>");
 $grem->article()->open();
-echo "<table class=\"bom-table\" id=\"att_list\">";
+echo "<table id=\"att_list\">";
 echo "<thead>";
 echo "<tr><td></td><td></td><td>ID</td><td>Name</td><td>Check-in time</td><td align=\"right\">Time</td><td width=\"100%\"></td></tr>";
 echo "</thead>";

@@ -371,7 +371,7 @@ $SmartListObject = new System\SmartListObject($app);
 
 echo "<form id=\"EmployeeForm\" method=\"POST\">";
 $grem = new Gremium(true);
-$grem->header()->prev($fs(30)->dir)->serve("<h1 id=\"js-output_headertitle\">" . ($UserFound ? "Edit employee" : "Add employee") . "</h1><ul id=\"js-output_headercite\">" . ($UserFound ? "<li>{$UserFound['usr_id']}</li>" : "") . "</ul>");
+$grem->header()->prev("href=\"{$fs()->dir}\"")->serve("<h1 id=\"js-output_headertitle\">" . ($UserFound ? "Edit employee" : "Add employee") . "</h1><ul id=\"js-output_headercite\">" . ($UserFound ? "<li>{$UserFound['usr_id']}</li>" : "") . "</ul>");
 $grem->menu()->open();
 echo "<span>Employee ID</span>";
 echo "<input type=\"text\" id=\"employeIDFormSearch\" data-slo=\":LIST\" data-list=\"personList\" class=\"flex\" placeholder=\"Select user...\" />";

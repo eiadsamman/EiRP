@@ -211,7 +211,7 @@ if ($doc_id) {
 
 		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Quotation Details</span>");
 		echo $_TEMPLATE->NewFrameBodyStart();
-		echo "<table class=\"bom-table\">
+		echo "<table>
 					<thead>
 						<tr>
 							<td width=\"100%\">Material</td>
@@ -272,7 +272,7 @@ if ($doc_id) {
 
 					$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Document History</span>");
 					echo $_TEMPLATE->NewFrameBodyStart();
-					echo "<table class=\"bom-table\">
+					echo "<table>
 						<thead>
 							<tr>
 								<td>Document ID</td>

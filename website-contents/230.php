@@ -149,7 +149,7 @@ if (isset($_POST['addcustomized'])) {
 if (isset($_POST['method'], $_POST['id'], $_POST['qty']) && $_POST['method'] == "displaybom") {
 	$_POST['id'] = (int)$_POST['id'];
 	$_POST['qty'] = (float)$_POST['qty'];
-	echo "<form id=\"jQpopForm\"><table class=\"bom-table\">
+	echo "<form id=\"jQpopForm\"><table>
 		<input type=\"hidden\" name=\"addcustomized\" value=\"1\" />
 		<input type=\"hidden\" name=\"part_of_bom\" value=\"{$_POST['id']}\" />
 		<thead>";
@@ -349,7 +349,7 @@ echo $_TEMPLATE->NewFrameBodyStart();
 
 <?php echo $_TEMPLATE->NewFrameBodyStart(); ?>
 <form id="jQpostFormMaterials">
-	<table class="bom-table hover">
+	<table class="hover">
 		<thead>
 			<tr>
 				<td>#</td>

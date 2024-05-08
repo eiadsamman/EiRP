@@ -9,7 +9,7 @@ $read        = $statement->read($id ?? 0);
 if ($read) {
 	$grem = new Gremium\Gremium(true);
 	if (empty($read->debitor) && empty($read->creditor)) {
-		$grem->header()->status(Gremium\Status::Exclamation)->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
+		$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
 		$grem->menu()->serve("<span class=\"small-media-hide\">Requested document is forbidden</span>");
 		$grem->article()->serve(
 			<<<HTML
@@ -23,7 +23,8 @@ if ($read) {
 		);
 		unset($grem);
 	} else {
-		$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
+		//$fs(214)->dir
+		$grem->header()->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 		$grem->menu()->open();
 		echo "<span class=\"small-media-hide flex\"></span>";
 		if ($fs(101)->permission->edit) {
@@ -143,12 +144,12 @@ if ($read) {
 	}
 } elseif ($id == null) {
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1>");
+	$grem->header()->serve("<h1>{$fs()->title}</h1>");
 	$grem->menu()->serve("<span class=\"small-media-hide\">No selected documents</span>");
 	unset($grem);
 } else {
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>$id</cite>");
+	$grem->header()->serve("<h1>{$fs()->title}</h1><cite>$id</cite>");
 	$grem->menu()->serve("<span class=\"small-media-hide\">Requested document is not available</span>");
 	$grem->article()->serve(
 		<<<HTML

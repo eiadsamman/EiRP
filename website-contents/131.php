@@ -119,7 +119,7 @@ if (isset($_POST['posubmit'])) {
 			<tbody>
 				<tr>
 					<td>
-						<table class=\"bom-table\">
+						<table>
 							<thead>
 								<tr><td>ID</td><td>Name</td><td>Total</td></tr>
 							</thead>
@@ -147,7 +147,7 @@ if (isset($_POST['posubmit'])) {
 					
 					<td width=\"100%\" style=\"padding-left:5px;position:relative\">
 						<div id=\"jsTimeMatrix\">
-							<table class=\"bom-table\" style=\"width:auto;\">
+							<table style=\"width:auto;\">
 								<thead>
 									<tr>
 										<td>Group</td>

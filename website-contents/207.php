@@ -2,7 +2,7 @@
 use System\Template\Gremium;
 
 $grem = new Gremium\Gremium(true, false);
-$grem->header()->prev($fs()->dir)->serve("<h1>My Companies</h1>");
+$grem->header()->prev("href=\"{$fs()->dir}\"")->serve("<h1>My Companies</h1>");
 $grem->menu()->serve("<span>Search</span><input id=\"compslo\" type=\"text\" class=\"flex\" data-slo=\"COMPANY_USER\" />");
 $article = $grem->article()->open();
 ?>

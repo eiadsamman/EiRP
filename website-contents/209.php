@@ -6,7 +6,7 @@
 	$accounting=new Accounting();
 	$_syscur=$accounting->system_default_currency();
 ?>
-<table class="bom-table">
+<table>
 <thead>
 	<tr>
 		<td>ID</td>
@@ -56,7 +56,7 @@
 			if($row['_qcount']>0){
 				echo "<tr>";
 				echo "<td colspan=\"8\" style=\"border-top:double 3px #ccc;\">";
-				echo "<table class=\"bom-table\"><tbody>";
+				echo "<table><tbody>";
 				
 				$rlist=$app->db->query("
 					SELECT 

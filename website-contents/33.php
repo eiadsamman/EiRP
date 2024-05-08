@@ -2,7 +2,7 @@
 use System\Template\Gremium;
 
 $grem = new Gremium\Gremium(true, false);
-$grem->header()->prev($fs()->dir)->serve("<h1>My Accounts</h1>");
+$grem->header()->prev("href=\"{$fs()->dir}\"")->serve("<h1>My Accounts</h1>");
 $grem->menu()->serve("<span>Search</span><input type=\"text\" class=\"flex\" id=\"sectorslo\" data-list=\"accounts-list\" data-slo=\":LIST\">");
 
 
@@ -35,7 +35,7 @@ $article = $grem->article()->open();
 			$ptp[$row['comp_name']][$row['ptp_name']][] = array($row['prt_id'], $row['prt_name'], $row['cur_shortname']);
 		}
 	}
-	echo "<table class=\"bom-table\" id=\"screenSectorCol\"><tbody>";
+	echo "<table id=\"screenSectorCol\"><tbody>";
 	foreach ($ptp as $company_k => $company_v) {
 		foreach ($company_v as $group_k => $group_v) {
 			echo "<tr>";

@@ -298,7 +298,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 
 	$grem       = new Gremium(false);
 	$grem->base = "0px";
-	$grem->header()->prev($fs()->dir)->serve(
+	$grem->header()->prev("href=\"{$fs()->dir}\"")->serve(
 		"<h1>{$fs()->title}</h1>" .
 		((int) $_POST['id'] != 0 ? "<ul class=\"small-media-hide\"><li>{$_POST['id']}</li></ul>" : "") .
 		"<cite><button type=\"submit\" data-role=\"submit\" id=\"jQsubmit\"></button></cite>"
@@ -377,7 +377,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 							<input type="file" id="up_btn{$fieldk}" class="js_uploader_btn" multiple="multiple" />
 							<span id="up_list{$fieldk}" class="js_upload_list">
 								<div id="up_handler{$fieldk}">
-									<table class="bom-table hover">
+									<table class="hover">
 										<tbody>
 			HTML;
 			while ($_uploads_query && $_uploads_row = $_uploads_query->fetch_assoc()) {
@@ -619,7 +619,7 @@ $grem_main->getLast()->close();
 $grem_main->article()->open();
 ?>
 
-<table class="bom-table hover" id="jQmtable" style="margin-top:1px;">
+<table class="hover" id="jQmtable" style="margin-top:1px;">
 	<thead>
 		<tr data-id="0" style="position: sticky; top: calc(var(--root--menubar-height) + 115px - var(--gremium-header-toggle));">
 			<?php
@@ -668,7 +668,7 @@ unset($grem);
 		<?php
 		$grem       = new Gremium(false);
 		$grem->base = "0px";
-		$grem->header()->prev($fs()->dir)->serve(
+		$grem->header()->prev("href=\"{$fs()->dir}\"")->serve(
 			"<h1>Filter</h1>" .
 			"<cite><button data-role=\"submit\" type=\"submit\" id=\"jQsubmit\"></button></cite>"
 		);

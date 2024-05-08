@@ -12,13 +12,13 @@
 	color: var(--root-ribbon-border-color);
 }
 
-table.bom-table>tbody>tr.tran-deleted>td {
+table>tbody>tr.tran-deleted>td {
 	background-color: var(--bomtable-stripes-color);
 	/*text-decoration:line-through;*/
 }
 
-table.bom-table>tbody>tr.tran-deleted>td,
-table.bom-table>tbody>tr.tran-deleted>td>div.payment_type {
+table>tbody>tr.tran-deleted>td,
+table>tbody>tr.tran-deleted>td>div.payment_type {
 	color: rgba(120,120,120,0.6);
 	/*text-decoration:line-through;*/
 }
@@ -338,7 +338,7 @@ div.btn-set.list>input {
 	left: 27px;
 }
 
-.bom-table.group-list>tbody>tr>td {
+.group-list>tbody>tr>td {
 	border: solid 1px var(--bomtable-border-color);
 }
 

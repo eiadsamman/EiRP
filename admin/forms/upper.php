@@ -1,21 +1,11 @@
 <?php
 ob_start();
 ob_implicit_flush(true);
-$_v = $app->settings->site['environment'] === "development" ? "?rev=1013" . uniqid() : "";
-$_v = "";
+$_v = $app->settings->site['environment'] === "development" ? "?rev=240508" . uniqid() : "";
 
 use System\Finance\AccountRole;
 use System\Personalization\Bookmark;
 use System\SmartListObject;
-
-
-$__helper     = false;
-$__side_panel = false;
-if (isset($fs()->parameters) && preg_match("/help([0-9]+)/", $fs()->parameters, $match)) {
-	$__helper = $fs((int) $match[1]);
-}
-
-
 
 $__workingaccount = false;
 $SmartListObject  = new SmartListObject($app);
@@ -27,25 +17,28 @@ $SmartListObject  = new SmartListObject($app);
 	<meta charset="utf-8" />
 	<base href="<?php echo "{$app->http_root}"; ?>" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, interactive-widget=overlays-content" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<meta name="apple-mobile-web-app-title" content="<?= $app->settings->site['title'] ?>" />
 	<meta name="mobile-web-app-capable" content="yes" />
 	<meta name="theme-color" content="#f0f0f5" />
+	<meta name="description" content="CANDAS ERP System.">
 	<link rel="shortcut icon" href="static/images/logo.ico" />
 	<meta http-equiv="copyright" content="&copy; <?php echo date("Y") . " {$app->settings->site['auther']}"; ?>" />
 	<meta http-equiv="author" content="<?php echo "{$app->settings->site['auther']}"; ?>" />
-	<title>
-		<?= "{$app->settings->site['title']} - {$fs()->title}" ?>
-	</title>
+	<title><?= "{$app->settings->site['title']} - {$fs()->title}" ?></title>
 	<link media="screen,print" rel="stylesheet" href="static/style/theme/default.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/base.css<?= $_v ?>" />
 	<link media="screen,print" rel="stylesheet" href="static/style/modals.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.button.set.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.slo.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.bom-table.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/style.gremium.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/gremium.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/buttons.css<?= $_v ?>" />
+	<script type="text/javascript" src="static/jquery/jquery.min-3.7.1.js"></script>
+	<script type="text/javascript" src="static/jquery/jquery-ui.min.js<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/slo-1.4.js<?= $_v ?>"></script>
+	<script type="module">import App from './static/javascript/modules/app.js';</script>
 	<?php
 	if (array_key_exists('css', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['css']);
@@ -54,14 +47,6 @@ $SmartListObject  = new SmartListObject($app);
 				echo "\t\t<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}{$_v}\" />\n";
 		}
 	}
-	?>
-	<script type="text/javascript" src="static/jquery/jquery.min-3.7.1.js"></script>
-	<script type="text/javascript" src="static/jquery/jquery-ui.min.js<?= $_v ?>"></script>
-	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js<?= $_v ?>"></script>
-	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js<?= $_v ?>"></script>
-	<script type="text/javascript" src="static/jquery/slo-1.4.js<?= $_v ?>"></script>
-	<script type="module">import App from './static/javascript/modules/app.js';</script>
-	<?php
 	if (array_key_exists('js', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['js']);
 		foreach ($load as $file) {
@@ -87,10 +72,6 @@ $SmartListObject  = new SmartListObject($app);
 				}
 				if ($app->user->logged) {
 					echo "<a id=\"header-menu-button\" title=\"{$fs()->id}: {$fs()->title}, (Ctrl+m)\"><span style=\"font-family:icomoon4;\">&#xe9bd;</span></a>";
-					if ($__helper) {
-						echo "<a href=\"{$__helper->dir}\" title=\"Help\" id=\"jqroot_help\" target=\"_blank\"><span style=\"font-family:icomoon4;\">&#xea09;</span></a>";
-					}
-
 					echo "<span class=\"gap\" style=\"text-align:right;\"></span>";
 					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=company\" tabindex=\"-1\" title=\"Running Company\" id=\"jqroot_com\">" . ($app->user->company ? $app->user->company->name : "N/A") . "</a>";
 					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($app->user->account) ? "<span class=\"mediabond-hide\">{$app->user->account->type->name}: </span>{$app->user->account->name}" : "N/A") . "</a>";
@@ -100,10 +81,9 @@ $SmartListObject  = new SmartListObject($app);
 					} elseif ($app->user->account) {
 						echo "<span>{$app->user->account->currency->shortname}</span>";
 					}
-
 					echo "<a tabindex=\"-1\" class=\"mediabond-hide js-input_darkmode-toggle\"><span style=\"font-family:icomoon4;\" title=\"Toggle Dark Mode\">&#xe9d4;</span></a>";
 					echo "<a href=\"user-account/\" tabindex=\"-1\" id=\"header-menu-useraccount-button\"><span style=\"font-family:icomoon4;\" title=\"User Settings\">&#xe971;</span></a>"; //<cite>1</cite>
-					echo "<a href=\"{$fs()->dir}/?logout\" tabindex=\"-1\" id=\"header-menu-logout\"><span style=\"font-family:icomoon4;\" title=\"Logout\">&#xe9b6;</span></a>";
+					echo "<a href=\"{$fs()->dir}/?logout=" . uniqid() . "\" tabindex=\"-1\" id=\"header-menu-logout\"><span style=\"font-family:icomoon4;\" title=\"Logout\">&#xe9b6;</span></a>";
 				}
 				?>
 			</div>
@@ -223,7 +203,7 @@ $SmartListObject  = new SmartListObject($app);
 						ORDER BY
 							(usrset_value+0) DESC"
 						);
-						if ($q) {
+						if ($r) {
 							while ($row = $r->fetch_assoc()) {
 								printf("<a href=\"%s/?--sys_sel-change=company_commit&i=%d\"><span>%s</span></a>", $fs()->dir, (int) $row['comp_id'], $row['comp_name']);
 							}
@@ -247,7 +227,7 @@ $SmartListObject  = new SmartListObject($app);
 						echo "<a href=\"\" class=\"js-input_darkmode-toggle\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Toggle Dark Mode\">&#xe9d4;</span><span>Toggle Dark Mode</span></a>";
 						echo "<a href=\"{$fs(263)->dir}\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Bookmarks\">&#xe9d9;</span><span>Bookmarks</span></a>"; //e9d7
 						echo "<a href=\"{$fs(17)->dir}\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Settings\">&#xe994;</span><span>Settings</span></a>";
-						echo "<a href=\"{$fs()->dir}/?logout\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Logout\">&#xe9b6;</span><span>Logout</span></a>";
+						echo "<a href=\"{$fs()->dir}/?logout=" . uniqid() . "\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Logout\">&#xe9b6;</span><span>Logout</span></a>";
 						echo "<div><span class=\"btn-set \"><span class=\"flex\" style=\"padding:10px 0px 0px 0px;background:none;border:none\">Bookmarks</span>";
 						if (!$bookmarked) {
 							echo "<button type=\"button\" class=\"edge-left\" title=\"Add this page to bookmarks\" data-target_id=\"{$fs()->id}\" data-bookmark_title=\"{$fs()->title}\" data-role=\"add\" id=\"bookmark-button\">Add</button>";

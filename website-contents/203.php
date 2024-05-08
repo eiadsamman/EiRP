@@ -134,7 +134,7 @@ if (isset($_POST['addcustomized'])) {
 if (isset($_POST['method'], $_POST['id'], $_POST['qty']) && $_POST['method'] == "displaybom") {
 	$_POST['id'] = (int)$_POST['id'];
 	$_POST['qty'] = (float)$_POST['qty'];
-	echo "<form id=\"jQpopForm\"><table class=\"bom-table\"><input type=\"hidden\" name=\"addcustomized\" value=\"1\" /><thead>";
+	echo "<form id=\"jQpopForm\"><table><input type=\"hidden\" name=\"addcustomized\" value=\"1\" /><thead>";
 	echo "<tr class=\"special\"><td colspan=\"8\">BOM Selector</td></tr>";
 
 	echo "</thead><tbody>";
@@ -246,7 +246,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 </style>
 <form id="jQpostForm">
 	<input type="hidden" name="wosubmit">
-	<table class="bom-table">
+	<table>
 		<thead>
 			<tr class="special">
 				<td colspan="2">New Work Order</td>
@@ -296,7 +296,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 			</tr>
 		</tbody>
 	</table>
-	<table class="bom-table hover" style="margin-top: 15px;">
+	<table class="hover" style="margin-top: 15px;">
 		<thead>
 			<tr class="special">
 				<td colspan="9">Work Order Materials Description</td>

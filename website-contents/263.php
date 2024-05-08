@@ -40,7 +40,7 @@ if ($app->xhttp) {
 
 
 $grem = new Gremium\Gremium(true);
-$grem->header()->prev($fs(27)->dir)->serve("<h1>Bookmarks</h1>");
+$grem->header()->prev("href=\"{$fs(27)->dir}\"")->serve("<h1>Bookmarks</h1>");
 
 $grem->menu()->serve("<span class=\"flex\"></span><input id=\"js-input_add-list\" data-slo=\":LIST\" data-list=\"js-ref_list\" placeholder=\"Add a bookmark...\" type=\"text\" />");
 
@@ -48,7 +48,7 @@ $grem->article()->open();
 
 $firstocc = false;
 
-echo "<table class=\"bom-table hover\" id=\"js-output_tablelist\" style=\"position:relative;\"><tbody>";
+echo "<table class=\"hover\" id=\"js-output_tablelist\" style=\"position:relative;\"><tbody>";
 foreach ($bookmark->list() as $bookmark) {
 	//color:#{$bookmark['trd_attrib5']}
 	//<span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px;display:inline-block;color:#555\">&#xe{$bookmark['trd_attrib4']};</span>

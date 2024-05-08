@@ -108,7 +108,7 @@ if ($doc_id) {
 
 		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Quotation Details</span>");
 		echo $_TEMPLATE->NewFrameBodyStart();
-		echo '<table class="bom-table">
+		echo '<table>
 			<thead><tr><td width="100%">Material</td><td align="right" colspan="2">Quantity</td><td align="right">Unit Price</td><td align="right">Inline</td></tr></thead>
 			<tbody id="jQmaterialList" style="border:solid 1px #E6E6EB;">';
 		$r = $invoice->DocGetMaterialList($doc_id);
@@ -171,7 +171,7 @@ if ($doc_id) {
 
 
 	echo $_TEMPLATE->NewFrameBodyStart();
-	echo "<table class=\"bom-table strip\">";
+	echo "<table class=\"strip\">";
 	echo "<thead style=\"position:sticky;top:146px;background-color:#fff;outline:solid 1px #ccc\">";
 	echo "<tr><td>Cost Center</td><td>Document ID</td><td>Material Request</td><td>Title</td><td>Date</td><td>Items</td><td>Quotations</td><td width=\"100%\">Status</td></tr>";
 	echo "</thead>";

@@ -102,7 +102,7 @@ if (isset($_POST['shift'])) {
 	exit;
 }
 ?>
-<table class="bom-table">
+<table>
 	<thead>
 		<tr class="special">
 			<td>Add employee cards to print</td>
@@ -129,7 +129,7 @@ if (isset($_POST['shift'])) {
 </table>
 <br />
 <form action="<?php echo $fs(28)->dir; ?>" target="_blank" method="post">
-	<table class="bom-table hover">
+	<table class="hover">
 		<tbody>
 			<tr class="special">
 				<td>Employee</td>

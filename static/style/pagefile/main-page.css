@@ -44,7 +44,7 @@
 
 .dashboard>div.accounts-overview>div.tickets>span:hover {
 	/* 
-	outline: solid 2px var(--button-border);
+	outline: solid 2px var(--outline-border-color);
 	border-radius: 2px;
 	text-decoration: none;
  */
@@ -78,7 +78,7 @@
 	font-weight: bold;
 	font-size: 1.1em;
 	height: 20px;
-	font-family: Verdana, Noto, Galada, sans-serif;
+	font-family: Verdana, sans-serif;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -91,7 +91,7 @@
 	font-weight: normal;
 	font-style: normal;
 	font-size: 0.9em;
-	font-family: Verdana, Noto, Galada, sans-serif;
+	font-family: Verdana, sans-serif;
 	color: #999;
 	margin-top: 0px;
 }
@@ -261,8 +261,9 @@
 	margin-bottom: 10px;
 }
 
-.dashboard>div.links>div>a:hover {
-	outline: solid 2px var(--button-border);
+.dashboard>div.links>div>a:hover,
+.dashboard>div.links>div>a:focus {
+	outline: solid 2px var(--root-link-color);
 	border-radius: 2px;
 	text-decoration: none;
 }

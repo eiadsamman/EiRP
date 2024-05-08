@@ -143,7 +143,7 @@ function inner(Page $fs, int $id)
 	}
 }
 ?>
-<table class="bom-table hover" style="margin-top:15px;">
+<table class="hover" style="margin-top:15px;">
 	<thead>
 		<tr>
 			<td>#</td>

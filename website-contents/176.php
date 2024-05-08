@@ -71,7 +71,7 @@ if (isset($_POST['method'], $_POST['job-id']) && $_POST['method'] == "update-job
 	echo "<form action=\"{$fs()->dir}/\" method=\"post\" id=\"jQform\">
 				<input type=\"hidden\" name=\"method\" value=\"commit-upateds\" />
 				<input type=\"hidden\" name=\"job_id\" value=\"{$job_info['id']}\" />";
-	echo "<table class=\"bom-table hover\" style=\"margin-bottom:15px;\">
+	echo "<table class=\"hover\" style=\"margin-bottom:15px;\">
 			<thead><tr class=\"special\"><td colspan=\"6\"><span><span class=\"vs-add\"><span></span></span>Update Job Salary [{$job_info['section']}/{$job_info['name']}]</span></td></tr></thead>
 			
 			<tbody><tr><th>Method</th><th>Working Time</th><th>Salary</th><th>Variable</th><th>Allowance (Day)</th><th>Transportation (Day)</th></tr>";
@@ -156,7 +156,7 @@ if (isset($_POST['method'], $_POST['job-id']) && $_POST['method'] == "update-job
 	exit;
 }
 
-echo "<table class=\"bom-table hover\"><thead>";
+echo "<table class=\"hover\"><thead>";
 echo "<tr><td></td><td>ID</td><td>Job Name</td><td width=\"100%\">Job Section</td></tr>";
 echo "</thead><tbody>";
 $q = $app->db->query("SELECT lty_id,lty_name,lsc_name,lty_section FROM labour_type LEFT JOIN labour_section ON lsc_id=lty_section;");

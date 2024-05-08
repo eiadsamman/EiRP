@@ -292,15 +292,17 @@ export class PanelNavigator {
 			this.runtime.outputScreen.innerHTML = body;
 
 			this.runtime.outputScreen.querySelectorAll("[data-href]").forEach(el => {
-				el.addEventListener("click", (e) => {
-					e.preventDefault();
-					this.navigator.history_vars.url = el.dataset.href;
-					this.navigator.history_vars.title = pageConfig.apptitle + " - " + el.dataset.targettitle;
-					this.navigator.url = el.dataset.href;
-					this.loader(el.dataset.href, el.dataset.targettitle, { id: el.dataset.targetid });
-					this.navigator.pushState();
-					return false;
-				});
+				try {
+					el.addEventListener("click", (e) => {
+						e.preventDefault();
+						this.navigator.history_vars.url = el.dataset.href;
+						this.navigator.history_vars.title = pageConfig.apptitle + " - " + el.dataset.targettitle;
+						this.navigator.url = el.dataset.href;
+						this.loader(el.dataset.href, el.dataset.targettitle, { id: el.dataset.targetid });
+						this.navigator.pushState();
+						return false;
+					});
+				} catch (e) { }
 			});
 			this.entityModule.run();
 

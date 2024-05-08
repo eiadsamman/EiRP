@@ -43,7 +43,7 @@ if (isset($_POST['bulkinput'])) {
 
 ?>
 <form action="" method="POST">
-	<table class="bom-table">
+	<table>
 		<tbody>
 			<tr class="special">
 				<td colspan="8">Bulk materials insertion</td>
@@ -81,7 +81,7 @@ if (isset($_POST['bulkinput'])) {
 	</table>
 	<br />
 
-	<table class="bom-table">
+	<table>
 		<tbody>
 			<tr class="special">
 				<td>Output result</td>

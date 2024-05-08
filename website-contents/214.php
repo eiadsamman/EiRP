@@ -47,7 +47,7 @@ $SmartListObject = new SmartListObject($app);
 		echo $controller->criteria->getCurrentPage() . "\n";
 		echo "</pre>";
 
-		echo "<table class=\"bom-table\"><tbody>";
+		echo "<table><tbody>";
 
 		if ($count > 0) {
 			$mysqli_result = $controller->chunk(false);

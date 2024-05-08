@@ -17,7 +17,7 @@ $grem = new Gremium(true);
 $grem->header()->serve("<h1>" . $fs()->title . "</h1>");
 $grem->article()->open();
 ?>
-<table class="bom-table ">
+<table>
 	<thead>
 		<tr>
 			<td></td>

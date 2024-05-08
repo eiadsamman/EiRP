@@ -173,7 +173,7 @@ if(isset($_POST['serial'])){
 <div class="btn-set">
 	<span>Employee serial</span><input type="text" id="serial" style="width:150px" value="" />
 </div>
-<table class="bom-table" style="margin-top:15px;">
+<table style="margin-top:15px;">
 <tbody id="jQrate">
 </tbody>
 </table>

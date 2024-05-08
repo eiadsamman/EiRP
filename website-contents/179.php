@@ -47,7 +47,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	header("VENDOR_FN_SUM: " . ($sum < 0 ? "(" : "") . number_format(abs($sum), 2) . ($sum < 0 ? ")" : ""));
 	header("VENDOR_FN_CURRENT: " . $controller->criteria->getCurrentPage());
 
-	echo "<table class=\"bom-table statment-view hover strip\">";
+	echo "<table class=\"statment-view hover strip\">";
 	echo "<thead class=\"table-head\" style=\"top: calc(158px - var(--gremium-header-toggle));background-color:#fff;z-index:1\">";
 	echo "<tr>";
 	echo "<td>ID</td>";
@@ -188,7 +188,7 @@ unset($grem);
 		position: sticky;
 	}
 
-	table.bom-table.statment-view>tbody>tr>td:nth-child(1)>div {
+	table.statment-view>tbody>tr>td:nth-child(1)>div {
 		padding: 2px 5px;
 	}
 
@@ -285,68 +285,68 @@ unset($grem);
 	}
 
 	@media only screen and (max-width: 768px) {
-		table.bom-table.statment-view {
+		table.statment-view {
 			border: none;
 		}
 
-		table.bom-table.statment-view>thead,
-		table.bom-table.statment-view>tfoot {
+		table.statment-view>thead,
+		table.statment-view>tfoot {
 			display: none;
 		}
 
-		table.bom-table.statment-view>tbody {
+		table.statment-view>tbody {
 			display: block;
 		}
 
-		table.bom-table.statment-view>tbody>tr {
+		table.statment-view>tbody>tr {
 			border: solid 1px var(--bomtable-border-color);
 			display: flex;
 			flex-wrap: wrap;
 			margin: 5px 0px;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td {
+		table.statment-view>tbody>tr>td {
 			border: none;
 			padding: 8px 10px;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(1) {
+		table.statment-view>tbody>tr>td:nth-child(1) {
 			flex: 1;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(1)>div {
+		table.statment-view>tbody>tr>td:nth-child(1)>div {
 			display: inline-block;
 			padding: 0 10px 0 0;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(1)>div:last-child {
+		table.statment-view>tbody>tr>td:nth-child(1)>div:last-child {
 			display: block;
 			padding-top: 10px;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(2) {
+		table.statment-view>tbody>tr>td:nth-child(2) {
 			flex: 1;
 			flex-basis: 100%;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(3) {
+		table.statment-view>tbody>tr>td:nth-child(3) {
 			flex: 1;
 			display: none;
 		}
 
 
-		table.bom-table.statment-view>tbody>tr>td.value-number,
+		table.statment-view>tbody>tr>td.value-number,
 		td.value-number {
 			width: auto;
 			min-width: auto;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td.value-number:nth-child(4),
-		table.bom-table.statment-view>tbody>tr>td.value-number:nth-child(5) {
+		table.statment-view>tbody>tr>td.value-number:nth-child(4),
+		table.statment-view>tbody>tr>td.value-number:nth-child(5) {
 			flex: 1 1 50%;
 		}
 
-		table.bom-table.statment-view>tbody>tr>td:nth-child(6) {
+		table.statment-view>tbody>tr>td:nth-child(6) {
 			color: var(--root-font-lightcolor);
 			flex: 1;
 		}

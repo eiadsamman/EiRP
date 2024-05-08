@@ -96,7 +96,7 @@ if ($app->xhttp) {
 		unset($grem);
 	} else {
 		$grem = new Gremium\Gremium(true);
-		$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite></cite>
+		$grem->header()->serve("<h1>{$fs()->title}</h1><cite></cite>
 		<div class=\"btn-set\"><button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Receipt</button></div>");
 		if (sizeof($defines) > 0) {
 			$grem->menu()->sticky(false)->open();
@@ -183,7 +183,7 @@ if ($app->xhttp) {
 						<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 						<span id="js_upload_list" class="js_upload_list">
 							<div id="UploadDOMHandler">
-								<table class="bom-table hover">
+								<table class="hover">
 									<tbody>
 										<?php
 										$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
@@ -225,7 +225,7 @@ if ($app->xhttp) {
 		$grem->title()->serve("<span class=\"flex\">Session transactions</span>");
 		$grem->article()->open();
 		?>
-		<table class="bom-table hover">
+		<table class="hover">
 			<thead>
 				<tr>
 					<td>ID</td>
@@ -242,9 +242,10 @@ if ($app->xhttp) {
 		?>
 		<form id="appPopupAddBenif" style="display:none">
 			<?php
+			$r          = array(true, true, false, false);
 			$grem       = new Gremium\Gremium(false);
 			$grem->base = "0px";
-			$grem->header()->prev($fs()->dir)->serve(
+			$grem->header()->prev("href=\"{$fs()->dir}\"")->serve(
 				"<h1>Add new beneficiary</h1>" .
 				"<cite><button type=\"submit\" data-role=\"submit\"></button></cite>"
 			);

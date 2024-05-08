@@ -54,7 +54,7 @@ if (isset($_POST['display-child']) && isset($_POST['id'])) {
 	<button type=\"button\" id=\"jQupdateName\" data-id=\"{$record['hir_id']}\">Update</button><button data-id=\"{$record['hir_id']}\" id=\"jQdeleteBranch\">Delete</button>";
 	echo "</div><h1 style=\"margin:15px 15px;color:#666\">Job roles</h1>";
 	echo "<div class=\"btn-set\"><span>Add job role</span><input type=\"text\" id=\"jQjobRole\" data-id=\"{$record['hir_id']}\" style=\"min-width:305px\" data-slo=\"E002\" /></div>";
-	echo "<br /><table class=\"bom-table hover\"><thead><tr><td></td><td width=\"100%\">Job</td></tr></thead><tbody id=\"jQjobListTable\">";
+	echo "<br /><table class=\"hover\"><thead><tr><td></td><td width=\"100%\">Job</td></tr></thead><tbody id=\"jQjobListTable\">";
 	if ($r = $app->db->query("SELECT jhr_hir_id,jhr_job_id,lty_name,lsc_name 
 						FROM job_hierarchyroles 
 							JOIN 
@@ -77,7 +77,7 @@ if (isset($_POST['display-child']) && isset($_POST['id'])) {
 			<span>Add employee</span>
 			<input type=\"text\" id=\"jQemployee\" data-id=\"{$record['hir_id']}\" 
 				style=\"min-width:305px\" data-sloparam=\"{'hir':'" . $record['hir_id'] . "'}\" data-slo=\"HIR_LABOUR\" /></div>";
-	echo "<br /><table class=\"bom-table hover\"><thead><tr><td></td><td width=\"100%\">Employee</td><td></td></tr></thead><tbody id=\"jQempListTable\">";
+	echo "<br /><table class=\"hover\"><thead><tr><td></td><td width=\"100%\">Employee</td><td></td></tr></thead><tbody id=\"jQempListTable\">";
 	if ($r = $app->db->query("SELECT 
 	CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) AS empname,lbr_id,hlb_id,lbr_resigndate
 	FROM

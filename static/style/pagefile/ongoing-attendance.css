@@ -6,12 +6,12 @@ td.elapsed>span {
 
 
 
-.bom-table.local-force>thead {
+table.local-force>thead {
 	display: none;
 }
 
-.bom-table.local-force>tbody,
-.bom-table.local-force {
+table.local-force>tbody,
+table.local-force {
 	display: block;
 	border: none;
 }
@@ -27,24 +27,24 @@ td.employee-photo>div {
 	border: solid 1px rgba(125,125,125,0.2);
 }
 
-.bom-table.local-force>tbody>tr>td.elapsed {
+table.local-force>tbody>tr>td.elapsed {
 	color: #06c;
 }
 
-.bom-table.local-force>tbody>tr>td.elapsed>span {
+table.local-force>tbody>tr>td.elapsed>span {
 	display: inline-block;
 	color: #888;
 	padding-right: 24px;
 }
 
-.bom-table.local-force>tbody>tr {
+table.local-force>tbody>tr {
 	display: inline-block;
 	min-width: 100px;
 	margin: 8px;
 	padding: 20px;
 }
 
-.bom-table.local-force>tbody>tr>td {
+table.local-force>tbody>tr>td {
 	display: block;
 	border: none;
 	padding: 2px;
@@ -52,20 +52,20 @@ td.employee-photo>div {
 	text-align: center;
 }
 
-.bom-table.local-force>tbody>tr>td:nth-child(4) {
+table.local-force>tbody>tr>td:nth-child(4) {
 	padding-bottom: 16px;
 }
 
-.bom-table.local-force>tbody>tr>td:nth-child(1),
-.bom-table.local-force>tbody>tr>td:last-child {
+table.local-force>tbody>tr>td:nth-child(1),
+table.local-force>tbody>tr>td:last-child {
 	display: none;
 }
 
-.bom-table.local-force>tbody>tr>td.mediabond-ignore {
+table.local-force>tbody>tr>td.mediabond-ignore {
 	display: none;
 }
 
-.bom-table.local-force>tbody>tr>td.emplyee-name {
+table.local-force>tbody>tr>td.emplyee-name {
 	max-width: 130px;
 	width: 130px;
 	text-overflow: ellipsis;
@@ -79,12 +79,12 @@ td.employee-photo>div {
 		display: none;
 	}
 
-	.bom-table.local-mediabond-table>thead {
+	table.local-mediabond-table>thead {
 		display: none;
 	}
 
-	.bom-table.local-mediabond-table>tbody,
-	.bom-table.local-mediabond-table {
+	table.local-mediabond-table>tbody,
+	table.local-mediabond-table {
 		display: block;
 		border: none;
 	}
@@ -100,17 +100,17 @@ td.employee-photo>div {
 		border: none;
 	}
 
-	.bom-table.local-mediabond-table>tbody>tr>td.elapsed {
+	table.local-mediabond-table>tbody>tr>td.elapsed {
 		color: #06c;
 	}
 
-	.bom-table.local-mediabond-table>tbody>tr>td.elapsed>span {
+	table.local-mediabond-table>tbody>tr>td.elapsed>span {
 		display: inline-block;
 		color: #888;
 		padding-right: 24px;
 	}
 
-	.bom-table.local-mediabond-table>tbody>tr {
+	table.local-mediabond-table>tbody>tr {
 		display: inline-block;
 		min-width: 100px;
 		margin: 5px;
@@ -118,7 +118,7 @@ td.employee-photo>div {
 		
 	}
 
-	.bom-table.local-mediabond-table>tbody>tr>td {
+	table.local-mediabond-table>tbody>tr>td {
 		display: block;
 		border: none;
 		padding: 2px;
@@ -126,20 +126,20 @@ td.employee-photo>div {
 		text-align: center;
 	}
 
-	.bom-table.local-mediabond-table>tbody>tr>td:nth-child(4) {
+	table.local-mediabond-table>tbody>tr>td:nth-child(4) {
 		padding-bottom: 16px;
 	}
 
-	.bom-table.local-mediabond-table>tbody>tr>td:nth-child(1),
-	.bom-table.local-mediabond-table>tbody>tr>td:last-child {
+	table.local-mediabond-table>tbody>tr>td:nth-child(1),
+	table.local-mediabond-table>tbody>tr>td:last-child {
 		display: none;
 	}
 
-	.bom-table.local-mediabond-table>tbody>tr>td.mediabond-ignore {
+	table.local-mediabond-table>tbody>tr>td.mediabond-ignore {
 		display: none;
 	}
 
-	.bom-table.local-mediabond-table>tbody>tr>td.emplyee-name {
+	table.local-mediabond-table>tbody>tr>td.emplyee-name {
 		max-width: 130px;
 		width: 130px;
 		text-overflow: ellipsis;

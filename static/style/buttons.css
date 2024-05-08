@@ -1,3 +1,4 @@
+
 .btn-set {
 	flex-wrap: nowrap;
 	-webkit-display: flex;
@@ -123,14 +124,17 @@
 
 .btn-set>button:focus {
 	background-color: var(--button_focus-bgcolor);
-	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	/* -webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	box-shadow: 0 0 4px rgba(82, 168, 236, .7); */
+	outline-offset: 1px;
+	outline: solid 2px var(--outline-border-color);
 	z-index: 15;
 }
 
 .btn-set>button:active {
-	background-color: var(--button_active-bgcolor);
+	/* background-color: var(--button_active-bgcolor); */
+	transform: translateY(0.0625rem);
 }
 
 .btn-set>input[type=button] {
@@ -147,14 +151,17 @@
 
 .btn-set>input[type=button]:active {
 	background-color: var(--input-focus_border-color);
+	transform: translateY(0.0625rem);
 }
 
-.btn-set>input[type=button]:active,
 .btn-set>input[type=button]:focus {
 	border-color: var(--input-active_border-color);
-	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	/* -webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .7);
+	box-shadow: 0 0 4px rgba(82, 168, 236, .7); */
+	outline-offset: 1px;
+	z-index: 16;
+	outline: solid 2px var(--outline-border-color);
 }
 
 
@@ -353,7 +360,7 @@
 	display: inline-block;
 	position: absolute;
 	inset: 2px 2px 2px 2px;
-	outline: solid 2px var(--button-border);
+	outline: solid 2px var(--outline-border-color);
 	border-radius: 2px;
 }
 

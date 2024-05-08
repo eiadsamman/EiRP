@@ -96,7 +96,7 @@ if (isset($_POST['method'], $_POST['xtrd'], $_POST['xper']) && $_POST['method'] 
 <div class="btn-set">
 	<span>Permission</span><input type="text" id="jQperm" data-slo="C001" style="width:350px;" />
 </div>
-<table class="bom-table hover" style="margin-top:15px;">
+<table class="hover" style="margin-top:15px;">
 	<thead>
 		<tr>
 			<td>#</td>

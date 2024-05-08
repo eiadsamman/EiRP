@@ -114,7 +114,7 @@ if ($app->xhttp) {
 	$read      = $statement->read($id ?? 0);
 	if (!$read) {
 		$grem = new Gremium\Gremium();
-		$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>$id</cite>");//<ul><li></li></ul>
+		$grem->header()->serve("<h1>{$fs()->title}</h1><cite>$id</cite>");//<ul><li></li></ul>
 		$grem->menu()->serve("<span class=\"small-media-hide\">Requested document is not available</span>");
 		$grem->article()->serve(
 			<<<HTML
@@ -136,8 +136,9 @@ if ($app->xhttp) {
 
 	$SmartListObject = new SmartListObject($app);
 
-	$grem = new Gremium\Gremium(true);
-	$grem->header()->prev($fs(214)->dir)->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad(($read ? $read->id : ""), $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
+	$grem  = new Gremium\Gremium(true);
+	$preva = "data-targettitle=\"{$fs(104)->title}\" data-href=\"{$fs(104)->dir}\" data-targetid=\"{$read->id}\" href=\"{$fs(104)->dir}/?id={$read->id}\"";
+	$grem->header()->prev($preva)->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad(($read ? $read->id : ""), $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 
 	$grem->menu()->serve(
 		"<span class=\"small-media-hide flex\"></span>" .
@@ -247,7 +248,7 @@ if ($app->xhttp) {
 					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 					<span id="js_upload_list" class="js_upload_list">
 						<div id="UploadDOMHandler">
-							<table class="bom-table hover">
+							<table class="hover">
 								<tbody>
 									<?php
 									foreach ($read->attachments as $attachment) {

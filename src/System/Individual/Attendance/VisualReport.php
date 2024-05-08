@@ -526,7 +526,7 @@ class VisualReport
 			echo "<div class=\"btn-set\" 
 				style=\"position: sticky;top: calc(158px - var(--gremium-header-toggle));padding: 10px 0px;z-index: 2;
 				background-color: var(--root-ribbon-menu-background-color);margin:0px -1px\"><span class=\"flex\" style=\"color: var(--root-font-lightcolor);\">$month_name</span></div><div>";
-			echo "<table class=\"bom-table attendance\"><tbody>";
+			echo "<table class=\"attendance\"><tbody>";
 
 			foreach ($monthv as $datek => $datev) {
 				$workingdate = false;

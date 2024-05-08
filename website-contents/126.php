@@ -103,7 +103,7 @@ if (isset($_POST['list-absenece-report']) && isset($_POST['lbr'])) {
 	krsort($allowed_abs_year);
 
 
-	echo "<table class=\"bom-table hover\" style=\"margin-bottom:10px\"><thead>";
+	echo "<table class=\"hover\" style=\"margin-bottom:10px\"><thead>";
 
 	//Print absence type header
 	echo "<tr><td></td>";
@@ -147,7 +147,7 @@ if (isset($_POST['list-absenece-report']) && isset($_POST['lbr'])) {
 			lbr_abs_id DESC"
 	);
 	if ($r) {
-		echo "<table class=\"bom-table hover\"><thead><tr><td></td><td>ID</td><td>Start date</td><td>Period</td><td>Type</td><td width=\"100%\">Editor</td>
+		echo "<table class=\"hover\"><thead><tr><td></td><td>ID</td><td>Start date</td><td>Period</td><td>Type</td><td width=\"100%\">Editor</td>
 		" . ($fs()->permission->delete ? "<td></td>" : "") . "
 		</tr></thead><tbody>";
 		while ($row = $r->fetch_assoc()) {
@@ -319,9 +319,9 @@ if (isset($_POST['submit-new-absence-request'])) {
 	} else {
 		$json->output(false, "Failed to submit absence request, try again");
 	}
-	exit;
 }
 ?>
+
 <style>
 	.css_newform {
 		display: -webkit-box;
@@ -347,7 +347,7 @@ if (isset($_POST['submit-new-absence-request'])) {
 </style>
 <div class="css_newform">
 	<div>
-		<table class="bom-table">
+		<table>
 			<thead>
 				<tr>
 					<td colspan="2">New absence request</td>

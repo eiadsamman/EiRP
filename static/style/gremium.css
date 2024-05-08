@@ -1,4 +1,11 @@
-.gremium {
+
+
+/**PART
+ * Gremium 
+ */
+
+
+ .gremium {
 	--gremium-width: 1200px;
 	--gremium-header-toggle: 0px;
 	--gremium-header-height: 70px;
@@ -101,6 +108,12 @@
 	height: 1px;
 	margin-right: 10px;
 	outline: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 
@@ -117,15 +130,18 @@
 	transition: padding 0.2s ease;
 }
 
-.gremium>header>a.previous:hover::before,
 .gremium>header>a.previous:active::before,
-.gremium>header>a.previous:focus::before,
 .gremium>header>a.previous:target::before {
 	color: var(--root-link-color);
-	padding: 15px 13px 15px 7px
+	padding: 15px 13px 15px 7px;
 }
 
-
+.gremium>header>a.previous:focus::before,
+.gremium>header>a.previous:target::before {
+	outline: solid 2px var(--outline-border-color);
+	border-radius: 3px;
+	outline-offset: 2px;
+}
 
 
 
@@ -354,7 +370,7 @@
 	transition: color 0.2s ease-out;
 	text-rendering: geometricPrecision;
 	text-transform: uppercase;
-	font-size: 0.9em;
+	font-size: 0.8em;
 	position: relative;
 }
 
@@ -405,21 +421,6 @@
 }
 
 /* #endregion Articles */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @media only screen and (max-width: 768px) {

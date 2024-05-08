@@ -46,7 +46,7 @@
 	$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
 
 	$r = $app->db->query("SELECT up_user,up_id,up_size,UNIX_TIMESTAMP(up_date) AS up_date,up_mime,up_name FROM uploads WHERE up_rel={$statement_id} AND up_pagefile=188 AND up_active=1 AND up_deleted=0;");
-	echo "<table class=\"bom-table\"><thead><tr class=\"special\"><td width=\"100%\">Displaying uploads for statement {$statement_id}</td><td>(" . $r->num_rows . ") files</td></tr></thead><tbody>
+	echo "<table><thead><tr class=\"special\"><td width=\"100%\">Displaying uploads for statement {$statement_id}</td><td>(" . $r->num_rows . ") files</td></tr></thead><tbody>
 		<tr><td colspan=\"2\" class=\"uploads-image-list\">";
 
 	if ($r) {

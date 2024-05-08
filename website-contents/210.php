@@ -1,4 +1,4 @@
-<table class="bom-table">
+<table>
 <thead>
 	<tr>
 		<td>ID</td>

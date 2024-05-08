@@ -6,7 +6,7 @@ $invoice->BuildDocumentNumberPrefixList();
 $accounting = new Accounting();
 $_syscur = $accounting->system_default_currency();
 ?>
-<table class="bom-table">
+<table>
 	<thead>
 		<tr>
 			<td>ID</td>

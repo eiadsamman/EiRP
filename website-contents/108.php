@@ -35,7 +35,7 @@ if (isset($_GET['id'])) {
 		WHERE
 			lbr_id=" . ((int)$_GET['id']) . "" . ($app->user->info->id != 1 ? " AND usr_id != 1 " : "") . ";")) {
 		if ($row = $r->fetch_assoc()) {
-			echo "<table class=\"bom-table hover\" id=\"rowtable\"><tbody>";
+			echo "<table class=\"hover\" id=\"rowtable\"><tbody>";
 
 			echo "<tr><th class=\"special\">Name</th><td width=\"100%\">{$row['usr_firstname']} {$row['usr_lastname']}";
 			echo !is_null($row['lbr_resigndate']) ? " <span class=\"op-error\" style=\"color:#f03\"><span style=\"display:inline-block\"></span>Employee suspended on " . date("Y-m-d", $row['lbr_resigndate']) . "</span>" : "";

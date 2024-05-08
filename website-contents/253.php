@@ -227,7 +227,7 @@ if ($doc_id)
 		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Received Materials</span>");
 		echo $_TEMPLATE->NewFrameBodyStart();
 		echo '<form id="jQpostFormMaterials">';
-		echo '<table class="bom-table">
+		echo '<table>
 		<thead>
 			<tr>
 				<td style="width:100%;">Material</td>

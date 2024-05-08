@@ -5,7 +5,7 @@
 	<input name="esstore" type="text" class="text" placeholder="Storage Location (#)" style="width:100%;margin-top:5px;" value="2001" />
 
 	<h2 class="bom-idnt">Level 0: Complete Assembly</h2>
-	<table class="bom-table" data-counter="0" data-lvl="0">
+	<table data-counter="0" data-lvl="0">
 		<thead>
 			<tr>
 				<td>Level</td>
@@ -107,7 +107,7 @@
 				var output = "";
 				output += '<div data-lvl=' + lvl + ' style="position:relative"><h2 class="bom-idnt">Level <span>' + lvl + '</span>: ' + description + '</h2>';
 				output += '<span>' + more + '</span>';
-				output += '<table class="bom-table bom-els" data-counter="0" data-lvl="' + lvl + '">';
+				output += '<table class="bom-els" data-counter="0" data-lvl="' + lvl + '">';
 				output += '<thead><tr><td>Order</td><td width="100%">BEI Material</td><td>Quantity</td><td>Reference</td><td class="op-add noselect"><span></span></td></tr></thead>';
 				output += '<tbody></tbody>';
 				output += '</table></div>';

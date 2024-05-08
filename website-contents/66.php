@@ -8,7 +8,7 @@ if (isset($_POST['method']) && $_POST['method'] == "updatepermissions") {
 	}
 	exit;
 }
-?><table class="bom-table hover">
+?><table class="hover">
 	<thead>
 		<tr>
 			<td>Username</td>

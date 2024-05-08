@@ -71,7 +71,7 @@ $grem->article()->open();
 echo <<<HTML
 <form id="js-form">
 	<input type="hidden" name="request" value="update" />
-	<table class="bom-table form-table">
+	<table class="form-table">
 		<thead style="display:none;">
 			<tr>
 				<td>Sell</td>
