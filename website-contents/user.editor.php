@@ -25,6 +25,8 @@ function check_date($input)
 
 function validateInput($input, $type, $default = null)
 {
+	if ($input == null)
+		return false;
 	if ($type == "string") {
 		return isset($input) && trim($input) != "" ? "'" . addslashes(trim($input)) . "'" : $default;
 	} elseif ($type == "int") {
@@ -113,25 +115,25 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 	$arroutput = array(
 		"result" => true,
 		"source" => array(
-			"firstname" => (validateInput($_POST['firstname'], "string", false) ? "'" . addslashes(trim($_POST['firstname'])) . "'" : false),
-			"lastname" => (validateInput($_POST['lastname'], "string") ? "'" . addslashes(trim($_POST['lastname'])) . "'" : null),
-			"nationality" => (validateInput($_POST['nationality'][1], "int") ? (int) $_POST['nationality'][1] : null),
+			"firstname" => (validateInput($_POST['firstname'] ?? null, "string", false) ? "'" . addslashes(trim($_POST['firstname'])) . "'" : false),
+			"lastname" => (validateInput($_POST['lastname'] ?? null, "string") ? "'" . addslashes(trim($_POST['lastname'])) . "'" : null),
+			"nationality" => (validateInput($_POST['nationality'][1] ?? null, "int") ? (int) $_POST['nationality'][1] : null),
 			"social_number" => (isset($_POST['social_number']) && fnConvOnlyNumbers($_POST['social_number']) != "" ? fnConvOnlyNumbers($_POST['social_number']) : null),
-			"social_id_image" => (validateInput($_POST['social_id_image'], "array") ? $_POST['social_id_image'] : null),
-			"perosnal_image" => (validateInput($_POST['perosnal_image'], "array") ? $_POST['perosnal_image'] : null),
-			"gender" => (validateInput($_POST['gender'][1], "int") ? (int) $_POST['gender'][1] : null),
-			"birthdate" => (validateInput($_POST['birthdate'][1], "date") ? "'" . $_POST['birthdate'][1] . "'" : null),
-			"phone_list" => (validateInput($_POST['phone_list'], "string") != "" ? "'" . fnConvOnlyNumbers(trim($_POST['phone_list'])) . "'" : null),
-			"residence" => (validateInput($_POST['residence'][1], "int") ? (int) $_POST['residence'][1] : null),
-			"transportation" => (validateInput($_POST['transportation'][1], "int") ? (int) $_POST['transportation'][1] : null),
-			"edu_cert_image" => (validateInput($_POST['edu_cert_image'], "array") ? $_POST['edu_cert_image'] : null),
-			"company" => (validateInput($_POST['company'][1], "int") ? (int) $_POST['company'][1] : false),
-			"regdate" => (validateInput($_POST['regdate'][1], "date") ? "'" . $_POST['regdate'][1] . "'" : false),
-			"resdate" => (validateInput($_POST['resdate'][1], "date") ? "'" . $_POST['resdate'][1] . "'" : null),
-			"jobtitle" => (validateInput($_POST['jobtitle'][1], "int") ? (int) $_POST['jobtitle'][1] : false),
-			"workingtimes" => (validateInput($_POST['workingtimes'][1], "int") ? (int) $_POST['workingtimes'][1] : null),
-			"payment" => (validateInput($_POST['payment'][1], "int") ? (int) $_POST['payment'][1] : null),
-			"shift" => (validateInput($_POST['shift'][1], "int") ? (int) $_POST['shift'][1] : null),
+			"social_id_image" => (validateInput($_POST['social_id_image'] ?? null, "array") ? $_POST['social_id_image'] : null),
+			"perosnal_image" => (validateInput($_POST['perosnal_image'] ?? null, "array") ? $_POST['perosnal_image'] : null),
+			"gender" => (validateInput($_POST['gender'][1] ?? null, "int") ? (int) $_POST['gender'][1] : null),
+			"birthdate" => (validateInput($_POST['birthdate'][1] ?? null, "date") ? "'" . $_POST['birthdate'][1] . "'" : null),
+			"phone_list" => (validateInput($_POST['phone_list'] ?? null, "string") != "" ? "'" . fnConvOnlyNumbers(trim($_POST['phone_list'])) . "'" : null),
+			"residence" => (validateInput($_POST['residence'][1] ?? null, "int") ? (int) $_POST['residence'][1] : null),
+			"transportation" => (validateInput($_POST['transportation'][1] ?? null, "int") ? (int) $_POST['transportation'][1] : null),
+			"edu_cert_image" => (validateInput($_POST['edu_cert_image'] ?? null, "array") ? $_POST['edu_cert_image'] : null),
+			"company" => (validateInput($_POST['company'][1] ?? null, "int") ? (int) $_POST['company'][1] : false),
+			"regdate" => (validateInput($_POST['regdate'][1] ?? null, "date") ? "'" . $_POST['regdate'][1] . "'" : false),
+			"resdate" => (validateInput($_POST['resdate'][1] ?? null, "date") ? "'" . $_POST['resdate'][1] . "'" : null),
+			"jobtitle" => (validateInput($_POST['jobtitle'][1] ?? null, "int") ? (int) $_POST['jobtitle'][1] : false),
+			"workingtimes" => (validateInput($_POST['workingtimes'][1] ?? null, "int") ? (int) $_POST['workingtimes'][1] : null),
+			"payment" => (validateInput($_POST['payment'][1] ?? null, "int") ? (int) $_POST['payment'][1] : null),
+			"shift" => (validateInput($_POST['shift'][1] ?? null, "int") ? (int) $_POST['shift'][1] : null),
 		)
 	);
 

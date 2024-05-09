@@ -88,11 +88,14 @@
 
 .appHtmlPopup>form [data-role="submit"] {
 	background: none;
-	margin-top: -5px;
 	border: none;
 	margin-right: 10px;
-	padding: 10px 15px;
-	cursor: pointer;
+	padding: 5px 15px;
+	cursor: default;
+}
+
+.appHtmlPopup>form [data-role="submit"]:active {
+	transform: translateY(0.08rem);
 }
 
 .appHtmlPopup>form [data-role="submit"]:active,
@@ -107,12 +110,10 @@
 	font-family: icomoon2;
 	content: "\f00c";
 	color: var(--root-font-lightcolor);
-	font-size: 1.4em;
+	font-size: 1.2em;
 	transition: color var(--transition-speed) ease;
 }
 
-.appHtmlPopup>form [data-role="submit"]:active::before,
-.appHtmlPopup>form [data-role="submit"]:focus::before,
 .appHtmlPopup>form [data-role="submit"]:hover::before {
 	color: var(--root-link-color);
 }

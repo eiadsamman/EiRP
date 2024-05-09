@@ -6,8 +6,8 @@ use System\Template\Gremium;
 if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchrecord") {
 	$employeeID = (int) $_POST['employeeID'];
 	if (
-		$r = $app->db->query("
-		SELECT
+		$r = $app->db->query(
+			"SELECT
 			usr_firstname,usr_lastname,
 			usr_id,usr_username,usr_phone_list,
 			gnd_name,
@@ -35,25 +35,31 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
 				LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
 		WHERE
-			lbr_id=$employeeID AND usr_id!=1;")
+			lbr_id=$employeeID AND usr_id != 1;"
+		)
 	) {
 		if ($row = $r->fetch_assoc()) {
 			header("HTTP_X_RESPONSE: SUCCESS");
 			header("HTTP_X_PID: " . $row['usr_id']);
 			$arr_socialids = array();
-			$q_socialid_uploads = $app->db->query("SELECT up_id,up_name,up_size,DATE_FORMAT(up_date,'%d %M, %Y') as up_date,up_pagefile FROM uploads WHERE up_rel=$employeeID AND up_deleted=0");
+
+
+			$q_socialid_uploads = $app->db->query("SELECT up_id,up_name,up_size,DATE_FORMAT(up_date,'%d %M, %Y') as up_date,up_pagefile FROM uploads WHERE up_rel = $employeeID AND up_deleted=0");
 			while ($row_socialid_uploads = $q_socialid_uploads->fetch_assoc()) {
 				if (!isset($arr_socialids[$row_socialid_uploads['up_pagefile']])) {
 					$arr_socialids[$row_socialid_uploads['up_pagefile']] = array();
 				}
 				$arr_socialids[$row_socialid_uploads['up_pagefile']][$row_socialid_uploads['up_id']] = array($row_socialid_uploads['up_name'], $row_socialid_uploads['up_size'], $row_socialid_uploads['up_date'], $row_socialid_uploads['up_id']);
 			}
-			$socialidphotos = "";
+
+			$socialidphotos = "-";
 			if (isset($arr_socialids[\System\Attachment\Type::HrID->value])) {
-				foreach ($arr_socialids[\System\Attachment\Type::HrID->value] as $k_socialid => $v_socialid) {
-					$socialidphotos .= "<a href=\"download/?id={$k_socialid}\" class=\"jq_frame_image\" >view</a>";
+				$socialidphotos = "";
+				foreach ($arr_socialids[\System\Attachment\Type::HrID->value] as $record) {
+					$socialidphotos .= "<a title=\"{$record[0]}\" href=\"{$fs(187)->dir}/?id={$record[3]}&pr=v\"><img src=\"{$fs(187)->dir}/?id={$record[3]}&pr=t\" /></a>";
 				}
 			}
+
 
 			$grem = new Gremium\Gremium(true);
 			$grem->header();
@@ -61,86 +67,124 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			if ($fs(227)->permission->read) {
 				$grem->title()->serve("<span class=\"flex\">Personal Information:</span>");
 				$grem->article()->open();
-				echo '
-					<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:10px;">
-					<tr>
-					<td style="width:33%;min-width:200px" align="center">';
 				$img = "user.jpg";
 				if (
 					isset($arr_socialids[\System\Attachment\Type::HrPerson->value]) && is_array($arr_socialids[\System\Attachment\Type::HrPerson->value])
 					&& sizeof($arr_socialids[\System\Attachment\Type::HrPerson->value]) > 0
 				) {
 					$imgid = reset($arr_socialids[\System\Attachment\Type::HrPerson->value])[3];
-					$img = "download/?id={$imgid}&pr=t";
+					$img   = "download/?id={$imgid}&pr=t";
 					unset($imgid);
 				}
-				echo "<div style=\"background-image:url('$img');\" id=\"personal_photo\"></div>";
 
-				echo '</td>
-					<td style="width:100%">
-						
-					<div class="template-gridLayout">
-							<div><span>Name</span><div>' . $row['usr_firstname'] . ' ' . $row['usr_lastname'] . '</div></div>
+				foreach (['usr_birthdate', 'usr_phone_list', 'ldn_name', 'trans_name', 'lbr_socialnumber'] as $k) {
+					$row[$k] = $row[$k] ?? "N/A";
+				}
+
+				echo <<<HTML
+					<div class="info-headersec">
+						<div class="profile-picture"><div style="background-image:url($img);"></div></div>
+						<div style="min-width: 260px;">
+							<div class="form">
+								<label>
+								<h1>Name</h1>
+									<div>{$row['usr_firstname']} {$row['usr_lastname']}</div>
+								</label>
+							</div>
+							<div class="form">
+								<label>
+									<h1>ID</h1>
+									<div>{$row['usr_id']}</div>
+								</label>
+								<label>
+									<h1>Gender</h1>
+									<div>{$row['gnd_name']}</div>
+								</label>
+								<label>
+									<h1>Nationality</h1>
+									<div>{$row['cntry_name']}</div>
+								</label>
+							</div>
+							<div class="form">
+								<label>
+									<h1>Birthdate</h1>
+									<div>{$row['usr_birthdate']}</div>
+								</label>
+								<label>
+									<h1>Registration date</h1>
+									<div>{$row['lbr_registerdate']}</div>
+								</label>
+								<label>
+									<h1>Social ID</h1>
+									<div>{$row['lbr_socialnumber']}</div>
+								</label>
+							</div>
+
+							<div class="form">
+								<label>
+									<h1>Contact infomration</h1>
+									<div>{$row['usr_phone_list']}</div>
+								</label>
+								<label>
+									<h1>Residence</h1>
+									<div>{$row['ldn_name']}</div>
+								</label>
+								<label>
+									<h1>Transportation</h1>
+									<div>{$row['trans_name']}</div>
+								</label>
+							</div>
+							
 						</div>
-
-					
-						<div class="template-gridLayout">
-							<div><span>ID</span><div>' . $row['usr_id'] . '</div></div>
-						</div>
-						
-						<div class="template-gridLayout">
-							<div><span>Nationality</span><div>' . $row['cntry_name'] . '</div></div>
-						</div>
-						
-
-						<div class="template-gridLayout">
-							<div><span>Birthdate</span><div>' . (is_null($row['usr_birthdate']) ? "-" : $row['usr_birthdate']) . '</div></div>
-						</div>
-
-					</tr>
-					</table>
-
-					<div class="template-gridLayout">
-						<div><span>Gender</span><div>' . ($row['gnd_name'] ?? "-") . '</div></div>
-						<div><span>Contact infomration</span><div>' . ($row['usr_phone_list'] ?? "-") . '</div></div>
-						<div><span>Residence</span><div>' . ($row['ldn_name'] ?? "-") . '</div></div>
-						<div><div></div></div>
 					</div>
-					
-					<div class="template-gridLayout">
-						<div><span>Transportation</span><div>' . ($row['trans_name'] ?? "-") . '</div></div>
-						<div><span>Social ID Number</span><div>' . ($row['lbr_socialnumber'] ?? "-") . '</div></div>
-						<div><span></span><div></div></div>
+					<div>
+						<div class="form">
+							<label>
+								<h1>References</h1>
+								<div style="padding:5px 10px;" class="attachments-view" id="attachementsList">{$socialidphotos}</div>
+								
+							</label>
+						</div>
 					</div>
 
-					<div class="template-gridLayout">
-						<div><span>References</span><div>' . $socialidphotos . '</div></div>
-					</div>';
+				HTML;
+
 				$grem->getLast()->close();
 			}
 
 			if ($fs(228)->permission->read) {
 				$grem->title()->serve("<span class=\"flex\">Job Information:</span>");
 				$grem->article()->open();
-				echo '
-				<div class="template-gridLayout">
-					<div><span>Registration date</span><div>' . $row['lbr_registerdate'] . '</div></div>
-					<div><span>Resignation date</span><div>' . $row['lbr_resigndate'] . '</div></div>
-					<div><div></div></div>
-					
-				</div>
-				<div class="template-gridLayout">
-					<div><span>Job title</span><div>' . $row['lsc_name'] . ", " . $row['lty_name'] . '</div></div>
-					<div><span>Payment method</span><div>' . $row['lbr_mth_name'] . '</div></div>
-					<div><span></span><div></div></div>
-				</div>
-				
-				<div class="template-gridLayout">
-					<div><span>Working shift</span><div>' . $row['lsf_name'] . '</div></div>
-					<div><span>Working Time</span><div>' . $row['lwt_name'] . '</div></div>
-					
-					<div><span></span><div></div></div>
-				</div>';
+				$row['lbr_resigndate'] = "2025-05-05";
+				$resignationMessage    = empty($row['lbr_resigndate']) ? "" : "<div class=\"form\"><label><h1>Resignation state</h1><div>Resigned on {$row['lbr_resigndate']}</div></label></div>";
+
+				echo <<<HTML
+					<div style="min-width: 260px;">
+						{$resignationMessage}
+						<div class="form">
+							<label>
+								<h1>Job title</h1>
+								<div>{$row['lsc_name']} {$row['lty_name']}</div>
+							</label>
+							<label>
+								<h1>Payment method</h1>
+								<div>{$row['lbr_mth_name']}</div>
+							</label>
+							<label></label>
+						</div>
+						<div class="form">
+							<label>
+								<h1>Working shift</h1>
+								<div>{$row['lsf_name']}</div>
+							</label>
+							<label>
+								<h1>Working Time</h1>
+								<div>{$row['lwt_name']}</div>
+							</label>
+							<label></label>
+						</div>
+					</div>
+				HTML;
 				$grem->getLast()->close();
 			}
 
@@ -148,11 +192,28 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			if ($fs(229)->permission->read) {
 				$grem->title()->serve("<span class=\"flex\">Salary Details:</span>");
 				$grem->article()->open();
-				echo '<div class="template-gridLayout">
-					<div><span>Salary</span><div>' . (is_null($row['lbr_fixedsalary']) ? number_format((float) $row['lbr_typ_sal_basic_salary'], 2, ".", ",") : number_format((float) $row['lbr_fixedsalary'], 2, ".", ",")) . '</div></div>
-					<div><span>Variable</span><div>' . (is_null($row['lbr_variable']) ? number_format((float) $row['lbr_typ_sal_variable'], 2, ".", ",") : number_format((float) $row['lbr_variable'], 2, ".", ",")) . '</div></div>
-					<div><span>Allowance</span><div>' . (is_null($row['lbr_allowance']) ? number_format((float) $row['lbr_typ_sal_allowance'], 2, ".", ",") : number_format((float) $row['lbr_allowance'], 2, ".", ",")) . '</div></div>
-				</div>';
+
+				$sd_1 = (is_null($row['lbr_fixedsalary']) ? number_format((float) $row['lbr_typ_sal_basic_salary'], 2, ".", ",") : number_format((float) $row['lbr_fixedsalary'], 2, ".", ",")) . " " . $app->currency->shortname;
+				$sd_2 = (is_null($row['lbr_variable']) ? number_format((float) $row['lbr_typ_sal_variable'], 2, ".", ",") : number_format((float) $row['lbr_variable'], 2, ".", ",")) . " " . $app->currency->shortname;
+				$sd_3 = (is_null($row['lbr_allowance']) ? number_format((float) $row['lbr_typ_sal_allowance'], 2, ".", ",") : number_format((float) $row['lbr_allowance'], 2, ".", ",")) . " " . $app->currency->shortname;
+				echo <<<HTML
+					<div style="min-width: 260px;">
+						<div class="form">
+							<label>
+								<h1>Salary</h1>
+								<div>{$sd_1}</div>
+							</label>
+							<label>
+								<h1>Variable</h1>
+								<div>{$sd_2}</div>
+							</label>
+							<label>
+								<h1>Allowance</h1>
+								<div>{$sd_3}<div>
+							</label>
+						</div>
+					</div>
+				HTML;
 				$grem->getLast()->close();
 			}
 			unset($grem);
@@ -184,15 +245,57 @@ $SmartListObject = new System\SmartListObject($app);
 ?>
 
 <style type="text/css">
-	#personal_photo {
+	.attachments-view>a {
 		display: inline-block;
+		border: solid 2px transparent;
+		border-radius: 4px;
+		padding: 0;
+		width: 104px;
+		height: 104px;
+	}
+
+	.attachments-view>a:hover {
+		border-color: var(--button-border);
+		text-decoration: none;
+		z-index: 2;
+	}
+
+	.attachments-view>a>img {
+		margin: 0;
+		border-radius: 2px;
+		max-width: 100px;
+		max-height: 100px;
+		position: absolute;
+	}
+
+	div.info-headersec {
+		display: flex;
+		flex-wrap: wrap;
+		column-gap: 30px;
+	}
+
+	div.info-headersec>div {
+		flex: 3;
+	}
+
+	div.info-headersec>div.profile-picture {
+		flex: 1;
+		margin-bottom: 20px;
+		text-align: center;
+	}
+
+	div.info-headersec>div.profile-picture>div {
+		display: inline-block;
+		width: 100%;
+		margin: 10px;
 		border: solid 0px #ccc;
 		width: 180px;
 		height: 180px;
-		background-size: 100% auto;
+		background-size:  auto 100%;
 		background-repeat: no-repeat;
-		background-position: 100% 50%;
-		border-radius: 10px;
+		background-position: 50% 50%;
+		border-radius: 50% 50%;
+		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
 	}
 </style>
 <a id="jQtriggerlink" style="display: none;" href="" target="_blank"></a>
@@ -212,8 +315,11 @@ $grem->getLast()->close();
 
 <div id="jQoutput" style="position:relative;"></div>
 
-<script>
+<script type="module">
+	import { Popup } from './static/javascript/modules/gui/popup.js';
 	$(document).ready(function (e) {
+
+
 		let counter = 0;
 		const linkTrigger = $("#jQtriggerlink"),
 			buttonEdit = $("#jQedit"),
@@ -222,11 +328,19 @@ $grem->getLast()->close();
 			spanIDTitle = $("#jQdomPID");
 		let queryResponse = false;
 
-		$("#jQoutput").on("click", ".jq_frame_image", function (e) {
-			e.preventDefault();
-			var viewsrc = $(this).attr("data-href");
-			popup.content("<img style=\"max-width:100%;width:100%;margin-bottom:15px;\" src=\"" + viewsrc + "\" />").show();
-		});
+		function addEvents() {
+			document.getElementById("attachementsList")?.childNodes.forEach(elm => {
+				elm.addEventListener("click", (e) => {
+					e.preventDefault();
+					let popAtt = new Popup();
+					popAtt.addEventListener("close", function (p) {
+						this.destroy();
+					});
+					popAtt.contentForm({ title: "Attachement preview" }, "<div style=\"text-align: center;\"><img style=\"max-width:600px;width:100%\" src=\"" + elm.href + "\" /></div>");
+					popAtt.show();
+				});
+			});
+		}
 
 		let clear = function () {
 			divOutput.html("");
@@ -251,12 +365,6 @@ $grem->getLast()->close();
 			"limit": 10
 		});
 
-		$(".jq_frame_image").on("click", function (e) {
-			e.preventDefault();
-			var path = $(this).attr("data-href");
-			popup.content("<img src=\"" + path + "\" />").show();
-			return false;
-		});
 		var fn_fetchfile = function (_pushState = true) {
 			overlay.show();
 			$.ajax({
@@ -281,6 +389,7 @@ $grem->getLast()->close();
 						spanIDTitle.html(responsepid);
 					}
 				}
+				addEvents()
 			}).fail(function (a, b, c) {
 				messagessys.failure(b + " - " + c);
 			}).always(function () {
@@ -302,7 +411,7 @@ $grem->getLast()->close();
 		<?php
 		if (isset($_GET['id'])) {
 			$_GET['id'] = (int) $_GET['id'];
-			$r = $app->db->query("SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id={$_GET['id']};");
+			$r          = $app->db->query("SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id={$_GET['id']};");
 			if ($r && $row = $r->fetch_assoc()) {
 				echo 'SLO_employeeID.set("' . $_GET['id'] . '","' . stripcslashes(trim($row['user_name'])) . '");';
 				echo 'history.replaceState({\'method\':\'view\', \'id\': ' . (int) $_GET['id'] . ', \'name\': \'' . $row['user_name'] . '\'}, "' . $fs(182)->title . '", "' . $fs(182)->dir . '/?id=' . (int) $_GET['id'] . '");';

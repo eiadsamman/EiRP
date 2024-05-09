@@ -842,14 +842,19 @@ span.vs-remove {
 	background-color: var(--bomtable-hover-color);
 }
 
-.split-view>div.panel>div a.panel-item:not(.place-holder):hover,
-.split-view>div.panel>div a.panel-item:not(.place-holder):active,
-.split-view>div.panel>div a.panel-item:not(.place-holder):focus {
-	outline: solid 2px var(--outline-border-color);
-	outline-offset: 2px;
-	border-radius: 2px;
+.split-view>div.panel>div a.panel-item:not(.place-holder):hover{
 	text-decoration: none;
 	z-index: 2;
+	background-color: red;
+	background-color: var(--bomtable-hover-color);
+}
+
+.split-view>div.panel>div a.panel-item:not(.place-holder):focus {
+	outline: solid 2px var(--root-link-color);
+	outline-offset: -1px;
+	border-radius: 0px;
+	text-decoration: none;
+	z-index: 3;
 }
 
 .split-view>div.panel>div a.panel-item:last-child {

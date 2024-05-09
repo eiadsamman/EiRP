@@ -1,6 +1,4 @@
 <?php
-use System\Finance\AccountStatement;
-use System\SmartListObject;
 use System\Template\Gremium;
 use System\Template\Gremium\Status;
 
@@ -42,10 +40,15 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	}
 
 
+
 	header("VENDOR_FN_COUNT: " . $count);
 	header("VENDOR_FN_PAGES: " . $pages);
 	header("VENDOR_FN_SUM: " . ($sum < 0 ? "(" : "") . number_format(abs($sum), 2) . ($sum < 0 ? ")" : ""));
 	header("VENDOR_FN_CURRENT: " . $controller->criteria->getCurrentPage());
+
+
+
+	echo "\n\n\n\n";
 
 	echo "<table class=\"statment-view hover strip\">";
 	echo "<thead class=\"table-head\" style=\"top: calc(158px - var(--gremium-header-toggle));background-color:#fff;z-index:1\">";
@@ -59,6 +62,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	echo "</tr>";
 	echo "</thead>";
 	echo "<tbody>";
+
 	if ($count > 0) {
 		$mysqli_result = $controller->chunk();
 		if ($mysqli_result->num_rows > 0) {
@@ -68,7 +72,8 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 				echo "<td>";
 				echo "<div><a href=\"{$fs(104)->dir}/?id={$row['acm_id']}\" dir=\"_blank\">{$row['acm_id']}</a></div>";
 				echo "<div>{$row['acm_ctime']}</div>";
-				echo "<div>" . ($row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") . "{$row['acm_beneficial']}</div>";
+				echo "<div class=\"in-value value-number " . ($row['atm_value'] <= 0 ? " negative" : "positive") . "\">" . number_format(abs($row['atm_value']), 2) . "</div>";
+				echo "<div>" . (!empty($row['comp_id']) && $row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") . "{$row['acm_beneficial']}</div>";
 				echo "</td>";
 
 				echo "<td class=\"value-comment\">
@@ -177,7 +182,7 @@ echo <<<HTML
 HTML;
 $legend->close();
 
-$article = $grem->article()->options(array("nobg"))->open();
+$article = $grem->article()->open();
 echo "<div id=\"js-container-output\" style=\"padding-bottom:50px\"></div>";
 $article->close();
 
@@ -202,29 +207,33 @@ unset($grem);
 		border-bottom: double 3px var(--bomtable-border-color);
 	}
 
-	td.value-comment {
+	table.statment-view>tbody>tr>td:nth-child(1)>div.in-value {
+		display: none;
+	}
+
+	.statment-view>tbody>tr>td.value-comment {
 		width: 100%;
 		line-height: 1.3em;
 	}
 
-	td.value-comment>span {
+	.statment-view>tbody>tr>td.value-comment>span {
 		display: block;
 		padding: 5px 0px;
 		color: rgb(125, 125, 125);
 	}
 
-	td.value-comment>div {
+	.statment-view>tbody>tr>td.value-comment>div {
 		position: relative;
 		padding: 5px 0px;
 	}
 
-	td.value-comment>div>span {
+	.statment-view>tbody>tr>td.value-comment>div>span {
 		display: block;
 		width: 0px;
 		padding-bottom: 10px;
 	}
 
-	td.value-comment>div>div {
+	.statment-view>tbody>tr>td.value-comment>div>div {
 		position: absolute;
 		padding-bottom: 2px;
 		right: 0px;
@@ -234,56 +243,46 @@ unset($grem);
 		overflow-y: hidden;
 	}
 
-
-	td.value-number {
-		text-align: right;
-		min-width: 100px;
-		width: 150px;
-	}
-
-	td.value-number.final {
-		/* font-weight: bold; */
-	}
-
-	td.value-number.final.negative {}
-
-	td.value-number.final::after,
-	td.value-number.final::before {
-		display: inline-block;
-		width: 8px;
+	.statment-view>tbody>tr>td.value-number.final {
 		font-weight: normal;
-	}
-
-	td.value-number.final.positive::after {
-		content: " ";
-	}
-
-	td.value-number.final.negative::after {
-		content: ")";
-		text-align: right;
-	}
-
-	td.value-number.final.negative::before {
-		content: "(";
-		text-align: left;
-	}
-
-	span.value-hightlight {
-		color: crimson;
 	}
 
 	.statment-view>td.blank {
 		display: none;
 	}
 
-	@media only screen and (max-width: 800px) {
-		.table-head {
-			position: relative;
-			top: 0 !important
-		}
-
+	.value-number {
+		text-align: right;
+		min-width: 100px;
+		width: 150px;
 	}
 
+	.value-number.positive {
+		color: darkseagreen;
+	}
+
+	.value-number.negative {
+		color: tomato;
+	}
+
+	.value-number.negative::after,
+	.value-number.negative::before {
+		display: inline-block;
+	}
+
+	.value-number.negative::after {
+		content: ")";
+	}
+
+	.value-number.negative::before {
+		content: "(";
+	}
+
+	span.value-hightlight {
+		color: crimson;
+	}
+</style>
+<style>
 	@media only screen and (max-width: 768px) {
 		table.statment-view {
 			border: none;
@@ -299,7 +298,7 @@ unset($grem);
 		}
 
 		table.statment-view>tbody>tr {
-			border: solid 1px var(--bomtable-border-color);
+			border-bottom: solid 1px var(--bomtable-border-color);
 			display: flex;
 			flex-wrap: wrap;
 			margin: 5px 0px;
@@ -311,17 +310,28 @@ unset($grem);
 		}
 
 		table.statment-view>tbody>tr>td:nth-child(1) {
+			display: flex;
+			flex-flow: wrap;
 			flex: 1;
 		}
 
 		table.statment-view>tbody>tr>td:nth-child(1)>div {
+			padding-left: 0px;
+			padding-right: 10px;
+		}
+
+		table.statment-view>tbody>tr>td:nth-child(1)>div:nth-child(2) {
+			flex: 1
+		}
+
+		table.statment-view>tbody>tr>td:nth-child(1)>div.in-value {
+			text-align: right;
 			display: inline-block;
-			padding: 0 10px 0 0;
 		}
 
 		table.statment-view>tbody>tr>td:nth-child(1)>div:last-child {
-			display: block;
-			padding-top: 10px;
+			flex-basis: 100%;
+			width: 100%;
 		}
 
 		table.statment-view>tbody>tr>td:nth-child(2) {
@@ -334,24 +344,30 @@ unset($grem);
 			display: none;
 		}
 
-
 		table.statment-view>tbody>tr>td.value-number,
 		td.value-number {
 			width: auto;
 			min-width: auto;
 		}
 
-		table.statment-view>tbody>tr>td.value-number:nth-child(4),
-		table.statment-view>tbody>tr>td.value-number:nth-child(5) {
-			flex: 1 1 50%;
+		table.statment-view>tbody>tr>td:nth-child(4),
+		table.statment-view>tbody>tr>td:nth-child(5) {
+			display: none;
 		}
 
-		table.statment-view>tbody>tr>td:nth-child(6) {
+		table.statment-view>tbody>tr>td.final:nth-child(6) {
 			color: var(--root-font-lightcolor);
 			flex: 1;
+			font-weight: normal;
+			padding-right: 20px;
 		}
+	}
 
-
+	@media only screen and (max-width: 800px) {
+		.table-head {
+			position: relative;
+			top: 0 !important
+		}
 	}
 
 	@media only screen and (max-width: 624px) {

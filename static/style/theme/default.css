@@ -56,7 +56,7 @@
 	--placeholder-bgcolor: hsl(0, 0%, 94%);
 	--placeholder-sweeping-bgcolor: white;
 
-	--outline-border-color: goldenrod;
+	--outline-border-color: gold;
 	/* var(--root-ribbon-menu-itemhover-background-color); */
 
 }
@@ -118,7 +118,7 @@
 	--placeholder-bgcolor: #202940;
 	--placeholder-sweeping-bgcolor: hsl(223, 25%, 25%);
 
-	--outline-border-color: goldenrod;
+	--outline-border-color: gold;
 
 
 }

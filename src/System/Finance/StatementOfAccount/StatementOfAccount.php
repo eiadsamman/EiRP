@@ -25,7 +25,7 @@ class StatementOfAccount
 		 */
 
 		$sort_direction = ($sort_ascending ? "ASC" : "DESC");
-		$query = "SELECT * 
+		$query          = "SELECT * 
 		FROM ( 
 			SELECT 
 			 _master.atm_value, 
@@ -36,7 +36,7 @@ class StatementOfAccount
 			,up_count
 			FROM 
 				acc_temp _master
-				INNER JOIN 
+				LEFT JOIN 
 					(SELECT 
 						atm_id, atm_main, comp_name, comp_id, prt_name,prt_id, cur_id,cur_shortname
 					FROM 
@@ -60,8 +60,7 @@ class StatementOfAccount
 					) statements_view
 					 ON _master.atm_main = statements_view.acm_id
 			WHERE
-				1 
-				AND _master.atm_account_id = {$this->app->user->account->id}
+				_master.atm_account_id = {$this->app->user->account->id}
 				AND statements_view.acm_rejected = 0
 				AND ({$this->criteria->where()})
 			ORDER BY
@@ -69,7 +68,7 @@ class StatementOfAccount
 			) AS _pagination
 		LIMIT {$this->criteria->limit()}
 		;";
-		//$this->app->errorHandler->customError((string) (microtime(true) - $s));
+		// $this->app->errorHandler->customError($query);
 		$stmt = $this->app->db->prepare($query);
 		$stmt->execute();
 		return $stmt->get_result();
@@ -77,7 +76,7 @@ class StatementOfAccount
 
 	public function complete(): \Generator
 	{
-		$stmt = $this->app->db->prepare(
+		$stmt = (
 			"SELECT 
 				_master.atm_value, 
 				acc_main.acm_id, acm_ctime, acc_main.acm_beneficial, acc_main.acm_comments,
@@ -95,15 +94,14 @@ class StatementOfAccount
 				JOIN
 					acc_main ON _master.atm_main = acm_id
 			WHERE
-				1 
-				AND _master.atm_account_id = {$this->app->user->account->id}
+				_master.atm_account_id = {$this->app->user->account->id}
 				AND acc_main.acm_rejected = 0
 				AND ({$this->criteria->where()})
 			ORDER BY
 				acc_main.acm_ctime ASC, acc_main.acm_id ASC
 			;"
 		);
-
+		$stmt = $this->app->db->prepare($stmt);
 		$stmt->execute();
 		$result = $stmt->get_result();
 		if ($result->num_rows > 0) {
@@ -118,9 +116,9 @@ class StatementOfAccount
 	{
 		if (!$this->app->user->account) {
 			$count = 0;
-			$sum = 0;
+			$sum   = 0;
 		}
-		$stmt = $this->app->db->prepare(
+		$stmt = (
 			"SELECT 
 				COUNT(atm_value) AS fn_count, SUM(atm_value) AS fn_sum
 			FROM 
@@ -134,12 +132,15 @@ class StatementOfAccount
 			ORDER BY
 				acc_main.acm_ctime ASC, acc_main.acm_id ASC
 			"
+
 		);
+		//$this->app->errorHandler->customError($stmt);
+		$stmt = $this->app->db->prepare($stmt);
 		if ($stmt->execute()) {
 			$result = $stmt->get_result();
 			if ($row = $result->fetch_assoc()) {
 				$count = $row['fn_count'];
-				$sum = $row['fn_sum'];
+				$sum   = $row['fn_sum'];
 			}
 		}
 	}

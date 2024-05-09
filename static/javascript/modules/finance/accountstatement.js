@@ -24,7 +24,7 @@ export default class AccountStatmenet {
 			onselect: function (e) {
 				instance.navigator.setProperty("page", e.key);
 				instance.navigator.pushState();
-				xhttp_request();
+				instance.xhttp_request();
 			}
 		});
 
@@ -45,7 +45,7 @@ export default class AccountStatmenet {
 			this.slo_page_current.set(this.navigator.getProperty("page"), this.navigator.getProperty("page"));
 			this.slo_date_start.set(this.navigator.getProperty("from"), this.navigator.getProperty("from"));
 			this.slo_date_end.set(this.navigator.getProperty("to"), instance.navigator.getProperty("to"));
-			xhttp_request(true);
+			this.xhttp_request(true);
 		});
 
 		this.registerEvents();

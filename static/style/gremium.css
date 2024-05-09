@@ -1,11 +1,9 @@
-
-
 /**PART
  * Gremium 
  */
 
 
- .gremium {
+.gremium {
 	--gremium-width: 1200px;
 	--gremium-header-toggle: 0px;
 	--gremium-header-height: 70px;
@@ -108,6 +106,7 @@
 	height: 1px;
 	margin-right: 10px;
 	outline: none;
+	cursor: default;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -117,33 +116,41 @@
 }
 
 
+.gremium>header>a.previous {
+	width: 50px;
+	height: 1px;
+	margin-right: 0px;
+}
+
 .gremium>header>a.previous::before {
 	position: absolute;
-	top: -14px;
 	display: inline-block;
 	font-family: "icomoon";
 	text-align: center;
 	color: var(--root-ribbon-font-color);
 	content: "\e618";
-	padding: 15px 7px 15px 13px;
+	padding: 0 7px 0 13px;
 	-webkit-transition: padding 0.2s ease;
 	transition: padding 0.2s ease;
 }
 
+
 .gremium>header>a.previous:active::before,
-.gremium>header>a.previous:target::before {
+.gremium>header>a.previous:hover::before {
 	color: var(--root-link-color);
-	padding: 15px 13px 15px 7px;
+	padding: 0 13px 0 7px;
 }
 
-.gremium>header>a.previous:focus::before,
-.gremium>header>a.previous:target::before {
+.gremium>header>a.previous:active::before,
+.gremium>header>a.previous:focus::before {
+	border-radius: 2px;
 	outline: solid 2px var(--outline-border-color);
-	border-radius: 3px;
-	outline-offset: 2px;
+	outline-offset: 1px;
 }
 
-
+.gremium>header>a.previous:active::before {
+	transform: translateY(0.08rem);
+}
 
 
 
@@ -372,6 +379,10 @@
 	text-transform: uppercase;
 	font-size: 0.8em;
 	position: relative;
+}
+
+.gremium>article div.form>label>div {
+	min-width: 120px;
 }
 
 

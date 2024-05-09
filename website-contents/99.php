@@ -7,13 +7,7 @@ use System\Template\Gremium;
 
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
-if (0) {
-	echo "<pre>";
-	$res = $app->db->query("SELECT * FROM acc_main WHERE acm_id = 7157");
-	$row = $res->fetch_assoc();
-	print_r($row);
-	exit;
-}
+ini_set('display_errors', 'On');
 
 function replaceARABIC($str)
 {
@@ -26,15 +20,15 @@ function replaceARABIC($str)
 
 
 
-$ajax_debug = false;
-$debug_level = 3;
+$ajax_debug                 = false;
+$debug_level                = 3;
 $accounts_comparition_style = " AND ";
-$accounting = new Accounting($app);
-$__systemdefaultcurrency = $accounting->system_default_currency();
-$currency_list = $accounting->get_currency_list();
-$default_perpage = 25;
-$arr_overview = array("total" => 0, "sum" => 0);
-$pre_load_variables = true;
+$accounting                 = new Accounting($app);
+$__systemdefaultcurrency    = $accounting->system_default_currency();
+$currency_list              = $accounting->get_currency_list();
+$default_perpage            = 25;
+$arr_overview               = array("total" => 0, "sum" => 0);
+$pre_load_variables         = true;
 
 if ($ajax_debug) {
 	ini_set('xdebug.var_display_max_depth', 5);
@@ -47,7 +41,7 @@ if ($ajax_debug) {
 /*
 Retreive user setting (per_page)
 */
-$perpage = new RecordsPerPage($app);
+$perpage     = new RecordsPerPage($app);
 $perpage_val = $perpage->get($fs()->id);
 
 /*
@@ -207,11 +201,11 @@ function Group_list_limit_active($source, $array)
 */
 function id_maping(&$app, &$array, $array_exclusions, $map)
 {
-	$output = array();
-	$serialized = "";
-	$smart = "";
+	$output                 = array();
+	$serialized             = "";
+	$smart                  = "";
 	$array_exclusions_index = array();
-	$arr_map = array(
+	$arr_map                = array(
 		"account" => "
 			SELECT 
 				prt_id AS _id,
@@ -235,7 +229,7 @@ function id_maping(&$app, &$array, $array_exclusions, $map)
 				$array_exclusions_index[$v] = false;
 			}
 			$serialized .= $smart . ((int) $v);
-			$smart = ",";
+			$smart      = ",";
 		}
 
 		$r = $app->db->query("{$arr_map[$map]} $serialized) ORDER BY _name");
@@ -261,7 +255,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'load_query') {
 		"message" => "",
 	);
 	if (!isset($_POST['query_id'])) {
-		$arr_output['result'] = false;
+		$arr_output['result']  = false;
 		$arr_output['message'] = "Query ID is missing";
 		echo json_encode($arr_output);
 		exit;
@@ -271,7 +265,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'load_query') {
 	if ($r) {
 		if ($row = $r->fetch_assoc()) {
 			$arr_output['result'] = true;
-			$output = unserialize(base64_decode($row['usrset_value']));
+			$output               = unserialize(base64_decode($row['usrset_value']));
 
 			//check output
 			$arr_schematic = array("creditor_account", "debitor_account", "category_family", "category");
@@ -301,7 +295,7 @@ if (isset($_POST['save_query'])) {
 		"message" => ""
 	);
 	if (!isset($_POST['save_name']) || trim($_POST['save_name']) == "") {
-		$arr_output['result'] = false;
+		$arr_output['result']  = false;
 		$arr_output['message'] = "Query title is required";
 		echo json_encode($arr_output);
 		exit;
@@ -309,7 +303,7 @@ if (isset($_POST['save_query'])) {
 	$prepare = $_POST['save_query'];
 
 	$_POST['save_name'] = str_replace(array("'", '"', "\\", "(", ")"), "-", $_POST['save_name']);
-	$r = $app->db->query('INSERT INTO 
+	$r                  = $app->db->query('INSERT INTO 
 		user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) VALUES (' . $app->user->info->id . ',' . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . ',\'' . $_POST["save_name"] . '\',\'' .
 		$prepare . '\',FROM_UNIXTIME(' . time() . ')) ON DUPLICATE KEY UPDATE
 		usrset_value=\'' . $prepare . '\',
@@ -318,11 +312,11 @@ if (isset($_POST['save_query'])) {
 
 
 	if ($r) {
-		$arr_output['result'] = true;
+		$arr_output['result']  = true;
 		$arr_output['message'] = "Query save successfully";
 		echo json_encode($arr_output);
 	} else {
-		$arr_output['result'] = false;
+		$arr_output['result']  = false;
 		$arr_output['message'] = "Query saving failed";
 		echo json_encode($arr_output);
 	}
@@ -346,7 +340,7 @@ if (isset($_POST['method']) && $_POST['method'] == "delete_query") {
 /*Filter query v2.16.1231.1300*/
 if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 	$executingtime = microtime(true);
-	include("99.prepare.php");
+	include ("99.prepare.php");
 	/*Prefetch filter (count, sum)*/
 	$fetch_report =
 		"SELECT
@@ -409,10 +403,11 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 		. ($arr_listfixed['month-reference'] != null ? " AND (YEAR(acm_month)=YEAR('{$arr_listfixed['month-reference']}') AND MONTH(acm_month)=MONTH('{$arr_listfixed['month-reference']}') ) " : "")
 		. ";";
 
+
 	if ($r = $app->db->query($fetch_report)) {
 		while ($row = $r->fetch_assoc()) {
 			$arr_overview['total'] = $row['zcount'];
-			$arr_overview['sum'] = $row['zsum'];
+			$arr_overview['sum']   = $row['zsum'];
 		}
 	}
 	if ($offset > (ceil($arr_overview['total'] / $perpage_val))) {
@@ -499,9 +494,10 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 			LIMIT
 				" . ($offset * $perpage_val) . ",$perpage_val;";
 
-		$ftime = microtime(true);
-		$r = $app->db->query($query);
+		//$app->errorHandler->customError($query);
 
+		$ftime = microtime(true);
+		$r     = $app->db->query($query);
 
 		if (!($ajax_debug)) {
 			echo "<div><div id=\"___ajax_sum\">{";
@@ -517,15 +513,8 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 			echo "}</div><div id=\"___ajax_tbody\">";
 		}
 
-		if ($ajax_debug && $debug_level == 1) {
-			//echo $query;
-			echo "Y>>" . $query;
-			exit;
-		}
-
 		if ($r) {
 			$array_output = array();
-
 			echo "<table class=\"hover screenCols\"><thead>
 				<tr>
 					<td>ID \ Issuer</td>
@@ -533,7 +522,6 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					<td>Creditor \ Debitor</td>
 					<td>Beneficial</td>
 					<td width=\"50%\" colspan=\"2\">Statement</td>
-					
 					" . ($fs()->permission->edit ? "<td style=\"width:10px\"></td>" : "") . "
 					<td style=\"width:10px\"></td>
 					<td style=\"width:10px\"></td>
@@ -542,50 +530,52 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 			<tbody>";
 
 			while ($row = $r->fetch_assoc()) {
-				$array_output[$row['acm_id']] = array("info" => array(), "details" => array());
-				$array_output[$row['acm_id']]["info"]["id"] = $row['acm_id'];
-				$array_output[$row['acm_id']]["info"]["rejected"] = $row['acm_rejected'];
+				$array_output[$row['acm_id']]                             = array("info" => array(), "details" => array());
+				$array_output[$row['acm_id']]["info"]["id"]               = $row['acm_id'];
+				$array_output[$row['acm_id']]["info"]["rejected"]         = $row['acm_rejected'];
 				$array_output[$row['acm_id']]["info"]["transaction_type"] = $row['acm_type'];
-				$array_output[$row['acm_id']]["info"]["type"] = $row['acm_type'];
-				$array_output[$row['acm_id']]["info"]["id"] = $row['acm_id'];
-				$array_output[$row['acm_id']]["info"]["date"] = $row['acm_ctime'];
-				$array_output[$row['acm_id']]["info"]["month"] = $row['acm_month'];
-				$array_output[$row['acm_id']]["info"]["beneficial"] = $row['acm_beneficial'];
-				$array_output[$row['acm_id']]["info"]["usr_id"] = $row['acm_usr_id'];
-				$array_output[$row['acm_id']]["info"]["reference"] = $row['acm_reference'];
-				$array_output[$row['acm_id']]["info"]["category_group"] = $row['accgrp_name'];
-				$array_output[$row['acm_id']]["info"]["category_name"] = $row['acccat_name'];
-				$array_output[$row['acm_id']]["info"]["editor"] = $row['_editor_name'];
-				$array_output[$row['acm_id']]["info"]["comments"] = $row['acm_comments'];
-				$array_output[$row['acm_id']]["info"]["rel"] = $row['acm_rel'];
+				$array_output[$row['acm_id']]["info"]["type"]             = $row['acm_type'];
+				$array_output[$row['acm_id']]["info"]["id"]               = $row['acm_id'];
+				$array_output[$row['acm_id']]["info"]["date"]             = $row['acm_ctime'];
+				$array_output[$row['acm_id']]["info"]["month"]            = $row['acm_month'];
+				$array_output[$row['acm_id']]["info"]["beneficial"]       = $row['acm_beneficial'];
+				$array_output[$row['acm_id']]["info"]["usr_id"]           = $row['acm_usr_id'];
+				$array_output[$row['acm_id']]["info"]["reference"]        = $row['acm_reference'];
+				$array_output[$row['acm_id']]["info"]["category_group"]   = $row['accgrp_name'];
+				$array_output[$row['acm_id']]["info"]["category_name"]    = $row['acccat_name'];
+				$array_output[$row['acm_id']]["info"]["editor"]           = $row['_editor_name'];
+				$array_output[$row['acm_id']]["info"]["comments"]         = $row['acm_comments'];
+				$array_output[$row['acm_id']]["info"]["rel"]              = $row['acm_rel'];
 
 
-				$sub_q = $app->db->query("
-					SELECT 
-						atm_value,atm_main,prt_name,cur_shortname,atm_dir,
-						comp_name,ptp_name
+				$sub_q = (
+					"SELECT 
+						atm_value,atm_main,prt_name,cur_shortname,atm_dir,comp_name,ptp_name
 					FROM
-						`acc_accounts` 
-							JOIN acc_temp ON prt_id=atm_account_id
+						acc_accounts
+							JOIN acc_temp ON prt_id = atm_account_id
 							JOIN currencies ON cur_id = prt_currency 
 							JOIN companies ON comp_id = prt_company_id 
-							JOIN `acc_accounttype` ON ptp_id=prt_type
-					WHERE atm_main={$row['acm_id']};");
+							JOIN `acc_accounttype` ON ptp_id = prt_type
+					WHERE atm_main = {$row['acm_id']};"
+				);
 
+				$sub_q=$app->db->query($sub_q);
 				if ($sub_q) {
 					while ($row_q = $sub_q->fetch_assoc()) {
+
 						if ($row_q['atm_dir'] == 0) {
 							//creditor
-							$array_output[$row['acm_id']]["details"]['creditor'] = array();
+							$array_output[$row['acm_id']]["details"]['creditor']              = array();
 							$array_output[$row['acm_id']]["details"]['creditor']['raw_value'] = number_format(abs($row_q['atm_value']), 2, ".", ",");
-							$array_output[$row['acm_id']]["details"]['creditor']['value'] = ($row_q['atm_value'] < 0 ? "(" . number_format(abs($row_q['atm_value']), 2, ".", ",") . ")" : number_format($row_q['atm_value'], 2, ".", ","));
-							$array_output[$row['acm_id']]["details"]['creditor']['account'] = $row_q['comp_name'] . ": " . $row_q['ptp_name'] . ": " . $row_q['prt_name'];
-							$array_output[$row['acm_id']]["details"]['creditor']['currency'] = $row_q['cur_shortname'];
+							$array_output[$row['acm_id']]["details"]['creditor']['value']     = ($row_q['atm_value'] < 0 ? "(" . number_format(abs($row_q['atm_value']), 2, ".", ",") . ")" : number_format($row_q['atm_value'], 2, ".", ","));
+							$array_output[$row['acm_id']]["details"]['creditor']['account']   = $row_q['comp_name'] . ": " . $row_q['ptp_name'] . ": " . $row_q['prt_name'];
+							$array_output[$row['acm_id']]["details"]['creditor']['currency']  = $row_q['cur_shortname'];
 						} elseif ($row_q['atm_dir'] == 1) {
 							//debitor
-							$array_output[$row['acm_id']]["details"]['debitor'] = array();
-							$array_output[$row['acm_id']]["details"]['debitor']['value'] = ($row_q['atm_value'] < 0 ? "(" . number_format(abs($row_q['atm_value']), 2, ".", ",") . ")" : number_format($row_q['atm_value'], 2, ".", ","));
-							$array_output[$row['acm_id']]["details"]['debitor']['account'] = $row_q['comp_name'] . ": " . $row_q['ptp_name'] . ": " . $row_q['prt_name'];
+							$array_output[$row['acm_id']]["details"]['debitor']             = array();
+							$array_output[$row['acm_id']]["details"]['debitor']['value']    = ($row_q['atm_value'] < 0 ? "(" . number_format(abs($row_q['atm_value']), 2, ".", ",") . ")" : number_format($row_q['atm_value'], 2, ".", ","));
+							$array_output[$row['acm_id']]["details"]['debitor']['account']  = $row_q['comp_name'] . ": " . $row_q['ptp_name'] . ": " . $row_q['prt_name'];
 							$array_output[$row['acm_id']]["details"]['debitor']['currency'] = $row_q['cur_shortname'];
 						}
 					}
@@ -597,13 +587,6 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				if (isset($main['details']['creditor']['currency'], $main['details']['debitor']['currency'])) {
 					echo "<tr" . ($main['info']['rejected'] == 1 ? " class=\"tran-deleted\"" : "") . ">";
 					echo "<td>" . $main['info']['id'] . (isset($main['info']['rel']) && !is_null($main['info']['rel']) ? " @<a href=\"\">{$main['info']['rel']}</a>" : "") . "<br />{$main['info']['date']}<br />{$main['info']['editor']}</td>";
-
-
-
-
-					if ($main['details']['creditor']['currency'] == $main['details']['debitor']['currency']) {
-					} else {
-					}
 
 					echo "<td align=\"right\">
 						<div class=\"payment_type crd\">{$main['details']['creditor']['value']}</div>
@@ -621,10 +604,11 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					echo "<td class=\"detailed_comments\">" . ($arr_comments["identical"] ? "<span>" . nl2br($main['info']['comments']) . "</span>" : "") . nl2br($arr_comments["new"] . ($arr_comments["identical"] ? "..." : "")) . "</td>";
 
 
-					$r_uploads = $app->db->query("
-							SELECT up_id,up_name,up_size,up_date,up_user,up_mime
+					$r_uploads   = $app->db->query(
+						"SELECT up_id,up_name,up_size,up_date,up_user,up_mime
 							FROM uploads JOIN pagefile_permissions ON pfp_trd_id=up_pagefile AND pfp_per_id = {$app->user->info->permissions}
-							WHERE up_rel={$main['info']['id']} AND up_active=1 AND pfp_value>0 AND up_pagefile=" . TRANSACTION_ATTACHMENT_PAGEFILE . ";");
+							WHERE up_rel={$main['info']['id']} AND up_active=1 AND pfp_value>0 AND up_pagefile=" . TRANSACTION_ATTACHMENT_PAGEFILE . ";"
+					);
 					$upload_list = array();
 					while ($row_uploads = $r_uploads->fetch_assoc()) {
 						$upload_list[] = $row_uploads;
@@ -643,7 +627,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					}
 					echo "</td>";
 
-					echo $fs()->permission->edit ? "<td class=\"op-edit\"><a href=\"{$fs(101)->dir}/?id={$main['info']['id']}\"></a></td>" : "";
+					echo $fs()->permission->edit ? "<td class=\"op-edit\"><a target=\"_blank\" href=\"{$fs(101)->dir}/?id={$main['info']['id']}\"></a></td>" : "";
 					echo "<td class=\"op-print\" data-id=\"{$main['info']['id']}\"><span></span></td>"; //xxxx
 					echo "<td class=\"op-display\" ><a href=\"{$fs(104)->dir}/?id={$main['info']['id']}\"></a></td>";
 					echo "</tr>";
@@ -654,16 +638,16 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 	} else {
 		/*Output: Group statements*/
 		$q_group = "  ";
-		$smart = "";
+		$smart   = "";
 		foreach ($arr_group as $k => $v) {
 			if ($v['active']) {
 				$q_group .= $smart . $v['field'];
-				$smart = ",";
+				$smart   = ",";
 			}
 		}
 
-		$group_query = "
-			SELECT
+		$group_query =
+			"SELECT
 				" . (isset($arr_group['year']) && $arr_group['year']['active'] ? " YEAR(acm_ctime) AS group_year, " : "") . "
 				" . (isset($arr_group['month']) && $arr_group['month']['active'] ? " MONTH(acm_ctime) AS group_month, DATE_FORMAT(acm_ctime,'%M') AS group_month_name, " : "") . "
 				" . (isset($arr_group['category_family']) && $arr_group['category_family']['active'] ? " accgrp_id,accgrp_name, " : "") . "
@@ -762,17 +746,17 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 		}
 
 		if ($r) {
-			$arr_output = array();
+			$arr_output     = array();
 			$arr_output_raw = array();
-			$max_depth = sizeof($arr_group);
+			$max_depth      = sizeof($arr_group);
 
 			/*Build the output array (multi-dimensional) based on the group by array (single dimension)*/
 			while ($row = $r->fetch_assoc()) {
-				$arr_keys = array();
+				$arr_keys        = array();
 				$arr_keysofnames = array();
 				foreach ($arr_group as $group_k => $group_v) {
 					$arr_keys[] = $row[$group_v['field']];
-					$name = array();
+					$name       = array();
 					if ($group_v['cols'] == "Type") {
 						foreach ($group_v['reference'] as $ref_v) {
 							$name[] = (\System\Finance\Transaction\Nature::tryFrom((int) $row[$ref_v])->toString());
@@ -784,7 +768,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					}
 					$arr_output = insert_using_keys($arr_output, array_merge($arr_keys, ["name"]), $name);
 				}
-				$arr_output = insert_using_keys($arr_output, array_merge($arr_keys, array("val")), $row['group_sum']);
+				$arr_output     = insert_using_keys($arr_output, array_merge($arr_keys, array("val")), $row['group_sum']);
 				$arr_output_raw = insert_using_keys($arr_output_raw, $arr_keys, $row['group_sum']);
 			}
 			$r->free_result();
@@ -812,7 +796,7 @@ if ($app->xhttp) {
 
 
 $SmartListObject = new SmartListObject($app);
-$grem = new Gremium\Gremium();
+$grem            = new Gremium\Gremium();
 
 $grem->header()->serve("<h1>Ledger Report</h1>");
 unset($grem);
@@ -1296,6 +1280,7 @@ unset($grem);
 				type: "POST",
 				data: formSerialized + "&method=filter",
 			}).done(function (data) {
+				console.log(data);
 				<?php echo ($ajax_debug) ? "console.clear();console.log(data);return;" : ""; ?>
 
 				var $data = $(data);
@@ -1402,47 +1387,8 @@ unset($grem);
 			fetch();
 		});
 
-		$("#jQoutput").on('click', ".op-edit > a", function (e) {
-			e.preventDefault();
-			var $this = $(this);
 
-			$("#jQtracer").find(" > div.overlay").css({
-				'display': 'block'
-			});
-			var $ajax = $.ajax({
-				type: "POST",
-				url: $this.attr("href") + "&ajax",
-				data: ""
-			}).done(function (data) {
-				popup.content(data);
-				popup.show();
-			}).always(function () {
-				$("#jQtracer").find(" > div.overlay").css({
-					'display': 'none'
-				});
-			});
-			return false;
-		});
-		$("#jQoutput").on('click', ".op-display > a", function (e) {
-			e.preventDefault();
-			var $this = $(this);
-			$("#jQtracer").find(" > div.overlay").css({
-				'display': 'block'
-			});
-			var $ajax = $.ajax({
-				type: "POST",
-				url: $this.attr("href") + "&ajax",
-				data: ""
-			}).done(function (data) {
-				popup.content(data);
-				popup.show();
-			}).always(function () {
-				$("#jQtracer").find(" > div.overlay").css({
-					'display': 'none'
-				});
-			});
-			return false;
-		});
+		
 
 		$("#jQoutput").on('click', ".op-print", function (e) {
 			const id = $(this).attr('data-id');
