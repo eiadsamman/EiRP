@@ -125,7 +125,8 @@ export class Navigator {
 	}
 
 }
-const App = new Application();
 
+
+const App = new Application();
 export default App;
 

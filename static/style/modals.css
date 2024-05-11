@@ -203,6 +203,7 @@ dialog.appHtmlDialog::-webkit-scrollbar-thumb {
 	pointer-events: all;
 	cursor: default;
 	color: #fff;
+	border-radius: 5px;
 }
 
 .messagesys>div>span,
@@ -210,6 +211,7 @@ dialog.appHtmlDialog::-webkit-scrollbar-thumb {
 	display: inline-block;
 	vertical-align: top;
 	white-space: normal;
+	
 }
 
 .messagesys>div>span:before {
@@ -224,7 +226,7 @@ dialog.appHtmlDialog::-webkit-scrollbar-thumb {
 }
 
 .messagesys>div.success {
-	background-color: rgb(60, 180, 60)
+	background-color: rgba(40, 200, 90, 0.75);
 }
 
 .messagesys>div.failure>span:before {
@@ -232,7 +234,7 @@ dialog.appHtmlDialog::-webkit-scrollbar-thumb {
 }
 
 .messagesys>div.failure {
-	background-color: rgb(220, 60, 60);
+	background-color: rgba(255, 20, 20, 0.75);
 }
 
 

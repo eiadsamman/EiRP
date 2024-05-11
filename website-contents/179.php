@@ -46,10 +46,6 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	header("VENDOR_FN_SUM: " . ($sum < 0 ? "(" : "") . number_format(abs($sum), 2) . ($sum < 0 ? ")" : ""));
 	header("VENDOR_FN_CURRENT: " . $controller->criteria->getCurrentPage());
 
-
-
-	echo "\n\n\n\n";
-
 	echo "<table class=\"statment-view hover strip\">";
 	echo "<thead class=\"table-head\" style=\"top: calc(158px - var(--gremium-header-toggle));background-color:#fff;z-index:1\">";
 	echo "<tr>";

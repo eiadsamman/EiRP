@@ -155,7 +155,6 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			if ($fs(228)->permission->read) {
 				$grem->title()->serve("<span class=\"flex\">Job Information:</span>");
 				$grem->article()->open();
-				$row['lbr_resigndate'] = "2025-05-05";
 				$resignationMessage    = empty($row['lbr_resigndate']) ? "" : "<div class=\"form\"><label><h1>Resignation state</h1><div>Resigned on {$row['lbr_resigndate']}</div></label></div>";
 
 				echo <<<HTML
