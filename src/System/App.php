@@ -209,14 +209,14 @@ class App
 		$this->base_permission = 2;
 		return true;
 		/* $lowsetlevel = $this->db->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
-			  if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
-				  $this->base_permission = (int) $rowlowsetlevel['per_id'];
-				  return true;
-			  } else {
-				  $this->errorHandler->customError("Failed to fetch system base permission");
-				  $this->responseStatus->NotFound->response();
-			  }
-			  return false; */
+						  if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
+							  $this->base_permission = (int) $rowlowsetlevel['per_id'];
+							  return true;
+						  } else {
+							  $this->errorHandler->customError("Failed to fetch system base permission");
+							  $this->responseStatus->NotFound->response();
+						  }
+						  return false; */
 	}
 	public function buildPrefixList(): bool
 	{
@@ -283,32 +283,26 @@ class App
 		return false;
 	}
 
-	public function userInit(): int
+	public function sessionOpen(): int
 	{
 		/* Session handler */
 		if (isset($_SESSION["sur"])) {
-			$stmt = $this->db->prepare(
-				"SELECT usr_id
-				FROM  users JOIN users_sessions ON usrses_usr_id=usr_id 
-				WHERE usrses_session_id=?;"
-			);
-			if ($stmt) {
-				$stmt->bind_param("s", $_SESSION["sur"]);
-				try {
-					if ($stmt->execute() && $r = $stmt->get_result()) {
-						if ($r && $row = $r->fetch_assoc()) {
-							$this->user->load($row['usr_id']);
-							$this->user->logged = true;
-						}
-						$stmt->close();
+			$stmt = $this->db->prepare("SELECT usr_id FROM  users JOIN users_sessions ON usrses_usr_id = usr_id WHERE usrses_session_id = ?;");
+			$stmt->bind_param("s", $_SESSION["sur"]);
+			try {
+				if ($stmt->execute() && $r = $stmt->get_result()) {
+					if ($r && $row = $r->fetch_assoc()) {
+						$this->user->load($row['usr_id']);
+						$this->user->logged = true;
 					}
-				} catch (\mysqli_sql_exception $e) {
-					$this->errorHandler->logError($e);
-					return 9;
-				} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
-					$this->errorHandler->logError($e);
-					return 4;
+					$stmt->close();
 				}
+			} catch (\mysqli_sql_exception $e) {
+				$this->errorHandler->logError($e);
+				return 9;
+			} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
+				$this->errorHandler->logError($e);
+				return 4;
 			}
 		}
 

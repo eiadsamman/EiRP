@@ -322,6 +322,7 @@
 	width: 100%;
 	margin-right: 0px;
 	margin-left: 0px;
+	background-color: var(--input_background-color);
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;

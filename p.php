@@ -14,7 +14,7 @@ $app         = new App(__DIR__, "settings.json", true);
 $app->databaseConnect($app->settings->database['host'], $app->settings->database['username'], $app->settings->database['password'], $app->settings->database['name']);
 $app->build();
 $app->register($_SERVER['REQUEST_URI']);
-$access_error = $app->userInit();
+$access_error = $app->sessionOpen();
 
 $al = $app->resolveArray();
 if (!empty($al) && sizeof($al) > 1 && $al[0] == "_") {
@@ -28,7 +28,7 @@ if (!empty($al) && sizeof($al) > 1 && $al[0] == "_") {
 
 $app->fileSystem = new System\FileSystem\Page($app);
 $fs              = $app->fileSystem;
-$dir = $fs->dir($app->resolve());
+$dir             = $fs->dir($app->resolve());
 if (!$dir) {
 	$app->responseStatus->NotFound->response();
 }
@@ -37,35 +37,15 @@ $fs->load($dir->id);
 if ($fs()->enabled == false) {
 	$app->responseStatus->Forbidden->response();
 	exit;
-} elseif ($fs()->permission->deny == true && $fs()->id == $app::PERMA_ID['index']) {
-	if (@!require_once ($app->root . "/admin/forms/upper.php")) {
-		$app->responseStatus->NotFound->response();
-	}
-	if (is_file($app->root . "website-contents/" . $app::PERMA_ID['login'] . ".php"))
-		if (@!require_once ($app->root . "website-contents/" . $app::PERMA_ID['login'] . ".php")) {
-			$app->responseStatus->NotFound->response();
-		}
-	if (@!require_once ($app->root . "/admin/forms/lower.php")) {
-		$app->responseStatus->NotFound->response();
-	}
-	exit;
-} elseif ($fs()->permission->deny == true && $fs()->id == $app::PERMA_ID['login']) {
 } elseif ($fs()->permission->deny == true) {
-	$app->responseStatus->Forbidden->response();
-	$access_error = 403;
-	if (@!require_once ($app->root . "/admin/forms/upper.php")) {
-		$app->responseStatus->NotFound->response();
+	if ($fs()->id != $app::PERMA_ID['index']) {
+		$app->responseStatus->Forbidden->response();
 	}
-	if (is_file($app->root . "website-contents/" . $app::PERMA_ID['login'] . ".php"))
-		if (@!require_once ($app->root . "website-contents/" . $app::PERMA_ID['login'] . ".php")) {
-			$app->responseStatus->NotFound->response();
-		}
-	if (@!require_once ($app->root . "/admin/forms/lower.php")) {
-		$app->responseStatus->NotFound->response();
-	}
+	require_once ($app->root . "/admin/forms/upper.php");
+	require_once ($app->root . "website-contents/" . $app::PERMA_ID['login'] . ".php");
+	require_once ($app->root . "/admin/forms/lower.php");
 	exit;
 }
-
 
 
 /* Forward */
