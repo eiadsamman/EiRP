@@ -164,7 +164,6 @@ $(document).ready(function (e) {
 
 
 	const BALANCE_UPDATE = function () {
-		return;
 		$.ajax({
 			data: {},
 			url: "acc/report/balupd",
@@ -190,7 +189,7 @@ $(document).ready(function (e) {
 		});
 	}
 
-	setInterval(function () { BALANCE_UPDATE(); }, 10000);
+	//setInterval(function () { BALANCE_UPDATE(); }, 10000);
 
 	$.fn.serialize = function (options) {
 		return $.param(this.serializeArray(options));

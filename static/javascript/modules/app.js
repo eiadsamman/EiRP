@@ -5,13 +5,11 @@ export class Application {
 		document.addEventListener("DOMContentLoaded", async () => {
 			await this.chunkLoaders();
 			this.dispatchEvents();
-
 		});
 	}
 
 	async chunkLoaders() {
 		let chunkElements = document.querySelectorAll("[data-chunk_source]");
-
 		await Promise.all([...chunkElements].map(async (el) => {
 			let url = (el.dataset.chunk_source);
 			let content_type = (el.dataset.content_type);
@@ -23,7 +21,7 @@ export class Application {
 		return new Promise((resolve) => {
 			fetch(url, {
 				method: 'GET',
-				cache: "default",/* force-cache */
+				cache: "default",/* force-cache, reload, default */
 				mode: "same-origin",
 				headers: {
 					'Accept': isTypeJson ? "application/json" : "text/html",
@@ -40,7 +38,13 @@ export class Application {
 				});
 		});
 	}
-
+	numberFormat(number, decimals, dec_point, thousands_sep) {
+		dec_point = typeof dec_point !== 'undefined' ? dec_point : '.';
+		thousands_sep = typeof thousands_sep !== 'undefined' ? thousands_sep : ',';
+		var parts = Number(number).toFixed(decimals).split('.');
+		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands_sep);
+		return parts.join(dec_point);
+	};
 	dispatchEvents() {
 		document.getElementById("header-menu")?.addEventListener("click", (e) => {
 			if (e.target.tagName === "A")

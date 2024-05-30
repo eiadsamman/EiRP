@@ -1,5 +1,6 @@
 <?php
 use System\Finance\AccountRole;
+use System\Finance\Forex;
 use System\Template\Gremium;
 use System\Finance\Account;
 use System\SmartListObject;
@@ -42,9 +43,11 @@ if ($app->xhttp) {
 
 			if ($transaction->post()) {
 				new System\Personalization\FrequentAccountUse($app, (int) $_POST['target-account'][1]);
+				$balance             = $app->user->account->getBalance();
 				$result['result']    = true;
 				$result['insert_id'] = $transaction->insert_id;
-				$result['balance']   = number_format($app->user->account->getBalance(), 2);
+				$result['type']      = "receipt";
+				$result['balance']   = ($balance < 0 ? "(" : "") . number_format(abs($balance), 2) . ($balance < 0 ? ")" : "");
 				$result['currency']  = $app->user->account->currency->shortname;
 			} else {
 				$result['errno'] = 300;
@@ -107,6 +110,11 @@ if ($app->xhttp) {
 		$grem->article()->open();
 		$current_date = new DateTime();
 		$current_date = $current_date->format("Y-m-d");
+
+		$forex = new Forex($app);
+
+		//echo "<pre>" . print_r($forex->table(), true) . "</pre>";
+		//exit;
 		?>
 		<form name="js-ref_form-main" id="js-ref_form-main" action="<?= $fs()->dir; ?>">
 			<input type="hidden" name="challenge" value="<?= uniqid(); ?>" />
@@ -137,7 +145,8 @@ if ($app->xhttp) {
 				<label style="min-width:150px">
 					<h1>Date</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date" data-required />
+						<input id="post-date" type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date"
+							data-required />
 						<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value="" data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
 					</div>
 				</label>
@@ -152,27 +161,37 @@ if ($app->xhttp) {
 
 
 			<div class="form">
-				<label style="flex-basis:0%">
+				<label style="flex-basis:0%;">
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
-							data-source="_/financeBeneficiaryList/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" name="beneficiary" id="beneficiary" />
-						<input type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
-						<input type="button" value="New" class="edge-right" style="display:none" id="js-input_add-benif">
+						<input name="beneficiary" id="beneficiary" type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
+							data-source="_/financeBeneficiaryList/slo/<?= md5(session_id() . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" />
+						<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo=":LIST"
+							data-source="_/userList/slo/<?= md5(session_id() . ($app->user->info->id)); ?>/slo_userList.a" />
+						<!-- <button type="button" value="New" class="edge-right edge-left plus" id="js-input_add-benif"></button> -->
 					</div>
 				</label>
 			</div>
+
 
 			<div class="form">
 				<label style="min-width:300px">
 					<h1>Amount</h1>
 					<div class="btn-set">
-						<input type="number" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" />
+						<input type="number" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="[\d-\/\*]*" min="0" inputmode="decimal" name="value" id="value" />
 						<?= "<span>{$app->user->account->currency->shortname}</span>" ?>
 					</div>
 				</label>
-				<label style="min-width:300px"></label>
+				<label style="min-width:300px">
+					<h1>Exchange Rate</h1>
+					<div class="btn-set">
+						<input type="number" placeholder="Exchange rate" tabindex="-1" title="Exchange rate" pattern="[\d\.]*" min="0" inputmode="decimal" name="exchange-rates" id="exchange-rates" />
+
+						<span><a href="<?= $fs(87)->dir ?>">USD → EGP</a></span>
+					</div>
+				</label>
 			</div>
+
 
 			<div class="form">
 				<label style="flex:0" for="">

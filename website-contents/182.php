@@ -2,47 +2,46 @@
 
 use System\Template\Gremium;
 
-
 if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchrecord") {
 	$employeeID = (int) $_POST['employeeID'];
-	if (
-		$r = $app->db->query(
-			"SELECT
-			usr_firstname,usr_lastname,
-			usr_id,usr_username,usr_phone_list,
-			gnd_name,
-			lsf_id,lsf_name,
-			lty_id,lty_name,lsc_name,
-			ldn_id,ldn_name,
-			DATE_FORMAT(usr_birthdate,'%d %M, %Y') AS usr_birthdate,
-			DATE_FORMAT(lbr_registerdate,'%d %M, %Y') AS lbr_registerdate,
-			DATE_FORMAT(lbr_resigndate,'%d %M, %Y') AS lbr_resigndate,
-			lbr_socialnumber,
-			trans_name,lbr_mth_name,lwt_name,
-			lbr_id,cntry_name,
-			lbr_fixedsalary,lbr_variable,lbr_allowance,lbr_trans_allowance,
-			lbr_typ_sal_basic_salary,lbr_typ_sal_variable,lbr_typ_sal_allowance,lbr_typ_sal_transportation
-		FROM
-			labour
-				JOIN users ON usr_id=lbr_id
-				LEFT JOIN labour_shifts ON lbr_shift=lsf_id
-				LEFT JOIN countries ON cntry_id=lbr_nationality
-				LEFT JOIN (SELECT lty_id,lty_name,lsc_name FROM labour_type JOIN labour_section ON lsc_id=lty_section) AS _labourtype ON lty_id=lbr_type
-				LEFT JOIN gender ON gnd_id=usr_gender
-				LEFT JOIN labour_residentail ON ldn_id=lbr_residential
-				LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
-				LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
-				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
-				LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
-		WHERE
-			lbr_id=$employeeID AND usr_id != 1;"
-		)
-	) {
-		if ($row = $r->fetch_assoc()) {
+	$query      = "SELECT
+		usr_firstname,usr_lastname,
+		usr_id,usr_username,usr_phone_list,
+		gnd_name,
+		lsf_id,lsf_name,
+		lty_id,lty_name,lsc_name,
+		ldn_id,ldn_name,
+		lbr_company,
+		DATE_FORMAT(usr_birthdate,'%d %M, %Y') AS usr_birthdate,
+		DATE_FORMAT(lbr_registerdate,'%d %M, %Y') AS lbr_registerdate,
+		DATE_FORMAT(lbr_resigndate,'%d %M, %Y') AS lbr_resigndate,
+		lbr_socialnumber,
+		trans_name,lbr_mth_name,lwt_name,
+		lbr_id,cntry_name,
+		lbr_fixedsalary,lbr_variable,lbr_allowance,lbr_trans_allowance,
+		lbr_typ_sal_basic_salary,lbr_typ_sal_variable,lbr_typ_sal_allowance,lbr_typ_sal_transportation
+	FROM
+		labour
+			JOIN users ON usr_id=lbr_id
+			LEFT JOIN labour_shifts ON lbr_shift=lsf_id
+			LEFT JOIN countries ON cntry_id=lbr_nationality
+			LEFT JOIN (SELECT lty_id,lty_name,lsc_name FROM labour_type JOIN labour_section ON lsc_id=lty_section) AS _labourtype ON lty_id=lbr_type
+			LEFT JOIN gender ON gnd_id=usr_gender
+			LEFT JOIN labour_residentail ON ldn_id=lbr_residential
+			LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
+			LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
+			LEFT JOIN labour_transportation ON lbr_transportation=trans_id
+			LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
+			JOIN user_company ON urc_usr_comp_id = lbr_company AND urc_usr_id = {$app->user->info->id}
+	WHERE
+		lbr_id = $employeeID AND usr_id != 1 ;";
+	$r          = $app->db->query($query);
+	if ($r) {
+		if ($r->num_rows > 0 && $row = $r->fetch_assoc()) {
+
 			header("HTTP_X_RESPONSE: SUCCESS");
 			header("HTTP_X_PID: " . $row['usr_id']);
 			$arr_socialids = array();
-
 
 			$q_socialid_uploads = $app->db->query("SELECT up_id,up_name,up_size,DATE_FORMAT(up_date,'%d %M, %Y') as up_date,up_pagefile FROM uploads WHERE up_rel = $employeeID AND up_deleted=0");
 			while ($row_socialid_uploads = $q_socialid_uploads->fetch_assoc()) {
@@ -150,12 +149,13 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				HTML;
 
 				$grem->getLast()->close();
+
 			}
 
 			if ($fs(228)->permission->read) {
 				$grem->title()->serve("<span class=\"flex\">Job Information:</span>");
 				$grem->article()->open();
-				$resignationMessage    = empty($row['lbr_resigndate']) ? "" : "<div class=\"form\"><label><h1>Resignation state</h1><div>Resigned on {$row['lbr_resigndate']}</div></label></div>";
+				$resignationMessage = empty($row['lbr_resigndate']) ? "" : "<div class=\"form\"><label><h1>Resignation state</h1><div>Resigned on {$row['lbr_resigndate']}</div></label></div>";
 
 				echo <<<HTML
 					<div style="min-width: 260px;">
@@ -218,6 +218,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			unset($grem);
 			exit;
 		} else {
+
 			$grem = new Gremium\Gremium(true);
 			header("HTTP_X_RESPONSE: ERROR");
 			$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>Not Found</h1>");
@@ -290,7 +291,7 @@ $SmartListObject = new System\SmartListObject($app);
 		border: solid 0px #ccc;
 		width: 180px;
 		height: 180px;
-		background-size:  auto 100%;
+		background-size: auto 100%;
 		background-repeat: no-repeat;
 		background-position: 50% 50%;
 		border-radius: 50% 50%;
@@ -317,8 +318,6 @@ $grem->getLast()->close();
 <script type="module">
 	import { Popup } from './static/javascript/modules/gui/popup.js';
 	$(document).ready(function (e) {
-
-
 		let counter = 0;
 		const linkTrigger = $("#jQtriggerlink"),
 			buttonEdit = $("#jQedit"),
@@ -379,6 +378,10 @@ $grem->getLast()->close();
 
 				if (response == "ERROR") {
 					clear();
+					buttonPrintID.prop("disabled", true);
+					buttonEdit.prop("disabled", true);
+					divOutput.html(o);
+					spanIDTitle.html("");
 				} else if (response == "SUCCESS") {
 					buttonPrintID.prop("disabled", false);
 					buttonEdit.prop("disabled", false);

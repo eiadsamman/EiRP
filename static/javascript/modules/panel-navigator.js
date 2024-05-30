@@ -27,7 +27,7 @@ export class PanelNavigator {
 				this.runtime.scrollArea.scrollHeight - this.runtime.scrollArea.scrollTop <= this.runtime.scrollArea.clientHeight * 1.2
 			) {
 				this.runtime.currentPage += 1;
-				this.xhttp_request();
+				this.sidePanelLoader();
 			}
 		});
 		window.addEventListener("keydown", (e) => {
@@ -46,14 +46,15 @@ export class PanelNavigator {
 	}
 
 	init = function () {
-		this.xhttp_request();
+		this.sidePanelLoader();
 		this.navigator.history_state.id = pageConfig.id;
 		this.navigator.history_vars.id = pageConfig.id;
 		this.navigator.history_vars.url = pageConfig.url;
 		this.navigator.history_vars.title = pageConfig.title;
 		this.navigator.replaceVariableState();
 		this.navigator.onPopState((event) => {
-			this.loader(
+			this.contentLoader(
+
 				event.state.url,
 				event.state.title,
 				{ "id": event.state.id }
@@ -141,7 +142,7 @@ export class PanelNavigator {
 		return emptyPlaceholdersCount;
 	}
 
-	xhttp_request = async () => {
+	sidePanelLoader = async () => {
 		if (this.runtime.isFinished) {
 			this.clearEmptyPlaceholders();
 			return;
@@ -164,12 +165,11 @@ export class PanelNavigator {
 			body: JSON.stringify({ ...{ "method": "fetch", "page": this.runtime.currentPage } })
 		});
 
-
 		if (response.ok) {
 			const payload = await response.json();
 			this.runtime.totalPages = parseInt(payload.headers.pages);
-			if (document.getElementById("PanelNavigator-TotalRecords"))
-				document.getElementById("PanelNavigator-TotalRecords").innerText = payload.headers.count + " records"
+			document.getElementById("PanelNavigator-TotalRecords").innerText = payload.headers.count + " records";
+
 			payload.contents.forEach(element => {
 				let freePlaceholder = this.getFreePlaceholder();
 				if (freePlaceholder) {
@@ -188,7 +188,7 @@ export class PanelNavigator {
 				this.runtime.scrollArea.clientHeight > 0 &&
 				(this.runtime.scrollArea.scrollHeight <= this.runtime.scrollArea.clientHeight)) {
 				this.runtime.currentPage += 1;
-				this.xhttp_request();
+				this.sidePanelLoader();
 			}
 			this.runtime.isLoading = false;
 		}
@@ -197,13 +197,24 @@ export class PanelNavigator {
 	generatePlaceholders = function () {
 		if (this.runtime.isLoading) return;
 		this.runtime.isLoading = true;
+		let content;
 		for (let i = 0; i < this.itemPerRequest; i++) {
-			var content = document.createElement("a");
-			content.classList.add("panel-item")
-			content.classList.add("place-holder")
+			content = document.createElement("a");
+			content.classList.add("panel-item");
+			content.classList.add("place-holder");
 			content.classList.add(...this.classList);
 			this.runtime.container.append(content);
 		}
+	}
+
+	prependItem = function (content) {
+		let item = document.createElement("a");
+		item.classList.add("panel-item");
+		item.classList.add("flash");
+		item.classList.add(...this.classList);
+		this.runtime.container.prepend(item);
+		this.buildItem(item, content);
+		this.assigneEvents(item);
 	}
 
 	setActiveItem = function (item) {
@@ -252,7 +263,7 @@ export class PanelNavigator {
 		}
 	}
 
-	loader = function (url, title, options = {}) {
+	contentLoader = function (url, title, options = {}) {
 		this.runtime.isContentLoading = true;
 		var formData = new FormData();
 
@@ -298,7 +309,8 @@ export class PanelNavigator {
 						this.navigator.history_vars.url = el.dataset.href;
 						this.navigator.history_vars.title = pageConfig.apptitle + " - " + el.dataset.targettitle;
 						this.navigator.url = el.dataset.href;
-						this.loader(el.dataset.href, el.dataset.targettitle, { id: el.dataset.targetid });
+						this.contentLoader(el.dataset.href, el.dataset.targettitle, { id: el.dataset.targetid });
+
 						this.navigator.pushState();
 						return false;
 					});

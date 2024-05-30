@@ -41,11 +41,13 @@ if ($app->xhttp) {
 			}
 
 			if ($transaction->post()) {
+				new System\Personalization\FrequentAccountUse($app, (int) $_POST['target-account'][1]);
+				$balance             = $app->user->account->getBalance();
 				$result['result']    = true;
 				$result['insert_id'] = $transaction->insert_id;
-				$result['balance']   = number_format($app->user->account->getBalance(), 2);
+				$result['type']      = "payment";
+				$result['balance']   = ($balance < 0 ? "(" : "") . number_format(abs($balance), 2) . ($balance < 0 ? ")" : "");
 				$result['currency']  = $app->user->account->currency->shortname;
-				new System\Personalization\FrequentAccountUse($app, (int) $_POST['target-account'][1]);
 			} else {
 				$result['errno'] = 300;
 				$result['error'] = "Transaction posting failed";
@@ -136,7 +138,7 @@ if ($app->xhttp) {
 				<label style="min-width:150px">
 					<h1>Date</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date" data-required />
+						<input id="post-date" type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date" data-required />
 						<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value="" data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
 					</div>
 				</label>
@@ -150,13 +152,14 @@ if ($app->xhttp) {
 			<!-- <hr style="border:none;border-top:solid 1px rgb(230,230,230);margin:20px 0px 30px 0px" /> -->
 
 			<div class="form">
-				<label style="flex-basis:0%">
+				<label style="flex-basis:0%;">
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
-							data-source="_/financeBeneficiaryList/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" name="beneficiary" id="beneficiary" />
-						<input type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" />
-						<input type="button" value="New" class="edge-right" style="display:none" id="js-input_add-benif">
+						<input name="beneficiary" id="beneficiary" type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
+							data-source="_/financeBeneficiaryList/slo/<?= md5(session_id() . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" />
+						<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo=":LIST"
+							data-source="_/userList/slo/<?= md5(session_id() . ($app->user->info->id)); ?>/slo_userList.a" />
+						<!-- <button type="button" value="New" class="edge-right edge-left plus" id="js-input_add-benif"></button> -->
 					</div>
 				</label>
 			</div>

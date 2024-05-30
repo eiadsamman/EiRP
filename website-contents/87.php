@@ -1,6 +1,6 @@
 <?php
 
-if ($app->xhttp) {	
+if ($app->xhttp) {
 	if (isset($_POST['request'], $_POST['verb-exchange-sell']) && $_POST['request'] == "update") {
 		if (is_null($app->currency)) {
 			header("UPDATE_STATUS: SYSTEM");
@@ -20,13 +20,21 @@ if ($app->xhttp) {
 		if ($r) {
 			foreach ($_POST['verb-exchange-sell'] as $cur_id => $cur_value) {
 				$cur_value = (float) $cur_value;
-
 				$r &= $app->db->query("INSERT INTO currency_exchange (curexg_from,curexg_to,curexg_value) VALUES ({$cur_id} , {$app->currency->id} , {$cur_value})  ON DUPLICATE KEY UPDATE curexg_value={$cur_value};");
 			}
 		}
 		if ($r) {
 			header("UPDATE_STATUS: SUCCESS");
 			$app->db->commit();
+
+			$app->db->autocommit(true);
+			$stmt = $app->db->prepare("INSERT INTO currency_exchange_log (curexglog_date, curexglog_editor) VALUES (?,?);");
+			$date = '2024-05-07';
+			$stmt->bind_param("si", $date, $app->user->info->id);
+			$stmt->execute();
+			$stmt->close();
+
+
 		} else {
 			header("UPDATE_STATUS: DBERR");
 			$app->db->rollback();
@@ -38,7 +46,26 @@ if ($app->xhttp) {
 	exit;
 }
 
+
 use System\Template\Gremium;
+
+/* Fetch latest update log */
+$stmt = $app->db->prepare(
+	"SELECT 
+		curexglog_date, usr_firstname, usr_lastname 
+	FROM 
+		currency_exchange_log
+		LEFT JOIN users ON usr_id = curexglog_editor 
+	ORDER BY curexglog_id  DESC LIMIT 1;
+ "
+);
+$exe    = $stmt->execute();
+$record = $stmt->get_result();
+$record = $record ? $record->fetch_assoc() : false;
+$stmt->close();
+
+
+
 $grem = new Gremium\Gremium(true);
 $grem->header()->serve("<h1>{$fs()->title}</h1>");
 $grem->menu()->open();
@@ -46,21 +73,22 @@ echo "<span class=\"gap\"></span>";
 echo "<button class=\"edge-left\" id=\"js-button-update\" type=\"button\">Update rates table</button>";
 $grem->getLast()->close();
 $grem->article()->open();
+
 ?>
-	<div class="form predefined">
-		<label style="min-width:300px">
-			<h1>System default currency</h1>
-			<div class="btn-set">
+<div class="form predefined">
+	<label style="min-width:300px">
+		<h1>System default currency</h1>
+		<div class="btn-set">
 			<?= $app->currency->name . " [{$app->currency->symbol}]"; ?>
-			</div>
-		</label>
-		<label>
-			<h1>Latest rates updated date</h1>
-			<div class="btn-set">
-			<?php echo date("Y-m-d"); ?>
-			</div>
-		</label>
-	</div>
+		</div>
+	</label>
+	<label>
+		<h1>Latest rates updated date</h1>
+		<div class="btn-set">
+			<?= $record ? ($record['curexglog_date'] . "<br />" . $record['usr_firstname'] . " " . $record['usr_lastname']) : "N/A"; ?>
+		</div>
+	</label>
+</div>
 <?php
 $grem->getLast()->close();
 

@@ -53,11 +53,13 @@ if ($app->xhttp) {
 			if (isset($_POST['attachments']) && is_array($_POST['attachments'])) {
 				$transaction->attachments($_POST['attachments']);
 			}
-
+			
 			if ($transaction->edit((int) $_POST['statement-id'])) {
+				$balance             = $app->user->account->getBalance();
 				$result['result']    = true;
 				$result['insert_id'] = $transaction->insert_id;
-				$result['balance']   = number_format($app->user->account->getBalance(), 2);
+				$result['type']      = "update";
+				$result['balance']   = ($balance < 0 ? "(" : "") . number_format(abs($balance), 2) . ($balance < 0 ? ")" : "");
 				$result['currency']  = $app->user->account->currency->shortname;
 			} else {
 				$result['errno'] = 300;
@@ -220,10 +222,9 @@ if ($app->xhttp) {
 						data-source="_/financeBeneficiaryList/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" name="beneficiary" id="beneficiary" value="<?= $read->beneficiary ?>"
 						data-slodefaultid="<?= $read->beneficiary ?>" />
 
-					<input type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo="B00S" name="individual" id="individual" value="<?= $read->individual ? $read->individual->fullName() : ""; ?>"
+					<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo=":LIST"
+						data-source="_/userList/slo/<?= md5(session_id() . ($app->user->info->id)); ?>/slo_userList.a" value="<?= $read->individual ? $read->individual->fullName() : ""; ?>"
 						data-slodefaultid="<?= $read->individual ? $read->individual->id : ""; ?>" />
-
-					<input type="button" value="New" class="edge-right" style="display:none" id="js-input_add-benif">
 				</div>
 			</label>
 		</div>
@@ -296,10 +297,10 @@ if ($app->xhttp) {
 	?>
 	<div>
 		<datalist id="js-ref_creditor-list" style="display: none;">
-			<?= $SmartListObject->userAccountsOutbound($read->creditor->id, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
+			<?= $read->creditor ? $SmartListObject->userAccountsOutbound($read->creditor->id, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value) : ""; ?>
 		</datalist>
 		<datalist id="js-ref_debitor-list" style="display: none;">
-			<?= $SmartListObject->userAccountsInbound($read->debitor->id, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
+			<?= $read->debitor ? $SmartListObject->userAccountsInbound($read->debitor->id, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value) : ""; ?>
 		</datalist>
 		<datalist id="jQcategoryList">
 			<?= $SmartListObject->financialCategories(); ?>

@@ -62,8 +62,8 @@
 }
 
 .theme-default.dark {
-	--root-background-color: rgb(23, 25, 27, 1);
-	--root-background-color_backdrop: rgb(23, 25, 27, 1);
+	--root-background-color: rgb(20, 20, 25, 1);
+	--root-background-color_backdrop: var(--root-background-color);
 
 	--root-font-color: #eee;
 	--root-font-lightcolor: hsl(200, 13%, 65%);

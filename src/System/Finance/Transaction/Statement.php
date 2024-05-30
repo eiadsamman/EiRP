@@ -31,8 +31,10 @@ class Statement
 				acm_comments,
 				acm_reference,
 				acm_category,
-				_category.accgrp_name,_category.acccat_name,
+				_category.accgrp_name,
+				_category.acccat_name,
 
+				_usr.usr_id AS ben_usr_id,
 				_usr.usr_firstname AS ben_usr_firstname,
 				_usr.usr_lastname AS ben_usr_lastname,
 

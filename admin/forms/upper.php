@@ -1,7 +1,7 @@
 <?php
 ob_start();
 ob_implicit_flush(true);
-$_v = $app->settings->site['environment'] === "development" ? "?rev=240508" . uniqid() : "";
+$_v = !empty($app->settings->site['environment']) && $app->settings->site['environment'] === "development" ? "?rev=240508" . uniqid() : "";
 
 use System\Finance\AccountRole;
 use System\Personalization\Bookmark;

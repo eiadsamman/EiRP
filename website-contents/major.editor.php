@@ -3,6 +3,7 @@
 use System\IO\AttachLib;
 use System\Template\Gremium\Gremium;
 
+
 /*
 Crit v2.1 210818
 0:	string|null 				Alias
@@ -143,8 +144,19 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 			if ($fieldv[6] == true) { /*Allow field value updating*/
 				if (($fieldv[4] == 'hidden' || $fieldv[4] == 'text' || $fieldv[4] == 'textarea')) {
 					$q .= $smart . sqlvalue($fieldv[5], $_POST[$database['hash']['r'][$fieldk]], isset($_POST[$database['hash']['r'][$fieldk]]));
+
 				} elseif (($fieldv[4] == 'slo')) {
-					$q .= $smart . sqlvalue($database['fields'][$fieldv[8]][5], $_POST[$database['hash']['r'][$fieldk]][1], isset($_POST[$database['hash']['r'][$fieldk]][1]));
+
+					if( $fieldv[7] == ":LIST"){
+						$q .= $smart . sqlvalue(
+							$fieldv[5], 
+							$_POST[$database['hash']['r'][$fieldk]][1], 
+							isset($_POST[$database['hash']['r'][$fieldk]][1])
+						);
+					}else{
+						$q .= $smart . sqlvalue($database['fields'][$fieldv[8]][5], $_POST[$database['hash']['r'][$fieldk]][1], isset($_POST[$database['hash']['r'][$fieldk]][1]));
+					}
+
 				} else if ($fieldv[4] == 'default') {
 					$q .= $smart . sqlvalue($fieldv[5], $fieldv[10], isset($fieldv[10]));
 				} else if ($fieldv[4] == 'primary') {
@@ -155,6 +167,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 				}
 			} else {
 				if ($fieldv[4] == 'slo') {
+					
 					$q .= $smart . sqlvalue($database['fields'][$fieldv[8]][5], $_POST[$database['hash']['r'][$fieldk]][1], isset($_POST[$database['hash']['r'][$fieldk]][1]));
 				}
 			}
@@ -320,15 +333,27 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 				
 				</div>";
 		} elseif ($fieldv[4] == 'slo') {
-			echo "<div class=\"form\"><label>
+			if($fieldv[7]==":LIST"){
+				echo "<div class=\"form\"><label>
 					<h1>{$fieldv[1]}</h1>
 					<div class=\"btn-set\">
-						<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" data-slo=\"{$fieldv[7]}\" class=\"flex\" style=\"min-width:250px;\"
-							" . (isset($cleaned[$fieldk]) ? " value=\"" . $cleaned[$fieldk] . "\" " : "") . " " . (isset($cleaned[$fieldv[8]]) ? " data-slodefaultid=\"" . $cleaned[$fieldv[8]] . "\" " : "") . " name=\"{$database['hash']['r'][$fieldk]}\" />
+						<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" data-list=\"{$fieldv[8]}\"
+							data-slo=\"{$fieldv[7]}\" class=\"flex\" style=\"min-width:250px;\"
+							" . (isset($cleaned[$fieldk]) ? " value=\"" . $cleaned[$fieldk] . "\" " : "") . " 
+							" . (isset($cleaned[$fieldv[8]]) ? " data-slodefaultid=\"" . $cleaned[$fieldv[8]] . "\" " : "") . " name=\"{$database['hash']['r'][$fieldk]}\" />
 					</div>
 				</label>
-				
 				</div>";
+			}else{
+				echo "<div class=\"form\"><label>
+						<h1>{$fieldv[1]}</h1>
+						<div class=\"btn-set\">
+							<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" data-slo=\"{$fieldv[7]}\" class=\"flex\" style=\"min-width:250px;\"
+								" . (isset($cleaned[$fieldk]) ? " value=\"" . $cleaned[$fieldk] . "\" " : "") . " " . (isset($cleaned[$fieldv[8]]) ? " data-slodefaultid=\"" . $cleaned[$fieldv[8]] . "\" " : "") . " name=\"{$database['hash']['r'][$fieldk]}\" />
+						</div>
+					</label>
+					</div>";
+			}
 		} elseif ($fieldv[4] == 'bool') {
 			echo "<div class=\"form\"><label>
 					<h1>{$fieldv[1]}</h1>

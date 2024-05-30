@@ -78,7 +78,7 @@ if ($read) {
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
 					<span>
-						<?= $read->beneficiary; ?>
+						<?= is_null($read->individual) ? $read->beneficiary : "<a href=\"{$fs(182)->dir}/?id={$read->individual->id}\" title=\"{$read->individual->fullName()}\">". $read->individual->id . "</a>: {$read->individual->fullName()}"; ?>
 					</span>
 				</div>
 			</label>

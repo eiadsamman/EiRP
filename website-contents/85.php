@@ -21,7 +21,8 @@ $database = array(
 				)
 				AS AliaOutbound ON AliaOutbound.prt_id = accdef_out_acc_id 
 				
-		
+		LEFT JOIN
+			acc_transtypes	ON acctyp_type = accdef_operation
 		LEFT JOIN (
 			SELECT 
 				acccat_id,CONCAT_WS(" : ",acccat_name,accgrp_name) AS acc_catdet 
@@ -43,7 +44,8 @@ $database = array(
 		'comp_name' => array(null, 'Company', true, null, 'slo', 'string', false, 'COMPANIES', 'accdef_company', '<b>list</b> Company name', null, null, "<i>[All companies]</i>"),
 		'accdef_company' => array(null, '', false, null, 'sloref', 'int', true, null, null),
 
-		'accdef_operation' => array(null, 'Type', false, null, 'text', 'int', true, null, null, '<b>int(1-4)</b> transaction type [1: income, 2: payment]'),
+		'accdef_operation' => array(null, 'Type', true, null, 'text', 'string', true, null, null, '<b>int(1-4)</b> transaction type [1: income, 2: payment]'),
+
 
 		'accdef_name' => array(null, 'Name', true, null, 'text', 'string', true, null, null, '<b>char(32)</b> operation name, NOTICE: editing or deleteing any <br />entry in this page may cause fatal errors in the system', null, null),
 
@@ -61,8 +63,16 @@ $database = array(
 		//'accdef_cda'=>array(null,'Default Category Action',true,'100%'	,'text'		,'int'	,true	,null	,null		,'<b>int(0-1)</b> specify if selected category should be linked with selected account',null,false),
 	),
 	'order' => array('accdef_id'),
+	'flexablewidth' => array('__inbound_account', '__outbound_account')
 	// 'disable-delete'=>true,
 
 );
 
-include("website-contents/major.editor.php");
+include ("website-contents/major.editor.php");
+use System\SmartListObject;
+
+$SmartListObject = new SmartListObject($app);
+?>
+<datalist id="js-statement-type">
+	<?= $SmartListObject->financialTransactionNature(); ?>
+</datalist>

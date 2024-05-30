@@ -11,11 +11,7 @@ class menuListItems extends \System\Views\Chunk\Chunk
 
 	protected function slo(): void
 	{
-		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + (true ? 3600 : 0)) . ' GMT');
-		header("Cache-Control: " . (true ? "public, immutable, max-age=3600" : "no-cache, no-store, must-revalidate"));
-		header("Pragma: " . (true ? "cache" : "no-cache"));
-		header('Content-Type: application/json; charset=utf-8', true);
-		header("Content-Encoding: gzip");
+		$this->headerJSONCacheGzip();
 		$output = "[";
 		$ident  = \System\Personalization\Identifiers::SystemFrequentVisit->value;
 		$q      = <<<SQL

@@ -1,5 +1,8 @@
 
 import { Popup } from '../gui/popup.js';
+import App from '../app.js';
+import MathEvaluator from '../math-evaluator.js';
+
 
 export default class Transaction {
 	busy = null;
@@ -12,7 +15,9 @@ export default class Transaction {
 	uploadController = null;
 	inputFieldsSorted = null;
 	description_field = null;
-	constructor() {
+	panelNavigator = null;
+	constructor(panelNavigator = null) {
+		this.panelNavigator = panelNavigator;
 	}
 
 	run = function () {
@@ -26,7 +31,7 @@ export default class Transaction {
 			overlay.show(true);
 			document.getElementById("plot-iframe").onload = function () {
 				objPrintFrame.focus();
-				setTimeout(() => { overlay.hide();objPrintFrame.print(); }, 100);
+				setTimeout(() => { overlay.hide(); objPrintFrame.print(); }, 100);
 			}
 		});
 
@@ -47,6 +52,20 @@ export default class Transaction {
 		if (this.formMain == null) {
 			return;
 		}
+
+
+		/* const calc = new MathEvaluator(document.getElementById('value'));
+		if (calc.inputField)
+			calc.inputField.addEventListener('keydown', function (e) {
+				if (e.key == "Enter") {
+					if (this.dataset.eval) {
+						this.dataset.busy = "";
+						this.value = this.dataset.eval;
+						delete this.dataset.busy;
+					}
+				}
+			}); */
+
 
 		this.uploadController = $.Upload({
 			objectHandler: $("#js_upload_list"),
@@ -111,7 +130,6 @@ export default class Transaction {
 						_instance.post();
 						return;
 					}
-
 					let nextField = _instance.findNextInputField(this.object);
 					if (nextField) {
 						nextField.focus({ focusVisible: true })
@@ -158,16 +176,22 @@ export default class Transaction {
 		$("#js-defines").slo({
 			onselect: function (e) {
 				const selected_option = document.querySelector("#defines option[data-id='" + e.key + "']");
-				this.slo_objects.getElementById("target-account").slo.set(selected_option.dataset.account_bound, selected_option.dataset.account_bound);
-				this.slo_objects.getElementById("category").slo.set(selected_option.dataset.category, selected_option.dataset.category);
+				_instance.slo_objects.getElementById("target-account").slo.set(selected_option.dataset.account_bound, selected_option.dataset.account_bound);
+				_instance.slo_objects.getElementById("category").slo.set(selected_option.dataset.category, selected_option.dataset.category);
+
+				let currentDate = new Date();
+				const offset = currentDate.getTimezoneOffset()
+				currentDate = new Date(currentDate.getTime() - (offset * 60 * 1000))
+
+				_instance.slo_objects.getElementById("post-date").slo.set(currentDate.toISOString().split('T')[0], currentDate.toISOString().split('T')[0]);
 				document.querySelectorAll(".predefined").forEach(element => {
 					element.style.display = "none";
 				});
-				this.slo_objects.getElementById("beneficiary").slo.focus();
+				_instance.slo_objects.getElementById("beneficiary").slo.focus();
 			},
 			ondeselect: function (e) {
-				this.slo_objects.clear();
-				clearFields();
+				_instance.slo_objects.clear();
+				_instance.clearFields();
 				document.querySelectorAll(".predefined").forEach(element => {
 					element.style.display = "flex";
 				});
@@ -260,7 +284,6 @@ export default class Transaction {
 		}
 	}
 
-
 	post = async function () {
 		if (this.busy)
 			return;
@@ -271,7 +294,6 @@ export default class Transaction {
 			return false;
 		}
 		this.busy = true;
-
 		try {
 			const formData = new FormData(this.formMain);
 			this.disableForm(true)
@@ -310,6 +332,22 @@ export default class Transaction {
 					}
 					$("#issuer-account-balance").html(payload.balance);
 					$("#jqroot_bal").html(payload.balance + " " + payload.currency);
+
+					if (payload.type == "receipt" || payload.type == "payment") {
+						this.panelNavigator.prependItem({
+							"attachements": formData.getAll("attachments[]").length,
+							"beneficial": formData.get("beneficiary[0]"),
+							"category": formData.get("category[0]"),
+							"date": formData.get("date[0]"),
+							"details": formData.get("description"),
+							"id": payload.insert_id,
+							"positive": payload.type == "receipt",
+							"value": (payload.type == "payment" ? "(" : "") + App.numberFormat(formData.get("value"), 2) + (payload.type == "payment" ? ")" : "")
+						})
+					} else if (payload.type == "update") {
+
+					}
+
 				} else {
 					messagesys.failure(payload.error);
 					if (payload.errno <= 199) {

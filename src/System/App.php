@@ -59,7 +59,7 @@ class App
 			$this->responseStatus->InternalServerError->response();
 		}
 
-		if ($this->settings->site['environment'] === "development") {
+		if (!empty($this->settings->site['environment']) && $this->settings->site['environment'] === "development") {
 			error_reporting(E_ALL);
 			ini_set('display_errors', 'On');
 		} else {
@@ -209,14 +209,14 @@ class App
 		$this->base_permission = 2;
 		return true;
 		/* $lowsetlevel = $this->db->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
-						  if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
-							  $this->base_permission = (int) $rowlowsetlevel['per_id'];
-							  return true;
-						  } else {
-							  $this->errorHandler->customError("Failed to fetch system base permission");
-							  $this->responseStatus->NotFound->response();
-						  }
-						  return false; */
+								if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
+									$this->base_permission = (int) $rowlowsetlevel['per_id'];
+									return true;
+								} else {
+									$this->errorHandler->customError("Failed to fetch system base permission");
+									$this->responseStatus->NotFound->response();
+								}
+								return false; */
 	}
 	public function buildPrefixList(): bool
 	{

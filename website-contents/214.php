@@ -147,7 +147,7 @@ $SmartListObject = new SmartListObject($app);
 				pn.navigator.history_vars.url = '<?= $fs(91)->dir; ?>';
 				pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(91)->title; ?>';
 				pn.navigator.url = '<?= $fs(91)->dir; ?>';
-				pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "new", "id": null }, () => { initInvokers() });
+				pn.contentLoader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "new", "id": null }, () => { initInvokers() });
 				pn.navigator.pushState();
 			});
 
@@ -158,7 +158,7 @@ $SmartListObject = new SmartListObject($app);
 			pn.navigator.history_vars.url = '<?= $fs(104)->dir; ?>';
 			pn.navigator.history_vars.title = '<?= $app->settings->site['title']; ?> - <?= $fs(104)->title; ?>';
 			pn.navigator.url = '<?= $fs(104)->dir; ?>';
-			pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "view", "id": event.dataset.listitem_id });
+			pn.contentLoader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "method": "view", "id": event.dataset.listitem_id });
 			pn.navigator.pushState();
 		}
 

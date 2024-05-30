@@ -45,7 +45,7 @@ class ListHandler extends SmartListObjectHandler {
 		if (dataSourceUrl) {
 			fetch(dataSourceUrl, {
 				method: 'GET',
-				cache: "force-cache",
+				cache: "default",/*reload , default*/
 				mode: "same-origin",
 				headers: {
 					'Accept': "application/json",
@@ -60,7 +60,6 @@ class ListHandler extends SmartListObjectHandler {
 					initial[0].style.background = "yellow";
 					initial[0].value = error;
 				});
-
 		} else {
 			this.isLoading = false;
 			$("#" + initial.attr("data-list")).children('option').each(function () {

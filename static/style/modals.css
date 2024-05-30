@@ -211,7 +211,7 @@ dialog.appHtmlDialog::-webkit-scrollbar-thumb {
 	display: inline-block;
 	vertical-align: top;
 	white-space: normal;
-	
+
 }
 
 .messagesys>div>span:before {
@@ -262,9 +262,9 @@ dialog.appHtmlDialog::-webkit-scrollbar-thumb {
 
 
 table {
-	/* border: solid 1px var(--bomtable-border-color); */
 	border-collapse: collapse;
 	width: 100%;
+	max-width: 100%;
 }
 
 table>tfoot>tr>th,
@@ -293,6 +293,16 @@ table>tfoot>tr>th {
 table>tbody>tr>td.console {
 	font-family: "Lucida Console", Monaco, monospace;
 	font-size: 0.9em;
+}
+
+
+table>tbody>tr>td {
+	
+	/* overflow: hidden;
+	overflow-wrap: break-word;
+	text-overflow: ellipsis;
+	width: 100px;
+	max-width: 100px; */
 }
 
 table>tbody>tr>th,
@@ -565,169 +575,4 @@ table.form-table>thead>tr>th {
 
 table.form-table>tbody>tr>th {
 	color: var(--root-font-lightcolor);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**PART
- * SLO 
- */
-
-
-.slo-container {
-	position: absolute;
-	min-width: 100%;
-	display: none;
-	background-color: var(--slo-menu-background-color);
-	margin-top: 1px;
-	margin-bottom: 0px;
-	color: var(--root-font-color);
-	z-index: 99 !important;
-	border: solid 1px var(--root-ribbon-border-color);
-	border-color: rgba(82, 168, 236, 1);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .5);
-	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
-	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
-}
-
-.slo-container>div {
-	display: block;
-	border: none;
-	padding: 12px 8px;
-	cursor: pointer;
-	margin: 3px;
-	border-radius: 6px;
-	background-color: var(--slo-menu-background-color);
-	z-index: 99 !important;
-}
-
-
-.slo-container>div:hover {
-	background-color: var(--slo-menu-itemhover-background-color);
-	z-index: 99 !important;
-}
-
-.slo-container>div.active {
-	background-color: var(--slo-menu-itemactive-background-color);
-	z-index: 99 !important;
-}
-
-
-
-.slo-container>div>p {
-	display: none;
-}
-
-.slo-container>div>span {
-	color: var(--root-font-lightcolor);
-	display: block;
-	padding-top: 8px;
-}
-
-.slo-wrap,
-.btn-set>span.slo-wrap {
-	position: relative;
-	background-color: transparent;
-	padding: 0px;
-	border: none;
-}
-
-.slo-wrap>input[type=text],
-.slo-wrap>input[type=number],
-.slo-wrap>input[type=password],
-.slo-wrap>input[type=date] {
-	height: 100%;
-	position: relative;
-	outline: none;
-	border: none;
-	border-bottom: solid 2px var(--input_border-color);
-	border-color: var(--input_border-color);
-	transition: border 0.2s ease-out;
-	width: 100%;
-	color: var(--root-font-color);
-	background-color: transparent;
-	padding-right: 25px;
-	font-size: 1em;
-}
-
-.slo-wrap>input[type=text]:not(:disabled):hover,
-.slo-wrap>input[type=number]:not(:disabled):hover,
-.slo-wrap>input[type=password]:not(:disabled):hover,
-.slo-wrap>input[type=date]:not(:disabled):hover {
-	border-color: var(--input-hover_border-color);
-	z-index: 12;
-}
-
-
-.slo-wrap>input[type=text]:not(:disabled):focus,
-.slo-wrap>input[type=number]:not(:disabled):focus,
-.slo-wrap>input[type=password]:not(:disabled):focus,
-.slo-wrap>input[type=date]:not(:disabled):focus {
-	border-color: var(--input-active_border-color);
-	/* -webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .7); */
-	z-index: 13;
-}
-
-
-.slo-wrap:after {
-	font-family: "icomoon4";
-	text-align: center;
-	display: flex;
-	align-items: center;
-	position: absolute;
-	pointer-events: none;
-	height: 100%;
-	content: " ";
-	color: #fff;
-	z-index: 13;
-	margin: 0;
-	padding: 0;
-	top: 0px;
-	right: 10px;
-}
-
-.slo-wrap.valid:after {
-	content: "\EA10";
-	font-size: 12px;
-	color: dodgerblue;
-}
-
-.slo-wrap.unvalid:after {
-	content: "\EA0F";
-	font-size: 10px;
-	color: crimson;
-}
-
-
-.slo-wrap.slo-select:after,
-.slo-wrap.valid.slo-select:after,
-.slo-wrap.unvalid.slo-select:after {
-	font-family: "icomoon";
-	content: "\e619";
-	font-size: 20px;
-	color: dodgerblue;
-}
-
-
-.slo-wrap.slo-select>input {
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	cursor: default;
 }

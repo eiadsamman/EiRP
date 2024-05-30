@@ -252,7 +252,8 @@ abstract class Transaction extends Instructions
 		if (!$stmt->execute())
 			return false;
 
-		$stmt = $this->app->db->prepare("UPDATE uploads SET up_rel = null WHERE up_rel = ?;");
+		$stmt = $this->app->db->prepare("UPDATE uploads SET up_rel = NULL WHERE up_rel = ?;");
+		
 		$stmt->bind_param("i", $statementID);
 		return $stmt->execute();
 
@@ -363,6 +364,7 @@ abstract class Transaction extends Instructions
 			return true;
 		}
 		if (sizeof($this->attachments) > 0) {
+			
 			$stmt = $this->app->db->prepare(
 				"UPDATE 
 					uploads 

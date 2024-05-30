@@ -14,6 +14,8 @@ if ($access_error == 403) {
 	?>
 	<style>
 		#login-form {
+			position: fixed;
+			inset: 0 0 0 0;
 			display: flex;
 			justify-content: center;
 			height: 100%;

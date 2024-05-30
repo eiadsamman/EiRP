@@ -12,15 +12,19 @@ class TransactionView extends \System\Views\PanelView
 
 	public function render(): void
 	{
-		$gd = !empty($_GET['id']) ? (int) $_GET['id'] : null;
-		$fs = $this->app->fileSystem;
+		$passedId        = !empty($_GET['id']) ? (int) $_GET['id'] : "null";
+		$fs              = $this->app->fileSystem;
+		$attachementType = \System\Attachment\Type::FinanceRecord->value;
+
 
 		echo $this->htmlWrapperSidePanel->open;
 		$grem_panel       = new Gremium(true, true, false, "PanelNavigator-Scroll");
 		$grem_panel->base = "0px";
 		$grem_panel->header()->serve("<h1>Statements</h1>");
-		$grem_panel->menu()->serve("<span class=\"flex\" id=\"PanelNavigator-TotalRecords\"></span>");
-		//<input class=\"edge-left\" type=\"button\" value=\"Search\" /><button id=\"js-input_btunew\">New</button>
+		$grem_panel->menu()->serve(
+			"<span class=\"flex\" id=\"PanelNavigator-TotalRecords\"></span>"
+			//."<input class=\"edge-left\" type=\"button\" value=\"Search\" /><button id=\"js-input_btunew\">New</button>"
+		);
 		$grem_panel->article("PanelNavigator-Window")->options(array("nopadding"))->serve();
 		$grem_panel->title("PanelNavigator-Informative")->serve("<div style=\"text-align:center;font-size:0.8em\">No more records</div>");
 		unset($grem_panel);
@@ -29,21 +33,20 @@ class TransactionView extends \System\Views\PanelView
 		$this->contentPlaceHolder();
 
 		/* JS Payload */
-		echo "<script type=\"text/javascript\">
+		echo <<<HTML
+			<script type="text/javascript">
 				let pageConfig = {
 					url: '{$fs()->dir}',
 					apptitle : '{$this->app->settings->site['title']}',
 					title: '{$this->app->settings->site['title']} - {$fs()->title}',
-					id: " . ($gd ?? "null") . ",
+					id: {$passedId},
 					upload: {
 						url: '{$fs->find(186)->dir}',
-						identifier: " . \System\Attachment\Type::FinanceRecord->value . "
+						identifier: {$attachementType}
 					}
 				}
-			</script>";
-
-		echo "<script type=\"module\">";
-		echo <<<HTML
+			</script>
+			<script type="module">
 				import { PanelNavigator } from './static/javascript/modules/panel-navigator.js';
 				import Transaction from './static/javascript/modules/finance/transaction.js';
 
@@ -52,14 +55,14 @@ class TransactionView extends \System\Views\PanelView
 				pn.onClickUrl = "{$fs(104)->dir}";
 				pn.itemPerRequest = {$this->perpage_val};
 				pn.classList = ["statment-panel"];
-				pn.entityModule = new Transaction();
-
+				pn.entityModule = new Transaction(pn);
+				
 				pn.onclick = function (event) {
 					pn.navigator.setProperty("id", event.dataset.listitem_id);
 					pn.navigator.history_vars.url = pn.onClickUrl;
 					pn.navigator.history_vars.title = '{$this->app->settings->site['title']} - {$fs(104)->title}';
 					pn.navigator.url = pn.onClickUrl;
-					pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "id": event.dataset.listitem_id });
+					pn.contentLoader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "id": event.dataset.listitem_id });
 					pn.navigator.pushState();
 				}
 
@@ -73,28 +76,41 @@ class TransactionView extends \System\Views\PanelView
 						`<div><h1 class=\"description\">\${data.details}</h1></div>`;
 				}
 				pn.init();
+
+				pn.contentLoader("{$fs()->dir}", null, { "id": {$passedId} });
+				{$this->trash()}
+			</script>
 		HTML;
-		if ($gd == null) {
-			echo "pn.loader(\"{$fs()->dir}\", null, { \"id\": null })";
-		} else {
-			echo "pn.loader(\"{$fs()->dir}\", null, { \"id\": $gd })";
-		}
-		echo "</script>";
 	}
-	private function trash(): void
+	private function trash(): string
 	{
 		$fs = $this->app->fileSystem;
-		echo <<<EFO
-		if (document.getElementById("js-input_btunew"))
-		document.getElementById("js-input_btunew").addEventListener("click", function () {
-			pn.clearActiveItem();
-			pn.navigator.setProperty("id", null);
-			pn.navigator.history_vars.url = '{$fs(91)->dir}';
-			pn.navigator.history_vars.title = '{$this->app->settings->site['title']} - {$fs(91)->title}';
-			pn.navigator.url = '{$fs(91)->dir}';
-			pn.loader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "id": null });
-			pn.navigator.pushState();
-		});
-		EFO;
+		return <<<HTML
+		//<script>
+		if (document.getElementById("js-input_btunew")){
+			document.getElementById("js-input_btunew").addEventListener("click", function () {
+				pn.prependItem({
+						"attachements": 1,
+						"beneficial": "نقدي",
+						"category": "رواتب: رواتب",
+						"date": "2024-01-25",
+						"details": "FFFFFFCUK",
+						"id": 7203,
+						"positive": true,
+						"value": "(1,000.00)"
+					})
+				
+				/* pn.clearActiveItem();
+				pn.navigator.setProperty("id", null);
+				pn.navigator.history_vars.url = '{$fs(91)->dir}';
+				pn.navigator.history_vars.title = '{$this->app->settings->site['title']} - {$fs(91)->title}';
+				pn.navigator.url = '{$fs(91)->dir}';
+				pn.contentLoader(pn.navigator.history_vars.url, pn.navigator.history_vars.title, { "id": null });
+				pn.navigator.pushState();
+				 */
+			})
+		};
+		//</script>
+		HTML;
 	}
 }
