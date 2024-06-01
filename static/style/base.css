@@ -838,7 +838,7 @@ span.vs-remove {
 
 
 .split-view>div.panel>div a.flash {
-	animation: yellowflash-bg 3s;
+	animation: flash 1s step-start 0s 4;
 }
 
 
@@ -930,7 +930,6 @@ span.loadingScreen-placeholder.title::after {
 	top: 15px
 }
 
-
 #PanelNavigator-Body.busy {
 	cursor: wait;
 }
@@ -959,22 +958,9 @@ span.loadingScreen-placeholderBody>span:last-child {
 	width: 33%;
 }
 
-@keyframes yellowflash-bg {
-	0% {
-		background: hsl(60, 90%, 80%);
-		outline: solid 2px hsl(60, 100%, 50%);
-		;
-	}
-
+@keyframes flash {
 	50% {
 		background: hsl(60, 90%, 80%);
-		outline: solid 2px hsl(60, 100%, 50%);
-		;
-	}
-
-	100% {
-		background: transparent;
-		outline: solid 2px transparent;
 	}
 }
 

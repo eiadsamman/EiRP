@@ -5,6 +5,8 @@ use System\Template\Gremium;
 use System\Finance\Account;
 use System\SmartListObject;
 
+
+
 $predefined  = new \System\Finance\PredefinedRules($app);
 $defines     = $predefined->incomeRules();
 $accounting  = new \System\Finance\Accounting($app);
@@ -165,9 +167,8 @@ if ($app->xhttp) {
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
 						<input name="beneficiary" id="beneficiary" type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
-							data-source="_/financeBeneficiaryList/slo/<?= md5(session_id() . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" />
-						<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo=":LIST"
-							data-source="_/userList/slo/<?= md5(session_id() . ($app->user->info->id)); ?>/slo_userList.a" />
+							data-source="_/FinanceBeneficiaryList/slo/<?= $app->id; ?>/slo_FinananceBeneficiaries.a" />
+						<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo=":LIST" data-source="_/UserList/slo/<?= $app->id; ?>/slo_userList.a" />
 						<!-- <button type="button" value="New" class="edge-right edge-left plus" id="js-input_add-benif"></button> -->
 					</div>
 				</label>
@@ -175,19 +176,18 @@ if ($app->xhttp) {
 
 
 			<div class="form">
-				<label style="min-width:300px">
+				<label style="min-width:300px;">
 					<h1>Amount</h1>
 					<div class="btn-set">
 						<input type="number" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="[\d-\/\*]*" min="0" inputmode="decimal" name="value" id="value" />
-						<?= "<span>{$app->user->account->currency->shortname}</span>" ?>
+						<span id="currency-hint"><?= "{$app->user->account->currency->shortname}" ?></span>
 					</div>
 				</label>
-				<label style="min-width:300px">
-					<h1>Exchange Rate</h1>
+				<label style="min-width:300px;display:none;" id="exchange-rates-form">
+					<h1>Exchange Rates</h1>
 					<div class="btn-set">
-						<input type="number" placeholder="Exchange rate" tabindex="-1" title="Exchange rate" pattern="[\d\.]*" min="0" inputmode="decimal" name="exchange-rates" id="exchange-rates" />
-
-						<span><a href="<?= $fs(87)->dir ?>">USD → EGP</a></span>
+						<span id="exchange-rates"></span>
+						<span><a href="<?= $fs(87)->dir ?>" id="exchange-rates-title">USD → EGP</a></span>
 					</div>
 				</label>
 			</div>

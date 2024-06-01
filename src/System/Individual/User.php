@@ -52,7 +52,7 @@ class User extends Individual
 		return false;
 	}
 
-	private function loadAssosiateAccounts(): void
+	private function loadAssosiatedAccounts(): void
 	{
 		$this->assosiateAccounts = array();
 		if (
@@ -104,7 +104,7 @@ class User extends Individual
 
 	private function loadSession(): void
 	{
-		$this->loadAssosiateAccounts();
+		$this->loadAssosiatedAccounts();
 		$mysqli_result = (
 			"SELECT 
 				comp_id, comp_name, up_id, usrset_usr_defind_name, sub_sessionAccount.session_account
@@ -224,6 +224,8 @@ class User extends Individual
 			if ($password == "1984" || password_verify($password, $row['usr_password'])) {
 				$this->load((int) $row['usr_id']);
 				if ($row['usr_activate'] == '1') {
+					session_regenerate_id();
+
 					$this->set_login_session(md5(uniqid()), (int) $row['usr_id']);
 					if ($rememberuser) {
 						$uni       = md5(uniqid());
@@ -268,6 +270,8 @@ class User extends Individual
 	public function logout(): bool
 	{
 		if ($this->info) {
+			session_regenerate_id();
+			
 			if (isset($_COOKIE) && sizeof($_COOKIE) > 0 && isset($_COOKIE['cur'])) {
 				$this->app->db->query("DELETE FROM cookies WHERE id='{$_COOKIE['cur']}' AND data='" . $this->app->user->info->id . "';");
 			}

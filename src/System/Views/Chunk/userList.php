@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace System\Views\Chunk;
 
-class userList extends \System\Views\Chunk\Chunk
+class UserList extends \System\Views\Chunk\Chunk
 {
 	protected function slo(): void
 	{

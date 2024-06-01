@@ -40,7 +40,15 @@ $SmartListObject  = new SmartListObject($app);
 	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js<?= $_v ?>"></script>
 	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js<?= $_v ?>"></script>
 	<script type="text/javascript" src="static/jquery/slo-1.4.js<?= $_v ?>"></script>
-	<script type="module" src="./static/javascript/modules/app.js"></script>
+	<script type="module">
+		import { Application, default as App } from "./static/javascript/modules/app.js";
+		import Account from "./static/javascript/modules/finance/account.js";
+		import Currency from "./static/javascript/modules/finance/currency.js";
+		App.ID = '<?= $app->id; ?>';
+		App.Instance = new Application(App.ID);
+		App.Account = new Account(<?= $app->user->company->id ?>,<?= $app->user->account->id; ?>,"<?= $app->user->account->name ?>",new Currency(<?= $app->user->account->currency->id ?>,"<?= $app->user->account->currency->name ?>","<?= $app->user->account->currency->shortname ?>","<?= $app->user->account->currency->symbol ?>"));
+	</script>
+
 	<?php
 	if (array_key_exists('css', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['css']);
@@ -97,9 +105,9 @@ $SmartListObject  = new SmartListObject($app);
 			<div>
 				<div>
 					<header>
-						<span class="btn-set"><input type="text" class="flex" id="PFSelector" data-slo=":LIST" data-source="_/menuListItems/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_listitems.a" placeholder="Goto page..." /></span>
+						<span class="btn-set"><input type="text" class="flex" id="PFSelector" data-slo=":LIST" data-source="_/MenuListItems/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_listitems.a" placeholder="Goto page..." /></span>
 					</header>
-					<div style="white-space:nowrap;" class="menu-items" data-chunk_source="_/menuListItems/html/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/menu_listitems.a" data-content_type="html"></div>
+					<div style="white-space:nowrap;" class="menu-items" data-chunk_source="_/MenuListItems/html/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/menu_listitems.a" data-content_type="html"></div>
 				</div>
 			</div>
 		</span>

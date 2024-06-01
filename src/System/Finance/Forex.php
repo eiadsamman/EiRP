@@ -11,15 +11,13 @@ class Forex
 
 	public function __construct(protected \System\App &$app)
 	{
-
 		$result = $this->app->db->query(
 			"SELECT 
 				curexg_from, curexg_value
 			FROM 
 				currency_exchange
 			WHERE
-				curexg_to = {$this->app->currency->id}
-			;"
+				curexg_to = {$this->app->currency->id};"
 		);
 		if ($result) {
 			while ($row = $result->fetch_row()) {
@@ -29,7 +27,6 @@ class Forex
 		unset($result);
 		unset($app);
 	}
-
 
 	public function exchange(int $from, int $to, float $value): float
 	{

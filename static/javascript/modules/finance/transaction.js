@@ -1,7 +1,6 @@
-
 import { Popup } from '../gui/popup.js';
 import App from '../app.js';
-import MathEvaluator from '../math-evaluator.js';
+//import MathEvaluator from '../math-evaluator.js';
 
 
 export default class Transaction {
@@ -16,7 +15,8 @@ export default class Transaction {
 	inputFieldsSorted = null;
 	description_field = null;
 	panelNavigator = null;
-	constructor(panelNavigator = null) {
+
+	constructor(panelNavigator) {
 		this.panelNavigator = panelNavigator;
 	}
 
@@ -25,6 +25,7 @@ export default class Transaction {
 		document.getElementById("js-input_edit")?.addEventListener("click", () => {
 		});
 
+		/* Printing function */
 		document.getElementById("js-input_print")?.addEventListener("click", function () {
 			const objPrintFrame = window.frames['plot-iframe'];
 			objPrintFrame.location = this.dataset.ploturl + "/?id=" + this.dataset.key;
@@ -35,6 +36,7 @@ export default class Transaction {
 			}
 		});
 
+		/* Open statement attachment popup */
 		document.getElementById("transAttachementsList")?.childNodes.forEach(elm => {
 			elm.addEventListener("click", (e) => {
 				e.preventDefault();
@@ -47,12 +49,11 @@ export default class Transaction {
 			});
 		});
 
+		/* Main application form */
 		this.formMain = document.getElementById("js-ref_form-main");
-
 		if (this.formMain == null) {
 			return;
 		}
-
 
 		/* const calc = new MathEvaluator(document.getElementById('value'));
 		if (calc.inputField)
@@ -84,6 +85,7 @@ export default class Transaction {
 
 		this.uploadController.update();
 
+		/* Get application form input field sorted by tabIndex value */
 		this.inputFields = this.formMain.querySelectorAll("input,textarea");
 		this.inputFieldsSorted = new Array();
 		let firstItemFocus = null;
@@ -101,7 +103,6 @@ export default class Transaction {
 							if (this.value.trim() == "") {
 								return;
 							}
-
 							if (field.tagName !== "TEXTAREA")
 								e.preventDefault();
 
@@ -110,7 +111,6 @@ export default class Transaction {
 								nextField.focus({ focusVisible: true, data: "Sex" });
 								nextField.selectionStart = nextField.selectionEnd = nextField.value.length
 							}
-
 							return false;
 						}
 					});
@@ -121,6 +121,7 @@ export default class Transaction {
 			}
 		}
 
+		/* Run SLO object excluding pre defined operation field */
 		this.slo_input = $("#js-ref_form-main [data-slo]").not("#js-defines");
 		this.slo_objects = this.slo_input.slo({
 			onselect: function (e) {
@@ -149,6 +150,9 @@ export default class Transaction {
 			this.addwin.show();
 		}); */
 
+		document.getElementById("currency-hint").addEventListener('animationend', function (e) {
+			e.target.classList.remove("flash");
+		});
 		document.getElementById("js-input_submit")?.addEventListener("click", () => {
 			this.post();
 		});
@@ -165,8 +169,93 @@ export default class Transaction {
 			/* this.value_field.focus(); */
 		}
 
-		this.slo_objects.getElementById("target-account").slo.events.onselect = (data) => {
+		/**
+		 * Receipt/Payment Application || Editing Application 
+		 * Determined if `statement-id` input field is presented in Editing Application
+		*/
+		let sourceAccount = this.slo_objects.getElementById("source-account");
+		let targetAccount = this.slo_objects.getElementById("target-account");
+		this.accountSelectionHandler = function (data, editing, caller) {
+			let againstAccount = false;
+			let account = App.Instance.assosiatedAccounts.find(el => {
+				return (el.id == parseInt(data.key) ? el : false);
+			});
+
+			if (editing) {
+				let statementNature = this.slo_objects.getElementById("statement-nature").slo.htmlhidden[0].value;
+				if (caller == "target") {
+					againstAccount = App.Instance.assosiatedAccounts.find(el => {
+						return (el.id == parseInt(sourceAccount.slo.htmlhidden[0].value) ? el : false);
+					});
+					if (account && statementNature == 1) {
+						document.getElementById("currency-hint").innerHTML = account.currency.shortname;
+					}
+				} else {
+					againstAccount = App.Instance.assosiatedAccounts.find(el => {
+						return (el.id == parseInt(targetAccount.slo.htmlhidden[0].value) ? el : false);
+					});
+					if (account && statementNature == 2) {
+						document.getElementById("currency-hint").innerHTML = account.currency.shortname;
+					}
+				}
+			} else {
+				againstAccount = App.Account;
+			}
+
+			if (account, againstAccount) {
+				if (account.id == parseInt(data.key)) {
+					let forex = App.Instance.forex.exchangeRate(againstAccount.currency.id, account.currency.id);
+					if (againstAccount.currency.id == account.currency.id) {
+						document.getElementById("exchange-rates-form").style.display = "none";
+					} else if (forex) {
+						document.getElementById("exchange-rates-form").style.display = "block";
+						if (forex[0] > forex[1]) {
+							document.getElementById("exchange-rates").innerText = forex[0] / forex[1];
+							document.getElementById("exchange-rates-title").innerHTML = againstAccount.currency.shortname + " → " + account.currency.shortname;
+						} else {
+							document.getElementById("exchange-rates").innerText = forex[1] / forex[0];
+							document.getElementById("exchange-rates-title").innerHTML = account.currency.shortname + " → " + againstAccount.currency.shortname;
+						}
+						if (editing)
+							document.getElementById("currency-hint").classList.add("flash");
+
+					}
+				}
+			}
 		}
+		if (document.getElementById("statement-id")) {
+			if (targetAccount) {
+				targetAccount.slo.events.onselect = (data) => {
+					this.accountSelectionHandler(data, true, "target");
+				}
+				targetAccount.slo.events.ondeselect = (data) => {
+					document.getElementById("exchange-rates-form").style.display = "none";
+				};
+			}
+			if (sourceAccount) {
+				sourceAccount.slo.events.onselect = (data) => {
+					this.accountSelectionHandler(data, true, "source");
+				}
+				sourceAccount.slo.events.ondeselect = (data) => {
+					document.getElementById("exchange-rates-form").style.display = "none";
+				};
+			}
+		} else {
+			if (targetAccount) {
+				targetAccount.slo.events.onselect = (data) => {
+					this.accountSelectionHandler(data, false, "target");
+				}
+				targetAccount.slo.events.ondeselect = (data) => {
+					document.getElementById("exchange-rates-form").style.display = "none";
+				};
+			}
+		}
+
+
+
+
+
+
 
 		this.slo_objects.getElementById("individual").slo.events.ondeselect = () => {
 			$("#beneficiary").prop("readonly", false);
@@ -315,25 +404,22 @@ export default class Transaction {
 				const payload = await response.json();
 				this.busy = false;
 				if (payload.result == true) {
-					if (payload.type == "insert") {
+					$("#issuer-account-balance").html(payload.balance);
+					$("#jqroot_bal").html(payload.balance + " " + payload.currency);
+
+					if (payload.type == "receipt" || payload.type == "payment") {
 						messagesys.success("Transaction `" + payload.insert_id + "` posted successfully");
 						$("#jQoutput").prepend(
 							"<tr>" +
 							"<td>" + payload.insert_id + "</td>" +
-							"<td align=\"right\">" + this.value_field.value + "</td>" +
-							"<td>" + this.slo_objects.getElementById("beneficiary").slo.get()['value'] + "</td>" +
+							"<td align=\"right\">" + App.Instance.numberFormat(formData.get("value"), 2) + "</td>" +
+							"<td>" + formData.get("beneficiary[0]") + "</td>" +
 							"</tr>"
 						);
 						this.clearFields();
 						this.uploadController.clean();
 						this.slo_objects.getElementById("beneficiary").slo.focus();
-					} else {
-						messagesys.success("Transaction `" + payload.insert_id + "` modified successfully");
-					}
-					$("#issuer-account-balance").html(payload.balance);
-					$("#jqroot_bal").html(payload.balance + " " + payload.currency);
 
-					if (payload.type == "receipt" || payload.type == "payment") {
 						this.panelNavigator.prependItem({
 							"attachements": formData.getAll("attachments[]").length,
 							"beneficial": formData.get("beneficiary[0]"),
@@ -342,10 +428,10 @@ export default class Transaction {
 							"details": formData.get("description"),
 							"id": payload.insert_id,
 							"positive": payload.type == "receipt",
-							"value": (payload.type == "payment" ? "(" : "") + App.numberFormat(formData.get("value"), 2) + (payload.type == "payment" ? ")" : "")
+							"value": (payload.type == "payment" ? "(" : "") + App.Instance.numberFormat(formData.get("value"), 2) + (payload.type == "payment" ? ")" : "")
 						})
 					} else if (payload.type == "update") {
-
+						messagesys.success("Transaction `" + payload.insert_id + "` modified successfully");
 					}
 
 				} else {

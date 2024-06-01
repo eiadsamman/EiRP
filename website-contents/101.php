@@ -1,5 +1,6 @@
 <?php
 use System\Finance\AccountRole;
+use System\Finance\Forex;
 use System\Template\Gremium;
 use System\Finance\Account;
 use System\SmartListObject;
@@ -53,7 +54,7 @@ if ($app->xhttp) {
 			if (isset($_POST['attachments']) && is_array($_POST['attachments'])) {
 				$transaction->attachments($_POST['attachments']);
 			}
-			
+
 			if ($transaction->edit((int) $_POST['statement-id'])) {
 				$balance             = $app->user->account->getBalance();
 				$result['result']    = true;
@@ -151,11 +152,18 @@ if ($app->xhttp) {
 	$grem->article()->open();
 	$current_date = new DateTime();
 	$current_date = $current_date->format("Y-m-d");
+	$forex        = new Forex($app);
+	$forex        = $forex->table();
+
+	$a = $forex[$read->creditor->currency->id];
+	$b = $forex[$read->debitor->currency->id];
+	unset($forex);
+
 	?>
 	<form name="js-ref_form-main" id="js-ref_form-main" action="<?= $fs()->dir; ?>">
 		<input type="hidden" name="challenge" value="<?= uniqid(); ?>" />
 		<input type="hidden" name="objective" value="transaction" />
-		<input type="hidden" name="statement-id" value="<?= $read->id; ?>" />
+		<input type="hidden" name="statement-id" id="statement-id" value="<?= $read->id; ?>" />
 
 		<div class="form predefined">
 			<label style="min-width:200px;flex:2">
@@ -174,7 +182,7 @@ if ($app->xhttp) {
 			<label style="min-width:200px;flex:1" for="">
 				<h1>Status</h1>
 				<div class="btn-set">
-					<label><input type="checkbox" name="record-status" name="status" id="status" <?= $read->canceled ? "" : " checked=\"checked\" "; ?> /> Open</label>
+					<label><input type="checkbox" name="record-status" name="status" id="status" <?= $read->canceled ? "" : " checked=\"checked\" "; ?> /> Posted</label>
 				</div>
 			</label>
 		</div>
@@ -219,25 +227,31 @@ if ($app->xhttp) {
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
 					<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="5" data-slo=":LIST"
-						data-source="_/financeBeneficiaryList/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" name="beneficiary" id="beneficiary" value="<?= $read->beneficiary ?>"
+						data-source="_/FinanceBeneficiaryList/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a" name="beneficiary" id="beneficiary" value="<?= $read->beneficiary ?>"
 						data-slodefaultid="<?= $read->beneficiary ?>" />
 
-					<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo=":LIST"
-						data-source="_/userList/slo/<?= md5(session_id() . ($app->user->info->id)); ?>/slo_userList.a" value="<?= $read->individual ? $read->individual->fullName() : ""; ?>"
-						data-slodefaultid="<?= $read->individual ? $read->individual->id : ""; ?>" />
+					<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo=":LIST" data-source="_/UserList/slo/<?= $app->id; ?>/slo_userList.a"
+						value="<?= $read->individual ? $read->individual->fullName() : ""; ?>" data-slodefaultid="<?= $read->individual ? $read->individual->id : ""; ?>" />
 				</div>
 			</label>
 		</div>
 
 		<div class="form">
-			<label style="min-width:300px">
+			<label style="min-width:300px;">
 				<h1>Amount</h1>
 				<div class="btn-set">
-					<input type="number" placeholder="Payment value" data-required tabindex="6" class="flex" data-touch="101" title="Transaction value" pattern="\d*" min="0" inputmode="decimal" name="value" id="value" value="<?= $read->value; ?>" />
-					<?= "<span>{$app->user->account->currency->shortname}</span>" ?>
+					<input type="number" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" pattern="[\d-\/\*]*" min="0" inputmode="decimal" name="value" id="value"
+						value="<?= $read->value; ?>" />
+					<span id="currency-hint"><?= "{$app->user->account->currency->shortname}" ?></span>
 				</div>
 			</label>
-			<label style="min-width:300px"></label>
+			<label style="min-width:300px;<?= ($read->creditor->currency->id != $read->debitor->currency->id ? "display:block;" : "display:none;"); ?>" id="exchange-rates-form">
+				<h1>Exchange Rates</h1>
+				<div class="btn-set">
+					<span id="exchange-rates"><?= ($a < $b ? $b / $a : $a / $b); ?></span>
+					<span><a href="<?= $fs(87)->dir ?>" id="exchange-rates-title">USD → EGP</a></span>
+				</div>
+			</label>
 		</div>
 
 		<div class="form">

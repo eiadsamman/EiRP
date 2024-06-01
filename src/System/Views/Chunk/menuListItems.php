@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace System\Views\Chunk;
 
-class menuListItems extends \System\Views\Chunk\Chunk
+class MenuListItems extends \System\Views\Chunk\Chunk
 {
 	protected function json(): void
 	{

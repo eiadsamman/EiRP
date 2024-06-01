@@ -37,6 +37,10 @@
 	/* background-color: var(--color-faint-white); */
 }
 
+.btn-set>span.flash {
+	animation: flash 1s step-start 0s 4;
+}
+
 .btn-set>label {
 	height: 36px;
 }
@@ -110,7 +114,8 @@
 	padding: 0px 20px;
 }
 
-.btn-set>input[type=button],.btn-set>a {
+.btn-set>input[type=button],
+.btn-set>a {
 	padding: 0px 15px;
 	font-size: 1em;
 	cursor: pointer;
@@ -453,7 +458,7 @@ input[type="number"]::-webkit-outer-spin-button {
  */
 
 
- .slo-container {
+.slo-container {
 	position: absolute;
 	min-width: 100%;
 	display: none;

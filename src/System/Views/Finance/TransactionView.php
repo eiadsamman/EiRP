@@ -49,6 +49,7 @@ class TransactionView extends \System\Views\PanelView
 			<script type="module">
 				import { PanelNavigator } from './static/javascript/modules/panel-navigator.js';
 				import Transaction from './static/javascript/modules/finance/transaction.js';
+				import Account from './static/javascript/modules/finance/account.js';
 
 				let pn = new PanelNavigator();
 				pn.sourceUrl = "{$fs(121)->dir}";
@@ -94,7 +95,7 @@ class TransactionView extends \System\Views\PanelView
 						"beneficial": "نقدي",
 						"category": "رواتب: رواتب",
 						"date": "2024-01-25",
-						"details": "FFFFFFCUK",
+						"details": "Test",
 						"id": 7203,
 						"positive": true,
 						"value": "(1,000.00)"

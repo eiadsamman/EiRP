@@ -13,16 +13,17 @@ use System\Views\Views;
 //$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);
 class App
 {
+	public string $id;
 	public MySQL $db;
 	public Individual\User $user;
 
 	public Currency $currency;
 	public ?array $currencies;
 
-	public $prefixList = array();
+	public array $prefixList = array();
 
 	public string $subdomain;
-	public $base_permission = 0;
+	public int $base_permission = 0;
 	public ResponseStatus $responseStatus;
 	public bool $xhttp = false;
 	public \System\Log\ErrorHandler $errorHandler;
@@ -44,6 +45,8 @@ class App
 
 	function __construct(string $root, string $settings_file, ?bool $cache = true)
 	{
+
+		
 		/* Set file system root */
 		$this->root = $root . DIRECTORY_SEPARATOR;
 
@@ -81,6 +84,9 @@ class App
 
 		/* Start session */
 		session_start();
+		
+
+		$this->id = md5(session_id());
 
 		/* Application session User */
 		$this->user = new Individual\User($this);
@@ -209,14 +215,14 @@ class App
 		$this->base_permission = 2;
 		return true;
 		/* $lowsetlevel = $this->db->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
-								if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
-									$this->base_permission = (int) $rowlowsetlevel['per_id'];
-									return true;
-								} else {
-									$this->errorHandler->customError("Failed to fetch system base permission");
-									$this->responseStatus->NotFound->response();
-								}
-								return false; */
+											if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
+												$this->base_permission = (int) $rowlowsetlevel['per_id'];
+												return true;
+											} else {
+												$this->errorHandler->customError("Failed to fetch system base permission");
+												$this->responseStatus->NotFound->response();
+											}
+											return false; */
 	}
 	public function buildPrefixList(): bool
 	{

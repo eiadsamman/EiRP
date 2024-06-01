@@ -1,13 +1,46 @@
-export class Application {
-	id = "129-j1f2";
+import Forex from "./finance/forex.js";
+import Account from "./finance/account.js";
+import Currency from "./finance/currency.js";
 
-	constructor() {
+export class Application {
+	id = null;
+	forex = null;
+	assosiatedAccounts = [];
+
+	constructor(id) {
+		this.id = id;
 		document.addEventListener("DOMContentLoaded", async () => {
 			await this.chunkLoaders();
 			this.dispatchEvents();
 		});
+		this.forex = new Forex(this.id);
+		this.loadAssosiatedAccount();
 	}
 
+	loadAssosiatedAccount() {
+		fetch('_/UserAssosiatedAccounts/json/' + this.id + '/json_UserAssosiatedAccounts.a', {
+			method: 'GET',
+			cache: "default", /* force-cache, reload, default */
+			mode: "same-origin",
+			headers: {
+				'Accept': "application/json",
+				"Content-Type": "application/json",
+			},
+		})
+			.then(response => response.json())
+			.then((payload) => {
+				payload.forEach(account => {
+					this.assosiatedAccounts.push(new Account(
+						account.company,
+						account.id,
+						account.name,
+						new Currency(account.currency.id, account.currency.name, account.currency.shortname, account.currency.symbol)
+					));
+				});
+			}).catch((err) => {
+				console.log(err);
+			});
+	}
 	async chunkLoaders() {
 		let chunkElements = document.querySelectorAll("[data-chunk_source]");
 		await Promise.all([...chunkElements].map(async (el) => {
@@ -21,7 +54,7 @@ export class Application {
 		return new Promise((resolve) => {
 			fetch(url, {
 				method: 'GET',
-				cache: "default",/* force-cache, reload, default */
+				cache: "default", /* force-cache, reload, default */
 				mode: "same-origin",
 				headers: {
 					'Accept': isTypeJson ? "application/json" : "text/html",
@@ -128,9 +161,11 @@ export class Navigator {
 		return (served ? "/?" : "") + uri;
 	}
 
-}
+};
 
 
-const App = new Application();
-export default App;
-
+export default {
+	ID: 0,
+	Instance: null,
+	Account: null
+};
