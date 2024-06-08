@@ -16,13 +16,13 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 		}
 
 		if ($new_premissions) {
-			/* Changin own account is forbiden */
-			if (($modify_user->info->id != $app->user->info->id)) {
+			/* Changing own account is forbiden */
+			if (($modify_user->info->id === $app->user->info->id)) {
 				echo "00";
 				exit;
 			}
 			/* Change target account permissions to higher levels than current account isn't allowed */
-			if (($new_premissions->id > $app->user->info->permissions)) {
+			if (($new_premissions->level > $app->user->info->level)) {
 				echo "00";
 				exit;
 			}
@@ -54,8 +54,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 		}
 
 
-		$pass = password_hash($_POST['_password'], PASSWORD_BCRYPT, ["cost" => "12"]);
-		;
+		$pass = password_hash($_POST['_password'], PASSWORD_BCRYPT, ["cost" => "12"]);;
 		if (
 			$r = $app->db->query(
 				"UPDATE users SET 
@@ -134,11 +133,11 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 	if ($modify_user->loaded && isset($_POST['invoke'], $_POST['id'], $_POST['relative']) && $_GET['modify-user'] == $_POST['relative'] && $_GET['modify-user'] == $modify_user->info->id && $_POST['invoke'] == "add-account") {
 		$id = (int) $_POST['id'];
 		$r  = $app->db->query("SELECT 
-			prt_id,prt_name,ptp_name,cur_shortname,comp_name,ptp_id,comp_id,upr_prt_id
+			prt_id, prt_name, ptp_name, cur_shortname, comp_name, ptp_id, comp_id, upr_prt_id
 		FROM 
-			`acc_accounts` 
-				LEFT JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id='{$modify_user->info->id}'
-				JOIN `acc_accounttype` ON ptp_id=prt_type
+			acc_accounts 
+				LEFT JOIN user_partition ON upr_prt_id = prt_id AND upr_usr_id = '{$modify_user->info->id}'
+				JOIN acc_accounttype ON ptp_id=prt_type
 				JOIN currencies ON cur_id = prt_currency
 				JOIN companies ON comp_id=prt_company_id
 		WHERE 
@@ -255,8 +254,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 		<input type="hidden" name="token" value="<?php echo session_id(); ?>" />
 		<div class="btn-set">
 			<span>Employee Name \ ID</span>
-			<input type="text" data-slo="B001" class="flex" value="<?php echo isset($modify_user) && $modify_user->loaded ? $modify_user->info->username : ""; ?>" id="inpUserSelection"
-				placeholder="Select user..." /><button type="submit">Modify</button>
+			<input type="text" data-slo="B001" class="flex" value="<?php echo isset($modify_user) && $modify_user->loaded ? $modify_user->info->username : ""; ?>" id="inpUserSelection" placeholder="Select user..." /><button type="submit">Modify</button>
 		</div>
 	</form>
 </div>
@@ -302,9 +300,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 							<?php } else { ?>
 								<tr>
 									<th>Permissions</th>
-									<td class="btn-set"><input type="text" name="perm" placeholder="Permissions..." id="ListObjectPerm" class="jQpermsel"
-											data-slodefaultid="<?= $app->permission($modify_user->info->permissions)->id; ?>" value="<?= $app->permission($modify_user->info->permissions)->name; ?>"
-											data-slo="PERM_LEVEL" class="flex" /></td>
+									<td class="btn-set"><input type="text" name="perm" placeholder="Permissions..." id="ListObjectPerm" class="jQpermsel" data-slodefaultid="<?= $app->permission($modify_user->info->permissions)->id; ?>" value="<?= $app->permission($modify_user->info->permissions)->name; ?>" data-slo="PERM_LEVEL" class="flex" /></td>
 								</tr>
 							<?php } ?>
 						</tbody>
@@ -321,8 +317,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 				<div id="FormCompanyModifyOverLay" style="display:none;position: absolute;background-color: rgba(230,230,234,0.7);top:0px;left:0px;right:0px;bottom: 0px;z-index: 8;cursor: wait;">
 				</div>
 				<div class="btn-set" style="position: sticky;top:112px;z-index: 3;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
-					<span class="flex">Registered Commpanies</span><input class="flex" data-slo="COMPANY" id="ListObjectAddCompany" type="text" placeholder="Add Company..." name=""><button
-						id="FormCompanyModifySubmitButton" type="button">Save</button>
+					<span class="flex">Registered Commpanies</span><input class="flex" data-slo="COMPANY" id="ListObjectAddCompany" type="text" placeholder="Add Company..." name=""><button id="FormCompanyModifySubmitButton" type="button">Save</button>
 				</div>
 
 				<div style="padding-left:10px;margin-top:10px;/*overflow-y: auto;max-height: 253px;*/">
@@ -358,8 +353,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 				<div id="FormCompanyModifyOverLay" style="display:none;position: absolute;background-color: rgba(230,230,234,0.7);top:0px;left:0px;right:0px;bottom: 0px;z-index: 8;cursor: wait;">
 				</div>
 				<div class="btn-set" style="position: sticky;top:112px;z-index: 2;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
-					<span class="flex">Registered Cost Centers</span><input class="flex" data-slo="COSTCENTER" id="ListObjectAddCostCenter" type="text" placeholder="Add Cost Center..." name=""><button
-						id="FormCostCenterModifySubmitButton" type="button">Save</button>
+					<span class="flex">Registered Cost Centers</span><input class="flex" data-slo="COSTCENTER" id="ListObjectAddCostCenter" type="text" placeholder="Add Cost Center..." name=""><button id="FormCostCenterModifySubmitButton" type="button">Save</button>
 				</div>
 
 				<div style="padding-left:10px;margin-top:10px;/*overflow-y: auto;max-height: 253px;*/">
@@ -394,8 +388,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 			<input type="hidden" name="invoke" value="accounts">
 			<div style="margin-top:0px;margin-bottom:5px;">
 				<div class="btn-set" style="position: sticky;top:112px;z-index: 1;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
-					<span class="flex">Registered Accounts</span><input class="flex" data-slo="ACC_ALL" id="ListObjectAddAccount" type="text" placeholder="Add Account..." name=""><button
-						id="FormAccountModifySubmitButton" type="button">Save</button>
+					<span class="flex">Registered Accounts</span><input class="flex" data-slo="ACC_ALL" id="ListObjectAddAccount" type="text" placeholder="Add Account..." name=""><button id="FormAccountModifySubmitButton" type="button">Save</button>
 				</div>
 				<div style="padding-left:10px;margin-top:10px;/*overflow-y: auto;max-height: 253px;*/">
 					<table class="hover">
@@ -424,7 +417,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 									comp_name,ptp_name,prt_name,cur_id;");
 							if ($r) {
 								while ($row = $r->fetch_assoc()) {
-									echo "<tr>";
+									echo "<tr data-account_id=\"{$row['prt_id']}\">";
 									echo "<td class=\"op-remove noselect\"><span></span></td>";
 									echo "<td>{$row['comp_name']}<input type=\"hidden\" name=\"a[{$row['prt_id']}]\" value=\"\" /></td>";
 									echo "<td>{$row['ptp_name']}: {$row['prt_name']}</td>";
@@ -448,10 +441,10 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 
 
 <script>
-	$(function () {
+	$(function() {
 		<?php if (isset($modify_user) && $modify_user->loaded) { ?>
 			var ListObjectAccounts = $("#ListObjectAddAccount").slo({
-				onselect: function (value) {
+				onselect: function(value) {
 					if (Operations.accounts.status == 1) {
 						return false;
 					}
@@ -466,19 +459,24 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 							"id": value.key,
 							"relative": <?php echo $modify_user->info->id; ?>
 						}
-					}).done(function (data) {
+					}).done(function(data) {
 						Operations.accounts.stop();
 						if (data == "0") {
 							messagesys.failure("Assigning account failed");
 						} else if (data == "1") {
-							messagesys.failure("Account is already assigned");
+							let row = $("#FormAccountList").find(`[data-account_id='${value.key}']`);
+							row.prependTo("#FormAccountList");
+							/* row.get(0).scrollIntoView({
+								block: "start",
+								behavior: "smooth"
+							}); */
 						} else {
 							$("#FormAccountList").prepend(data);
 						}
-					}).fail(function (a, b, c) {
+					}).fail(function(a, b, c) {
 						messagesys.failure("Failed to execute operation");
-					}).always(function () {
-						// overlay.hide();
+					}).always(function() {
+						/* overlay.hide(); */
 					});
 				},
 				limit: 6,
@@ -487,7 +485,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 
 
 			var ListObjectAddCostCenter = $("#ListObjectAddCostCenter").slo({
-				onselect: function (value) {
+				onselect: function(value) {
 					if (Operations.costcenter.status == 1) {
 						return false;
 					}
@@ -502,7 +500,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 							"id": value.key,
 							"relative": <?php echo $modify_user->info->id; ?>
 						}
-					}).done(function (data) {
+					}).done(function(data) {
 						Operations.costcenter.stop();
 						if (data == "0") {
 							messagesys.failure("Assigning cost center failed");
@@ -511,9 +509,9 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						} else {
 							$("#FormCostCenterList").prepend(data);
 						}
-					}).fail(function (a, b, c) {
+					}).fail(function(a, b, c) {
 						messagesys.failure("Failed to execute operation");
-					}).always(function () {
+					}).always(function() {
 						// overlay.hide();
 					});
 				},
@@ -522,7 +520,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 			});
 
 			var ListObjectCompanies = $("#ListObjectAddCompany").slo({
-				onselect: function (value) {
+				onselect: function(value) {
 					if (Operations.companies.status == 1) {
 						return false;
 					}
@@ -537,7 +535,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 							"id": value.key,
 							"relative": <?php echo $modify_user->info->id; ?>
 						}
-					}).done(function (data) {
+					}).done(function(data) {
 						Operations.companies.stop();
 						if (data == "0") {
 							messagesys.failure("Assigning company failed");
@@ -546,9 +544,9 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						} else {
 							$("#FormCompanyList").prepend(data);
 						}
-					}).fail(function (a, b, c) {
+					}).fail(function(a, b, c) {
 						messagesys.failure("Failed to execute operation");
-					}).always(function () {
+					}).always(function() {
 						// overlay.hide();
 					});
 				},
@@ -562,7 +560,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						"controls": [$("#FormAccountModifySubmitButton"), ListObjectAccounts],
 						"form": $("#FormAccountModify")
 					},
-					"run": function () {
+					"run": function() {
 						if (this.status == 1) {
 							return;
 						}
@@ -570,7 +568,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						for (var dom in this.dom.controls)
 							this.dom.controls[dom].prop("disabled", true);
 					},
-					"stop": function () {
+					"stop": function() {
 						if (this.status == 0) {
 							return;
 						}
@@ -585,7 +583,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						"controls": [$("#FormCompanyModifySubmitButton"), ListObjectCompanies],
 						"form": $("#FormCompanyModify")
 					},
-					"run": function () {
+					"run": function() {
 						if (this.status == 1) {
 							return;
 						}
@@ -593,7 +591,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						for (var dom in this.dom.controls)
 							this.dom.controls[dom].prop("disabled", true);
 					},
-					"stop": function () {
+					"stop": function() {
 						if (this.status == 0) {
 							return;
 						}
@@ -608,7 +606,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						"controls": [$("#FormCostCenterModifySubmitButton"), ListObjectCompanies],
 						"form": $("#FormCostCenter")
 					},
-					"run": function () {
+					"run": function() {
 						if (this.status == 1) {
 							return;
 						}
@@ -616,7 +614,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						for (var dom in this.dom.controls)
 							this.dom.controls[dom].prop("disabled", true);
 					},
-					"stop": function () {
+					"stop": function() {
 						if (this.status == 0) {
 							return;
 						}
@@ -631,7 +629,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						"controls": [$("#FormInfoModifySubmitButton")],
 						"form": $("#FormInfoModify")
 					},
-					"run": function () {
+					"run": function() {
 						if (this.status == 1) {
 							return;
 						}
@@ -639,7 +637,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						for (var dom in this.dom.controls)
 							this.dom.controls[dom].prop("disabled", true);
 					},
-					"stop": function () {
+					"stop": function() {
 						if (this.status == 0) {
 							return;
 						}
@@ -650,17 +648,17 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 				}
 			};
 
-			$("#FormAccountList").on('click', 'tr > td.op-remove', function () {
+			$("#FormAccountList").on('click', 'tr > td.op-remove', function() {
 				$(this).parent().remove();
 			});
-			$("#FormCompanyList").on('click', 'tr > td.op-remove', function () {
+			$("#FormCompanyList").on('click', 'tr > td.op-remove', function() {
 				$(this).parent().remove();
 			});
-			$("#FormCostCenter").on('click', 'tr > td.op-remove', function () {
+			$("#FormCostCenter").on('click', 'tr > td.op-remove', function() {
 				$(this).parent().remove();
 			});
 
-			$("#FormInfoModifySubmitButton").on('click', function () {
+			$("#FormInfoModifySubmitButton").on('click', function() {
 				if (Operations.info.status == 1) {
 					return false;
 				}
@@ -671,7 +669,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 					type: 'POST',
 					url: '<?php echo $fs()->dir . "?modify-user={$modify_user->info->id}&token=" . session_id(); ?>',
 					data: Operations.info.dom.form.serialize()
-				}).done(function (data) {
+				}).done(function(data) {
 					if (data == "00") {
 						messagesys.failure("Updating user information failed");
 					} else if (data == "01") {
@@ -687,14 +685,15 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 					} else {
 						messagesys.failure("Uknown error");
 					}
-				}).fail(function (a, b, c) {
+					Operations.info.stop();
+				}).fail(function(a, b, c) {
 					messagesys.failure("Failed to execute operation");
-				}).always(function () {
+				}).always(function() {
 					overlay.hide();
 				});
 			});
 
-			$("#FormAccountModifySubmitButton").on('click', function () {
+			$("#FormAccountModifySubmitButton").on('click', function() {
 				if (Operations.accounts.status == 1) {
 					return false;
 				}
@@ -705,19 +704,19 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 					type: 'POST',
 					url: '<?php echo $fs()->dir . "?modify-user={$modify_user->info->id}&token=" . session_id(); ?>',
 					data: Operations.accounts.dom.form.serialize()
-				}).done(function (data) {
+				}).done(function(data) {
 					Operations.accounts.stop();
 					if (data == "1")
 						messagesys.success("Accounts modifications saved");
 					else
 						messagesys.failure("Accounts modifications saving failed");
-				}).fail(function (a, b, c) {
+				}).fail(function(a, b, c) {
 					messagesys.failure("Failed to execute operation");
-				}).always(function () {
+				}).always(function() {
 					overlay.hide();
 				});
 			});
-			$("#FormCompanyModifySubmitButton").on('click', function () {
+			$("#FormCompanyModifySubmitButton").on('click', function() {
 				if (Operations.companies.status == 1) {
 					return false;
 				}
@@ -728,19 +727,19 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 					type: 'POST',
 					url: '<?php echo $fs()->dir . "?modify-user={$modify_user->info->id}&token=" . session_id(); ?>',
 					data: Operations.companies.dom.form.serialize()
-				}).done(function (data) {
+				}).done(function(data) {
 					Operations.companies.stop();
 					if (data == "1")
 						messagesys.success("Companies modifications saved");
 					else
 						messagesys.failure("Companies modifications saving failed");
-				}).fail(function (a, b, c) {
+				}).fail(function(a, b, c) {
 					messagesys.failure("Failed to execute operation");
-				}).always(function () {
+				}).always(function() {
 					overlay.hide();
 				});
 			});
-			$("#FormCostCenterModifySubmitButton").on('click', function () {
+			$("#FormCostCenterModifySubmitButton").on('click', function() {
 				if (Operations.costcenter.status == 1) {
 					return false;
 				}
@@ -751,29 +750,29 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 					type: 'POST',
 					url: '<?php echo $fs()->dir . "?modify-user={$modify_user->info->id}&token=" . session_id(); ?>',
 					data: Operations.costcenter.dom.form.serialize()
-				}).done(function (data) {
+				}).done(function(data) {
 					Operations.costcenter.stop();
 					if (data == "1")
 						messagesys.success("Cost center modifications saved");
 					else
 						messagesys.failure("Cost center modifications saving failed");
-				}).fail(function (a, b, c) {
+				}).fail(function(a, b, c) {
 					messagesys.failure("Failed to execute operation");
-				}).always(function () {
+				}).always(function() {
 					overlay.hide();
 				});
 			});
 
 
-			$("#FormAccountModify").on('submit', function (e) {
+			$("#FormAccountModify").on('submit', function(e) {
 				e.preventDefault();
 				return false;
 			});
-			$("#FormCostCenter").on('submit', function (e) {
+			$("#FormCostCenter").on('submit', function(e) {
 				e.preventDefault();
 				return false;
 			});
-			$("#FormCompanyModify").on('submit', function (e) {
+			$("#FormCompanyModify").on('submit', function(e) {
 				e.preventDefault();
 				return false;
 			});
@@ -784,11 +783,11 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 		<?php } ?>
 
 		var userinput = $("#inpUserSelection").slo({
-			onselect: function (value) {
+			onselect: function(value) {
 				$("#ModifyUser").val(value.key);
 				$("#frmUserSelection").submit();
 			},
-			ondeselect: function () {
+			ondeselect: function() {
 				$("#UserDetailts").html("");
 			},
 			limit: 10
@@ -797,7 +796,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 		userinput.focus();
 
 
-		$(document).on('submit', ".jQform", function (e) {
+		$(document).on('submit', ".jQform", function(e) {
 			e.preventDefault();
 			var $this = $(this);
 			overlay.show();
@@ -805,7 +804,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 				type: 'GET',
 				url: $this.attr("action"),
 				data: $this.serialize()
-			}).done(function (data) {
+			}).done(function(data) {
 				var output;
 				try {
 					output = JSON.parse(data);
@@ -818,9 +817,9 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 				} else {
 					messagesys.success(output.message);
 				}
-			}).fail(function (a, b, c) {
+			}).fail(function(a, b, c) {
 				messagesys.failure("Failed to execute operation");
-			}).always(function () {
+			}).always(function() {
 				overlay.hide();
 			});
 			return false;

@@ -619,7 +619,7 @@ $addButton = (!isset($database['readonly']) || (isset($database['readonly']) && 
 	'<cite style="font-size:1em;justify-content:flex-end;margin-top:5px" class="btn-set"><button type="button" class="plus" id="jQbtnAdd" title="Add new record"> Add</button></cite>' : "");
 
 
-$grem_main = new Gremium(true, true);
+$grem_main = new Gremium(false, true);
 $grem_main->header()->serve(
 	"<h1>{$fs()->title}</h1>" .
 	"<ul><li style=\"font-size:0.8em;margin-top:3px;\"><a href=\"{$fs($fs()->parent)->dir}\">" . ($fs($fs()->parent)->title) . "</a></li></ul>" .

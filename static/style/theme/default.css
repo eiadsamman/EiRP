@@ -22,7 +22,7 @@
 
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
-	--bomtable-hover-color: #f0f0f6;
+	--bomtable-hover-color: hsl(60, 100%, 90%);
 	--bomtable-stripes-color: #fafafc;
 
 
@@ -46,7 +46,8 @@
 	--button_hover-bgcolor: hsl(206, 100%, 41%);
 	--button_focus-bgcolor: hsl(206, 100%, 42%);
 	--button_active-bgcolor: hsl(206, 100%, 37%);
-	--button_disabled-bgcolor: var(--static-bgcolor);
+	--button_disabled-bgcolor: var(--root-ribbon-background-color);
+	
 
 
 	--slo-menu-background-color: white;
@@ -84,7 +85,7 @@
 
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
-	--bomtable-hover-color: hsl(223, 23%, 25%);
+	--bomtable-hover-color: hsl(220, 30%, 30%);
 	--bomtable-stripes-color: #202940;
 
 
@@ -108,7 +109,7 @@
 	--button_hover-bgcolor: hsl(206, 100%, 41%);
 	--button_focus-bgcolor: hsl(206, 100%, 42%);
 	--button_active-bgcolor: hsl(206, 100%, 37%);
-	--button_disabled-bgcolor: var(--static-bgcolor);
+	--button_disabled-bgcolor: var(--root-ribbon-background-color);
 
 
 	--slo-menu-background-color: rgb(40, 40, 49);

@@ -6,8 +6,16 @@ namespace System\Finance\Transaction;
 
 use System\Exceptions\Finance\TransactionException;
 use System\Finance\Account;
+use System\Finance\Currency;
 use System\Finance\Forex;
 
+
+class ManualForexInstructions
+{
+	public function __construct(public Currency $exchangeFrom, public Currency $exchangeTo, public float $value)
+	{
+	}
+}
 
 class Instructions
 {
@@ -24,16 +32,31 @@ class Instructions
 	protected ?int $relation = null;
 	protected ?int $individual = null;
 	protected ?array $attachments = null;
-	public ?int $insert_id = null;
+	protected bool $isOverridenForex = false;
+	protected ?ManualForexInstructions $manualForexInstructions = null;
 
+	public ?int $insert_id = null;
 
 	public function __construct(protected \System\App &$app)
 	{
 	}
 
+
+	public function overrideForex(int $currency_from, int $currency_to, float $value): void
+	{
+		if ($value <= 0 || $currency_from == 0 || $currency_to == 0) {
+		} else {
+			$this->isOverridenForex        = true;
+			$this->manualForexInstructions = new ManualForexInstructions(
+				new Currency($currency_from),
+				new Currency($currency_to),
+				$value
+			);
+		}
+	}
+
 	public function attachments(?array $attachments = null): self
 	{
-
 		$this->attachments = array();
 		foreach ($attachments as $v) {
 			if ((int) $v > 0) {
@@ -253,10 +276,9 @@ abstract class Transaction extends Instructions
 			return false;
 
 		$stmt = $this->app->db->prepare("UPDATE uploads SET up_rel = NULL WHERE up_rel = ?;");
-		
+
 		$stmt->bind_param("i", $statementID);
 		return $stmt->execute();
-
 	}
 	private function processEdit(int $statementID): bool
 	{
@@ -273,7 +295,6 @@ abstract class Transaction extends Instructions
 				acm_reference = ?,
 				acm_realvalue = ?,
 				acm_realcurrency = ?,
-				acm_forex_rate = ?,
 				acm_rel = ?,
 				acm_party = ?,
 				acm_rejected = ?
@@ -281,16 +302,12 @@ abstract class Transaction extends Instructions
 				acm_id = ?;"
 		);
 
-		$dateTime       = $this->dateTime->format("Y-m-d");
-		$timeStamp      = (new \DateTime("now"))->format("Y-m-d H:i:s");
-		$openState      = $this->open ? 0 : 1;
-		$forex_exchange = $this->forex->exchange(
-			$this->issuer_account->currency->id,
-			$this->target_account->currency->id,
-			1
-		);
+		$dateTime  = $this->dateTime->format("Y-m-d");
+		$timeStamp = (new \DateTime("now"))->format("Y-m-d H:i:s");
+		$openState = $this->open ? 0 : 1;
+
 		$stmt->bind_param(
-			"iissisissdidiiii",
+			"iissisissdiiiii",
 
 			$this->individual,
 			$this->app->user->info->id,
@@ -303,7 +320,6 @@ abstract class Transaction extends Instructions
 			$this->reference,
 			$this->value,
 			$this->issuer_account->currency->id,
-			$forex_exchange,
 			$this->relation,
 			$this->app->user->company->id,
 			$openState,
@@ -321,19 +337,15 @@ abstract class Transaction extends Instructions
 
 	private function processPost(): bool
 	{
-		$stmt           = $this->app->db->prepare(
-			"INSERT INTO acc_main (acm_usr_id,acm_editor_id,acm_ctime,acm_time,acm_type,acm_beneficial,acm_category,acm_comments,acm_reference,acm_realvalue,acm_realcurrency,acm_forex_rate,acm_rel,acm_party
-			) VALUES (?,?,?,?,?,? ,?,?,?,?,?, ?,?,?);"
+		$stmt      = $this->app->db->prepare(
+			"INSERT INTO acc_main (acm_usr_id,acm_editor_id,acm_ctime,acm_time,acm_type,acm_beneficial,acm_category,acm_comments,acm_reference,acm_realvalue,acm_realcurrency,acm_rel,acm_party
+			) VALUES (?,?,?,?,? ,?,?,?,?,?, ?,?,?);"
 		);
-		$dateTime       = $this->dateTime->format("Y-m-d");
-		$timeStamp      = (new \DateTime("now"))->format("Y-m-d H:i:s");
-		$forex_exchange = $this->forex->exchange(
-			$this->issuer_account->currency->id,
-			$this->target_account->currency->id,
-			1
-		);
+		$dateTime  = $this->dateTime->format("Y-m-d");
+		$timeStamp = (new \DateTime("now"))->format("Y-m-d H:i:s");
+
 		$stmt->bind_param(
-			"iissisissdidii",
+			"iissisissdiii",
 			$this->individual,
 			$this->app->user->info->id,
 			$dateTime,
@@ -345,7 +357,6 @@ abstract class Transaction extends Instructions
 			$this->reference,
 			$this->value,
 			$this->issuer_account->currency->id,
-			$forex_exchange,
 			$this->relation,
 			$this->app->user->company->id
 		);
@@ -364,7 +375,7 @@ abstract class Transaction extends Instructions
 			return true;
 		}
 		if (sizeof($this->attachments) > 0) {
-			
+
 			$stmt = $this->app->db->prepare(
 				"UPDATE 
 					uploads 

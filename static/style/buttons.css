@@ -28,8 +28,16 @@
 	white-space: nowrap;
 }
 
+.btn-set>*.highlight {
+	background-color: var(--bomtable-hover-color);
+}
 
 /* #region - Components*/
+
+.btn-set>div {
+	padding: 0;
+	border: none;
+}
 
 .btn-set>span {
 	white-space: nowrap;
@@ -37,9 +45,13 @@
 	/* background-color: var(--color-faint-white); */
 }
 
-.btn-set>span.flash {
-	animation: flash 1s step-start 0s 4;
+.btn-set>span.at::before {
+	content: "@";
+	padding-right: 5px;
+	color: var(--root-font-lightcolor);
 }
+
+
 
 .btn-set>label {
 	height: 36px;
@@ -126,14 +138,13 @@
 }
 
 
-
-.btn-set>button:hover {
+.btn-set>button:not(:disabled):hover {
 	background-color: var(--button_hover-bgcolor);
 	text-decoration: none;
 	z-index: 14;
 }
 
-.btn-set>input[type=button]:hover {
+.btn-set>input[type=button]:not(:disabled):hover {
 	border-color: var(--input-hover_border-color);
 	z-index: 14;
 }
@@ -155,12 +166,12 @@
 	border-color: var(--input-hover_border-color);
 }
 
-.btn-set>button:active {
+.btn-set>button:not(:disabled):active {
 	transform: translateY(0.08rem);
 	z-index: 15;
 }
 
-.btn-set>input[type=button]:active {
+.btn-set>input[type=button]:not(:disabled):active {
 	border-color: var(--input-hover_border-color);
 	transform: translateY(0.08rem);
 	z-index: 15;
@@ -272,6 +283,7 @@
 	box-shadow: 0 0 4px 1px rgba(70, 220, 100, 0.4);
 	background-color: rgba(180, 255, 200, .1);
 }
+
 
 
 

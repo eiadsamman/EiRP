@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace System\Finance\Transaction;
 
-use System\Finance\Account;
 use System\Finance\Currency;
 use System\Profiles\AccountProfile;
 use System\Profiles\IndividualProfile;
-
 
 class StatementCategoryProperty
 {
@@ -26,31 +24,22 @@ class StatementProperty
 	public float $value;
 	public AccountProfile|bool $creditor;
 	public AccountProfile|bool $debitor;
-
-	public float $creditAmount;
-	public float $debitAmount;
-
-
+	public ?float $creditAmount;
+	public ?float $debitAmount;
+	public ?float $forexRate = 1;
 	public StatementCategoryProperty $category;
 	public Currency $currency;
-
 	public \DateTime $dateTime;
 	public ?string $beneficiary;
 	public ?string $description;
 	public ?string $reference = null;
-
 	public ?int $relation = null;
 	public ?IndividualProfile $individual = null;
-
 	public IndividualProfile $editor;
-
 	public array $attachments;
-
 	public bool $canceled = false;
-
 	public function __construct()
 	{
-
 	}
 
 	public function __toString(): string
@@ -62,6 +51,7 @@ class StatementProperty
 			"Target Account" => $this->debitor->id . ": " . $this->debitor->currency->shortname . " " . $this->debitor->name,
 			"Date" => $this->dateTime->format("Y-m-d"),
 			"Beneficiary" => $this->beneficiary,
+			"Forex Rate" => $this->forexRate,
 			"Value" => $this->value,
 			"Category" => $this->category->group . ": " . $this->category->name,
 			"Description" => $this->description,

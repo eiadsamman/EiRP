@@ -1,4 +1,5 @@
 <?php
+
 use System\Template\Gremium;
 
 $perpage_val = 20;
@@ -23,7 +24,7 @@ if ($read) {
 		);
 		unset($grem);
 	} else {
-		//$fs(214)->dir
+
 		$grem->header()->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 		$grem->menu()->open();
 		echo "<span class=\"small-media-hide flex\"></span>";
@@ -33,34 +34,18 @@ if ($read) {
 		} else {
 			echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs(142)->dir}\" id=\"js-input_print\" class=\"edge-right edge-left\" tabindex=\"-1\">Print</button>";
 		}
+
 		$grem->getLast()->close();
 		$grem->title()->serve("<span class=\"flex\">Statement details</span>");
 		$grem->article()->open(); ?>
 		<iframe id="plot-iframe" name="plot-iframe" style="display:block;width:0;height:0px;visibility: hidden"></iframe>
 		<div class="form predefined">
+
 			<label>
 				<h1>Statement ID</h1>
 				<div class="btn-set">
 					<span>
 						<?= $app->prefixList[13][0] . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT); ?>
-					</span>
-				</div>
-			</label>
-			<label>
-				<h1>Post Date</h1>
-				<div class="btn-set">
-					<span>
-						<?= $read->dateTime->format("Y-m-d"); ?>
-					</span>
-				</div>
-			</label>
-		</div>
-		<div class="form predefined">
-			<label>
-				<h1>Value</h1>
-				<div class="btn-set">
-					<span>
-						<?= $read->currency->shortname . " " . number_format($read->value, 2); ?>
 					</span>
 				</div>
 			</label>
@@ -75,13 +60,36 @@ if ($read) {
 		</div>
 		<div class="form predefined">
 			<label>
-				<h1>Beneficiary</h1>
+				<h1>Value</h1>
 				<div class="btn-set">
 					<span>
-						<?= is_null($read->individual) ? $read->beneficiary : "<a href=\"{$fs(182)->dir}/?id={$read->individual->id}\" title=\"{$read->individual->fullName()}\">". $read->individual->id . "</a>: {$read->individual->fullName()}"; ?>
+						<?= $read->currency->shortname . " " . number_format($read->value, 2); ?>
 					</span>
 				</div>
 			</label>
+			<label>
+				<h1>Post Date</h1>
+				<div class="btn-set">
+					<span>
+						<?= $read->dateTime->format("Y-m-d"); ?>
+					</span>
+				</div>
+			</label>
+		</div>
+		<div class="form predefined">
+			<label>
+				<h1>Beneficiary</h1>
+				<div class="btn-set">
+					<?= is_null($read->individual) ? "<span>{$read->beneficiary}</span>" : "<span class=\"at\"><a href=\"{$fs(182)->dir}/?id={$read->individual->id}\" title=\"{$read->individual->fullName()}\">{$read->individual->fullName()}</a></span>"; ?>
+				</div>
+			</label>
+			<label>
+				<h1>Issuer</h1>
+				<div class="btn-set">
+					<span class="at"><a href="<?= $fs(182)->dir ?>/?id=<?= $read->editor->id ?>" title="<?= $read->editor->fullName() ?>"><?= $read->editor->fullName() ?></a></span>
+				</div>
+			</label>
+
 		</div>
 		<div class="form predefined">
 			<label>
@@ -137,7 +145,7 @@ if ($read) {
 				</div>
 			</label>
 		</div>
-		<?php
+<?php
 		$grem->getLast()->close();
 		$grem->terminate();
 		unset($grem);

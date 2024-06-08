@@ -15,9 +15,209 @@ export default class Transaction {
 	inputFieldsSorted = null;
 	description_field = null;
 	panelNavigator = null;
-
+	exchangeObjects = {}
 	constructor(panelNavigator) {
 		this.panelNavigator = panelNavigator;
+	}
+
+	forexFieldState(state) {
+		if (state) {
+			this.exchangeObjects.form.style.display = "flex";
+		} else {
+			this.exchangeObjects.form.style.display = "none";
+			this.exchangeObjects.value.value = "";
+			this.exchangeObjects.action.innerText = "";
+			this.exchangeObjects.hint.innerText = "";
+			this.exchangeObjects.field_from.value = "";
+			this.exchangeObjects.field_to.value = "";
+			this.exchangeObjects.overridden = false;
+			this.exchangeObjects.field_override.value = "false";
+		}
+	}
+
+	forexSelectionHandler = function (data, editing, caller) {
+		let againstAccount = false;
+		let statementType = null;
+
+		let sourceAccount = this.slo_objects.getElementById("source-account");
+		let targetAccount = this.slo_objects.getElementById("target-account");
+
+		let account = App.Instance.assosiatedAccounts.find(el => {
+			return (el.id == parseInt(data) ? el : false);
+		});
+		this.exchangeObjects.value.value = "";
+		this.exchangeObjects.action.innerText = "";
+		this.exchangeObjects.field_from.value = "";
+		this.exchangeObjects.field_to.value = "";
+
+		if (editing) {
+			statementType = parseInt(this.slo_objects.getElementById("statement-nature").slo.htmlhidden[0].value);
+		} else {
+			statementType = parseInt(document.getElementById("statement-nature").value);
+		}
+		if (isNaN(statementType)) return;
+
+		if (editing) {
+			let statementNature = this.slo_objects.getElementById("statement-nature").slo.htmlhidden[0].value;
+			if (caller == "target") {
+				againstAccount = App.Instance.assosiatedAccounts.find(el => {
+					return (el.id == parseInt(sourceAccount.slo.htmlhidden[0].value) ? el : false);
+				});
+				if (account && statementNature == 1) {
+					this.exchangeObjects.currency_hint.innerHTML = account.currency.shortname;
+				}
+			} else {
+				againstAccount = App.Instance.assosiatedAccounts.find(el => {
+					return (el.id == parseInt(targetAccount.slo.htmlhidden[0].value) ? el : false);
+				});
+				if (account && statementNature == 2) {
+					this.exchangeObjects.currency_hint.innerHTML = account.currency.shortname;
+				}
+			}
+		} else {
+			againstAccount = App.Account;
+		}
+
+		if (account, againstAccount) {
+			if (account.id == parseInt(data)) {
+				let forex = null;
+				if (statementType == 1) {
+					/* Receipt : Forex Buy */
+					forex = App.Instance.forex.buyingRates(againstAccount.currency.id, account.currency.id);
+				} else {
+					/* Payment : Forex Sell */
+					forex = App.Instance.forex.sellingRates(againstAccount.currency.id, account.currency.id);
+				}
+				if (againstAccount.currency.id == account.currency.id) {
+					this.forexFieldState(false);
+				} else if (forex) {
+					this.forexFieldState(true);
+					this.exchangeObjects.hint.classList.remove("highlight");
+					if (forex[0] > forex[1]) {
+						this.exchangeObjects.field_from.value = againstAccount.currency.id;
+						this.exchangeObjects.field_to.value = account.currency.id;
+						this.exchangeObjects.value.value = forex[0] / forex[1];
+						this.exchangeObjects.value.dataset.default = forex[0] / forex[1];
+						this.exchangeObjects.hint.innerText = App.Instance.numberFormat(forex[0] / forex[1], 4);
+						this.exchangeObjects.action.innerText = againstAccount.currency.shortname + " → " + account.currency.shortname;
+					} else {
+						this.exchangeObjects.field_from.value = account.currency.id;
+						this.exchangeObjects.field_to.value = againstAccount.currency.id;
+						this.exchangeObjects.value.value = forex[1] / forex[0];
+						this.exchangeObjects.value.dataset.default = forex[1] / forex[0];
+						this.exchangeObjects.hint.innerText = App.Instance.numberFormat(forex[1] / forex[0], 4);
+						this.exchangeObjects.action.innerText = account.currency.shortname + " → " + againstAccount.currency.shortname;
+					}
+				}
+			}
+		}
+	}
+
+	forexEventSubmit(skip = false) {
+		this.exchangeObjects.hint.style.display = "flex";
+		this.exchangeObjects.value.style.display = "none";
+		if (skip) {
+			return true;
+		}
+		if (isNaN(parseFloat(this.exchangeObjects.value.value))) {
+			this.exchangeObjects.overridden = false;
+			this.exchangeObjects.hint.innerText = this.exchangeObjects.value.dataset.default;
+			this.exchangeObjects.value.value = this.exchangeObjects.value.dataset.default;
+			this.exchangeObjects.field_override.value = "false";
+			this.exchangeObjects.hint.classList.remove("highlight");
+		} else {
+			this.exchangeObjects.overridden = true;
+			this.exchangeObjects.hint.classList.add("highlight");
+			this.exchangeObjects.value.value = parseFloat(this.exchangeObjects.value.value);
+			this.exchangeObjects.hint.innerText = App.Instance.numberFormat(this.exchangeObjects.value.value, 4);
+			this.exchangeObjects.field_override.value = "true";
+			this.value_field.focus();
+			this.value_field.select();
+		}
+	}
+
+	forexProcedures() {
+		this.exchangeObjects.form = document.getElementById("exchange-form");
+		this.exchangeObjects.action = document.getElementById("exchange-action");
+		this.exchangeObjects.hint = document.getElementById("exchange-hint");
+		this.exchangeObjects.value = document.getElementById("exchange-value");
+		this.exchangeObjects.field_override = document.getElementById("exchange-override");
+		this.exchangeObjects.field_from = document.getElementById("exchange-dir-from");
+		this.exchangeObjects.field_to = document.getElementById("exchange-dir-to");
+		this.exchangeObjects.currency_hint = document.getElementById("currency-hint");
+
+		for (let key in this.exchangeObjects) {
+			if (this.exchangeObjects[key] === undefined || this.exchangeObjects[key] === null) {
+				return false;
+			}
+		};
+		this.exchangeObjects.overridden = false;
+
+		let sourceAccount = this.slo_objects.getElementById("source-account");
+		let targetAccount = this.slo_objects.getElementById("target-account");
+
+		this.exchangeObjects.currency_hint.addEventListener('animationend', function (e) {
+			e.target.classList.remove("flash");
+		});
+		this.exchangeObjects.action.addEventListener("click", e => {
+			e.preventDefault();
+			this.exchangeObjects.hint.style.display = "none";
+			this.exchangeObjects.value.style.display = "flex";
+			this.exchangeObjects.value.focus();
+			this.exchangeObjects.value.select();
+			return false;
+		});
+		this.exchangeObjects.value.addEventListener("keydown", e => {
+			if (e.key == "Enter") {
+				this.forexEventSubmit()
+			}
+			if (e.key == "Escape") {
+				this.value_field.focus();
+				this.value_field.select();
+			}
+		})
+		this.exchangeObjects.value.addEventListener("blur", e => {
+			this.forexEventSubmit(true)
+		});
+
+		/* Handle editing form account fields  */
+		if (document.getElementById("statement-id")) {
+			let statementNature = this.slo_objects.getElementById("statement-nature").slo.htmlhidden[0];
+
+			this.slo_objects.getElementById("statement-nature").slo.events.onselect = (data) => {
+				this.forexSelectionHandler(targetAccount.slo.htmlhidden[0].value, true, "target");
+				this.forexSelectionHandler(sourceAccount.slo.htmlhidden[0].value, true, "source");
+			};
+			this.slo_objects.getElementById("statement-nature").slo.events.ondeselect = (data) => {
+				this.exchangeObjects.currency_hint.innerHTML = "";
+			}
+
+			targetAccount.slo.events.onselect = (data) => {
+				this.forexFieldState(false);
+				this.forexSelectionHandler(data.key, true, "target");
+			}
+			targetAccount.slo.events.ondeselect = () => {
+				this.forexFieldState(false);
+				if (parseInt(statementNature.value) == 1)
+					this.exchangeObjects.currency_hint.innerHTML = "";
+			};
+
+			sourceAccount.slo.events.onselect = (data) => {
+				this.forexFieldState(false);
+				this.forexSelectionHandler(data.key, true, "source");
+			}
+			sourceAccount.slo.events.ondeselect = () => {
+				this.forexFieldState(false);
+				if (parseInt(statementNature.value) == 2)
+					this.exchangeObjects.currency_hint.innerHTML = "";
+			};
+
+		} else {
+			targetAccount.slo.events.onselect = (data) => {
+				this.forexSelectionHandler(data.key, false, "target");
+			}
+			targetAccount.slo.events.ondeselect = () => { this.forexFieldState(false); };
+		}
 	}
 
 	run = function () {
@@ -54,19 +254,6 @@ export default class Transaction {
 		if (this.formMain == null) {
 			return;
 		}
-
-		/* const calc = new MathEvaluator(document.getElementById('value'));
-		if (calc.inputField)
-			calc.inputField.addEventListener('keydown', function (e) {
-				if (e.key == "Enter") {
-					if (this.dataset.eval) {
-						this.dataset.busy = "";
-						this.value = this.dataset.eval;
-						delete this.dataset.busy;
-					}
-				}
-			}); */
-
 
 		this.uploadController = $.Upload({
 			objectHandler: $("#js_upload_list"),
@@ -150,9 +337,7 @@ export default class Transaction {
 			this.addwin.show();
 		}); */
 
-		document.getElementById("currency-hint").addEventListener('animationend', function (e) {
-			e.target.classList.remove("flash");
-		});
+
 		document.getElementById("js-input_submit")?.addEventListener("click", () => {
 			this.post();
 		});
@@ -168,94 +353,6 @@ export default class Transaction {
 			$("#beneficiary").prop("readonly", true);
 			/* this.value_field.focus(); */
 		}
-
-		/**
-		 * Receipt/Payment Application || Editing Application 
-		 * Determined if `statement-id` input field is presented in Editing Application
-		*/
-		let sourceAccount = this.slo_objects.getElementById("source-account");
-		let targetAccount = this.slo_objects.getElementById("target-account");
-		this.accountSelectionHandler = function (data, editing, caller) {
-			let againstAccount = false;
-			let account = App.Instance.assosiatedAccounts.find(el => {
-				return (el.id == parseInt(data.key) ? el : false);
-			});
-
-			if (editing) {
-				let statementNature = this.slo_objects.getElementById("statement-nature").slo.htmlhidden[0].value;
-				if (caller == "target") {
-					againstAccount = App.Instance.assosiatedAccounts.find(el => {
-						return (el.id == parseInt(sourceAccount.slo.htmlhidden[0].value) ? el : false);
-					});
-					if (account && statementNature == 1) {
-						document.getElementById("currency-hint").innerHTML = account.currency.shortname;
-					}
-				} else {
-					againstAccount = App.Instance.assosiatedAccounts.find(el => {
-						return (el.id == parseInt(targetAccount.slo.htmlhidden[0].value) ? el : false);
-					});
-					if (account && statementNature == 2) {
-						document.getElementById("currency-hint").innerHTML = account.currency.shortname;
-					}
-				}
-			} else {
-				againstAccount = App.Account;
-			}
-
-			if (account, againstAccount) {
-				if (account.id == parseInt(data.key)) {
-					let forex = App.Instance.forex.exchangeRate(againstAccount.currency.id, account.currency.id);
-					if (againstAccount.currency.id == account.currency.id) {
-						document.getElementById("exchange-rates-form").style.display = "none";
-					} else if (forex) {
-						document.getElementById("exchange-rates-form").style.display = "block";
-						if (forex[0] > forex[1]) {
-							document.getElementById("exchange-rates").innerText = forex[0] / forex[1];
-							document.getElementById("exchange-rates-title").innerHTML = againstAccount.currency.shortname + " → " + account.currency.shortname;
-						} else {
-							document.getElementById("exchange-rates").innerText = forex[1] / forex[0];
-							document.getElementById("exchange-rates-title").innerHTML = account.currency.shortname + " → " + againstAccount.currency.shortname;
-						}
-						if (editing)
-							document.getElementById("currency-hint").classList.add("flash");
-
-					}
-				}
-			}
-		}
-		if (document.getElementById("statement-id")) {
-			if (targetAccount) {
-				targetAccount.slo.events.onselect = (data) => {
-					this.accountSelectionHandler(data, true, "target");
-				}
-				targetAccount.slo.events.ondeselect = (data) => {
-					document.getElementById("exchange-rates-form").style.display = "none";
-				};
-			}
-			if (sourceAccount) {
-				sourceAccount.slo.events.onselect = (data) => {
-					this.accountSelectionHandler(data, true, "source");
-				}
-				sourceAccount.slo.events.ondeselect = (data) => {
-					document.getElementById("exchange-rates-form").style.display = "none";
-				};
-			}
-		} else {
-			if (targetAccount) {
-				targetAccount.slo.events.onselect = (data) => {
-					this.accountSelectionHandler(data, false, "target");
-				}
-				targetAccount.slo.events.ondeselect = (data) => {
-					document.getElementById("exchange-rates-form").style.display = "none";
-				};
-			}
-		}
-
-
-
-
-
-
 
 		this.slo_objects.getElementById("individual").slo.events.ondeselect = () => {
 			$("#beneficiary").prop("readonly", false);
@@ -287,6 +384,7 @@ export default class Transaction {
 			}
 		});
 		//firstItemFocus.focus()
+		this.forexProcedures();
 	}
 
 	findNextInputField = function (target) {
@@ -302,6 +400,7 @@ export default class Transaction {
 		}
 		return false;
 	}
+
 	disableForm = function (state) {
 		if (document.getElementById("js-input_submit"))
 			document.getElementById("js-input_submit").disabled = state;
@@ -310,6 +409,7 @@ export default class Transaction {
 				elm.disabled = state;
 		});
 	}
+
 	clearFields = function () {
 		if (this.slo_objects) {
 			this.slo_objects.getElementById("beneficiary").slo.clear(false);
@@ -319,6 +419,7 @@ export default class Transaction {
 			this.description_field.value = "";
 		}
 	}
+
 	validateFields = function () {
 		let thrownerror = {
 			occured: false,
@@ -359,6 +460,18 @@ export default class Transaction {
 				thrownerror.object = this.value_field;
 			}
 		}
+
+		if (this.exchangeObjects.overridden && isNaN(parseFloat(this.exchangeObjects.value.value))) {
+			this.value_field.parentNode.parentNode.querySelector("h1").classList.add("required");
+			if (!thrownerror.occured) {
+				thrownerror.occured = true;
+				thrownerror.message = "Invalid statement value";
+				thrownerror.object = this.value_field;
+			}
+		}
+
+
+
 		if ((this.description_field.value).trim() == "") {
 			this.description_field.parentNode.parentNode.querySelector("h1").classList.add("required");
 			if (!thrownerror.occured) {

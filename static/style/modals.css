@@ -259,12 +259,12 @@ dialog.appHtmlDialog::-webkit-scrollbar-thumb {
 /**PART
  * TABLES 
  */
-
-
 table {
 	border-collapse: collapse;
 	width: 100%;
 	max-width: 100%;
+	background-color: var(--bomtable-background-color);
+	transition: background-color var(--transition-speed) ease
 }
 
 table>tfoot>tr>th,
@@ -286,23 +286,12 @@ table>tfoot>tr>th {
 	padding: 12px 8px;
 	white-space: nowrap;
 	color: var(--root-font-color);
-	background-color: var(--bomtable-background-color);
-	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+	transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }
 
 table>tbody>tr>td.console {
 	font-family: "Lucida Console", Monaco, monospace;
 	font-size: 0.9em;
-}
-
-
-table>tbody>tr>td {
-	
-	/* overflow: hidden;
-	overflow-wrap: break-word;
-	text-overflow: ellipsis;
-	width: 100px;
-	max-width: 100px; */
 }
 
 table>tbody>tr>th,
@@ -315,12 +304,15 @@ table>tfoot>tr>th {
 	cursor: default;
 }
 
+table>thead>tr>td {
+	background-color: var(--bomtable-background-color);
+}
+
 table>thead>tr>td,
 table>tfoot>tr>td {
 	color: var(--root-font-color);
 	border: solid 1px var(--bomtable-border-color);
-	background-color: var(--bomtable-background-color);
-	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+	transition: color var(--transition-speed) ease;
 	border-left: none;
 	border-right: none;
 	padding: 10px 8px;
@@ -355,11 +347,13 @@ table.strip>tbody>tr:nth-child(2n)>td {
 	font-size: 1em;
 }
 
-table.strip.hover>tbody>tr:hover:nth-child(2n)>td,
 table.hover>tbody>tr:hover>td {
-	/* background-color: var(--bomtable-hover-color) */
-	font-size: 1em;
+	background-color: var(--bomtable-hover-color);
 }
+
+
+
+
 
 table>thead.sticky {
 	position: sticky;

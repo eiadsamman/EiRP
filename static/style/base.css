@@ -165,6 +165,12 @@ ul>li {
 	user-select: none;
 }
 
+.flash {
+	
+	animation: flash 1s step-start 0s 4;
+}
+
+
 /* #endregion */
 
 /* #region Layout Content*/
@@ -836,12 +842,6 @@ span.vs-remove {
 	color: var(--root-font-color);
 }
 
-
-.split-view>div.panel>div a.flash {
-	animation: flash 1s step-start 0s 4;
-}
-
-
 .split-view>div.panel>div a.panel-item:not(.place-holder) {
 	cursor: pointer;
 }
@@ -960,7 +960,7 @@ span.loadingScreen-placeholderBody>span:last-child {
 
 @keyframes flash {
 	50% {
-		background: hsl(60, 90%, 80%);
+		background: hsl(60, 90%, 80%) !important;
 	}
 }
 

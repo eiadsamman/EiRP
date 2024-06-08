@@ -7,11 +7,8 @@ namespace System\Finance\Transaction;
 use System\Exceptions\Finance\TransactionException;
 use System\Finance\Account;
 
-
-
 class Payment extends Transaction
 {
-
 	public function __construct(protected \System\App &$app)
 	{
 		parent::__construct($app);
@@ -43,25 +40,23 @@ class Payment extends Transaction
 			return false;
 		}
 
-		/* First step */
+		/* Second step */
 		$account = $this->target_account->id;
 		$dir     = 1;
-		$value   = 1 *
-			($this->issuer_account->currency->id == $this->target_account->currency->id ?
-				$this->value :
-				$this->forex->exchange(
-					$this->issuer_account->currency->id,
-					$this->target_account->currency->id,
-					$this->value
-				)
-			);
+		if ($this->app->fileSystem->find(87)->permission->edit &&  $this->isOverridenForex) {
+			if ($this->manualForexInstructions->exchangeFrom->id == $this->target_account->currency->id) {
+				$value   = 1 * $this->value / $this->manualForexInstructions->value;
+			} else {
+				$value   = 1 * $this->value * $this->manualForexInstructions->value;
+			}
+		} else {
+			$value   = 1 * $this->forex->exchangeSellCurrency($this->issuer_account->currency->id, $this->target_account->currency->id, $this->value);
+		}
 		if (!$stmt->execute()) {
 			return false;
 		}
 		return true;
 	}
-
-
 
 	public final function issuerAccount(Account $account): self
 	{
@@ -72,6 +67,7 @@ class Payment extends Transaction
 		$this->accountConflict();
 		return $this;
 	}
+
 	public final function targetAccount(Account $account): self
 	{
 		if (!$account->role->inbound) {

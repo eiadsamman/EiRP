@@ -1280,7 +1280,6 @@ unset($grem);
 				type: "POST",
 				data: formSerialized + "&method=filter",
 			}).done(function (data) {
-				console.log(data);
 				<?php echo ($ajax_debug) ? "console.clear();console.log(data);return;" : ""; ?>
 
 				var $data = $(data);

@@ -64,32 +64,39 @@ class Statement
 		) {
 			if ($row = $r->fetch_assoc()) {
 
-				$result = new StatementProperty();
-				$result->id = (int) $row['acm_id'];
-				$result->canceled = (int) $row['acm_rejected'] == 1;
-				$result->type = Nature::tryFrom((int) $row['acm_type']);
-				$result->dateTime = new \DateTime($row['acm_ctime']);
-				$result->reference = $row['acm_reference'];
+				$result              = new StatementProperty();
+				$result->id          = (int) $row['acm_id'];
+				$result->canceled    = (int) $row['acm_rejected'] == 1;
+				$result->type        = Nature::tryFrom((int) $row['acm_type']);
+				$result->dateTime    = new \DateTime($row['acm_ctime']);
+				$result->reference   = $row['acm_reference'];
 				$result->description = $row['acm_comments'];
 				$result->beneficiary = $row['acm_beneficial'];
+
+
 				$result->value = (float) $row['acm_realvalue'];
 				if (empty($row['acm_usr_id'])) {
 					$result->individual = null;
 				} else {
-					$result->individual = new IndividualProfile();
-					$result->individual->id = (int) $row['acm_usr_id'];
+					$result->individual            = new IndividualProfile();
+					$result->individual->id        = (int) $row['acm_usr_id'];
 					$result->individual->firstname = $row['ben_usr_firstname'];
-					$result->individual->lastname = $row['ben_usr_lastname'];
+					$result->individual->lastname  = $row['ben_usr_lastname'];
 				}
 
-				$result->editor = new IndividualProfile();
-				$result->editor->id = (int) $row['acm_editor_id'];
+				$result->editor            = new IndividualProfile();
+				$result->editor->id        = (int) $row['acm_editor_id'];
 				$result->editor->firstname = $row['edt_usr_firstname'];
-				$result->editor->lastname = $row['edt_usr_lastname'];
-				
+				$result->editor->lastname  = $row['edt_usr_lastname'];
+
 				$result->category = new StatementCategoryProperty((int) $row['acm_category'], $row['accgrp_name'], $row['acccat_name']);
 				$result->currency = new Currency((int) $row['cur_id'], $row['cur_name'], $row['cur_symbol'], $row['cur_shortname']);
+
 				$this->pairs($result);
+
+				if (!is_null($result->creditAmount) && !is_null($result->debitAmount) && $result->creditAmount > 0 && $result->debitAmount > 0)
+					$result->forexRate = $result->creditAmount > $result->debitAmount ? $result->creditAmount / $result->debitAmount : $result->debitAmount / $result->creditAmount;
+
 				$this->getAttachements($result);
 				return $result;
 			}
@@ -100,18 +107,19 @@ class Statement
 
 	private function pairs(StatementProperty &$statementProperty)
 	{
-		$statementProperty->creditor = false;
-		$statementProperty->debitor = false;
+		$statementProperty->creditor     = false;
+		$statementProperty->debitor      = false;
 		$statementProperty->creditAmount = 0;
-		$statementProperty->debitAmount = 0;
-		$view_role = new AccountRole();
-		$view_role->view = true;
+		$statementProperty->debitAmount  = 0;
+		$view_role                       = new AccountRole();
+		$view_role->view                 = true;
 		if (
 			$r = $this->app->db->query(
 				"SELECT 
 					atm_account_id, atm_value, atm_dir
 				FROM
-					acc_temp JOIN view_financial_accounts ON prt_id = atm_account_id
+					acc_temp 
+						JOIN view_financial_accounts ON prt_id = atm_account_id
 				WHERE
 					atm_main = {$statementProperty->id}"
 			)
@@ -120,10 +128,10 @@ class Statement
 				try {
 					if ((int) $row['atm_dir'] == 0) {
 						$statementProperty->creditAmount = (float) $row['atm_value'];
-						$statementProperty->creditor = $this->app->user->findAssosiateAccount((int) $row['atm_account_id']);
+						$statementProperty->creditor     = $this->app->user->findAssosiateAccount((int) $row['atm_account_id']);
 					} else {
 						$statementProperty->debitAmount = (float) $row['atm_value'];
-						$statementProperty->debitor = $this->app->user->findAssosiateAccount((int) $row['atm_account_id']);
+						$statementProperty->debitor     = $this->app->user->findAssosiateAccount((int) $row['atm_account_id']);
 					}
 				} catch (AccountNotFoundException $e) {
 				}
@@ -147,9 +155,9 @@ class Statement
 			)
 		) {
 			while ($row = $r->fetch_assoc()) {
-				$file = new \System\Attachment\Properties();
-				$file->id = (int) $row['up_id'];
-				$file->name = $row['up_name'] ?? "";
+				$file                             = new \System\Attachment\Properties();
+				$file->id                         = (int) $row['up_id'];
+				$file->name                       = $row['up_name'] ?? "";
 				$statementProperty->attachments[] = $file;
 			}
 		}

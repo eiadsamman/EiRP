@@ -12,10 +12,11 @@ class ForexTable extends \System\Views\Chunk\Chunk
 		if (
 			$r = $this->app->db->query(
 				"SELECT 
-					curexg_from ,curexg_to,curexg_value,curexg_type,
+					curexg_from ,curexg_to,curexg_value,curexg_sell,
 					cur_name,cur_shortname,cur_symbol,cur_default
 				FROM
-					currency_exchange JOIN currencies ON cur_id = curexg_from
+					currency_exchange 
+						JOIN currencies ON cur_id = curexg_from
 			"
 			)
 		) {
@@ -25,7 +26,9 @@ class ForexTable extends \System\Views\Chunk\Chunk
 				$output .= "\"name\": \"{$row['cur_name']}\"" . ",";
 				$output .= "\"shortname\": \"{$row['cur_shortname']}\"" . ",";
 				$output .= "\"symbol\": \"{$row['cur_symbol']}\"" . ",";
-				$output .= "\"rate\": {$row['curexg_value']}" . "";
+				$output .= "\"rate_buy\": {$row['curexg_value']}" . ",";
+				$output .= "\"rate_sell\": {$row['curexg_sell']}" . ",";
+				$output .= "\"timestamp\": 0" . "";
 				$output .= "}";
 				$smart  = ",";
 			}

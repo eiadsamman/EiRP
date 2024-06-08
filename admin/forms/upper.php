@@ -1,7 +1,7 @@
 <?php
 ob_start();
 ob_implicit_flush(true);
-$_v = !empty($app->settings->site['environment']) && $app->settings->site['environment'] === "development" ? "?rev=240508" . uniqid() : "";
+$_v = !empty($app->settings->site['environment']) && $app->settings->site['environment'] === "development" ? "?rev=240508" . uniqid() : "?rev=" . $app->settings->site['version'];
 
 use System\Finance\AccountRole;
 use System\Personalization\Bookmark;
@@ -17,7 +17,7 @@ $SmartListObject  = new SmartListObject($app);
 	<meta charset="utf-8" />
 	<base href="<?php echo "{$app->http_root}"; ?>" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, interactive-widget=overlays-content" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, interactive-widget=overlays-content" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<meta name="apple-mobile-web-app-title" content="<?= $app->settings->site['title'] ?>" />
@@ -46,22 +46,25 @@ $SmartListObject  = new SmartListObject($app);
 		import Currency from "./static/javascript/modules/finance/currency.js";
 		App.ID = '<?= $app->id; ?>';
 		App.Instance = new Application(App.ID);
-		App.Account = new Account(<?= $app->user->company->id ?>,<?= $app->user->account->id; ?>,"<?= $app->user->account->name ?>",new Currency(<?= $app->user->account->currency->id ?>,"<?= $app->user->account->currency->name ?>","<?= $app->user->account->currency->shortname ?>","<?= $app->user->account->currency->symbol ?>"));
-	</script>
+		<?php if ($app->user->logged) {
+			echo "App.Account = new Account({$app->user->company->id},{$app->user->account->id},\"{$app->user->account->name}\",new Currency({$app->user->account->currency->id},\"{$app->user->account->currency->name}\",\"{$app->user->account->currency->shortname}\",\"{$app->user->account->currency->symbol}\"));";
+		} ?>
 
+	</script>
 	<?php
+	echo "\n";
 	if (array_key_exists('css', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['css']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "\t\t<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}{$_v}\" />\n";
+				echo "\t<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}{$_v}\" />\n";
 		}
 	}
 	if (array_key_exists('js', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['js']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "\t\t<script type=\"text/javascript\" src=\"static/{$file}{$_v}\"></script>\n";
+				echo "\t<script type=\"text/javascript\" src=\"static/{$file}{$_v}\"></script>\n";
 		}
 	}
 	?>
@@ -70,8 +73,6 @@ $SmartListObject  = new SmartListObject($app);
 
 <body class="theme-default <?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>" data-mode="<?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>">
 	<a href="" id="PFTrigger" style="display: none;"></a>
-
-
 	<?php if ($app->user->logged && !$fs()->permission->deny) { ?>
 		<span class="header-ribbon noprint">
 			<div>
