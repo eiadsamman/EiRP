@@ -26,8 +26,8 @@ class ForexTable extends \System\Views\Chunk\Chunk
 				$output .= "\"name\": \"{$row['cur_name']}\"" . ",";
 				$output .= "\"shortname\": \"{$row['cur_shortname']}\"" . ",";
 				$output .= "\"symbol\": \"{$row['cur_symbol']}\"" . ",";
-				$output .= "\"rate_buy\": {$row['curexg_value']}" . ",";
-				$output .= "\"rate_sell\": {$row['curexg_sell']}" . ",";
+				$output .= "\"rate_buy\": " . ((float) $row['curexg_value']) . ",";
+				$output .= "\"rate_sell\": " . ((float) $row['curexg_sell']) . "  ,";
 				$output .= "\"timestamp\": 0" . "";
 				$output .= "}";
 				$smart  = ",";
