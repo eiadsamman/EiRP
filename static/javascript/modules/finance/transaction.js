@@ -38,7 +38,6 @@ export default class Transaction {
 	forexSelectionHandler = function (data, editing, caller) {
 		let againstAccount = false;
 		let statementType = null;
-
 		let sourceAccount = this.slo_objects.getElementById("source-account");
 		let targetAccount = this.slo_objects.getElementById("target-account");
 
@@ -49,15 +48,8 @@ export default class Transaction {
 		this.exchangeObjects.action.innerText = "";
 		this.exchangeObjects.field_from.value = "";
 		this.exchangeObjects.field_to.value = "";
-
 		if (editing) {
 			statementType = parseInt(this.slo_objects.getElementById("statement-nature").slo.htmlhidden[0].value);
-		} else {
-			statementType = parseInt(document.getElementById("statement-nature").value);
-		}
-		if (isNaN(statementType)) return;
-
-		if (editing) {
 			let statementNature = this.slo_objects.getElementById("statement-nature").slo.htmlhidden[0].value;
 			if (caller == "target") {
 				againstAccount = App.Instance.assosiatedAccounts.find(el => {
@@ -75,16 +67,17 @@ export default class Transaction {
 				}
 			}
 		} else {
+			statementType = parseInt(document.getElementById("statement-nature").value);
 			againstAccount = App.Account;
 		}
-
-		if (account, againstAccount) {
+		if (isNaN(statementType)) return;
+		if (account && againstAccount) {
 			if (account.id == parseInt(data)) {
 				let forex = null;
 				if (statementType == 1) {
 					/* Receipt : Forex Buy */
 					forex = App.Instance.forex.buyingRates(againstAccount.currency.id, account.currency.id);
-				} else {
+				} else if (statementType == 2) {
 					/* Payment : Forex Sell */
 					forex = App.Instance.forex.sellingRates(againstAccount.currency.id, account.currency.id);
 				}
@@ -110,6 +103,8 @@ export default class Transaction {
 					}
 				}
 			}
+		} else {
+			messagesys.failure("Loading forex information failed, resign to your account and try again");
 		}
 	}
 
@@ -136,7 +131,9 @@ export default class Transaction {
 		}
 	}
 
-	forexProcedures() {
+	forexVendor() {
+		let sourceAccount = this.slo_objects.getElementById("source-account");
+		let targetAccount = this.slo_objects.getElementById("target-account");
 		this.exchangeObjects.form = document.getElementById("exchange-form");
 		this.exchangeObjects.action = document.getElementById("exchange-action");
 		this.exchangeObjects.hint = document.getElementById("exchange-hint");
@@ -145,21 +142,19 @@ export default class Transaction {
 		this.exchangeObjects.field_from = document.getElementById("exchange-dir-from");
 		this.exchangeObjects.field_to = document.getElementById("exchange-dir-to");
 		this.exchangeObjects.currency_hint = document.getElementById("currency-hint");
+		this.exchangeObjects.overridden = false;
 
 		for (let key in this.exchangeObjects) {
 			if (this.exchangeObjects[key] === undefined || this.exchangeObjects[key] === null) {
 				return false;
 			}
 		};
-		this.exchangeObjects.overridden = false;
-
-		let sourceAccount = this.slo_objects.getElementById("source-account");
-		let targetAccount = this.slo_objects.getElementById("target-account");
 
 		this.exchangeObjects.currency_hint.addEventListener('animationend', function (e) {
 			e.target.classList.remove("flash");
 		});
 		this.exchangeObjects.action.addEventListener("click", e => {
+			if (e.target.tagName !== "A") return;
 			e.preventDefault();
 			this.exchangeObjects.hint.style.display = "none";
 			this.exchangeObjects.value.style.display = "flex";

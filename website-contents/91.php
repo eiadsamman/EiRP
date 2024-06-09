@@ -195,6 +195,7 @@ if ($app->xhttp) {
 						<span id="currency-hint"><?= "{$app->user->account->currency->shortname}" ?></span>
 					</div>
 					<div class="btn-set" id="exchange-form" style="margin-top:15px;display: none">
+						<?= $fs(87)->permission->edit ? "<span><a id=\"exchange-action\" href=\"{$fs(87)->dir}\"></a></span>" : "<span id=\"exchange-action\"></span>"; ?>
 						<span><a id="exchange-action" href="<?= $fs(87)->dir; ?>"></a></span>
 						<input type="text" inputmode="decimal" placeholder="Exchange rate" data-required tabindex="-1" style="display:none"
 							id="exchange-value" name="exchange-value" data-default="" <?= $fs(87)->permission->edit ? "" : "disabled"; ?> class="flex" />
