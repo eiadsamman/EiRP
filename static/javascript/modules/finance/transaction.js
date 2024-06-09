@@ -379,7 +379,7 @@ export default class Transaction {
 			}
 		});
 		//firstItemFocus.focus()
-		this.forexProcedures();
+		this.forexVendor();
 	}
 
 	findNextInputField = function (target) {
