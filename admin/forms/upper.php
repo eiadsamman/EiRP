@@ -17,7 +17,7 @@ $SmartListObject  = new SmartListObject($app);
 	<meta charset="utf-8" />
 	<base href="<?php echo "{$app->http_root}"; ?>" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, interactive-widget=overlays-content" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=overlays-content" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<meta name="apple-mobile-web-app-title" content="<?= $app->settings->site['title'] ?>" />
@@ -47,9 +47,22 @@ $SmartListObject  = new SmartListObject($app);
 		App.ID = '<?= $app->id; ?>';
 		App.Instance = new Application(App.ID);
 		<?php if ($app->user->logged) {
-			echo "App.Account = new Account({$app->user->company->id},{$app->user->account->id},\"{$app->user->account->name}\",new Currency({$app->user->account->currency->id},\"{$app->user->account->currency->name}\",\"{$app->user->account->currency->shortname}\",\"{$app->user->account->currency->symbol}\"));";
+			echo "App.Account = new Account(";
+			echo ($app->user->company?$app->user->company->id:"null").',';
+			if($app->user->account){
+				echo $app->user->account->id.',';
+				echo '"'.$app->user->account->name.'"'.',';
+				echo "new Currency(";
+				echo $app->user->account->currency->id.',';
+				echo '"'.$app->user->account->currency->name.'",';
+				echo '"'.$app->user->account->currency->shortname.'",';
+				echo '"'.$app->user->account->currency->symbol.'",';
+				echo ")";
+			}else{
+				echo "0,null,null";
+			}
+			echo ");";
 		} ?>
-
 	</script>
 	<?php
 	echo "\n";

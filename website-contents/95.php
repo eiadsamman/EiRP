@@ -119,7 +119,7 @@ if ($app->xhttp) {
 		$current_date = $current_date->format("Y-m-d");
 
 		$forex = new Forex($app);
-?>
+		?>
 		<form name="js-ref_form-main" id="js-ref_form-main" action="<?= $fs()->dir; ?>">
 			<input type="hidden" name="challenge" value="<?= uniqid(); ?>" />
 			<input type="hidden" name="objective" value="transaction" />
@@ -145,7 +145,8 @@ if ($app->xhttp) {
 				<label style="min-width:200px;">
 					<h1>Debitor</h1>
 					<div class="btn-set">
-						<input tabindex="1" placeholder="Debitor account" data-required title="Debitor account" data-touch="200" type="text" data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
+						<input tabindex="1" placeholder="Debitor account" data-required title="Debitor account" data-touch="200" type="text" data-slo=":LIST"
+							data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
 					</div>
 				</label>
 			</div>
@@ -154,14 +155,17 @@ if ($app->xhttp) {
 				<label style="min-width:150px">
 					<h1>Date</h1>
 					<div class="btn-set">
-						<input id="post-date" type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date" value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date" data-required />
-						<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value="" data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
+						<input id="post-date" type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date"
+							value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date" data-required />
+						<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value=""
+							data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
 					</div>
 				</label>
 				<label style="min-width:300px">
 					<h1>Category</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Statement category" data-required data-slo=":LIST" data-touch="105" title="Category" data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
+						<input type="text" placeholder="Statement category" data-required data-slo=":LIST" data-touch="105" title="Category"
+							data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
 					</div>
 				</label>
 			</div>
@@ -171,8 +175,11 @@ if ($app->xhttp) {
 				<label style="flex-basis:0%;">
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
-						<input name="beneficiary" id="beneficiary" type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST" data-source="_/FinanceBeneficiaryList/slo/<?= $app->id; ?>/slo_FinananceBeneficiaries.a" />
-						<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user" data-slo=":LIST" data-source="_/UserList/slo/<?= $app->id; ?>/slo_userList.a" />
+						<input name="beneficiary" id="beneficiary" type="text" placeholder="Beneficiary name" data-mandatory class="flex"
+							title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
+							data-source="_/FinanceBeneficiaryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinananceBeneficiaries.a" />
+						<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user"
+							data-slo=":LIST" data-source="_/UserList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_userList.a" />
 						<!-- <button type="button" value="New" class="edge-right edge-left plus" id="js-input_add-benif"></button> -->
 					</div>
 				</label>
@@ -182,12 +189,14 @@ if ($app->xhttp) {
 				<label style="min-width:300px;" for="">
 					<h1>Amount</h1>
 					<div class="btn-set">
-						<input type="text" inputmode="decimal" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101" title="Transaction value" min="0" name="value" id="value" />
+						<input type="text" inputmode="decimal" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101"
+							title="Transaction value" min="0" name="value" id="value" />
 						<span id="currency-hint"><?= "{$app->user->account->currency->shortname}" ?></span>
 					</div>
 					<div class="btn-set" id="exchange-form" style="margin-top:15px;display: none">
 						<span><a id="exchange-action" href="<?= $fs(87)->dir; ?>"></a></span>
-						<input type="text" inputmode="decimal" placeholder="Exchange rate" data-required tabindex="-1" style="display:none" id="exchange-value" name="exchange-value" data-default="" <?= $fs(87)->permission->edit ? "" : "disabled"; ?> class="flex" />
+						<input type="text" inputmode="decimal" placeholder="Exchange rate" data-required tabindex="-1" style="display:none"
+							id="exchange-value" name="exchange-value" data-default="" <?= $fs(87)->permission->edit ? "" : "disabled"; ?> class="flex" />
 						<span id="exchange-hint" class="flex"></span>
 					</div>
 				</label>
@@ -224,8 +233,10 @@ if ($app->xhttp) {
 				<label style="min-width:300px">
 					<h1>Reference</h1>
 					<div class="btn-set">
-						<input type="text" placeholder="Statement reference..." data-slo="ACC_REFERENCE" title="Reference" tabindex="-1" name="reference" class="flex" />
-						<input type="text" placeholder="Related ID" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" name="relation" />
+						<input type="text" placeholder="Statement reference..." data-slo="ACC_REFERENCE" title="Reference" tabindex="-1" name="reference"
+							class="flex" />
+						<input type="text" placeholder="Related ID" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1"
+							name="relation" />
 					</div>
 				</label>
 			</div>
@@ -234,7 +245,9 @@ if ($app->xhttp) {
 				<label>
 					<h1>Description</h1>
 					<div class="btn-set">
-						<textarea type="text" placeholder="Statement description..." data-required tabindex="6" title="Statement Description" data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" name="description" id="description" rows="7"></textarea>
+						<textarea type="text" placeholder="Statement description..." data-required tabindex="6" title="Statement Description" data-touch="103"
+							style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" name="description" id="description"
+							rows="7"></textarea>
 					</div>
 				</label>
 			</div>
@@ -276,7 +289,7 @@ if ($app->xhttp) {
 			</datalist>
 		</div>
 
-<?php
+		<?php
 	}
 }
 ?>

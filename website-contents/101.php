@@ -241,10 +241,10 @@ if ($app->xhttp) {
 				<div class="btn-set">
 					<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="5"
 						data-slo=":LIST"
-						data-source="_/FinanceBeneficiaryList/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_FinananceBeneficiaries.a"
+						data-source="_/FinanceBeneficiaryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinananceBeneficiaries.a"
 						name="beneficiary" id="beneficiary" value="<?= $read->beneficiary ?>" data-slodefaultid="<?= $read->beneficiary ?>" />
 					<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user"
-						data-slo=":LIST" data-source="_/UserList/slo/<?= $app->id; ?>/slo_userList.a"
+						data-slo=":LIST" data-source="_/UserList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_userList.a"
 						value="<?= $read->individual ? $read->individual->fullName() : ""; ?>"
 						data-slodefaultid="<?= $read->individual ? $read->individual->id : ""; ?>" />
 				</div>

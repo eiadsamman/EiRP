@@ -1,5 +1,4 @@
 <?php
-
 use System\Template\Gremium;
 
 $perpage_val = 20;

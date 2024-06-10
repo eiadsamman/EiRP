@@ -70,8 +70,6 @@ if (isset($_POST['posubmit'])) {
 		"paymethod" => isset($_POST['paymethod'][1]) && (int) $_POST['paymethod'][1] != 0 ? (int) $_POST['paymethod'][1] : null,
 		"section" => isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? (int) $_POST['section'][1] : null,
 		"job" => isset($_POST['section'][1]) && (int) $_POST['job'][1] != 0 ? (int) $_POST['job'][1] : null,
-
-
 		//"shift"=>isset($_POST['shift'][1]) && (int)$_POST['shift'][1]!=0?(int)$_POST['shift'][1]:null,
 		//"workingtime"=>isset($_POST['workingtime'][1]) && (int)$_POST['workingtime'][1]!=0?(int)$_POST['workingtime'][1]:null,
 		//"residence"=>null,

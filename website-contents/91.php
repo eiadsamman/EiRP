@@ -178,9 +178,9 @@ if ($app->xhttp) {
 					<div class="btn-set">
 						<input name="beneficiary" id="beneficiary" type="text" placeholder="Beneficiary name" data-mandatory class="flex"
 							title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
-							data-source="_/FinanceBeneficiaryList/slo/<?= $app->id; ?>/slo_FinananceBeneficiaries.a" />
+							data-source="_/FinanceBeneficiaryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinananceBeneficiaries.a" />
 						<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user"
-							step=".1" data-slo=":LIST" data-source="_/UserList/slo/<?= $app->id; ?>/slo_userList.a" />
+							step=".1" data-slo=":LIST" data-source="_/UserList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_userList.a" />
 						<!-- <button type="button" value="New" class="edge-right edge-left plus" id="js-input_add-benif"></button> -->
 					</div>
 				</label>
