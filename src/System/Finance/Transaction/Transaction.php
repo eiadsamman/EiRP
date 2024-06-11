@@ -285,9 +285,7 @@ abstract class Transaction extends Instructions
 		$stmt = $this->app->db->prepare(
 			"UPDATE acc_main SET
 				acm_usr_id = ?,
-				acm_editor_id = ?,
 				acm_ctime = ?,
-				acm_time = ?,
 				acm_type = ?,
 				acm_beneficial = ?,
 				acm_category = ?,
@@ -303,16 +301,12 @@ abstract class Transaction extends Instructions
 		);
 
 		$dateTime  = $this->dateTime->format("Y-m-d");
-		$timeStamp = (new \DateTime("now"))->format("Y-m-d H:i:s");
 		$openState = $this->open ? 0 : 1;
 
 		$stmt->bind_param(
-			"iissisissdiiiii",
-
+			"isisissdiiiii",
 			$this->individual,
-			$this->app->user->info->id,
 			$dateTime,
-			$timeStamp,
 			$this->nature_id,
 			$this->beneficiary,
 			$this->category,
