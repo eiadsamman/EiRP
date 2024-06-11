@@ -13,7 +13,7 @@ if ($app->xhttp) {
 			),
 			"contents" => array()
 		);
-		if(!$app->user->account){
+		if (!$app->user->account) {
 			echo json_encode($json_output);
 			exit;
 		}
@@ -25,12 +25,12 @@ if ($app->xhttp) {
 		//$controller->criteria->statementBeneficiary('مصطفى');
 
 		$user_current = abs((int) $request['page']);
-		$count = $sum = $pages = 0;
+		$count        = $sum = $pages = 0;
 		$controller->summary($count, $sum);
 		$count = is_null($count) ? 0 : $count;
 		$pages = ceil($count / $controller->criteria->getRecordsPerPage());
 
-		
+
 		if (isset($request['page']) && $user_current > 0) {
 			if ($user_current > $pages) {
 				$controller->criteria->setCurrentPage($pages);
@@ -41,10 +41,9 @@ if ($app->xhttp) {
 			$controller->criteria->setCurrentPage(1);
 		}
 
-		$json_output['headers']['count'] = $count;
-		$json_output['headers']['pages'] = $pages;
+		$json_output['headers']['count']   = $count;
+		$json_output['headers']['pages']   = $pages;
 		$json_output['headers']['current'] = $controller->criteria->getCurrentPage();
-
 
 
 		if ($count > 0) {
@@ -59,6 +58,9 @@ if ($app->xhttp) {
 						"category" => "{$row['accgrp_name']}: {$row['acccat_name']}",
 						"beneficial" => $row['acm_beneficial'],
 						"details" => $row['acm_comments'] ?? "",
+						"padge_id" => $row['issuer_badge'] ?? 0,
+						"padge_initials" => mb_substr($row['usr_firstname'], 0, 1) . " " . mb_substr($row['usr_lastname'], 0, 1),
+						"padge_color" => "hsl(" . ((int) ($row['acm_editor_id']) * 10 % 360) . ", 75%, 50%)",
 						"attachements" => $row['up_count'] ?? 0
 					);
 				}

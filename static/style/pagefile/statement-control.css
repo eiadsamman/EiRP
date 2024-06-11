@@ -1,9 +1,9 @@
-.statment-panel>div {
+.statment-panel div {
 	display: flex;
 	line-height: 1.5em;
 }
 
-.statment-panel>div>h1 {
+.statment-panel div>h1 {
 	font-size: 1em;
 	font-weight: normal;
 	flex: 1;
@@ -11,58 +11,98 @@
 	padding: 0;
 }
 
-.statment-panel>div>h1.description {
+.statment-panel div>i.padge {
+	margin-left: 10px;
+	margin-right: 5px;
+}
+
+.statment-panel div>i.padge>span {
+	display: block;
+	margin-top: 2px;
+	height: 37px;
+	width: 37px;
+	background-repeat: no-repeat;
+	background-size: 100% auto;
+	background-position: 50% 50%;
+	border-radius: 100%;
+}
+
+
+.statment-panel div>i.padge.initials>b {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-wrap: nowrap;
+	height: 37px;
+	width: 37px;
+	text-align: center;
+	font-size: 1em;
+	font-style: normal;
+	border-radius: 100%;
+	background-color: #000;
+	color: white;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.statment-panel div>h1.description {
 	max-height: 60px;
 	text-overflow: ellipsis;
 	overflow-y: hidden;
 	color: var(--root-font-lightcolor);
 }
 
-.statment-panel>div>cite>span.stm,
-.statment-panel>div>cite>span.atch,
-.statment-panel>div>cite>span.stt {
+.statment-panel div>cite>span.stm,
+.statment-panel div>cite>span.atch,
+.statment-panel div>cite>span.stt {
 	display: inline-block;
 }
 
-.statment-panel>div>cite>span.stm::after,
-.statment-panel>div>cite>span.atch::after,
-.statment-panel>div>cite>span.stt::after {
-	font-family: icomoon4;
+.statment-panel div>cite>span.stm::after,
+.statment-panel div>cite>span.atch::after,
+.statment-panel div>cite>span.stt::after {
+	font-family: icomoon;
 	display: inline-block;
 	margin: 0px 4px;
 }
 
-.statment-panel>div>cite>span.atch::after {
-	content: "\e9cd";
+.statment-panel div>cite>span.atch::after {
+	content: "\e60e";
 	color: tomato;
 }
 
-.statment-panel>div>cite>span.stt.opn::after {
-	content: "\e990";
+.statment-panel div>cite>span.stt.opn::after {
+	content: "\e645";
 	color: orange;
 }
 
-.statment-panel>div>cite>span.stt.chk::after {
-	content: "\e98f";
+.statment-panel div>cite>span.stt.chk::after {
+	content: "\e644";
 }
 
-.statment-panel>div>cite>span.stm.inc.active::after {
-	color: lime;
+.statment-panel div>cite>span.stm.inc.active::after {
+	color: limegreen;
 }
 
-.statment-panel>div>cite>span.stm.pay.active::after {
-	color: dodgerblue;
+.statment-panel div>cite>span.stm.pay.active::after {
+	color: tomato;
 }
 
-.statment-panel>div>cite>span.stm.inc::after {
-	content: "\ea43";
+.statment-panel div>cite>span.stm.inc::after {
+	content: "\e619";
+	padding-top: 1px;
+	font-size: 1.2em;
 }
 
-.statment-panel>div>cite>span.stm.pay::after {
-	content: "\ea41";
+.statment-panel div>cite>span.stm.pay::after {
+	content: "\e61a";
+	padding-top: 1px;
+	font-size: 1.2em;
+
 }
 
-.statment-panel>div>cite {
+.statment-panel div>cite {
 	font-style: normal;
 	color: var(--root-font-lightcolor);
 }

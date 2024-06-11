@@ -166,7 +166,7 @@ ul>li {
 }
 
 .flash {
-	
+
 	animation: flash 1s step-start 0s 4;
 }
 
@@ -819,6 +819,12 @@ span.vs-remove {
 	min-width: 200px;
 }
 
+.split-view>div.panel>div>article {
+	padding-top: 1px;
+	padding-bottom: 5px;
+	border-radius: 7px;
+}
+
 .split-view>div.panel>div::-webkit-scrollbar {
 	width: 5px;
 }
@@ -833,7 +839,9 @@ span.vs-remove {
 
 .split-view>div.panel>div a.panel-item {
 	display: block;
-	border-bottom: solid 1px var(--bomtable-border-color);
+	/* border-bottom: solid 1px var(--bomtable-border-color); */
+	margin: 5px;
+	border-radius: 6px;
 	min-height: 100px;
 	padding: 10px;
 	position: relative;
@@ -842,25 +850,37 @@ span.vs-remove {
 	color: var(--root-font-color);
 }
 
-.split-view>div.panel>div a.panel-item:not(.place-holder) {
-	cursor: pointer;
+.split-view>div.panel>div a.panel-item:not(.place-holder)::before {
+	position: relative;
+	display: block;
+	content: " ";
+	width: 100%;
+	height: 1px;
+	top: -13px;
+	border-top: solid 1px var(--static-border);
 }
 
-.split-view>div.panel>div a.panel-item.active {
-	background-color: var(--bomtable-hover-color);
+.split-view>div.panel>div a.panel-item:first-child::before {
+	border: none;
+}
+
+.split-view>div.panel>div a.panel-item:not(.place-holder) {
+	cursor: pointer;
 }
 
 .split-view>div.panel>div a.panel-item:not(.place-holder):hover {
 	text-decoration: none;
 	z-index: 2;
-	background-color: red;
-	background-color: var(--bomtable-hover-color);
+	background-color: var(--slo-menu-itemhover-background-color);
+}
+
+.split-view>div.panel>div a.panel-item.active {
+	background-color: var(--slo-menu-itemactive-background-color) !important;
 }
 
 .split-view>div.panel>div a.panel-item:not(.place-holder):focus {
 	outline: solid 2px var(--root-link-color);
 	outline-offset: -1px;
-	border-radius: 0px;
 	text-decoration: none;
 	z-index: 3;
 }

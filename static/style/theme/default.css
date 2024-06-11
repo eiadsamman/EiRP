@@ -23,7 +23,7 @@
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
 	--bomtable-hover-color: hsl(60, 100%, 90%);
-	--bomtable-stripes-color: #fafafc;
+	--bomtable-stripes-color: hsl(60, 100%, 95%);
 
 
 	--input_border-radius: 3px;
@@ -43,16 +43,16 @@
 	--button-font-color: white;
 	--button-border: hsl(206, 100%, 46%);
 	--button-bgcolor: hsl(206, 100%, 46%);
-	--button_hover-bgcolor: hsl(206, 100%, 41%);
-	--button_focus-bgcolor: hsl(206, 100%, 42%);
+	--button_hover-bgcolor: hsl(206, 100%, 40%);
+	--button_focus-bgcolor: hsl(206, 100%, 44%);
 	--button_active-bgcolor: hsl(206, 100%, 37%);
 	--button_disabled-bgcolor: var(--root-ribbon-background-color);
-	
+
 
 
 	--slo-menu-background-color: white;
-	--slo-menu-itemhover-background-color: rgb(243, 245, 253);
-	--slo-menu-itemactive-background-color: rgba(217, 235, 255, 1);
+	--slo-menu-itemhover-background-color: hsl(220, 50%, 96%);
+	--slo-menu-itemactive-background-color: hsl(220, 90%, 95%);
 
 	--placeholder-bgcolor: hsl(0, 0%, 94%);
 	--placeholder-sweeping-bgcolor: white;
@@ -112,9 +112,9 @@
 	--button_disabled-bgcolor: var(--root-ribbon-background-color);
 
 
-	--slo-menu-background-color: rgb(40, 40, 49);
-	--slo-menu-itemhover-background-color: rgb(60, 60, 74);
-	--slo-menu-itemactive-background-color: var(--root-ribbon-menu-itemhover-background-color);
+	--slo-menu-background-color: hsl(223, 15%, 15%);
+	--slo-menu-itemhover-background-color: hsl(220, 15%, 22%);
+	--slo-menu-itemactive-background-color: hsl(220, 20%, 26%);
 
 	--placeholder-bgcolor: #202940;
 	--placeholder-sweeping-bgcolor: hsl(223, 25%, 25%);

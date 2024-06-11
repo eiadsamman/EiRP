@@ -187,7 +187,6 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				$grem->getLast()->close();
 			}
 
-
 			if ($fs(229)->permission->read) {
 				$grem->title()->serve("<span class=\"flex\">Salary Details:</span>");
 				$grem->article()->open();

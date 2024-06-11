@@ -15,7 +15,7 @@ class TransactionView extends \System\Views\PanelView
 		$passedId        = !empty($_GET['id']) ? (int) $_GET['id'] : "null";
 		$fs              = $this->app->fileSystem;
 		$attachementType = \System\Attachment\Type::FinanceRecord->value;
-
+		$imageUri        = $this->app->fileSystem->find(187)->dir;
 
 		echo $this->htmlWrapperSidePanel->open;
 		$grem_panel       = new Gremium(true, true, false, "PanelNavigator-Scroll");
@@ -71,15 +71,23 @@ class TransactionView extends \System\Views\PanelView
 					let statementTypeIcon = data.positive ? `<span class="stm inc active"></span>` : `<span class="stm pay active"></span>`;
 					let lockIcon = `<span class="stt chk"></span>`;
 					let attachments = parseInt(data.attachements) > 0 ? `<span class="atch"></span>` : "";
-					return `<div><h1>\${data.beneficial}</h1><cite>\${data.id}</cite></div>` +
-						`<div><h1>\${data.value}</h1><cite>\${data.date}</cite></div>` +
-						`<div><h1>\${data.category}</h1><cite>\${attachments}\${statementTypeIcon}</cite></div>` +
+					let badgeType = parseInt(data.padge_id)  ? "image" : "initials";
+					let badgeURI = parseInt(data.padge_id) ? `<span style="background-image:url('{$imageUri}/?id=\${data.padge_id}&pr=t');"></span>` : `<b style="background-color:\${data.padge_color}">\${data.padge_initials}</b>`;
+					return `` +
+						`<div>`+
+						`	<span style="flex: 1">` +
+						`		<div><h1>\${data.beneficial}</h1><cite>\${attachments}\</cite><cite>\${data.id}</cite></div>` +
+						`		<div><cite>\${statementTypeIcon}</cite><h1>\${data.value}</h1><cite>\${data.date}</cite></div>` +
+						`		<div><h1>\${data.category}</h1></div>` +
+						`	</span>` +
+						`	<i class="padge \${badgeType}">\${badgeURI}</i>` + 
+						`</div>` +
 						`<div><h1 class=\"description\">\${data.details}</h1></div>`;
 				}
 				pn.init();
 
 				pn.contentLoader("{$fs()->dir}", null, { "id": {$passedId} });
-				{$this->trash()}
+				
 			</script>
 		HTML;
 	}
@@ -90,7 +98,7 @@ class TransactionView extends \System\Views\PanelView
 		//<script>
 		if (document.getElementById("js-input_btunew")){
 			document.getElementById("js-input_btunew").addEventListener("click", function () {
-				pn.prependItem({
+				/* pn.prependItem({
 						"attachements": 1,
 						"beneficial": "نقدي",
 						"category": "رواتب: رواتب",
@@ -100,7 +108,7 @@ class TransactionView extends \System\Views\PanelView
 						"positive": true,
 						"value": "(1,000.00)"
 					})
-				
+				 */
 				/* pn.clearActiveItem();
 				pn.navigator.setProperty("id", null);
 				pn.navigator.history_vars.url = '{$fs(91)->dir}';

@@ -58,7 +58,7 @@ if ($app->xhttp) {
 					(float) $_POST['exchange-value']
 				);
 			}
-			
+
 			if (isset($_POST['attachments']) && is_array($_POST['attachments'])) {
 				$transaction->attachments($_POST['attachments']);
 			}
@@ -171,9 +171,9 @@ if ($app->xhttp) {
 
 		<input type="hidden" name="exchange-override" id="exchange-override" value="true" />
 		<input type="hidden" name="exchange-dir-from" id="exchange-dir-from"
-			value="<?= $a < $b ? $read->creditor->currency->id : $read->debitor->currency->id; ?>" />
+			value="<?= ($read->creditor && $read->debitor ? $a < $b ? $read->creditor->currency->id : $read->debitor->currency->id : ""); ?>" />
 		<input type="hidden" name="exchange-dir-to" id="exchange-dir-to"
-			value="<?= $a >= $b ? $read->creditor->currency->id : $read->debitor->currency->id; ?>" />
+			value="<?= ($read->creditor && $read->debitor ? $a >= $b ? $read->creditor->currency->id : $read->debitor->currency->id : ""); ?>" />
 
 		<div class="form predefined">
 			<label style="min-width:200px;flex:2">
@@ -261,17 +261,18 @@ if ($app->xhttp) {
 				</div>
 
 				<div class="btn-set" id="exchange-form"
-					style="margin-top:15px;display: <?= ($read->creditor->currency->id != $read->debitor->currency->id ? "flex" : "none"); ?>;">
-
+					style="margin-top:15px;display: <?= ($read->debitor && $read->creditor && ($read->creditor->currency->id != $read->debitor->currency->id) ? "flex" : "none"); ?>;">
 					<span>
 						<a id="exchange-action" href="<?= $fs(87)->dir; ?>">
-							<?= $a < $b ? $read->creditor->currency->shortname : $read->debitor->currency->shortname; ?> →
-							<?= $a >= $b ? $read->creditor->currency->shortname : $read->debitor->currency->shortname; ?>
+							<?php if ($read->debitor && $read->creditor) { ?>
+								<?= $a < $b ? $read->creditor->currency->shortname : $read->debitor->currency->shortname; ?> →
+								<?= $a >= $b ? $read->creditor->currency->shortname : $read->debitor->currency->shortname; ?>
+							<?php } ?>
 						</a>
 					</span>
 					<input type="text" inputmode="decimal" data-required style="display:none" placeholder="Exchange rate" id="exchange-value"
-						name="exchange-value" data-default="<?= $read->forexRate; ?>" <?= $fs(87)->permission->edit ? "" : "disabled"; ?>
-						class="flex" value="<?= (float) number_format($a > $b ? $a / $b : $b / $a, 4); ?>" />
+						name="exchange-value" data-default="<?= $read->forexRate; ?>" <?= $fs(87)->permission->edit ? "" : "disabled"; ?> class="flex"
+						value="<?= (float) number_format($a > $b ? $a / $b : $b / $a, 4); ?>" />
 
 					<span id="exchange-hint" class="flex"><?= number_format($a > $b ? $a / $b : $b / $a, 4); ?></span>
 				</div>
