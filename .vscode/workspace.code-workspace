@@ -12,7 +12,6 @@
 			"uploads/": true,
 			"_queries/": true,
 			"_backs": true,
-			"admin/class/barcode": true,
 			/* "cpanel3/": true, */
 			"*.xlsx":true,
 		},
