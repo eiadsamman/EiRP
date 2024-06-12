@@ -485,7 +485,7 @@ export default class Transaction {
 		if (this.busy)
 			return;
 		try {
-			this.validateFields();
+			//this.validateFields();
 		} catch (e) {
 			messagesys.failure(e);
 			return false;
@@ -517,13 +517,7 @@ export default class Transaction {
 
 					if (payload.type == "receipt" || payload.type == "payment") {
 						messagesys.success("Transaction `" + payload.insert_id + "` posted successfully");
-						$("#jQoutput").prepend(
-							"<tr>" +
-							"<td>" + payload.insert_id + "</td>" +
-							"<td align=\"right\">" + App.Instance.numberFormat(formData.get("value"), 2) + "</td>" +
-							"<td>" + formData.get("beneficiary[0]") + "</td>" +
-							"</tr>"
-						);
+
 						this.clearFields();
 						this.uploadController.clean();
 						this.slo_objects.getElementById("beneficiary").slo.focus();
@@ -536,8 +530,11 @@ export default class Transaction {
 							"details": formData.get("description"),
 							"id": payload.insert_id,
 							"positive": payload.type == "receipt",
-							"value": (payload.type == "payment" ? "(" : "") + App.Instance.numberFormat(formData.get("value"), 2) + (payload.type == "payment" ? ")" : "")
-						})
+							"value": (payload.type == "payment" ? "(" : "") + App.Instance.numberFormat(formData.get("value"), 2) + (payload.type == "payment" ? ")" : ""),
+							"padge_id": App.User.photo,//
+							"padge_initials": App.User.initials,
+							"padge_color": App.Instance.userColorCode(App.User.id),
+						});
 					} else if (payload.type == "update") {
 						messagesys.success("Transaction `" + payload.insert_id + "` modified successfully");
 					}

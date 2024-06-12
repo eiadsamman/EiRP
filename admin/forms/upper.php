@@ -47,6 +47,9 @@ $SmartListObject  = new SmartListObject($app);
 		App.ID = '<?= $app->id; ?>';
 		App.Instance = new Application(App.ID);
 		<?php if ($app->user->logged) {
+			echo "App.User.id = {$app->user->info->id};";
+			echo "App.User.photo = {$app->user->info->photoid};";
+			echo "App.User.initials = \"". mb_substr($app->user->info->firstname, 0, 1) . " " . mb_substr($app->user->info->lastname, 0, 1)."\";";
 			echo "App.Account = new Account(";
 			echo ($app->user->company?$app->user->company->id:"null").',';
 			if($app->user->account){

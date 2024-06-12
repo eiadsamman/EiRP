@@ -257,21 +257,6 @@ if ($app->xhttp) {
 		</form>
 		<?php
 		$grem->getLast()->close();
-		$grem->title()->serve("<span class=\"flex\">Session transactions</span>");
-		$grem->article()->open();
-		?>
-		<table class="hover">
-			<thead>
-				<tr>
-					<td>ID</td>
-					<td stlye="text-align:right">Amount</td>
-					<td style="width:100%">Benificial</td>
-				</tr>
-			</thead>
-			<tbody id="jQoutput"></tbody>
-		</table>
-		<?php
-		$grem->getLast()->close();
 		$grem->terminate();
 		unset($grem);
 		?>

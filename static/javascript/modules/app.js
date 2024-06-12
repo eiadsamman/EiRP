@@ -17,6 +17,10 @@ export class Application {
 		this.loadAssosiatedAccount();
 	}
 
+	userColorCode(userId) {
+		return "hsl(" + (userId * 10 % 360) + ", 75%, 50%)";
+	}
+
 	loadAssosiatedAccount() {
 		fetch('_/UserAssosiatedAccounts/json/' + this.id + '/json_UserAssosiatedAccounts.a', {
 			method: 'GET',
@@ -166,6 +170,11 @@ export class Navigator {
 
 export default {
 	ID: 0,
+	User: {
+		id: null,
+		photo: null,
+		initials: null,
+	},
 	Instance: null,
 	Account: null
 };
