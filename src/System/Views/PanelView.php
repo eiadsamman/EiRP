@@ -20,7 +20,7 @@ class PanelView implements Views
 	public function __construct(protected App &$app)
 	{
 		$this->htmlWrapperSidePanel = new HTMLWrapper(
-			"<div class=\"split-view\"><div class=\"panel entire\">",
+			"<div class=\"split-view\"><div class=\"panel entire\" id=\"PanelNavigator-Side\">",
 			"</div><div class=\"body\" id=\"PanelNavigator-Body\"></div></div>"
 		);
 	}

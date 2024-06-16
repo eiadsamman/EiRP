@@ -29,7 +29,7 @@ class File
 		$output->uploader = (int) $res['up_user'];
 		$output->size = (int) $res['up_size'];
 		$output->name = (int) $res['up_name'];
-		$output->mine = (int) $res['up_mime'];
+		$output->mime = (int) $res['up_mime'];
 		$output->active = !is_null($res['up_active']) && (int) $res['up_active'] == 1 ? true : false;
 		$output->deleted = !is_null($res['up_deleted']) && (int) $res['up_deleted'] == 1 ? true : false;
 		$output->default = !is_null($res['up_param_int']) && (int) $res['up_param_int'] == 1 ? true : false;

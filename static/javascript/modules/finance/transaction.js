@@ -233,14 +233,18 @@ export default class Transaction {
 
 		/* Open statement attachment popup */
 		document.getElementById("transAttachementsList")?.childNodes.forEach(elm => {
-			elm.addEventListener("click", (e) => {
-				e.preventDefault();
-				let popAtt = new Popup();
-				popAtt.addEventListener("close", function (p) {
-					this.destroy();
-				});
-				popAtt.contentForm({ title: "Attachement preview" }, "<div style=\"text-align: center;\"><img style=\"max-width:600px;width:100%\" src=\"" + elm.href + "\" /></div>");
-				popAtt.show();
+			elm.addEventListener("click", function (e) {
+				if (this.dataset.attachment && this.dataset.attachment == "force") {
+					/* default link behaviour */
+				} else {
+					e.preventDefault();
+					let popAtt = new Popup();
+					popAtt.addEventListener("close", function (p) {
+						this.destroy();
+					});
+					popAtt.contentForm({ title: "Attachement preview" }, "<div style=\"text-align: center;\"><img style=\"max-width:600px;width:100%\" src=\"" + elm.href + "\" /></div>");
+					popAtt.show();
+				}
 			});
 		});
 

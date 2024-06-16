@@ -114,6 +114,8 @@
 	padding: 0;
 	width: 104px;
 	height: 104px;
+	margin-right: 3px;
+	;
 }
 
 .attachments-view>a:hover {
@@ -124,8 +126,40 @@
 
 .attachments-view>a>img {
 	margin: 0;
-	border-radius: 2px;
-	max-width: 100px;
-	max-height: 100px;
+	border-radius: 4px;
+	width: 100px;
+	height: 100px;
 	position: absolute;
+}
+
+.attachments-view>a>span {
+	margin: 0;
+	border-radius: 4px;
+	width: 100px;
+	height: 100px;
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: var(--slo-menu-itemhover-background-color);
+
+}
+
+.attachments-view>a>span>span {
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 1.5em;
+	padding-top: 15px;
+	padding-bottom: 5px;
+}
+
+.attachments-view>a>span>div {
+	text-align: center;
+	color: var(--root-font-lightcolor);
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding: 0px 5px;
+	max-height: 40px;
 }

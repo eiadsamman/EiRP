@@ -770,11 +770,12 @@ span.vs-remove {
 	text-overflow: ellipsis;
 }
 
-
 /* #endregion General*/
 
 
 /* #region Split View */
+
+
 .split-view {
 	display: flex;
 	height: 100%;
@@ -782,9 +783,10 @@ span.vs-remove {
 
 .split-view>div.panel {
 	flex: 2;
+	z-index: 1;
 	position: relative;
-	max-width: 400px;
-	transition: width 0.3s ease, max-width 0.3s ease;
+	max-width: 350px;
+	transition: width 0.5s ease, max-width 0.5s ease;
 }
 
 .split-view>div.panel.hide {
@@ -794,6 +796,8 @@ span.vs-remove {
 
 .split-view>div.body {
 	flex: 5;
+	background-color: var(--root-background-color);
+	z-index: 2;
 }
 
 /* div#PanelNavigator-Scroll {
@@ -806,6 +810,7 @@ span.vs-remove {
  */
 
 .split-view>div.panel>div {
+	min-width: 200px;
 	top: var(--root--menubar-height);
 	position: sticky;
 	overflow-y: auto;
@@ -816,7 +821,7 @@ span.vs-remove {
 	max-height: calc(100vh - var(--root--menubar-height));
 	margin-right: 10px;
 	scroll-padding-top: 115px;
-	min-width: 200px;
+	overflow-x: hidden;
 }
 
 .split-view>div.panel>div>article {
@@ -842,6 +847,7 @@ span.vs-remove {
 	/* border-bottom: solid 1px var(--bomtable-border-color); */
 	margin: 5px;
 	border-radius: 6px;
+
 	min-height: 100px;
 	padding: 10px;
 	position: relative;
@@ -1019,9 +1025,8 @@ span.loadingScreen-placeholderBody>span:last-child {
 /* #region Media*/
 @media only screen and (max-width: 1080px) {
 	.split-view>div.panel {
-		width: 0px;
 		max-width: 0px;
-		overflow-x: hidden;
+		width: 0px;
 	}
 }
 

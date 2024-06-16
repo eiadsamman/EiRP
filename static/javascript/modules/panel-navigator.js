@@ -6,6 +6,7 @@ export class PanelNavigator {
 		this.itemPerRequest = 20;
 		this.navigator = new Navigator({}, '');
 		this.entityModule = null;
+		this.isSidePanelVisible = true;
 		this.classList = [];
 
 		this.runtime = new Object();
@@ -18,6 +19,7 @@ export class PanelNavigator {
 		this.runtime.scrollArea = document.getElementById("PanelNavigator-Scroll");
 		this.runtime.container = document.getElementById("PanelNavigator-Window");
 		this.runtime.loadingScreen = document.getElementById("PanelNavigator-LoadingScreen");
+		this.runtime.outputSide = document.getElementById("PanelNavigator-Side");
 		this.runtime.outputScreen = document.getElementById("PanelNavigator-Body");
 		this.runtime.informative = document.getElementById("PanelNavigator-Informative").querySelector("div");
 
@@ -124,6 +126,14 @@ export class PanelNavigator {
 		});
 	}
 
+	sidePanelVisibility(visible) {
+		this.isSidePanelVisible = visible;
+		if (visible) {
+			this.runtime.outputSide.classList.remove("hide")
+		} else {
+			this.runtime.outputSide.classList.add("hide")
+		}
+	}
 	getFreePlaceholder = function () {
 		let freePlaceholder = this.runtime.scrollArea.querySelector(".panel-item.place-holder");
 		if (freePlaceholder == null) {
@@ -301,6 +311,9 @@ export class PanelNavigator {
 			if (title != null)
 				document.title = title;
 			this.runtime.outputScreen.innerHTML = body;
+
+
+			// sex.addEventListener("click", () => {this.sidePanelVisibility(!this.isSidePanelVisible);});
 
 			this.runtime.outputScreen.querySelectorAll("[data-href]").forEach(el => {
 				try {

@@ -22,44 +22,44 @@ class Statement
 		if (
 			$r = $this->app->db->query(
 				"SELECT 
-				acm_id,
-				acm_usr_id,
-				acm_editor_id,
-				acm_ctime,
-				acm_type,
-				acm_beneficial,
-				acm_comments,
-				acm_reference,
-				acm_category,
-				_category.accgrp_name,
-				_category.acccat_name,
+					acm_id,
+					acm_usr_id,
+					acm_editor_id,
+					acm_ctime,
+					acm_type,
+					acm_beneficial,
+					acm_comments,
+					acm_reference,
+					acm_category,
+					_category.accgrp_name,
+					_category.acccat_name,
 
-				_usr.usr_id AS ben_usr_id,
-				_usr.usr_firstname AS ben_usr_firstname,
-				_usr.usr_lastname AS ben_usr_lastname,
+					_usr.usr_id AS ben_usr_id,
+					_usr.usr_firstname AS ben_usr_firstname,
+					_usr.usr_lastname AS ben_usr_lastname,
 
-				_editor.usr_firstname AS edt_usr_firstname,
-				_editor.usr_lastname AS edt_usr_lastname,
+					_editor.usr_firstname AS edt_usr_firstname,
+					_editor.usr_lastname AS edt_usr_lastname,
 
-				acm_rejected,
-				acm_realvalue, 
-				cur_id, cur_name, cur_symbol,cur_shortname
-			FROM 
-				acc_main 
-					LEFT JOIN 
-					(
-						SELECT
-							acccat_id AS _catid,
-							accgrp_name,
-							acccat_name
-						FROM
-							acc_categories JOIN acc_categorygroups  ON acccat_group = accgrp_id
-					) AS _category ON _category._catid = acm_category
-					LEFT JOIN users AS _usr ON _usr.usr_id = acm_usr_id
-					LEFT JOIN users AS _editor ON _editor.usr_id = acm_editor_id
-					LEFT JOIN currencies ON cur_id = acm_realcurrency
-			WHERE 
-				acm_id = $id;"
+					acm_rejected,
+					acm_realvalue, 
+					cur_id, cur_name, cur_symbol,cur_shortname
+				FROM 
+					acc_main 
+						LEFT JOIN 
+						(
+							SELECT
+								acccat_id AS _catid,
+								accgrp_name,
+								acccat_name
+							FROM
+								acc_categories JOIN acc_categorygroups  ON acccat_group = accgrp_id
+						) AS _category ON _category._catid = acm_category
+						LEFT JOIN users AS _usr ON _usr.usr_id = acm_usr_id
+						LEFT JOIN users AS _editor ON _editor.usr_id = acm_editor_id
+						LEFT JOIN currencies ON cur_id = acm_realcurrency
+				WHERE 
+					acm_id = $id;"
 			)
 		) {
 			if ($row = $r->fetch_assoc()) {
@@ -144,7 +144,7 @@ class Statement
 		if (
 			$r = $this->app->db->query(
 				"SELECT 
-					up_id, up_name
+					up_id, up_name, up_mime, up_size
 				FROM 
 					uploads 
 				WHERE 
@@ -158,6 +158,8 @@ class Statement
 				$file                             = new \System\Attachment\Properties();
 				$file->id                         = (int) $row['up_id'];
 				$file->name                       = $row['up_name'] ?? "";
+				$file->mime                       = $row['up_mime'] ?? "";
+				$file->size                       = (int) $row['up_size'];
 				$statementProperty->attachments[] = $file;
 			}
 		}

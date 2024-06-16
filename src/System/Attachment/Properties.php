@@ -11,7 +11,7 @@ class Properties
 	public int $uploader;
 	public int $size;
 	public string $name;
-	public string $mine;
+	public string $mime;
 	public bool $active;
 	public bool $deleted;
 	public bool $default;

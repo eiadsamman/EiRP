@@ -38,11 +38,13 @@ if ($read) {
 		$grem->title()->serve("<span class=\"flex\">Statement details</span>");
 		$grem->article()->open(); ?>
 		<iframe id="plot-iframe" name="plot-iframe" style="display:block;width:0;height:0px;visibility: hidden"></iframe>
+
 		<div class="form predefined">
 
 			<label>
 				<h1>Statement ID</h1>
 				<div class="btn-set">
+					<!-- <button type="button" id="sex">Sex</button> -->
 					<span>
 						<?= $app->prefixList[13][0] . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT); ?>
 					</span>
@@ -85,7 +87,8 @@ if ($read) {
 			<label>
 				<h1>Issuer</h1>
 				<div class="btn-set">
-					<span class="at"><a href="<?= $fs(182)->dir ?>/?id=<?= $read->editor->id ?>" title="<?= $read->editor->fullName() ?>"><?= $read->editor->fullName() ?></a></span>
+					<span class="at"><a href="<?= $fs(182)->dir ?>/?id=<?= $read->editor->id ?>"
+							title="<?= $read->editor->fullName() ?>"><?= $read->editor->fullName() ?></a></span>
 				</div>
 			</label>
 
@@ -127,9 +130,32 @@ if ($read) {
 				<label>
 					<h1>Attachments</h1>
 					<div style="padding:5px 10px;" class="attachments-view" id="transAttachementsList">
-						<?php
+						<?php	
 						foreach ($read->attachments as $file) {
-							echo "<a title=\"{$file->name}\" href=\"{$fs(187)->dir}?id={$file->id}&pr=v\" ><img src=\"{$fs(187)->dir}?id={$file->id}&pr=t\" /></a>";
+
+							if (explode("/", $file->mime)[0] == "image") {
+								echo "<a title=\"{$file->name}\" href=\"{$fs(187)->dir}?id={$file->id}&pr=v\">";
+								echo "<img src=\"{$fs(187)->dir}?id={$file->id}&pr=t\" />";
+								echo "</a>";
+							} else {
+								echo "<a title=\"{$file->name}\" href=\"{$fs(187)->dir}?id={$file->id}\" data-attachment=\"force\" target=\"_blank\">";
+								$extpos = strrpos($file->name, ".", -1);
+								if ($extpos !== false) {
+									$ext      = strtolower(substr($file->name, $extpos + 1));
+									$clr      = crc32($ext) % 360;
+									$filename = substr($file->name, 0, $extpos);
+								} else {
+									$ext      = ".";
+									$clr      = 0;
+									$filename = "";
+								}
+								echo "<span>";
+								echo "<span style=\"color: hsl($clr, 50%, 50%);\">{$ext}</span>";
+								echo "<div>" . (number_format($file->size / 1024, 0)) . "KB</div>";
+								echo "<div>{$filename}</div>";
+								echo "</span>";
+								echo "</a>";
+							}
 						}
 						?>
 					</div>
@@ -144,7 +170,7 @@ if ($read) {
 				</div>
 			</label>
 		</div>
-<?php
+		<?php
 		$grem->getLast()->close();
 		$grem->terminate();
 		unset($grem);

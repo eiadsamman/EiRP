@@ -6,6 +6,7 @@ namespace System\Finance;
 
 use Exception;
 use mysqli_result;
+use System\Template\Gremium\Gremium;
 
 
 class DocumentException extends Exception
@@ -26,27 +27,32 @@ class DocumentId extends Exception
 {
 	public function errorPlot()
 	{
-		$_TEMPLATE = new \System\Template\Body();
-		$_TEMPLATE->Title("Invalid request!", null, "", "mark-error");
-		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Document ID not provided, one or more of the following might be the cause:</span>");
-		$_TEMPLATE->NewFrameBody('<ul>
+		$grem = new Gremium(true);
+		$grem->header()->serve("<h1>Invalid request!</h1>");
+		$grem->article()->open();
+		echo ("<span class=\"flex\">Document ID Token is invalid, one or more of the following might be the cause:</span>");
+		echo ('<ul>
 			<li>Session has expired</li>
-			<li>Requested document number is not valid</li>
 			<li>Permission denied or not enough privileges to proceed with this document</li>
 			<ul>');
+		$grem->getLast()->close();
+		$grem->terminate();
 	}
 }
 class DocumentToken extends Exception
 {
 	public function errorPlot()
 	{
-		$_TEMPLATE = new \System\Template\Body();
-		$_TEMPLATE->Title("Invalid request!", null, "", "mark-error");
-		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Document ID Token is invalid, one or more of the following might be the cause:</span>");
-		$_TEMPLATE->NewFrameBody('<ul>
+		$grem = new Gremium(true);
+		$grem->title()->serve("<h1>Invalid request!</h1>");
+		$grem->article()->open();
+		echo ("<span class=\"flex\">Document ID Token is invalid, one or more of the following might be the cause:</span>");
+		echo ('<ul>
 			<li>Session has expired</li>
 			<li>Permission denied or not enough privileges to proceed with this document</li>
 			<ul>');
+		$grem->getLast()->close();
+		$grem->terminate();
 	}
 }
 
@@ -133,9 +139,9 @@ class Invoice
 
 	public function DocumentURI(): int|bool
 	{
-
 		try {
 			if (!isset($_GET['docid']) || (int)$_GET['docid'] == 0) {
+				
 				throw new DocumentId("No document ID provided", 30001);
 			} else if (md5("sysdoc_" . $_GET['docid'] . session_id()) != $_GET['token']) {
 				throw new DocumentToken("Invlaid token", 30002);
