@@ -45,6 +45,7 @@ $SmartListObject  = new SmartListObject($app);
 		import Account from "./static/javascript/modules/finance/account.js";
 		import Currency from "./static/javascript/modules/finance/currency.js";
 		App.ID = '<?= $app->id; ?>';
+		App.ApplicationTitle = '<?= $app->settings->site['title']; ?>';
 		App.Instance = new Application(App.ID);
 		<?php if ($app->user->logged) {
 			echo "App.User.id = {$app->user->info->id};";

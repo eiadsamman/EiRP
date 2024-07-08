@@ -41,9 +41,10 @@ if ($app->xhttp) {
 			$controller->criteria->setCurrentPage(1);
 		}
 
-		$json_output['headers']['count']   = $count;
-		$json_output['headers']['pages']   = $pages;
-		$json_output['headers']['current'] = $controller->criteria->getCurrentPage();
+		$json_output['headers']['count']       = $count;
+		$json_output['headers']['pages']       = $pages;
+		$json_output['headers']['landing_uri'] = $fs(104)->dir;
+		$json_output['headers']['current']     = $controller->criteria->getCurrentPage();
 
 
 		if ($count > 0) {

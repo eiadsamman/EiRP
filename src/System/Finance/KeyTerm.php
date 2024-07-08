@@ -7,6 +7,7 @@ namespace System\Finance;
 
 enum KeyTerm: int
 {
+	case NA = 0;
 	case Assets = 1;
 	case Liabilities = 2;
 	case Equity = 3;
@@ -30,6 +31,7 @@ enum KeyTerm: int
 	{
 		return match ($this) {
 			self::Assets => 'Assets',
+			self::NA => '(<i>N/A</i>)',
 			self::Liabilities => 'Liabilities',
 			self::Equity => 'Equity',
 		};

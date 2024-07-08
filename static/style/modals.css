@@ -347,7 +347,7 @@ table.strip>tbody>tr:nth-child(2n)>td {
 	font-size: 1em;
 }
 
-table.hover>tbody>tr:hover>td {
+table.hover>tbody>tr:hover>td:not(.placeholder) {
 	background-color: var(--bomtable-hover-color);
 }
 
@@ -393,6 +393,26 @@ table tr>td.op-display>* {
 	-ms-user-select: none;
 	user-select: none;
 
+}
+
+
+table>tbody>tr>td.placeholder {
+	cursor: wait;
+}
+
+table>tbody>tr>td.placeholder::after {
+	height: 12px;
+	display: inline-block;
+	content: " ";
+	animation-duration: 2.2s;
+	animation-fill-mode: forwards;
+	animation-iteration-count: infinite;
+	animation-name: placeHolderShimmerLong;
+	animation-timing-function: linear;
+	background: var(--root-background-color);
+	background: linear-gradient(to right, var(--placeholder-bgcolor) 0%, var(--placeholder-sweeping-bgcolor) 15%, var(--placeholder-bgcolor) 30%);
+	background-size: 1400px 104px;
+	width: 100%;
 }
 
 

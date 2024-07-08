@@ -786,7 +786,7 @@ span.vs-remove {
 	z-index: 1;
 	position: relative;
 	max-width: 350px;
-	transition: width 0.5s ease, max-width 0.5s ease;
+	transition: width 0.2s ease, max-width 0.2s ease;
 }
 
 .split-view>div.panel.hide {
@@ -924,11 +924,7 @@ span.vs-remove {
 }
 
 
-div#PanelNavigator-LoadingScreen {
-	display: none;
-}
-
-span.loadingScreen-placeholder::after {
+.loadingScreen-placeholder::after {
 	height: 12px;
 	display: inline-block;
 	content: " ";
@@ -944,13 +940,13 @@ span.loadingScreen-placeholder::after {
 	width: 100px;
 }
 
-span.loadingScreen-placeholder.header::after {
+.loadingScreen-placeholder.header::after {
 	width: 300px;
 	height: 30px;
 	top: 5px;
 }
 
-span.loadingScreen-placeholder.title::after {
+.loadingScreen-placeholder.title::after {
 	width: 300px;
 	height: 15px;
 	top: 15px

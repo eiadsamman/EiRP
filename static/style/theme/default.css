@@ -18,11 +18,11 @@
 	--root-input-background-color: white;
 	--root-button-background-color: white;
 
-	--root-modal-background-color: rgba(50, 50, 50, .6);
+	--root-modal-background-color: rgba(259, 259, 259, .5);
 
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
-	--bomtable-hover-color: hsl(60, 100%, 90%);
+	--bomtable-hover-color: hsl(220, 50%, 96%); /*  hsl(60, 100%, 90%); */
 	--bomtable-stripes-color: hsl(60, 100%, 95%);
 
 
@@ -46,7 +46,7 @@
 	--button_hover-bgcolor: hsl(206, 100%, 40%);
 	--button_focus-bgcolor: hsl(206, 100%, 44%);
 	--button_active-bgcolor: hsl(206, 100%, 37%);
-	--button_disabled-bgcolor: var(--root-ribbon-background-color);
+	--button_disabled-bgcolor: hsl(206, 10%, 94%);
 
 
 
@@ -85,7 +85,7 @@
 
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
-	--bomtable-hover-color: hsl(220, 30%, 30%);
+	--bomtable-hover-color: hsl(220, 15%, 22%);/*  hsl(220, 30%, 30%); */
 	--bomtable-stripes-color: #202940;
 
 
@@ -109,7 +109,7 @@
 	--button_hover-bgcolor: hsl(206, 100%, 41%);
 	--button_focus-bgcolor: hsl(206, 100%, 42%);
 	--button_active-bgcolor: hsl(206, 100%, 37%);
-	--button_disabled-bgcolor: var(--root-ribbon-background-color);
+	--button_disabled-bgcolor: hsl(240, 11%, 12%);
 
 
 	--slo-menu-background-color: hsl(223, 15%, 15%);

@@ -567,6 +567,14 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 
+
+.slo-wrap>input[type=text]:disabled,
+.slo-wrap>input[type=number]:disabled,
+.slo-wrap>input[type=password]:disabled,
+.slo-wrap>input[type=date]:disabled {
+	background-color: var(--button_disabled-bgcolor);
+}
+
 .slo-wrap:after {
 	font-family: "icomoon4";
 	text-align: center;

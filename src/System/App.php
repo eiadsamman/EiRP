@@ -39,7 +39,7 @@ class App
 
 	public ?Views $view;
 
-	public \System\FileSystem\Page $fileSystem;
+	public \System\FileSystem\Page $file;
 	protected array $permissions_array = array();
 	private string|null $route = null;
 

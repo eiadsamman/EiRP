@@ -1,12 +1,14 @@
 import { Navigator } from "./app.js";
+import App from "./app.js";
 export class PanelNavigator {
-	constructor() {
-		this.sourceUrl = "";
+	constructor(id) {
+		this.sidePanelUrl = "";
 		this.onClickUrl = "";
 		this.itemPerRequest = 20;
 		this.navigator = new Navigator({}, '');
-		this.entityModule = null;
-		this.isSidePanelVisible = true;
+		this.module = null;
+		this.panelVisible = true;
+		this.scope = {};
 		this.classList = [];
 
 		this.runtime = new Object();
@@ -18,7 +20,7 @@ export class PanelNavigator {
 		this.runtime.activeItem = null;
 		this.runtime.scrollArea = document.getElementById("PanelNavigator-Scroll");
 		this.runtime.container = document.getElementById("PanelNavigator-Window");
-		this.runtime.loadingScreen = document.getElementById("PanelNavigator-LoadingScreen");
+
 		this.runtime.outputSide = document.getElementById("PanelNavigator-Side");
 		this.runtime.outputScreen = document.getElementById("PanelNavigator-Body");
 		this.runtime.informative = document.getElementById("PanelNavigator-Informative").querySelector("div");
@@ -47,26 +49,29 @@ export class PanelNavigator {
 	listitemHandler = function () {
 	}
 
+	highlightItemById = function (id) {
+		if (id != undefined) {
+			let listitem = this.runtime.scrollArea.querySelector(`.panel-item[data-listitem_id="${id}"]`);
+			if (listitem) {
+				this.clearActiveItem();
+				this.setActiveItem(listitem);
+			}
+		}
+	}
+
 	init = function () {
 		this.sidePanelLoader();
-		this.navigator.history_state.id = pageConfig.id;
-		this.navigator.history_vars.id = pageConfig.id;
-		this.navigator.history_vars.url = pageConfig.url;
-		this.navigator.history_vars.title = pageConfig.title;
-		this.navigator.replaceVariableState();
+		this.navigator.stampState();
 		this.navigator.onPopState((event) => {
-			this.contentLoader(
+			this.register(event.state[':url'], event.state);
+			this.highlightItemById(event.state.id);
 
-				event.state.url,
-				event.state.title,
-				{ "id": event.state.id }
-			);
-			if (event.state.id != undefined) {
-				let listitem = this.runtime.scrollArea.querySelector(`.panel-item[data-listitem_id="${event.state.id}"]`);
-				if (listitem) {
-					this.clearActiveItem();
-					this.setActiveItem(listitem);
+			if (this.module && this.module.hasOwnProperty("id") && this.module.id == event.state[':url'] && this.module.hasOwnProperty("onPopState")) {
+				if (typeof this.module.onPopState == "function") {
+					this.module.onPopState();
 				}
+			} else {
+				this.run();
 			}
 		});
 
@@ -127,13 +132,14 @@ export class PanelNavigator {
 	}
 
 	sidePanelVisibility(visible) {
-		this.isSidePanelVisible = visible;
+		this.panelVisible = visible;
 		if (visible) {
 			this.runtime.outputSide.classList.remove("hide")
 		} else {
 			this.runtime.outputSide.classList.add("hide")
 		}
 	}
+
 	getFreePlaceholder = function () {
 		let freePlaceholder = this.runtime.scrollArea.querySelector(".panel-item.place-holder");
 		if (freePlaceholder == null) {
@@ -160,7 +166,7 @@ export class PanelNavigator {
 		this.runtime.informative.innerText = "Loading...";
 		this.generatePlaceholders();
 
-		let response = await fetch(this.sourceUrl, {
+		let response = await fetch(this.sidePanelUrl, {
 			method: 'POST',
 			mode: "cors",
 			cache: "no-cache",
@@ -178,13 +184,14 @@ export class PanelNavigator {
 		if (response.ok) {
 			const payload = await response.json();
 			this.runtime.totalPages = parseInt(payload.headers.pages);
+
 			document.getElementById("PanelNavigator-TotalRecords").innerText = payload.headers.count + " records";
 
 			payload.contents.forEach(element => {
 				let freePlaceholder = this.getFreePlaceholder();
 				if (freePlaceholder) {
 					freePlaceholder.classList.remove("place-holder");
-					this.buildItem(freePlaceholder, element);
+					this.buildItem(freePlaceholder, element);//payload.headers.landing_uri
 					this.assigneEvents(freePlaceholder);
 				}
 			});
@@ -248,7 +255,7 @@ export class PanelNavigator {
 			if (instance.runtime.activeItem != null) {
 				if (instance.runtime.activeItem.dataset.listitem_id === this.dataset.listitem_id)
 					return;
-				instance.clearActiveItem()
+				instance.clearActiveItem();
 			}
 			instance.setActiveItem(this);
 			instance.onclick(this);
@@ -269,21 +276,61 @@ export class PanelNavigator {
 	fetchNewItems = function () {
 		let fisrtNode = this.runtime.container.firstElementChild;
 		if (fisrtNode && fisrtNode.dataset.listitem_id) {
-			console.log(fisrtNode.dataset.listitem_id);
+
 		}
 	}
 
-	contentLoader = function (url, title, options = {}) {
+	register = function (url, data) {
+		this.navigator.url = url;
+		this.navigator.state = data;
+	}
+
+	run = function () {
+		this.fetch();
+	}
+
+	praseEvents = function () {
+		this.runtime.outputScreen.querySelectorAll("[data-href]").forEach(el => {
+			try {
+				el.addEventListener("click", (e) => {
+					e.preventDefault();
+					this.navigator.url = el.dataset.href;
+					this.navigator.state = {};
+					for (let attr in el.dataset) {
+						if (attr != "href" && attr != "title") {
+							this.navigator.state[attr] = el.dataset[attr];
+						}
+					}
+					this.run();
+					this.navigator.pushState();
+					return false;
+				});
+			} catch (e) {
+			}
+		});
+	}
+
+	fetch = function () {
+		let url = this.navigator.url;
+		let html_title = "";
+		let formData = new FormData();
+
 		this.runtime.isContentLoading = true;
-		var formData = new FormData();
-
 		this.runtime.outputScreen.classList.add("busy");
-		this.latency = setTimeout(() => {
-			this.runtime.outputScreen.innerHTML = this.runtime.loadingScreen.innerHTML;
-		}, 500);
 
-		for (var key in options) {
-			formData.append(key, options[key]);
+		if (this.scope[url] !== undefined) {
+			html_title = this.scope[url].title;
+			this.sidePanelVisibility(this.scope[url].side);
+
+			if (this.scope[url].placeholder !== undefined && this.scope[url].placeholder !== null && document.getElementById(this.scope[url].placeholder)) {
+				this.latency = window.setTimeout(() => {
+					this.runtime.outputScreen.innerHTML = document.getElementById(this.scope[url].placeholder).innerHTML;
+				}, 200);
+			}
+		}
+
+		for (var key in this.navigator.state) {
+			formData.append(key, this.navigator.state[key]);
 		}
 
 		fetch(url, {
@@ -303,38 +350,32 @@ export class PanelNavigator {
 			}
 			return Promise.reject(response);
 		}).then(body => {
+			this.module = null;
 			if (this.latency) {
 				clearTimeout(this.latency);
 			}
 			this.runtime.outputScreen.classList.remove("busy");
 			this.runtime.isContentLoading = false;
-			if (title != null)
-				document.title = title;
+			if (html_title != null)
+				document.title = App.ApplicationTitle + " - " + html_title;
+
 			this.runtime.outputScreen.innerHTML = body;
+			this.praseEvents();
 
-
-			// sex.addEventListener("click", () => {this.sidePanelVisibility(!this.isSidePanelVisible);});
-
-			this.runtime.outputScreen.querySelectorAll("[data-href]").forEach(el => {
-				try {
-					el.addEventListener("click", (e) => {
-						e.preventDefault();
-						this.navigator.history_vars.url = el.dataset.href;
-						this.navigator.history_vars.title = pageConfig.apptitle + " - " + el.dataset.targettitle;
-						this.navigator.url = el.dataset.href;
-						this.contentLoader(el.dataset.href, el.dataset.targettitle, { id: el.dataset.targetid });
-
-						this.navigator.pushState();
-						return false;
+			/* Import page custome module file */
+			if (this.scope[url] !== undefined && this.scope[url].module != undefined && this.scope[url].import != undefined && this.scope[url].module != null) {
+				import(this.scope[url].import + "?a=" + Math.random())
+					.then((m) => {
+						/* Load assosiate module */
+						let module = (m[this.scope[url].module]);
+						this.module = new module(this);
+						this.module.run();
 					});
-				} catch (e) { }
-			});
-			this.entityModule.run();
+			}
 
 		}).catch(response => {
-			console.log(response)
 			this.runtime.isContentLoading = false;
 			messagesys.failure("Server response `" + response.statusText + "`");
-		})
+		});
 	}
 }

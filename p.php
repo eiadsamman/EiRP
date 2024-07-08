@@ -26,14 +26,14 @@ if (!empty($al) && sizeof($al) > 1 && $al[0] == "_") {
 	}
 }
 
-$app->fileSystem = new System\FileSystem\Page($app);
-$fs              = $app->fileSystem;
-$dir             = $fs->dir($app->resolve());
-if (!$dir) {
+$app->file = new System\FileSystem\Page($app);
+$fs              = $app->file;
+$urlParse        = $fs->parse($app->resolve());
+if (!$urlParse) {
 	$app->responseStatus->NotFound->response();
 }
 
-$fs->load($dir->id);
+$fs->load($urlParse->id);
 if ($fs()->enabled == false) {
 	$app->responseStatus->Forbidden->response();
 	exit;

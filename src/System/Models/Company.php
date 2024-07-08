@@ -91,7 +91,7 @@ class Company extends CompanyProfile
 
 	public function insert(): bool|null
 	{
-		if (!$this->app->fileSystem->find($this->companySystemFileId)->permission->add) {
+		if (!$this->app->file->find($this->companySystemFileId)->permission->add) {
 			throw new \System\Exceptions\Exceptions("Permissions denied");
 		}
 		$this->prepare();
@@ -128,7 +128,7 @@ class Company extends CompanyProfile
 		if (empty($this->internalId)) {
 			throw new \System\Exceptions\Exceptions("No company loaded");
 		}
-		if (!$this->app->fileSystem->find($this->companySystemFileId)->permission->edit) {
+		if (!$this->app->file->find($this->companySystemFileId)->permission->edit) {
 			throw new \System\Exceptions\Exceptions("Permissions denied");
 		}
 		$this->prepare();
@@ -170,7 +170,7 @@ class Company extends CompanyProfile
 		if (empty($this->internalId)) {
 			throw new \System\Exceptions\Exceptions("No company loaded");
 		}
-		if (!$this->app->fileSystem->find($this->companySystemFileId)->permission->delete) {
+		if (!$this->app->file->find($this->companySystemFileId)->permission->delete) {
 			throw new \System\Exceptions\Exceptions("Permissions denied");
 		}
 

@@ -104,10 +104,11 @@ if ($app->xhttp) {
 		HTML
 		);
 		unset($grem);
+
 	} else {
+		
 		$grem = new Gremium\Gremium(true);
-		$grem->header()->serve("<h1>{$fs()->title}</h1><cite></cite>
-		<div class=\"btn-set\"><button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Receipt</button></div>");
+		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Receipt</button></div>");
 		if (sizeof($defines) > 0) {
 			$grem->menu()->sticky(false)->open();
 			echo "<input placeholder=\"Actions...\" type=\"text\" id=\"js-defines\" data-slo=\":LIST\" tabindex=\"-1\" data-list=\"defines\" />";

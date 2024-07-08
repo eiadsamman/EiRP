@@ -43,7 +43,7 @@ class Receipt extends Transaction
 		/* Second step */
 		$account = $this->target_account->id;
 		$dir     = 0;
-		if ($this->app->fileSystem->find(87)->permission->edit && $this->isOverridenForex) {
+		if ($this->app->file->find(87)->permission->edit && $this->isOverridenForex) {
 			if ($this->manualForexInstructions->exchangeFrom->id == $this->target_account->currency->id) {
 				$value = -1 * $this->value / $this->manualForexInstructions->value;
 			} else {

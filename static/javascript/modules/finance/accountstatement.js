@@ -1,15 +1,15 @@
-
 import { Navigator } from "../app.js";
 
 export default class AccountStatmenet {
-	constructor() {
+	constructor(uri) {
 		const instance = this;
-
+		this.uri = uri;
+		this.export_uri = "";
 		this.navigator = new Navigator({
 			"page": "",
 			"from": "",
 			"to": "",
-		}, pageConfig.url);
+		}, this.uri);
 
 
 		this.slo_date_start = $("#js-input_date-start").slo({
@@ -41,17 +41,26 @@ export default class AccountStatmenet {
 
 		this.navigator.setProperty("from", this.slo_date_start.get()[0].id);
 		this.navigator.setProperty("to", this.slo_date_end.get()[0].id);
-		this.navigator.onPopState(() => {
-			this.slo_page_current.set(this.navigator.getProperty("page"), this.navigator.getProperty("page"));
-			this.slo_date_start.set(this.navigator.getProperty("from"), this.navigator.getProperty("from"));
-			this.slo_date_end.set(this.navigator.getProperty("to"), instance.navigator.getProperty("to"));
+		this.navigator.onPopState((e) => {
+			try {
+				this.slo_page_current.set(e.state.page, e.state.page);
+				this.slo_date_start.set(e.state.from, e.state.from);
+				this.slo_date_end.set(e.state.to, e.state.to);
+			} catch (e) {
+			}
 			this.xhttp_request(true);
 		});
 
 		this.registerEvents();
-		this.xhttp_request(false);
 	}
 
+	register(data) {
+		this.navigator.history_state = data;
+		this.navigator.history_var = data;
+	}
+	run() {
+		this.xhttp_request(false);
+	}
 
 	registerEvents() {
 		this.js_input_cmd_export.addEventListener('click', () => {
@@ -60,7 +69,7 @@ export default class AccountStatmenet {
 			this.js_form_export.find("[name=from]").val(this.navigator.getProperty('from'));
 			this.js_form_export.find("[name=to]").val(this.navigator.getProperty('to'));
 			this.js_form_export.attr("method", "post");
-			this.js_form_export.attr("action", pageConfig.exporturl + "/?");
+			this.js_form_export.attr("action", this.export_uri + "/?");
 			this.js_form_export.submit();
 
 			setTimeout(() => {
@@ -75,7 +84,6 @@ export default class AccountStatmenet {
 			this.xhttp_request(true)
 		});
 
-
 		this.js_input_cmd_next.addEventListener("click", () => {
 			if (parseInt(this.navigator.getProperty("page")) >= this.total_pages) { return; };
 			this.navigator.setProperty("page", parseInt(this.navigator.getProperty("page")) + 1);
@@ -84,7 +92,6 @@ export default class AccountStatmenet {
 			this.slo_page_current.set(this.navigator.getProperty("page"), this.navigator.getProperty("page"));
 			this.xhttp_request(true);
 		});
-
 
 
 		this.js_input_cmd_prev.addEventListener("click", () => {
@@ -108,14 +115,13 @@ export default class AccountStatmenet {
 		});
 	}
 
-
 	xhttp_request(isloaded = false) {
 		this.js_input_cmd_prev.disabled = this.navigator.getProperty("page") == 1;
 		this.js_input_cmd_next.disabled = parseInt(this.navigator.getProperty("page")) >= this.total_pages;
 
 		$.ajax({
 			data: { ...this.navigator.history_state, ...{ "method": "statement_report" } },
-			url: pageConfig.url,
+			url: this.uri,
 			type: 'POST'
 		}).done((output, textStatus, request) => {
 			let response = request.getResponseHeader('VENDOR_RESULT');

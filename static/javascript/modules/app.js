@@ -105,58 +105,46 @@ export class Application {
 }
 
 export class Navigator {
-	constructor(init_state, url) {
-		this.history_state = init_state;
-		this.history_vars = { ...init_state };
+	constructor(state, url) {
+		this.state = state;
 		this.url = url;
-		/* this.replaceState(); */
 		return this;
 	}
 
 	onPopState(callable) {
 		let self = this;
 		window.onpopstate = function (e) {
-			if (e.state != null)
-				for (const [key, value] of Object.entries(self.history_vars)) {
-					if (Object.hasOwn(e.state, key)) {
-						self.history_vars[key] = e.state[key];
-					}
-				}
+			this.state = e.state;
 			callable.call(self, e);
 		};
 	}
 
 	setProperty(property, value) {
-		this.history_state[property] = value;
-		this.history_vars[property] = value;
+		this.state[property] = value;
 	}
 
 	getProperty(property) {
-		return this.history_state[property];
-	}
-
-	getVariable(property) {
-		return this.history_vars[property];
+		return this.state[property];
 	}
 
 	pushState() {
-		window.history.pushState(this.history_vars, "", this.url + this.uriBuild());
+		window.history.pushState({ ...this.state, ":url": this.url }, "", this.url + this.uriBuild());
 	}
 
 	replaceState() {
-		window.history.replaceState(this.history_vars, "", this.url + this.uriBuild());
+		window.history.replaceState({ ...this.state, ":url": this.url }, "", this.url + this.uriBuild());
 	}
 
-	replaceVariableState() {
-		window.history.replaceState(this.history_vars, "");
+	stampState() {
+		window.history.replaceState({ ...this.state, ":url": this.url }, "");
 	}
 
 	uriBuild() {
 		let uri = "";
 		let delm = "";
 		let served = false;
-		for (const [key, value] of Object.entries(this.history_state)) {
-			if (value != null) {
+		for (const [key, value] of Object.entries(this.state)) {
+			if (key.substring(0, 1) != "_" && key.substring(0, 1) != ":" && value != null) {
 				uri += delm + key + "=" + (value == null ? "" : value);
 				delm = "&";
 				served = true;
@@ -176,5 +164,6 @@ export default {
 		initials: null,
 	},
 	Instance: null,
-	Account: null
+	Account: null,
+	ApplicationTitle: null
 };

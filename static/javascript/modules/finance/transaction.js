@@ -2,8 +2,232 @@ import { Popup } from '../gui/popup.js';
 import App from '../app.js';
 //import MathEvaluator from '../math-evaluator.js';
 
+export class Ledger {
+	panelNavigator = null;
+	busy = false;
+	totalPages = 1;
+	currentPage = 1;
+	totalPages = 0;
+	recordsCount = 0;
+	recordsSum = 0;
 
-export default class Transaction {
+	js_container_output = null;
+	js_input_cmd_next = null;
+	js_input_cmd_prev = null;
+	js_output_total = null;
+	js_output_page_total = null;
+
+
+	constructor(panelNavigator) {
+		const instance = this;
+		this.currentPage = 1;
+		this.totalPages = 1;
+		this.panelNavigator = panelNavigator;
+		this.id = this.panelNavigator.navigator.url;
+		this.slo_page_current = $("#js-input_page-current").slo({
+			onselect: (e) => {
+				this.currentPage = parseInt(e.key);
+				this.currentPage = this.currentPage <= 0 ? 1 : this.currentPage;
+				this.panelNavigator.navigator.setProperty("page", this.currentPage);
+				this.panelNavigator.navigator.pushState();
+				this.fetch();
+			}
+		});
+		this.js_container_output = document.getElementById("js-container-output");
+		this.js_input_cmd_next = document.getElementById("js-input_page-next");
+		this.js_input_cmd_prev = document.getElementById("js-input_page-prev");
+		this.js_output_total = document.getElementById("js-output-total");
+		this.js_output_page_total = document.getElementById("js-output_page-total");
+	}
+
+	onPopState = function () {
+		this.currentPage = this.panelNavigator.navigator.state.page ? parseInt(this.panelNavigator.navigator.state.page) : 1;
+		this.slo_page_current.set(this.currentPage, this.currentPage);
+		this.fetch();
+	}
+
+	run = function () {
+		this.panelNavigator.clearActiveItem();
+		this.currentPage = this.panelNavigator.navigator.state.page ? parseInt(this.panelNavigator.navigator.state.page) : 1;
+		this.slo_page_current.set(this.currentPage, this.currentPage);
+		this.js_output_page_total.addEventListener("click", () => {
+			if (this.totalPages > 0) {
+				this.currentPage = parseInt(this.totalPages);
+				this.panelNavigator.navigator.setProperty("page", this.currentPage);
+				this.panelNavigator.navigator.pushState();
+				this.fetch();
+			}
+		});
+
+		this.js_input_cmd_next.addEventListener("click", () => {
+			if (this.currentPage >= this.total_pages) { return; };
+			this.currentPage += 1;
+			this.panelNavigator.navigator.setProperty("page", this.currentPage);
+			this.panelNavigator.navigator.pushState();
+			this.js_input_cmd_prev.disabled = false;
+			this.slo_page_current.set(this.currentPage, this.currentPage);
+			this.fetch()
+		});
+
+
+		this.js_input_cmd_prev.addEventListener("click", () => {
+			if (this.currentPage <= 1) { return; };
+			this.currentPage -= 1;
+			this.panelNavigator.navigator.setProperty("page", this.currentPage);
+			this.panelNavigator.navigator.pushState();
+			this.slo_page_current.set(this.currentPage, this.currentPage)
+			this.fetch();
+		});
+		this.fetch();
+	}
+
+	paginationUpdate(currentPage, totalPages, recordsCount, recordsSum) {
+		if (currentPage && totalPages && recordsCount && recordsSum) {
+			this.currentPage = parseInt(currentPage);
+			this.totalPages = parseInt(totalPages);
+			this.recordsCount = parseInt(recordsCount)
+			this.recordsSum = recordsSum
+			this.slo_page_current.set(this.currentPage, this.currentPage);
+
+			try {
+				if (this.slo_page_current[0].slo.handler instanceof NumberHandler) {
+					this.slo_page_current[0].slo.handler.rangeEnd(parseInt(this.totalPages));
+				}
+			} catch (e) {
+				this.slo_page_current.clear();
+			}
+
+			if (this.totalPages == 0) {
+				this.js_input_cmd_next.disabled = true;
+				this.js_input_cmd_prev.disabled = true;
+				this.js_output_page_total.disabled = true;
+				this.slo_page_current.disable();
+			} else if (this.totalPages == 1) {
+				this.js_input_cmd_next.disabled = true;
+				this.js_input_cmd_prev.disabled = true;
+				this.js_output_page_total.disabled = false;
+				this.slo_page_current.disable();
+			} else if (this.totalPages > 1) {
+				this.slo_page_current.enable()
+				if (this.panelNavigator.navigator.getProperty("page") == 0) {
+					this.js_input_cmd_next.disabled = true;
+				} else if (this.panelNavigator.navigator.getProperty("page") >= this.totalPages) {
+					this.js_input_cmd_next.disabled = true;
+				} else {
+					this.js_input_cmd_next.disabled = false;
+				}
+				this.js_output_page_total.disabled = false;
+			}
+			this.js_output_page_total.value = this.totalPages;
+		}
+	}
+
+	generatePlaceholders(count = 20, colspan = 1) {
+		this.js_container_output.innerHTML = "";
+		let tr = null;
+		let td = null;
+		for (let i = 0; i < count; i++) {
+			tr = document.createElement("TR");
+			td = document.createElement("TD");
+			td.classList.add("placeholder");
+			td.setAttribute("colspan", colspan);
+			tr.appendChild(td);
+			this.js_container_output.appendChild(tr);
+		}
+	}
+	fetch = function () {
+		this.generatePlaceholders(20, 6)
+		this.js_input_cmd_prev.disabled = this.currentPage == 1;
+		this.js_input_cmd_next.disabled = parseInt(this.currentPage) >= this.totalPages;
+		this.busy = true;
+		fetch(this.panelNavigator.navigator.url, {
+			method: "POST",
+			mode: "cors",
+			cache: "no-cache",
+			credentials: "same-origin",
+			referrerPolicy: "no-referrer",
+			headers: {
+				"Accept": "text/plain, */*",
+				"Content-type": "application/json; charset=UTF-8",
+				"X-Requested-With": "fetch"
+			},
+			body: JSON.stringify({ "objective": "list", "page": this.currentPage })
+		}).then(response => {
+			this.busy = false;
+			if (response.ok) {
+				this.paginationUpdate(
+					response.headers.get("Vendor-Ouput-Current"),
+					response.headers.get("Vendor-Ouput-Pages"),
+					response.headers.get("Vendor-Ouput-Count"),
+					response.headers.get("Vendor-Ouput-Sum"),
+				);
+				return response.text();
+			}
+			return Promise.reject(response);
+		}).then(body => {
+			this.js_container_output.innerHTML = body;
+			this.panelNavigator.praseEvents();
+		});
+	}
+
+
+
+}
+
+
+export class StatementView {
+	panelNavigator = null;
+	constructor(panelNavigator) {
+		this.panelNavigator = panelNavigator;
+		this.id = this.panelNavigator.navigator.url;
+	}
+
+	run = function () {
+		if (this.panelNavigator.navigator.state.id) {
+			const panelItem = document.querySelector('a[data-listitem_id="' + this.panelNavigator.navigator.state.id + '"]');
+			if (panelItem) {
+				this.panelNavigator.setActiveItem(panelItem);
+				panelItem.scrollIntoView({
+					behavior: "smooth",
+					block: "nearest"
+				});
+			}
+		}
+
+		document.getElementById("js-input_edit")?.addEventListener("click", () => {
+		});
+
+		/* Printing function */
+		document.getElementById("js-input_print")?.addEventListener("click", function () {
+			const objPrintFrame = window.frames['plot-iframe'];
+			objPrintFrame.location = this.dataset.ploturl + "/?id=" + this.dataset.key;
+			overlay.show(true);
+			document.getElementById("plot-iframe").onload = function () {
+				objPrintFrame.focus();
+				setTimeout(() => { overlay.hide(); objPrintFrame.print(); }, 100);
+			}
+		});
+
+		/* Open statement attachment popup */
+		document.getElementById("transAttachementsList")?.childNodes.forEach(elm => {
+			elm.addEventListener("click", function (e) {
+				if (this.dataset.attachment && this.dataset.attachment == "force") {
+					/* default link behaviour */
+				} else {
+					e.preventDefault();
+					let popAtt = new Popup();
+					popAtt.addEventListener("close", function (p) {
+						this.destroy();
+					});
+					popAtt.contentForm({ title: "Attachement preview" }, "<div style=\"text-align: center;\"><img style=\"max-width:600px;width:100%\" src=\"" + elm.href + "\" /></div>");
+					popAtt.show();
+				}
+			});
+		});
+	}
+}
+
+export class Transaction {
 	busy = null;
 	addwin = null;
 	formMain = null;
@@ -18,6 +242,7 @@ export default class Transaction {
 	exchangeObjects = {}
 	constructor(panelNavigator) {
 		this.panelNavigator = panelNavigator;
+		this.id = this.panelNavigator.navigator.url;
 	}
 
 	forexFieldState(state) {
@@ -217,42 +442,21 @@ export default class Transaction {
 
 	run = function () {
 		let _instance = this;
-		document.getElementById("js-input_edit")?.addEventListener("click", () => {
-		});
 
-		/* Printing function */
-		document.getElementById("js-input_print")?.addEventListener("click", function () {
-			const objPrintFrame = window.frames['plot-iframe'];
-			objPrintFrame.location = this.dataset.ploturl + "/?id=" + this.dataset.key;
-			overlay.show(true);
-			document.getElementById("plot-iframe").onload = function () {
-				objPrintFrame.focus();
-				setTimeout(() => { overlay.hide(); objPrintFrame.print(); }, 100);
+		if (this.panelNavigator.navigator.state.id) {
+			const panelItem = document.querySelector('a[data-listitem_id="' + this.panelNavigator.navigator.state.id + '"]');
+			if (panelItem) {
+				this.panelNavigator.setActiveItem(panelItem);
+				panelItem.scrollIntoView({
+					behavior: "smooth",
+					block: "nearest"
+				});
 			}
-		});
-
-		/* Open statement attachment popup */
-		document.getElementById("transAttachementsList")?.childNodes.forEach(elm => {
-			elm.addEventListener("click", function (e) {
-				if (this.dataset.attachment && this.dataset.attachment == "force") {
-					/* default link behaviour */
-				} else {
-					e.preventDefault();
-					let popAtt = new Popup();
-					popAtt.addEventListener("close", function (p) {
-						this.destroy();
-					});
-					popAtt.contentForm({ title: "Attachement preview" }, "<div style=\"text-align: center;\"><img style=\"max-width:600px;width:100%\" src=\"" + elm.href + "\" /></div>");
-					popAtt.show();
-				}
-			});
-		});
+		}
 
 		/* Main application form */
 		this.formMain = document.getElementById("js-ref_form-main");
-		if (this.formMain == null) {
-			return;
-		}
+
 
 		this.uploadController = $.Upload({
 			objectHandler: $("#js_upload_list"),
@@ -261,8 +465,8 @@ export default class Transaction {
 			list_button: $("#js_upload_count"),
 			emptymessage: "[No files uploaded]",
 			delete_method: 'permanent',
-			upload_url: pageConfig.upload.url,
-			relatedpagefile: pageConfig.upload.identifier,
+			upload_url: 'upload',
+			relatedpagefile: 188,
 			multiple: true,
 			inputname: "attachments",
 			domhandler: $("#UploadDOMHandler"),
@@ -489,15 +693,17 @@ export default class Transaction {
 		if (this.busy)
 			return;
 		try {
-			//this.validateFields();
+			this.validateFields();
 		} catch (e) {
 			messagesys.failure(e);
 			return false;
 		}
 		this.busy = true;
+
 		try {
 			const formData = new FormData(this.formMain);
 			this.disableForm(true)
+			overlay.show();
 			let response = await fetch(this.formMain.action, {
 				method: 'POST',
 				mode: "cors",
@@ -510,6 +716,7 @@ export default class Transaction {
 				},
 				body: formData,
 			});
+			overlay.hide();
 			this.disableForm(false);
 
 			if (response.ok) {

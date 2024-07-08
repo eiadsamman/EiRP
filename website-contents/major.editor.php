@@ -147,13 +147,13 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 
 				} elseif (($fieldv[4] == 'slo')) {
 
-					if( $fieldv[7] == ":LIST"){
+					if ($fieldv[7] == ":LIST") {
 						$q .= $smart . sqlvalue(
-							$fieldv[5], 
-							$_POST[$database['hash']['r'][$fieldk]][1], 
+							$fieldv[5],
+							$_POST[$database['hash']['r'][$fieldk]][1],
 							isset($_POST[$database['hash']['r'][$fieldk]][1])
 						);
-					}else{
+					} else {
 						$q .= $smart . sqlvalue($database['fields'][$fieldv[8]][5], $_POST[$database['hash']['r'][$fieldk]][1], isset($_POST[$database['hash']['r'][$fieldk]][1]));
 					}
 
@@ -167,7 +167,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 				}
 			} else {
 				if ($fieldv[4] == 'slo') {
-					
+
 					$q .= $smart . sqlvalue($database['fields'][$fieldv[8]][5], $_POST[$database['hash']['r'][$fieldk]][1], isset($_POST[$database['hash']['r'][$fieldk]][1]));
 				}
 			}
@@ -333,7 +333,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 				
 				</div>";
 		} elseif ($fieldv[4] == 'slo') {
-			if($fieldv[7]==":LIST"){
+			if ($fieldv[7] == ":LIST") {
 				echo "<div class=\"form\"><label>
 					<h1>{$fieldv[1]}</h1>
 					<div class=\"btn-set\">
@@ -344,7 +344,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 					</div>
 				</label>
 				</div>";
-			}else{
+			} else {
 				echo "<div class=\"form\"><label>
 						<h1>{$fieldv[1]}</h1>
 						<div class=\"btn-set\">
@@ -629,7 +629,8 @@ $grem_main->menu()->open();
 ?>
 <!-- <input disabled="disabled" id="jQnavFirst" type="button" value="First" class="edge-left" /> -->
 <input disabled="disabled" class="pagination prev edge-left" value="&#xE618;" id="jQnavPrev" type="button" />
-<input type="text" id="js-input_page-current" placeholder="#" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0" data-rangeend="1" />
+<input type="text" id="js-input_page-current" placeholder="#" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0"
+	data-rangeend="1" />
 <input disabled="disabled" class="pagination next edge-right" value="&#xE61B;" id="jQnavNext" type="button" value="Next" />
 <input type="button" style="text-align:center;display:none" id="jQnavTitle" value="0 pages" />
 <span type="text" style="text-align:center;min-width:80px;" readonly id="jQnavTotal">0 records</span>
@@ -673,7 +674,7 @@ $grem_main->terminate();
 unset($grem);
 ?>
 
-<div style="display:none">
+<div style="display: none;">
 	<form id="appPopupDelConfirm">
 		<?php
 		$grem       = new Gremium(false);
@@ -725,7 +726,7 @@ unset($grem);
 
 	var nav = new Navigator({
 		'page': 1,
-		'search': ''
+		'_search': ''
 	}, '<?= $fs()->dir; ?>');
 
 	const searchPopup = new Popup("appPopupSearch");
@@ -739,10 +740,10 @@ unset($grem);
 		if (isset($_GET['page']) && (int) $_GET['page'] > 0)
 			echo "nav.setProperty(\"page\", " . (int) $_GET['page'] . ");";
 		if (isset($_GET['search']) && trim($_GET['search']) != "")
-			echo "nav.setProperty(\"search\", '" . base64_decode($_GET['search']) . "');";
+			echo "nav.setProperty(\"_search\", '" . base64_decode($_GET['search']) . "');";
 		?>
 
-		nav.replaceVariableState();
+		nav.stampState();
 		let slo_page_current = $("#js-input_page-current").slo({
 			onselect: function (e) {
 				nav.setProperty("page", e.key);
@@ -755,7 +756,7 @@ unset($grem);
 		searchPopup.addEventListener("submit", function (e) {
 			slo_page_current.set(1, 1);
 			nav.setProperty("page", 1);
-			nav.setProperty("search", $(this.controlContent).serialize().replace(/[^&]+=\.?(?:&|$)/g, ''));
+			nav.setProperty("_search", $(this.controlContent).serialize().replace(/[^&]+=\.?(?:&|$)/g, ''));
 			nav.pushState();
 			searchPopup.close();
 			Populate();
@@ -763,11 +764,8 @@ unset($grem);
 		});
 
 		nav.onPopState((e) => {
-			if (e.state && e.state.page) {
-				nav.setProperty("page", e.state.page);
-				slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"));
-			}
-			if (e.state && e.state.search) { nav.setProperty("search", e.state.search); }
+			nav.state = e.state;
+			slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"));
 			Populate();
 		});
 		slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"));
@@ -778,7 +776,7 @@ unset($grem);
 		$("#jQButtonSearchClear").on("click", function () {
 			slo_page_current.set(1, 1);
 			nav.setProperty("page", 1);
-			nav.setProperty("search", "");
+			nav.setProperty("_search", "");
 			nav.pushState();
 			searchWindowState = false;
 			Populate();
@@ -790,14 +788,15 @@ unset($grem);
 		});
 
 		let Populate = function () {
+			console.log(nav.state)
 			overlay.show();
 			var $ajax = $.ajax({
 				type: 'POST',
 				url: '<?php echo $fs()->dir; ?>',
 				data: {
 					'method': 'populate',
-					'page': nav.history_vars.page,
-					'search': nav.history_vars.search
+					'page': nav.state.page,
+					'search': nav.state._search
 				}
 			}).done(function (data) {
 				$("#jQPopulatePool").html(data);
@@ -850,7 +849,7 @@ unset($grem);
 
 
 		$("#jQnavNext").on("click", function () {
-			nav.setProperty("page", nav.getVariable("page") + 1);
+			nav.setProperty("page", nav.getProperty("page") + 1);
 			slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"));
 			nav.pushState();
 			Populate();
@@ -862,8 +861,8 @@ unset($grem);
 			Populate();
 		});
 		$("#jQnavPrev").on("click", function () {
-			if (nav.getVariable("page") > 1) {
-				nav.setProperty("page", nav.getVariable("page") - 1);
+			if (nav.getProperty("page") > 1) {
+				nav.setProperty("page", nav.getProperty("page") - 1);
 				slo_page_current.set(nav.getProperty("page"), nav.getProperty("page"));
 				nav.pushState();
 				Populate();

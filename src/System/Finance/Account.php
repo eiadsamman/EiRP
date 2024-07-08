@@ -42,9 +42,9 @@ class Account extends AccountProfile
 		if (
 			$mysqli_result = $this->app->db->query(
 				"SELECT 
-					prt_id,prt_name,cur_symbol,cur_name,cur_id,cur_shortname,
-					upr_prt_inbound,upr_prt_outbound,upr_prt_fetch,upr_prt_view,
-					prt_ale,ptp_name,ptp_id,prt_company_id,comp_name
+					prt_id,prt_name, cur_symbol, cur_name, cur_id, cur_shortname,
+					upr_prt_inbound, upr_prt_outbound, upr_prt_fetch, upr_prt_view,
+					prt_ale, ptp_name, ptp_id, prt_company_id, comp_name, ptp_termgroup_id
 				FROM 
 					acc_accounts
 						JOIN currencies ON cur_id = prt_currency
@@ -78,7 +78,7 @@ class Account extends AccountProfile
 				$this->balance             = $this->role->view ? $this->getBalance() : null;
 				$this->type->id            = (int) $row['ptp_id'];
 				$this->type->name          = $row['ptp_name'];
-				$this->type->keyTerm       = is_null($row['prt_ale']) ? null : KeyTerm::tryFrom($row['prt_ale']);
+				$this->type->keyTerm       = is_null((int)$row['ptp_termgroup_id']) ? KeyTerm::NA : KeyTerm::tryFrom((int)$row['ptp_termgroup_id']);
 			} else {
 				throw new AccountNotFoundException("Account not found or insufficient privileges");
 			}

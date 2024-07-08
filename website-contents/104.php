@@ -24,11 +24,11 @@ if ($read) {
 		unset($grem);
 	} else {
 
-		$grem->header()->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
+		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 		$grem->menu()->open();
 		echo "<span class=\"small-media-hide flex\"></span>";
 		if ($fs(101)->permission->edit) {
-			echo "<input type=\"button\" data-targettitle=\"{$fs(101)->title}\" data-href=\"{$fs(101)->dir}\" data-targetid=\"{$read->id}\" id=\"js-input_edit\" value=\"Edit\" class=\"edge-left\" tabindex=\"-1\" />";
+			echo "<input type=\"button\" data-href=\"{$fs(101)->dir}\" data-id=\"{$read->id}\" id=\"js-input_edit\" value=\"Edit\" class=\"edge-left\" tabindex=\"-1\" />";
 			echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs(142)->dir}\" id=\"js-input_print\" class=\"edge-right\" tabindex=\"-1\">Print</button>";
 		} else {
 			echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs(142)->dir}\" id=\"js-input_print\" class=\"edge-right edge-left\" tabindex=\"-1\">Print</button>";
@@ -44,7 +44,6 @@ if ($read) {
 			<label>
 				<h1>Statement ID</h1>
 				<div class="btn-set">
-					<!-- <button type="button" id="sex">Sex</button> -->
 					<span>
 						<?= $app->prefixList[13][0] . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT); ?>
 					</span>
@@ -130,7 +129,7 @@ if ($read) {
 				<label>
 					<h1>Attachments</h1>
 					<div style="padding:5px 10px;" class="attachments-view" id="transAttachementsList">
-						<?php	
+						<?php
 						foreach ($read->attachments as $file) {
 
 							if (explode("/", $file->mime)[0] == "image") {

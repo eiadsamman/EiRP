@@ -145,15 +145,13 @@ if (is_null($app->user->account)) {
 $initial_values = array(
 	'from' => isset($_GET['from']) && $app->dateValidate($_GET['from']) ? date("Y-m-d", $app->dateValidate($_GET['from'])) : "",
 	'to' => isset($_GET['to']) && $app->dateValidate($_GET['to']) ? date("Y-m-d", $app->dateValidate($_GET['to'])) : "",
-	"page" => isset($_GET['page']) ? abs((int) $_GET['page']) : 0
+	'page' => isset($_GET['page']) ? abs((int) $_GET['page']) : 0
 );
 
 
-
 $grem = new Gremium\Gremium(true);
-
 $grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
-	"<ul class=\"small-media-hide\"><li class=\"small-media-hide\">{$app->user->company->name}: {$app->user->account->name}</li></ul>" .
+	"<ul class=\"small-media-hide\"><li>{$app->user->account->type->keyTerm->toString()}: {$app->user->account->name}</li></ul>" .
 	"<cite><span id=\"js-output-total\">0.00</span>{$app->user->account->currency->shortname}</cite>");
 
 $menu         = $grem->menu()->sticky(false)->open();
@@ -162,8 +160,9 @@ $current_date = $current_date->format("Y-m-d");
 echo <<<HTML
 <input type="text" id="js-input_date-start" style="width:110px" data-slo=":DATE" placeholder="From date" value="{$initial_values['from']}" value=""  />
 <input type="text" id="js-input_date-end" style="width:110px" data-slo=":DATE" placeholder="To date" value="{$initial_values['to']}" value="{$current_date}"  />
-<button id="js-input_cmd-update">Search</button>
-<input type="button" class="edge-right" id="js-input_cmd-export" value="Export" />
+<button id="js-input_cmd-update" class="edge-left edge-right">Filter</button>
+<span class="gap"></span>
+<input type="button" class="edge-right edge-left" id="js-input_cmd-export" value="Export" />
 HTML;
 $menu->close();
 
@@ -392,17 +391,15 @@ unset($grem);
 	<input type="hidden" name="to" value="" />
 </form>
 
-<script type="text/javascript">
-	let pageConfig = {
-		url: '<?= $fs()->dir; ?>',
-		apptitle: '<?= $app->settings->site['title']; ?>',
-		title: '<?= $app->settings->site['title'] . " - " . $fs()->title ?>',
-		exporturl: "<?= $fs(13)->dir ?>",
-		id: 0
-	}
-</script>
 
 <script type="module">
 	import AccountStatmenet from './static/javascript/modules/finance/accountstatement.js';
-	const accountStatement = new AccountStatmenet();
+	const accountStatement = new AccountStatmenet('<?= $fs()->dir; ?>');
+	accountStatement.export_uri = "<?= $fs(13)->dir ?>";
+	accountStatement.register({	
+		"page": <?= $initial_values['page'] ?>,
+		"from": "<?= $initial_values['from'] ?>",
+		"to": "<?= $initial_values['to'] ?>",
+	});
+	accountStatement.run();
 </script>

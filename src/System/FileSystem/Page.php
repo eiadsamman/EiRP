@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace System\FileSystem;
 
-class Page
+class Page extends Data
 {
 	private array $files = array();
 	protected \System\App $app;
@@ -53,11 +53,31 @@ class Page
 		if (array_key_exists($id, $this->files)) {
 			$this->inuse = $this->files[$id];
 			$this->details($id);
+
+			$this->id         = $this->inuse->id;
+			$this->dir        = $this->inuse->dir;
+			$this->directory  = $this->inuse->directory;
+			$this->title      = $this->inuse->title;
+			$this->parent     = $this->inuse->parent;
+			$this->forward    = $this->inuse->forward;
+			$this->enabled    = $this->inuse->enabled;
+			$this->visible    = $this->inuse->visible;
+			$this->icon       = $this->inuse->icon;
+			$this->color      = $this->inuse->color;
+			$this->parameters = $this->inuse->parameters;
+			$this->headers    = $this->inuse->headers;
+			$this->cdns       = $this->inuse->cdns;
+			$this->loader     = $this->inuse->loader;
+			$this->permission = $this->inuse->permission;
 			return true;
 		}
 		return false;
 	}
 
+	public function loaded(): Data
+	{
+		return $this->inuse;
+	}
 	public function __invoke(int $id = null): Data|bool
 	{
 		if ($id === null) {
@@ -82,7 +102,7 @@ class Page
 			}
 		}
 	}
-	public function dir(string $dir): Data|bool
+	public function parse(string $dir): Data|bool
 	{
 		$_dir = trim($dir);
 		foreach ($this->files as $file) {
