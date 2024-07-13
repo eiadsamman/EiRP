@@ -45,13 +45,21 @@
 			</tr>
 		`);
 
-		var _AddListItem = function (id, name, size = false, checked = false, mime = "image") {
+
+		var addListItem = function (id, name, size = false, checked = false, mime = "image") {
 			const clone = itemtemplate.clone();
 			clone.find(".checkbox input").prop("checked", checked).attr("name", settings.inputname + "[]").val(id);
 			clone.find(".op-remove").attr("data-id", id);
 			clone.find(".content").html("<a class=\"js_upload_view\" target=\"_blank\" data-mime=\"" + mime + "\" href=\"download/?id=" + id + "&pr=v\">" + name + "</a>");
 			containerbody.prepend(clone);
 			updateCount();
+		}
+		var addErrorItem = function (errorid, message) {
+			const clone = itemloading.clone();
+			clone.find(".progress").html(errorid);
+			clone.find(".content").html(message);
+			containerbody.prepend(clone);
+
 		}
 
 		var _newupload = function (file) {
@@ -71,6 +79,8 @@
 			formData.append("upload_file", true);
 			formData.append("pagefile", settings.relatedpagefile);
 
+			
+			
 			updateCount();
 			$.ajax({
 				type: "POST",
@@ -94,10 +104,11 @@
 						myXhr.upload.addEventListener('timeout', function (event) {
 						}, false);
 						myXhr.upload.addEventListener('abort', function (event) {
-							up_operation.html("<span style=\"color:#f04;\">Aborted</span>");
+							clone.find(".progress").html("Aborted");
 						}, false);
 					} else {
-						up_operation.html("<span style=\"color:#f04;\">Error</span>");
+						clone.find(".progress").html("Error");
+
 					}
 					return myXhr;
 				},
@@ -106,17 +117,17 @@
 					try {
 						json = JSON.parse(output);
 					} catch (e) {
-						up_operation.html("<span style=\"color:#f04;\" title=\"Parsing output error\">Failed</span>");
+						clone.find(".progress").html("Parse!");
 						updateCount();
 						return false;
 					}
 					if (json == null) {
-						up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
+						clone.find(".progress").html("Failed");
 						updateCount();
 						return false;
 					}
 					if (json.result == 0) {
-						up_operation.html("<span style=\"color:#f04;\" title=\"Server refused to receive the file\">Failed</span>");
+						clone.find(".progress").html("Failed");
 						updateCount();
 						return false;
 					}
@@ -124,14 +135,14 @@
 						settings.onupload.call(this, { "id": json.id, "size": json.size, "name": json.name, "mime": json.mime })
 					}
 					clone.remove();
-					_AddListItem(json.id, json.name, 0, true, json.mime);
+					addListItem(json.id, json.name, 0, true, json.mime);
 					updateCount();
 				},
 				error: function (e, b, c) {
 					if (b == "timeout") {
-						up_operation.html("<span style=\"color:#f04;\">Timeout, uploading failed</span>");
+						clone.find(".progress").html("Timeout");
 					} else {
-						up_operation.html("<span style=\"color:#f04;\">" + c + "</span>");
+						clone.find(".progress").html(c);
 					}
 				},
 				async: true,
@@ -237,7 +248,7 @@
 				return object;
 			},
 			'AddListItem': function (id, name, size = false, checked = false, mime = "image") {
-				_AddListItem(id, name, size, checked, mime);
+				addListItem(id, name, size, checked, mime);
 			},
 			'init': function () {
 				var _this = this;
