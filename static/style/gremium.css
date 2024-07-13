@@ -461,6 +461,7 @@
 		border-radius: 0;
 		border-left: none;
 		border-right: none;
+		padding: 10px;
 	}
 
 	.gremium>h2 {
@@ -470,5 +471,5 @@
 		color: var(--root-font-lightcolor);
 		z-index: 20;
 	}
-	
+
 }

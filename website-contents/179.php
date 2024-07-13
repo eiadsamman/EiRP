@@ -170,9 +170,9 @@ $legend = $grem->legend()->open();
 echo <<<HTML
 <span id="js-output_statements-count">0</span>
 <span class="small-media-hide flex"></span>
-<input type="button" class="pagination prev edge-left" id="js-input_page-prev" disabled value="&#xE618;" />
+<input type="button" class="pagination prev edge-left" id="js-input_page-prev" disabled value="&#xe91a;" />
 <input type="text" id="js-input_page-current" placeholder="#" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0" data-rangeend="100" />
-<input type="button" class="pagination next" id="js-input_page-next" disabled value="&#xE61B;" />
+<input type="button" class="pagination next" id="js-input_page-next" disabled value="&#xe91d;" />
 <input type="button" class="edge-right" id="js-output_page-total" style="min-width:50px;text-align:center" value="0" />
 HTML;
 $legend->close();

@@ -208,9 +208,9 @@ export class Ledger extends AppModule {
 				<menu class="btn-set">
 					<a class="edge-right edge-left">Search</a>
 					<span class="small-media-hide flex"></span>
-					<input type="button" class="pagination prev edge-left" disabled value="&#xE618;" />
+					<input type="button" class="pagination prev edge-left" disabled value="&#xe91a;" />
 					<input type="text" placeholder="#" style="width:80px;text-align:center" value="0" />
-					<input type="button" class="pagination next" disabled value="&#xE61B;" />
+					<input type="button" class="pagination next" disabled value="&#xe91d;" />
 					<input type="button" class="edge-right" style="min-width:50px;text-align:center" value="0" />
 				</menu>
 				<article>
@@ -260,6 +260,11 @@ export class Ledger extends AppModule {
 			this.js_output_total.innerText = this.recordsSum;
 			this.js_output_totalrecords.innerText = App.Instance.numberFormat(parseInt(this.recordsCount), 0, "", ",") + " records";
 			this.js_output_page_total.value = App.Instance.numberFormat(parseInt(this.totalPages), 0, "", ",");
+
+			window.scroll({
+				top: 0,
+				behavior: 'smooth'
+			});
 		}
 	}
 

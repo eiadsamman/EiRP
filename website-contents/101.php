@@ -151,7 +151,7 @@ if ($app->xhttp) {
 	$grem->header()->prev($preva)->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad(($read ? $read->id : ""), $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 
 	$grem->menu()->serve(
-		"<span class=\"small-media-hide flex\"></span>" .
+		"<span class=\"flex\"></span>" .
 		"<button class=\"success edge-left\" id=\"js-input_submit\" tabindex=\"10\">&nbsp;&nbsp;Save</button>"
 	);
 

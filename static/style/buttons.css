@@ -289,45 +289,56 @@
 
 .btn-set>*.success:before,
 .btn-set>*.plus:before,
-.btn-set>*.error:before {
+.btn-set>*.error:before,
+.btn-set>*.search:before,
+.btn-set>*.filter:before,
+.btn-set>*.lock:before,
+.btn-set>*.unlock:before {
 	display: inline-block;
-	font-family: icomoon2;
+	font-family: glyphs;
+	font-size: 1.1em;
+	position: relative;
+	top: 0px;
 }
 
+.btn-set>button:before {
+	top: 2px !important;
+}
+
+
 .btn-set>*.success:before {
-	content: "\f00c";
+	content: "\e900";
 	color: rgb(30, 160, 40);
-	position: relative;
-	top: 1px;
 }
 
 .btn-set>*.plus:before {
-	font-family: icomoon;
-	content: "\e630";
+	content: "\e902";
 	color: var(--root-link-color);
-	font-size: 0.8em;
 }
 
 .btn-set>*.error:before {
-	content: "\f00d";
+	content: "\e901";
 	color: rgb(195, 45, 50);
 }
 
-.btn-set>*.lock:before,
-.btn-set>*.unlock:before {
-	font-family: icomoon4;
-}
-
 .btn-set>*.lock:before {
-	content: "\e98f";
+	content: "\e982";
+}
+
+.btn-set>*.search:before {
+	content: "\e904";
+}
+
+.btn-set>*.filter:before {
+	content: "\e93c";
 }
 
 .btn-set>*.unlock:before {
-	content: "\e990";
+	content: "\e983";
 }
 
 .btn-set>input.pagination {
-	font-family: "icomoon";
+	font-family: glyphs;
 	font-size: 1.1em
 }
 

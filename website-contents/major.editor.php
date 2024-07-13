@@ -628,10 +628,10 @@ $grem_main->header()->serve(
 $grem_main->menu()->open();
 ?>
 <!-- <input disabled="disabled" id="jQnavFirst" type="button" value="First" class="edge-left" /> -->
-<input disabled="disabled" class="pagination prev edge-left" value="&#xE618;" id="jQnavPrev" type="button" />
+<input disabled="disabled" class="pagination prev edge-left" value="&#xe91a;" id="jQnavPrev" type="button" />
 <input type="text" id="js-input_page-current" placeholder="#" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0"
 	data-rangeend="1" />
-<input disabled="disabled" class="pagination next edge-right" value="&#xE61B;" id="jQnavNext" type="button" value="Next" />
+<input disabled="disabled" class="pagination next edge-right" value="&#xe91d;" id="jQnavNext" type="button" value="Next" />
 <input type="button" style="text-align:center;display:none" id="jQnavTitle" value="0 pages" />
 <span type="text" style="text-align:center;min-width:80px;" readonly id="jQnavTotal">0 records</span>
 

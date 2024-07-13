@@ -24,6 +24,7 @@ class TransactionView extends \System\Views\PanelView
 		);
 		$this->assets     = array(
 			["css", "style/pagefile/statement-control.css"],
+			["css", "style/pagefile/TransactionView.css"],
 			["css", "style/style.upload.css"],
 			["js", "jquery/uploader-1.0.js"],
 		);

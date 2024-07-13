@@ -25,7 +25,7 @@ if ($read) {
 	} else {
 		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 		$grem->menu()->open();
-		echo "<span class=\"small-media-hide flex\"></span>";
+		echo "<span class=\"flex\"></span>";
 		if ($fs(101)->permission->edit) {
 			echo "<input type=\"button\" data-href=\"{$fs(101)->dir}/?id={$read->id}\" id=\"js-input_edit\" value=\"Edit\" class=\"edge-left\" tabindex=\"-1\" />";
 			echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs(142)->dir}\" id=\"js-input_print\" class=\"edge-right\" tabindex=\"-1\">Print</button>";
