@@ -4,6 +4,7 @@ import Currency from "./finance/currency.js";
 
 export class Application {
 	id = null;
+	
 	forex = null;
 	assosiatedAccounts = [];
 
@@ -42,7 +43,6 @@ export class Application {
 					));
 				});
 			}).catch((err) => {
-				console.log(err);
 			});
 	}
 	async chunkLoaders() {
@@ -165,5 +165,6 @@ export default {
 	},
 	Instance: null,
 	Account: null,
-	ApplicationTitle: null
+	Title: null,
+	BaseURL: null
 };

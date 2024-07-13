@@ -12,4 +12,8 @@ interface Views
 
 	public function render(): void;
 
+	public function htmlAssets(string $version): void;
+
+
+
 }

@@ -15,8 +15,7 @@ $app->databaseConnect($app->settings->database['host'], $app->settings->database
 $app->build();
 $app->register($_SERVER['REQUEST_URI']);
 $access_error = $app->sessionOpen();
-
-$al = $app->resolveArray();
+$al           = $app->resolveArray();
 if (!empty($al) && sizeof($al) > 1 && $al[0] == "_") {
 	if (class_exists('System\\Views\\Chunk\\' . $al[1])) {
 		$className  = 'System\\Views\\Chunk\\' . $al[1];
@@ -26,9 +25,10 @@ if (!empty($al) && sizeof($al) > 1 && $al[0] == "_") {
 	}
 }
 
+
 $app->file = new System\FileSystem\Page($app);
-$fs              = $app->file;
-$urlParse        = $fs->parse($app->resolve());
+$fs        = $app->file;
+$urlParse  = $fs->parse($app->resolve());
 if (!$urlParse) {
 	$app->responseStatus->NotFound->response();
 }
@@ -120,24 +120,18 @@ $app->buildPrefixList();
 if ($app->xhttp) {
 	include_once $app->root . "website-contents/{$fs()->id}.php";
 } else {
+
+	$app->viewVendor($fs()->loader);
+
 	if ($fs()->headers['html-header'] == 0)
 		include_once $app->root . "/admin/forms/upper.php";
 
+	match ($fs()->headers['contents']) {
+		1 => include_once $app->root . "website-contents/{$fs()->id}.php",
+		2 => include_once $app->root . "website-contents/0.php",
+		3 => $app->view != null ? $app->view->render() : ""
+	};
 
-	switch ($fs()->headers['contents']) {
-		case 1:
-			include_once $app->root . "website-contents/{$fs()->id}.php";
-			break;
-		case 2:
-			include_once $app->root . "website-contents/0.php";
-			break;
-		case 3:
-			//include_once $app->root . "website-contents/{$fs()->id}.php";
-			if ($app->viewFactory($fs()->loader)) {
-				$app->view->render();
-			}
-			break;
-	}
 
 	if ($fs()->headers['html-header'] == 0)
 		include_once $app->root . "/admin/forms/lower.php";

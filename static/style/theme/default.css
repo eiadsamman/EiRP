@@ -22,7 +22,7 @@
 
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
-	--bomtable-hover-color: hsl(220, 50%, 96%); /*  hsl(60, 100%, 90%); */
+	--bomtable-hover-color: hsl(60, 100%, 90%); /*  hsl(60, 100%, 90%); */
 	--bomtable-stripes-color: hsl(60, 100%, 95%);
 
 
@@ -85,7 +85,7 @@
 
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
-	--bomtable-hover-color: hsl(220, 15%, 22%);/*  hsl(220, 30%, 30%); */
+	--bomtable-hover-color: hsl(220, 30%, 30%);/*  hsl(220, 30%, 30%); */
 	--bomtable-stripes-color: #202940;
 
 

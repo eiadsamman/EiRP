@@ -130,7 +130,7 @@ if ($app->xhttp) {
 		$grem->article()->serve(
 			<<<HTML
 		<ul>
-			<li>Document `<a data-title="{$fs(104)->title}" data-href="{$fs(104)->dir}" data-id="$id" href="{$fs(104)->dir}/?id=$id">$id</a>` is not valid or doesn't exists on the current company scope</li>
+			<li>Document `<a data-title="{$fs(104)->title}" href="{$fs(104)->dir}/?id=$id" data-href="{$fs(104)->dir}/?id=$id">$id</a>` is not valid or doesn't exists on the current company scope</li>
 			<li>Permission denied or not enough privileges to proceed with this document</li>
 			<li>Contact system administrator for further assistance</li>
 		</ul>
@@ -146,8 +146,8 @@ if ($app->xhttp) {
 	 */
 
 	$SmartListObject = new SmartListObject($app);
-	$grem  = new Gremium\Gremium(true);
-	$preva = " data-href=\"{$fs(104)->dir}\" data-id=\"{$read->id}\" href=\"{$fs(104)->dir}/?id={$read->id}\"";
+	$grem            = new Gremium\Gremium(true);
+	$preva           = " data-href=\"{$fs(104)->dir}/?id={$read->id}\" href=\"{$fs(104)->dir}/?id={$read->id}\"";
 	$grem->header()->prev($preva)->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad(($read ? $read->id : ""), $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 
 	$grem->menu()->serve(
@@ -228,8 +228,9 @@ if ($app->xhttp) {
 				<h1>Category</h1>
 				<div class="btn-set">
 					<input type="text" placeholder="Statement category" data-required data-slo=":LIST" data-touch="105" title="Category"
-						data-list="jQcategoryList" tabindex="4" class="flex" name="category" id="category"
-						value="<?= $read->category->group . ": " . $read->category->name; ?>" data-slodefaultid="<?= $read->category->id; ?>" />
+						data-source="_/FinanceCategoryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinancialCategories.a" tabindex="4"
+						class="flex" name="category" id="category" value="<?= $read->category->group . ": " . $read->category->name; ?>"
+						data-slodefaultid="<?= $read->category->id; ?>" />
 				</div>
 			</label>
 		</div>
@@ -346,9 +347,6 @@ if ($app->xhttp) {
 		</datalist>
 		<datalist id="js-ref_debitor-list" style="display: none;">
 			<?= $read->debitor ? $SmartListObject->userAccountsInbound($read->debitor->id, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value) : ""; ?>
-		</datalist>
-		<datalist id="jQcategoryList">
-			<?= $SmartListObject->financialCategories(); ?>
 		</datalist>
 		<datalist id="js-ref_nature-list">
 			<?= $SmartListObject->financialTransactionNature($read->type->value); ?>

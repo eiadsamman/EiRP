@@ -785,7 +785,7 @@ span.vs-remove {
 	flex: 2;
 	z-index: 1;
 	position: relative;
-	max-width: 350px;
+	max-width: 400px;
 	transition: width 0.2s ease, max-width 0.2s ease;
 }
 
@@ -800,11 +800,11 @@ span.vs-remove {
 	z-index: 2;
 }
 
-/* div#PanelNavigator-Scroll {
+/* div#pana-Scroll {
 	scroll-snap-type: y mandatory;
 }
 
-#PanelNavigator-Window>div {
+#pana-Window>div {
 	scroll-snap-align: start;
 }
  */
@@ -952,7 +952,7 @@ span.vs-remove {
 	top: 15px
 }
 
-#PanelNavigator-Body.busy {
+#pana-Body.busy {
 	cursor: wait;
 }
 

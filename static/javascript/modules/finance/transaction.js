@@ -1,16 +1,131 @@
 import { Popup } from '../gui/popup.js';
 import App from '../app.js';
 //import MathEvaluator from '../math-evaluator.js';
+class AppModule {
+	id = null;
+	pana = null;
+	constructor() {
 
-export class Ledger {
-	panelNavigator = null;
+	}
+	splashscreenTemplate(title) {
+		return `
+		<div class="gremium limit-width">
+			<header style="position:sticky;">
+				<a style="pointer-events: none;" class="previous" data-role="previous"></a>
+				<h1>${title}</h1><cite></cite>
+			</header>
+			<menu class="btn-set">
+				<span>&nbsp;</span>
+			</menu>
+			<h2>Statement details</h2>
+			<article>
+				<span class="loadingScreen-placeholderBody"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>
+			</article>
+		</div>`;
+	}
+	splashscreen(target, url, title, data) {
+		target.innerHTML = this.splashscreenTemplate(title);
+	}
+}
+
+export class Search extends AppModule {
+	pana = null;
+	postUrl = "";
+
+	constructor(pana) {
+		super();
+		this.pana = pana;
+		this.id = this.pana.navigator.url;
+		this.searchFrom = null;
+	}
+
+	static get AcceptedFields() {
+		return ["statement-id", "beneficiary", "description", "date-start", "date-end", "category"];
+	}
+	run() {
+		this.searchFrom = document.getElementById("searchForm");
+		this.postUrl = this.searchFrom.getAttribute("action");
+		this.searchFrom.addEventListener("submit", (e) => {
+			e.preventDefault();
+			this.post();
+			return false;
+		});
+		document.getElementById("js-input_submit")?.addEventListener("click", () => {
+			this.post();
+		});
+
+		try {
+			this.searchFrom.querySelector("[name=\"statement-id\"]").value = this.pana.navigator.state['statement-id'] ?? "";
+			this.searchFrom.querySelector("[name=\"beneficiary\"]").value = this.pana.navigator.state.beneficiary ?? "";
+			this.searchFrom.querySelector("[name=\"description\"]").value = this.pana.navigator.state.description ?? "";
+
+			let dateStart = $(this.searchFrom.querySelector("[name=\"date-start\"]")).slo();
+			let dateEnd = $(this.searchFrom.querySelector("[name=\"date-end\"]")).slo();
+			let category = $(this.searchFrom.querySelector("[name=\"category\"]")).slo();
+
+			if (this.pana.navigator.state['date-start']) {
+				dateStart.set(this.pana.navigator.state['date-start'], this.pana.navigator.state['date-start'])
+			}
+			if (this.pana.navigator.state['date-end']) {
+				dateEnd.set(this.pana.navigator.state['date-end'], this.pana.navigator.state['date-end'])
+			}
+			if (this.pana.navigator.state['category']) {
+				category.set(this.pana.navigator.state['category'], "")
+			}
+		} catch (e) { }
+
+	}
+
+	post() {
+		const data = {};
+		var elements = this.searchFrom.elements;
+		// TODO: SOME
+		/**
+		 * Needs a lot of enhancments
+		 * convert names to object and arrays
+		 */
+		for (var i = 0, element; element = elements[i++];) {
+			if ((element.type === "text" || element.type === "hidden" || element.type === "number") && element.name.slice(-3) != "[0]" && element.value.trim() !== "") {
+				if (element.name.slice(-3) == "[1]") {
+					data[element.name.slice(0, -3)] = element.value;
+				} else {
+					data[element.name] = element.value;
+				}
+			}
+		}
+		this.pana.navigator.state = data;
+		this.pana.navigator.replaceState();
+		this.pana.register(this.postUrl, data);
+		this.pana.navigator.pushState();
+		this.pana.run();
+	}
+
+
+	splashscreenTemplate(title) {
+		return `
+		<div class="gremium limit-width">
+			<header style="position:sticky;">
+				<a style="pointer-events: none;" class="previous" data-role="previous"></a>
+				<h1>${title}</h1><cite></cite>
+			</header>
+			
+			<h2>Search criteria</h2>
+			<article>
+				<span class="loadingScreen-placeholderBody"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>
+			</article>
+		</div>`;
+	}
+}
+
+export class Ledger extends AppModule {
+	pana = null;
 	busy = false;
 	totalPages = 1;
 	currentPage = 1;
 	totalPages = 0;
 	recordsCount = 0;
 	recordsSum = 0;
-
+	latency = null;
 	js_container_output = null;
 	js_input_cmd_next = null;
 	js_input_cmd_prev = null;
@@ -18,18 +133,27 @@ export class Ledger {
 	js_output_page_total = null;
 
 
-	constructor(panelNavigator) {
-		const instance = this;
+	constructor(pana) {
+		super();
 		this.currentPage = 1;
 		this.totalPages = 1;
-		this.panelNavigator = panelNavigator;
-		this.id = this.panelNavigator.navigator.url;
+		this.pana = pana;
+		this.id = this.pana.navigator.url;
+	}
+
+	onPopState() {
+		this.currentPage = this.pana.navigator.state.page ? parseInt(this.pana.navigator.state.page) : 1;
+		this.slo_page_current.set(this.currentPage, this.currentPage);
+		this.fetch();
+	}
+
+	run() {
 		this.slo_page_current = $("#js-input_page-current").slo({
 			onselect: (e) => {
 				this.currentPage = parseInt(e.key);
 				this.currentPage = this.currentPage <= 0 ? 1 : this.currentPage;
-				this.panelNavigator.navigator.setProperty("page", this.currentPage);
-				this.panelNavigator.navigator.pushState();
+				this.pana.navigator.setProperty("page", this.currentPage);
+				this.pana.navigator.pushState();
 				this.fetch();
 			}
 		});
@@ -37,56 +161,70 @@ export class Ledger {
 		this.js_input_cmd_next = document.getElementById("js-input_page-next");
 		this.js_input_cmd_prev = document.getElementById("js-input_page-prev");
 		this.js_output_total = document.getElementById("js-output-total");
+		this.js_output_totalrecords = document.getElementById("js-output_total-records");
 		this.js_output_page_total = document.getElementById("js-output_page-total");
-	}
 
-	onPopState = function () {
-		this.currentPage = this.panelNavigator.navigator.state.page ? parseInt(this.panelNavigator.navigator.state.page) : 1;
+		this.pana.clearActiveItem();
+		this.currentPage = this.pana.navigator.state.page ? parseInt(this.pana.navigator.state.page) : 1;
 		this.slo_page_current.set(this.currentPage, this.currentPage);
-		this.fetch();
-	}
 
-	run = function () {
-		this.panelNavigator.clearActiveItem();
-		this.currentPage = this.panelNavigator.navigator.state.page ? parseInt(this.panelNavigator.navigator.state.page) : 1;
-		this.slo_page_current.set(this.currentPage, this.currentPage);
-		this.js_output_page_total.addEventListener("click", () => {
+		this.js_output_page_total?.addEventListener("click", () => {
 			if (this.totalPages > 0) {
 				this.currentPage = parseInt(this.totalPages);
-				this.panelNavigator.navigator.setProperty("page", this.currentPage);
-				this.panelNavigator.navigator.pushState();
+				this.pana.navigator.setProperty("page", this.currentPage);
+				this.pana.navigator.pushState();
 				this.fetch();
 			}
 		});
 
-		this.js_input_cmd_next.addEventListener("click", () => {
+		this.js_input_cmd_next?.addEventListener("click", () => {
 			if (this.currentPage >= this.total_pages) { return; };
 			this.currentPage += 1;
-			this.panelNavigator.navigator.setProperty("page", this.currentPage);
-			this.panelNavigator.navigator.pushState();
+			this.pana.navigator.setProperty("page", this.currentPage);
+			this.pana.navigator.pushState();
 			this.js_input_cmd_prev.disabled = false;
 			this.slo_page_current.set(this.currentPage, this.currentPage);
 			this.fetch()
 		});
 
 
-		this.js_input_cmd_prev.addEventListener("click", () => {
+		this.js_input_cmd_prev?.addEventListener("click", () => {
 			if (this.currentPage <= 1) { return; };
 			this.currentPage -= 1;
-			this.panelNavigator.navigator.setProperty("page", this.currentPage);
-			this.panelNavigator.navigator.pushState();
+			this.pana.navigator.setProperty("page", this.currentPage);
+			this.pana.navigator.pushState();
 			this.slo_page_current.set(this.currentPage, this.currentPage)
 			this.fetch();
 		});
 		this.fetch();
 	}
 
+	splashscreen(target, url, title, data) {
+		target.innerHTML = `
+			<div class="gremium limit-width">
+				<header style="position:sticky;">
+					<h1>${title}</h1><cite>0.00</cite>
+				</header>
+				<menu class="btn-set">
+					<a class="edge-right edge-left">Search</a>
+					<span class="small-media-hide flex"></span>
+					<input type="button" class="pagination prev edge-left" disabled value="&#xE618;" />
+					<input type="text" placeholder="#" style="width:80px;text-align:center" value="0" />
+					<input type="button" class="pagination next" disabled value="&#xE61B;" />
+					<input type="button" class="edge-right" style="min-width:50px;text-align:center" value="0" />
+				</menu>
+				<article>
+					
+				</article>
+			</div>`;
+	}
+
 	paginationUpdate(currentPage, totalPages, recordsCount, recordsSum) {
 		if (currentPage && totalPages && recordsCount && recordsSum) {
 			this.currentPage = parseInt(currentPage);
 			this.totalPages = parseInt(totalPages);
-			this.recordsCount = parseInt(recordsCount)
-			this.recordsSum = recordsSum
+			this.recordsCount = recordsCount;
+			this.recordsSum = recordsSum;
 			this.slo_page_current.set(this.currentPage, this.currentPage);
 
 			try {
@@ -109,16 +247,19 @@ export class Ledger {
 				this.slo_page_current.disable();
 			} else if (this.totalPages > 1) {
 				this.slo_page_current.enable()
-				if (this.panelNavigator.navigator.getProperty("page") == 0) {
+				if (this.pana.navigator.getProperty("page") == 0) {
 					this.js_input_cmd_next.disabled = true;
-				} else if (this.panelNavigator.navigator.getProperty("page") >= this.totalPages) {
+				} else if (this.pana.navigator.getProperty("page") >= this.totalPages) {
 					this.js_input_cmd_next.disabled = true;
 				} else {
 					this.js_input_cmd_next.disabled = false;
 				}
 				this.js_output_page_total.disabled = false;
 			}
-			this.js_output_page_total.value = this.totalPages;
+
+			this.js_output_total.innerText = this.recordsSum;
+			this.js_output_totalrecords.innerText = App.Instance.numberFormat(parseInt(this.recordsCount), 0, "", ",") + " records";
+			this.js_output_page_total.value = App.Instance.numberFormat(parseInt(this.totalPages), 0, "", ",");
 		}
 	}
 
@@ -135,12 +276,16 @@ export class Ledger {
 			this.js_container_output.appendChild(tr);
 		}
 	}
-	fetch = function () {
-		this.generatePlaceholders(20, 6)
+
+	fetch() {
+		this.latency = setTimeout(() => {
+			this.generatePlaceholders(20, 6);
+		}, 500);
+
 		this.js_input_cmd_prev.disabled = this.currentPage == 1;
 		this.js_input_cmd_next.disabled = parseInt(this.currentPage) >= this.totalPages;
 		this.busy = true;
-		fetch(this.panelNavigator.navigator.url, {
+		fetch(this.pana.navigator.url, {
 			method: "POST",
 			mode: "cors",
 			cache: "no-cache",
@@ -151,9 +296,10 @@ export class Ledger {
 				"Content-type": "application/json; charset=UTF-8",
 				"X-Requested-With": "fetch"
 			},
-			body: JSON.stringify({ "objective": "list", "page": this.currentPage })
+			body: JSON.stringify({ ...this.pana.navigator.state, "objective": "list", "page": this.currentPage })
 		}).then(response => {
 			this.busy = false;
+			if (this.latency) clearTimeout(this.latency);
 			if (response.ok) {
 				this.paginationUpdate(
 					response.headers.get("Vendor-Ouput-Current"),
@@ -161,32 +307,66 @@ export class Ledger {
 					response.headers.get("Vendor-Ouput-Count"),
 					response.headers.get("Vendor-Ouput-Sum"),
 				);
+
+				/**
+				 * Update search buttons
+				 */
+				let stringifyQurey = "";
+				for (let element in this.pana.navigator.state) {
+					if (Search.AcceptedFields.includes(element))
+						stringifyQurey += (stringifyQurey == "" ? "" : "&") + element + "=" + this.pana.navigator.state[element]
+				};
+
+				let searchButton = document.getElementById("searchButton");
+				let cancelSearchButton = document.getElementById("cancelSearchButton");
+				if (searchButton) {
+					searchButton.dataset.href = searchButton.dataset.target + "/?" + stringifyQurey;
+				}
+				cancelSearchButton.style.display = "none";
+				if (cancelSearchButton && stringifyQurey != "") {
+					cancelSearchButton.style.display = "block";
+				}
+
+
 				return response.text();
+
 			}
 			return Promise.reject(response);
 		}).then(body => {
-			this.js_container_output.innerHTML = body;
-			this.panelNavigator.praseEvents();
+			if (this.recordsCount == 0) {
+				this.js_container_output.innerHTML = "";
+				let tr = document.createElement("TR");
+				let td = document.createElement("TD");
+				td.setAttribute("colspan", 6);
+				td.innerText = "No statements found...";
+				tr.appendChild(td);
+				this.js_container_output.appendChild(tr);
+			} else {
+				this.js_container_output.innerHTML = body;
+				this.pana.praseEvents(this.js_container_output);
+
+			}
 		});
 	}
-
-
-
 }
 
-
-export class StatementView {
-	panelNavigator = null;
-	constructor(panelNavigator) {
-		this.panelNavigator = panelNavigator;
-		this.id = this.panelNavigator.navigator.url;
+export class StatementView extends AppModule {
+	pana = null;
+	constructor(pana) {
+		super();
+		this.pana = pana;
+		this.id = this.pana.navigator.url;
 	}
 
-	run = function () {
-		if (this.panelNavigator.navigator.state.id) {
-			const panelItem = document.querySelector('a[data-listitem_id="' + this.panelNavigator.navigator.state.id + '"]');
+	splashscreen(target, url, title, data) {
+		target.innerHTML = this.splashscreenTemplate(title);
+	}
+
+	run() {
+		if (this.pana.navigator.state.id) {
+			const panelItem = document.querySelector('a[data-listitem_id="' + this.pana.navigator.state.id + '"]');
 			if (panelItem) {
-				this.panelNavigator.setActiveItem(panelItem);
+				this.pana.setActiveItem(panelItem);
 				panelItem.scrollIntoView({
 					behavior: "smooth",
 					block: "nearest"
@@ -227,7 +407,7 @@ export class StatementView {
 	}
 }
 
-export class Transaction {
+export class Transaction extends AppModule {
 	busy = null;
 	addwin = null;
 	formMain = null;
@@ -238,11 +418,27 @@ export class Transaction {
 	uploadController = null;
 	inputFieldsSorted = null;
 	description_field = null;
-	panelNavigator = null;
+	pana = null;
 	exchangeObjects = {}
-	constructor(panelNavigator) {
-		this.panelNavigator = panelNavigator;
-		this.id = this.panelNavigator.navigator.url;
+
+	constructor(pana) {
+		super();
+		this.pana = pana;
+		this.id = this.pana.navigator.url;
+	}
+
+	splashscreen(target, url, title, data) {
+		target.innerHTML = `
+		<div class="gremium limit-width">
+			<header style="position:sticky;">
+				<a style="pointer-events: none;" class="previous" data-role="previous"></a>
+				<h1>${title}</h1><cite></cite>
+			</header>
+			<h2>Transaction details</h2>
+			<article>
+				<span class="loadingScreen-placeholderBody"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>
+			</article>
+		</div>`
 	}
 
 	forexFieldState(state) {
@@ -260,7 +456,7 @@ export class Transaction {
 		}
 	}
 
-	forexSelectionHandler = function (data, editing, caller) {
+	forexSelectionHandler(data, editing, caller) {
 		let againstAccount = false;
 		let statementType = null;
 		let sourceAccount = this.slo_objects.getElementById("source-account");
@@ -440,13 +636,13 @@ export class Transaction {
 		}
 	}
 
-	run = function () {
+	run() {
 		let _instance = this;
 
-		if (this.panelNavigator.navigator.state.id) {
-			const panelItem = document.querySelector('a[data-listitem_id="' + this.panelNavigator.navigator.state.id + '"]');
+		if (this.pana.navigator.state.id) {
+			const panelItem = document.querySelector('a[data-listitem_id="' + this.pana.navigator.state.id + '"]');
 			if (panelItem) {
-				this.panelNavigator.setActiveItem(panelItem);
+				this.pana.setActiveItem(panelItem);
 				panelItem.scrollIntoView({
 					behavior: "smooth",
 					block: "nearest"
@@ -590,7 +786,7 @@ export class Transaction {
 		this.forexVendor();
 	}
 
-	findNextInputField = function (target) {
+	findNextInputField(target) {
 		let located = false;
 		for (let i in this.inputFieldsSorted) {
 			if (located) {
@@ -604,7 +800,7 @@ export class Transaction {
 		return false;
 	}
 
-	disableForm = function (state) {
+	disableForm(state) {
 		if (document.getElementById("js-input_submit"))
 			document.getElementById("js-input_submit").disabled = state;
 		this.formMain.querySelectorAll("input, textarea, button").forEach(function (elm) {
@@ -613,7 +809,7 @@ export class Transaction {
 		});
 	}
 
-	clearFields = function () {
+	clearFields() {
 		if (this.slo_objects) {
 			this.slo_objects.getElementById("beneficiary").slo.clear(false);
 			this.slo_objects.getElementById("individual").slo.clear(false);
@@ -623,7 +819,7 @@ export class Transaction {
 		}
 	}
 
-	validateFields = function () {
+	validateFields() {
 		let thrownerror = {
 			occured: false,
 			message: "",
@@ -689,7 +885,7 @@ export class Transaction {
 		}
 	}
 
-	post = async function () {
+	async post() {
 		if (this.busy)
 			return;
 		try {
@@ -733,7 +929,7 @@ export class Transaction {
 						this.uploadController.clean();
 						this.slo_objects.getElementById("beneficiary").slo.focus();
 
-						this.panelNavigator.prependItem({
+						this.pana.prependItem({
 							"attachements": formData.getAll("attachments[]").length,
 							"beneficial": formData.get("beneficiary[0]"),
 							"category": formData.get("category[0]"),

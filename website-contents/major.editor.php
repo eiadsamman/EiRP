@@ -788,7 +788,6 @@ unset($grem);
 		});
 
 		let Populate = function () {
-			console.log(nav.state)
 			overlay.show();
 			var $ajax = $.ajax({
 				type: 'POST',

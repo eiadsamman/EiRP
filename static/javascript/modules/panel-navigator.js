@@ -1,6 +1,6 @@
 import { Navigator } from "./app.js";
 import App from "./app.js";
-export class PanelNavigator {
+export class PaNa {
 	constructor(id) {
 		this.sidePanelUrl = "";
 		this.onClickUrl = "";
@@ -10,22 +10,24 @@ export class PanelNavigator {
 		this.panelVisible = true;
 		this.scope = {};
 		this.classList = [];
+		
 
 		this.runtime = new Object();
 		this.runtime.isLoading = false;
 		this.runtime.isFinished = false;
-		this.runtime.isContentLoading = false;
+		this.runtime.busy = false;
 		this.runtime.totalPages = 1;
 		this.runtime.currentPage = 1;
 		this.runtime.activeItem = null;
-		this.runtime.scrollArea = document.getElementById("PanelNavigator-Scroll");
-		this.runtime.container = document.getElementById("PanelNavigator-Window");
+		this.runtime.scrollArea = document.getElementById("pana-Scroll");
+		this.runtime.container = document.getElementById("pana-Window");
 
-		this.runtime.outputSide = document.getElementById("PanelNavigator-Side");
-		this.runtime.outputScreen = document.getElementById("PanelNavigator-Body");
-		this.runtime.informative = document.getElementById("PanelNavigator-Informative").querySelector("div");
+		this.runtime.outputSide = document.getElementById("pana-Side");
+		this.runtime.outputScreen = document.getElementById("pana-Body");
+		this.runtime.informative = document.getElementById("pana-Informative").querySelector("div");
 
-		this.latency = null;
+		this.latencyTimer = null;
+		this.latency = 1000;
 		this.runtime.scrollArea.addEventListener("scroll", () => {
 			if (this.checkAvailability() &&
 				this.runtime.scrollArea.scrollHeight - this.runtime.scrollArea.scrollTop <= this.runtime.scrollArea.clientHeight * 1.2
@@ -66,7 +68,8 @@ export class PanelNavigator {
 			this.register(event.state[':url'], event.state);
 			this.highlightItemById(event.state.id);
 
-			if (this.module && this.module.hasOwnProperty("id") && this.module.id == event.state[':url'] && this.module.hasOwnProperty("onPopState")) {
+
+			if (this.module && this.module.id == event.state[':url'] && typeof this.module['onPopState'] == "function") {
 				if (typeof this.module.onPopState == "function") {
 					this.module.onPopState();
 				}
@@ -80,7 +83,7 @@ export class PanelNavigator {
 		this.runtime.scrollArea.addEventListener("keydown", (e) => {
 			if (e.key == "ArrowDown") {
 				e.preventDefault();
-				if (this.runtime.activeItem != null && !this.runtime.isContentLoading) {
+				if (this.runtime.activeItem != null && !this.runtime.busy) {
 					let listitem = this.runtime.scrollArea.querySelector(`.panel-item[data-listitem_id="${this.runtime.activeItem.dataset.listitem_id}"]`);
 					if (listitem) {
 						let nextSibling = listitem.nextSibling;
@@ -98,7 +101,7 @@ export class PanelNavigator {
 				return false;
 			} else if (e.key == "ArrowUp") {
 				e.preventDefault();
-				if (this.runtime.activeItem != null && !this.runtime.isContentLoading) {
+				if (this.runtime.activeItem != null && !this.runtime.busy) {
 					let listitem = this.runtime.scrollArea.querySelector(`.panel-item[data-listitem_id="${this.runtime.activeItem.dataset.listitem_id}"]`);
 					if (listitem) {
 						let previousSibling = listitem.previousSibling;
@@ -185,7 +188,7 @@ export class PanelNavigator {
 			const payload = await response.json();
 			this.runtime.totalPages = parseInt(payload.headers.pages);
 
-			document.getElementById("PanelNavigator-TotalRecords").innerText = payload.headers.count + " records";
+			document.getElementById("pana-TotalRecords").innerText = payload.headers.count + " records";
 
 			payload.contents.forEach(element => {
 				let freePlaceholder = this.getFreePlaceholder();
@@ -286,19 +289,46 @@ export class PanelNavigator {
 	}
 
 	run = function () {
-		this.fetch();
+		let url = this.navigator.url;
+		this.module = null;
+		this.runtime.busy = true;
+		this.runtime.outputScreen.classList.add("busy");
+
+		/* Import page custome module file */
+		if (this.scope[url] !== undefined) {
+			document.title = App.Title + " - " + this.scope[url].title;
+			this.sidePanelVisibility(this.scope[url].side);
+			if (this.scope[url].module != undefined && this.scope[url].import != undefined && this.scope[url].module != null) {
+				import(this.scope[url].import).then((m) => {
+					this.module = new (m[this.scope[url].module])(this);
+					if (typeof this.module['splashscreen'] == "function") {
+						this.latencyTimer = window.setTimeout(() => {
+							this.module.splashscreen(this.runtime.outputScreen, url, this.scope[url].title, this.navigator.state);
+						}, this.latency);
+					}
+					this.fetch();
+				}).catch(e => {
+					messagesys.failure('Loading application modules failed');
+				});
+			}
+		}
+
+
 	}
 
-	praseEvents = function () {
-		this.runtime.outputScreen.querySelectorAll("[data-href]").forEach(el => {
+	praseEvents = function (target) {
+		target.querySelectorAll("[data-href]").forEach(el => {
 			try {
 				el.addEventListener("click", (e) => {
 					e.preventDefault();
-					this.navigator.url = el.dataset.href;
+					let urlparts = el.dataset.href.split("?");
 					this.navigator.state = {};
-					for (let attr in el.dataset) {
-						if (attr != "href" && attr != "title") {
-							this.navigator.state[attr] = el.dataset[attr];
+					this.navigator.url = urlparts[0].replace(/^\/+|\/+$/g, '');
+					if (urlparts.length > 1) {
+						urlparts[1] = urlparts[1].replace(/^\/+/g, '');
+						let search = new URLSearchParams(urlparts[1]);
+						for (const [key, value] of search) {
+							this.navigator.state[key] = value;
 						}
 					}
 					this.run();
@@ -311,70 +341,30 @@ export class PanelNavigator {
 	}
 
 	fetch = function () {
-		let url = this.navigator.url;
-		let html_title = "";
 		let formData = new FormData();
-
-		this.runtime.isContentLoading = true;
-		this.runtime.outputScreen.classList.add("busy");
-
-		if (this.scope[url] !== undefined) {
-			html_title = this.scope[url].title;
-			this.sidePanelVisibility(this.scope[url].side);
-
-			if (this.scope[url].placeholder !== undefined && this.scope[url].placeholder !== null && document.getElementById(this.scope[url].placeholder)) {
-				this.latency = window.setTimeout(() => {
-					this.runtime.outputScreen.innerHTML = document.getElementById(this.scope[url].placeholder).innerHTML;
-				}, 200);
-			}
-		}
-
-		for (var key in this.navigator.state) {
+		for (var key in this.navigator.state)
 			formData.append(key, this.navigator.state[key]);
-		}
-
-		fetch(url, {
+		fetch(this.navigator.url, {
 			method: 'POST',
 			mode: "cors",
 			cache: "no-cache",
 			credentials: "same-origin",
 			referrerPolicy: "no-referrer",
-			headers: {
-				"X-Requested-With": "fetch",
-			},
+			headers: { "X-Requested-With": "fetch" },
 			body: formData
 		}).then(response => {
-			this.runtime.isContentLoading = false;
-			if (response.ok) {
-				return response.text();
-			}
+			this.runtime.busy = false;
+			if (this.latencyTimer) clearTimeout(this.latencyTimer);
+			if (response.ok) return response.text();
 			return Promise.reject(response);
 		}).then(body => {
-			this.module = null;
-			if (this.latency) {
-				clearTimeout(this.latency);
-			}
-			this.runtime.outputScreen.classList.remove("busy");
-			this.runtime.isContentLoading = false;
-			if (html_title != null)
-				document.title = App.ApplicationTitle + " - " + html_title;
-
 			this.runtime.outputScreen.innerHTML = body;
-			this.praseEvents();
-
-			/* Import page custome module file */
-			if (this.scope[url] !== undefined && this.scope[url].module != undefined && this.scope[url].import != undefined && this.scope[url].module != null) {
-				import(this.scope[url].import + "?a=" + Math.random())
-					.then((m) => {
-						/* Load assosiate module */
-						let module = (m[this.scope[url].module]);
-						this.module = new module(this);
-						this.module.run();
-					});
-			}
-
+			this.runtime.outputScreen.classList.remove("busy");
+			this.praseEvents(this.runtime.outputScreen);
+			if (this.module) this.module.run();
 		}).catch(response => {
-			this.runtime.isContentLoading = false;
+			this.runtime.busy = false;
+			this.runtime.outputScreen.classList.remove("busy");
 			messagesys.failure("Server response `" + response.statusText + "`");
 		});
 	}

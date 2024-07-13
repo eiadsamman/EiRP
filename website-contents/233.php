@@ -465,11 +465,9 @@ if ($doc_id) {
 
 					$("#jQmaterialList > tr > td > div > input.jQcalcCostInline").each(function() {
 						if (isNaN(parseFloat($(this).val())) || isNaN(parseFloat($(this).attr("data-CostQty")))) {
-							console.log("?")
 							_sum += 0;
 						} else {
 							_sum += parseFloat($(this).val()) * parseFloat($(this).attr("data-CostQty"));
-							console.log("[")
 						}
 					});
 

@@ -106,9 +106,9 @@ if ($app->xhttp) {
 		unset($grem);
 
 	} else {
-		
 		$grem = new Gremium\Gremium(true);
-		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Receipt</button></div>");
+		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\">
+			<button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Submit Receipt</button></div>");
 		if (sizeof($defines) > 0) {
 			$grem->menu()->sticky(false)->open();
 			echo "<input placeholder=\"Actions...\" type=\"text\" id=\"js-defines\" data-slo=\":LIST\" tabindex=\"-1\" data-list=\"defines\" />";
@@ -167,7 +167,8 @@ if ($app->xhttp) {
 					<h1>Category</h1>
 					<div class="btn-set">
 						<input type="text" placeholder="Statement category" data-required data-slo=":LIST" data-touch="105" title="Category"
-							data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
+							data-source="_/FinanceCategoryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinancialCategories.a" tabindex="3"
+							class="flex" name="category" id="category" />
 					</div>
 				</label>
 			</div>
@@ -321,9 +322,6 @@ if ($app->xhttp) {
 			</datalist>
 			<datalist id="js-ref_creditor-list" style="display: none;">
 				<?= $SmartListObject->userAccountsOutbound(null, [$app->user->account->id], \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
-			</datalist>
-			<datalist id="jQcategoryList">
-				<?= $SmartListObject->financialCategories(); ?>
 			</datalist>
 		</div>
 		<?php

@@ -165,7 +165,8 @@ if ($app->xhttp) {
 					<h1>Category</h1>
 					<div class="btn-set">
 						<input type="text" placeholder="Statement category" data-required data-slo=":LIST" data-touch="105" title="Category"
-							data-list="jQcategoryList" tabindex="3" class="flex" name="category" id="category" />
+							data-source="_/FinanceCategoryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinancialCategories.a" tabindex="3"
+							class="flex" name="category" id="category" />
 					</div>
 				</label>
 			</div>
@@ -268,9 +269,6 @@ if ($app->xhttp) {
 			</datalist>
 			<datalist id="js-ref_creditor-list" style="display: none;">
 				<?= $SmartListObject->userAccountsInbound(null, [$app->user->account->id], \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
-			</datalist>
-			<datalist id="jQcategoryList">
-				<?= $SmartListObject->financialCategories(); ?>
 			</datalist>
 		</div>
 

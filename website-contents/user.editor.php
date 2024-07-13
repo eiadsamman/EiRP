@@ -552,7 +552,6 @@ echo "</form>";
 			$Form.on('submit', function (e) {
 				$("#js-input_submit-button").prop("disabled", true);
 				e.preventDefault();
-				console.log($Form.serialize())
 				$.ajax({
 					url: '<?php echo $fs()->dir; ?>',
 					type: 'POST',

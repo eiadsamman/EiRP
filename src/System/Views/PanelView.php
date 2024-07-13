@@ -6,9 +6,26 @@ namespace System\Views;
 use System\App;
 use System\Views\Views;
 
+
+class HTMLAssetsMap
+{
+	private static $base = "static/";
+	public static function print(string $type, string $url, string $version): string
+	{
+		$type = strtolower($type);
+		return match ($type) {
+			'css' => "<link media=\"screen,print\" rel=\"stylesheet\" href=\"" . HTMLAssetsMap::$base . "{$url}{$version}\" />",
+			'js' => "<script type=\"text/javascript\" src=\"" . HTMLAssetsMap::$base . "{$url}{$version}\"></script>"
+		};
+	}
+}
+
 class PanelView implements Views
 {
 	protected array $pagesScope;
+
+	protected array $assets;
+
 	public function __construct(protected App &$app)
 	{
 		/** 
@@ -18,13 +35,21 @@ class PanelView implements Views
 		$this->pagesScope = array();
 	}
 
+	public function htmlAssets(string $version = ""): void
+	{
+		echo "\n";
+		foreach ($this->assets as $asset) {
+			echo "\t" . HTMLAssetsMap::print($asset[0], $asset[1], $version) . "\n";
+		}
+	}
+
 	protected function panelHtmlWrapOpen(bool $visible = true): string
 	{
-		return "<div class=\"split-view\"><div class=\"panel entire " . ($visible ? "" : " hide") . "\" id=\"PanelNavigator-Side\">";
+		return "<div class=\"split-view\"><div class=\"panel entire " . ($visible ? "" : " hide") . "\" id=\"pana-Side\">";
 	}
 	protected function panelHtmlWrapClose(): string
 	{
-		return "</div><div class=\"body\" id=\"PanelNavigator-Body\"></div></div>";
+		return "</div><div class=\"body\" id=\"pana-Body\"></div></div>";
 	}
 
 	protected function scopeToString(): string
@@ -36,8 +61,7 @@ class PanelView implements Views
 			$side        = ($attributes[0] ? "true" : "false");
 			$import      = ($attributes[1] != null ? "\"$attributes[1]\"" : "null");
 			$module      = ($attributes[2] != null ? "\"$attributes[2]\"" : "null");
-			$placeholder = ($attributes[3] != null ? "\"$attributes[3]\"" : "null");
-			$output .= $smart . "\"{$this->app->file->find($page)->dir}\": {\"title\": \"{$this->app->file->find($page)->title}\",\"import\": $import,\"side\": $side,\"module\": $module,\"placeholder\": $placeholder}";
+			$output .= $smart . "\"{$this->app->file->find($page)->dir}\": {\"title\": \"{$this->app->file->find($page)->title}\",\"import\": $import,\"side\": $side,\"module\": $module}";
 			$smart       = ", ";
 		}
 		$output .= "}";
@@ -50,6 +74,5 @@ class PanelView implements Views
 
 	public function render(): void
 	{
-		echo "Fuck ";
 	}
 }

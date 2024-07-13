@@ -1,7 +1,7 @@
 <?php
 ob_start();
 ob_implicit_flush(true);
-$_v = !empty($app->settings->site['environment']) && $app->settings->site['environment'] === "development" ? "?rev=" . uniqid() : "?rev=" . $app->settings->site['version'];
+$_v = !empty($app->settings->site['environment']) && $app->settings->site['environment'] === "development" ? uniqid() : $app->settings->site['version'];
 
 use System\Finance\AccountRole;
 use System\Personalization\Bookmark;
@@ -29,66 +29,76 @@ $SmartListObject  = new SmartListObject($app);
 	<meta http-equiv="author" content="<?php echo "{$app->settings->site['auther']}"; ?>" />
 	<title><?= "{$app->settings->site['title']} - {$fs()->title}" ?></title>
 
-	<link media="screen,print" rel="stylesheet" href="static/style/theme/default.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/base.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/modals.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/gremium.css<?= $_v ?>" />
-	<link media="screen,print" rel="stylesheet" href="static/style/buttons.css<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/theme/default.css?rev=<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/base.css?rev=<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/modals.css?rev=<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/gremium.css?rev=<?= $_v ?>" />
+	<link media="screen,print" rel="stylesheet" href="static/style/buttons.css?rev=<?= $_v ?>" />
 
 	<script type="text/javascript" src="static/jquery/jquery.min-3.7.1.js"></script>
-	<script type="text/javascript" src="static/jquery/jquery-ui.min.js<?= $_v ?>"></script>
-	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js<?= $_v ?>"></script>
-	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js<?= $_v ?>"></script>
-	<script type="text/javascript" src="static/jquery/slo-1.4.js<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/jquery-ui.min.js?rev=<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/gui.menus-3.5.js?rev=<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js?rev=<?= $_v ?>"></script>
+	<script type="text/javascript" src="static/jquery/slo-1.4.js?rev=<?= $_v ?>"></script>
+
 	<script type="module">
 		import { Application, default as App } from "./static/javascript/modules/app.js";
 		import Account from "./static/javascript/modules/finance/account.js";
 		import Currency from "./static/javascript/modules/finance/currency.js";
-		App.ID = '<?= $app->id; ?>';
-		App.ApplicationTitle = '<?= $app->settings->site['title']; ?>';
+		App.ID = '<?= $app->id . $_v; ?>';
+		App.Title = '<?= $app->settings->site['title']; ?>';
+		App.BaseURL = '<?php echo "{$app->http_root}"; ?>';
 		App.Instance = new Application(App.ID);
+
 		<?php if ($app->user->logged) {
 			echo "App.User.id = {$app->user->info->id};";
 			echo "App.User.photo = {$app->user->info->photoid};";
-			echo "App.User.initials = \"". mb_substr($app->user->info->firstname, 0, 1) . " " . mb_substr($app->user->info->lastname, 0, 1)."\";";
+			echo "App.User.initials = \"" . mb_substr($app->user->info->firstname, 0, 1) . " " . mb_substr($app->user->info->lastname, 0, 1) . "\";";
 			echo "App.Account = new Account(";
-			echo ($app->user->company?$app->user->company->id:"null").',';
-			if($app->user->account){
-				echo $app->user->account->id.',';
-				echo '"'.$app->user->account->name.'"'.',';
+			echo ($app->user->company ? $app->user->company->id : "null") . ',';
+			if ($app->user->account) {
+				echo $app->user->account->id . ',';
+				echo '"' . $app->user->account->name . '"' . ',';
 				echo "new Currency(";
-				echo $app->user->account->currency->id.',';
-				echo '"'.$app->user->account->currency->name.'",';
-				echo '"'.$app->user->account->currency->shortname.'",';
-				echo '"'.$app->user->account->currency->symbol.'",';
+				echo $app->user->account->currency->id . ',';
+				echo '"' . $app->user->account->currency->name . '",';
+				echo '"' . $app->user->account->currency->shortname . '",';
+				echo '"' . $app->user->account->currency->symbol . '",';
 				echo ")";
-			}else{
+			} else {
 				echo "0,null,null";
 			}
 			echo ");";
 		} ?>
 	</script>
 	<?php
+
+	if ($app->view != null) {
+		$app->view->htmlAssets("?rev=$_v");
+	}
+
+
 	echo "\n";
 	if (array_key_exists('css', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['css']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "\t<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}{$_v}\" />\n";
+				echo "\t<link media=\"screen,print\" rel=\"stylesheet\" href=\"static/{$file}?rev={$_v}\" />\n";
 		}
 	}
 	if (array_key_exists('js', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['js']);
 		foreach ($load as $file) {
 			if (trim($file) != "")
-				echo "\t<script type=\"text/javascript\" src=\"static/{$file}{$_v}\"></script>\n";
+				echo "\t<script type=\"text/javascript\" src=\"static/{$file}?rev={$_v}\"></script>\n";
 		}
 	}
 	?>
 </head>
 <?php ob_end_flush(); ?>
 
-<body class="theme-default <?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>" data-mode="<?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>">
+<body class="theme-default <?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>"
+	data-mode="<?= isset($themeDarkMode) ? $themeDarkMode->mode : ""; ?>">
 	<a href="" id="PFTrigger" style="display: none;"></a>
 	<?php if ($app->user->logged && !$fs()->permission->deny) { ?>
 		<span class="header-ribbon noprint">
@@ -123,9 +133,13 @@ $SmartListObject  = new SmartListObject($app);
 			<div>
 				<div>
 					<header>
-						<span class="btn-set"><input type="text" class="flex" id="PFSelector" data-slo=":LIST" data-source="_/MenuListItems/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_listitems.a" placeholder="Goto page..." /></span>
+						<span class="btn-set"><input type="text" class="flex" id="PFSelector" data-slo=":LIST"
+								data-source="_/MenuListItems/slo/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/slo_listitems.a"
+								placeholder="Goto page..." /></span>
 					</header>
-					<div style="white-space:nowrap;" class="menu-items" data-chunk_source="_/MenuListItems/html/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/menu_listitems.a" data-content_type="html"></div>
+					<div style="white-space:nowrap;" class="menu-items"
+						data-chunk_source="_/MenuListItems/html/<?= md5("#Fg32-32-f-" . ($app->user->info->id)); ?>/menu_listitems.a"
+						data-content_type="html"></div>
 				</div>
 			</div>
 		</span>
@@ -135,7 +149,8 @@ $SmartListObject  = new SmartListObject($app);
 				<div>
 					<header>
 						<span class="btn-set">
-							<input type="text" class="flex" id="account-menu-slo" data-url="<?= $fs()->dir ?>" data-list="accounts-list" data-slo=":LIST" placeholder="Select an account...">
+							<input type="text" class="flex" id="account-menu-slo" data-url="<?= $fs()->dir ?>" data-list="accounts-list" data-slo=":LIST"
+								placeholder="Select an account...">
 						</span>
 						<datalist id="accounts-list">
 							<?php
@@ -214,7 +229,8 @@ $SmartListObject  = new SmartListObject($app);
 				<div>
 					<header>
 						<span class="btn-set">
-							<input type="text" class="flex" id="company-menu-slo" data-url="<?= $fs()->dir ?>" data-slo=":LIST" data-list="company-list" placeholder="Select a company...">
+							<input type="text" class="flex" id="company-menu-slo" data-url="<?= $fs()->dir ?>" data-slo=":LIST" data-list="company-list"
+								placeholder="Select a company...">
 						</span>
 						<datalist id="company-list">
 							<?= $SmartListObject->userCompanies(); ?>

@@ -46,7 +46,7 @@ class App
 	function __construct(string $root, string $settings_file, ?bool $cache = true)
 	{
 
-		
+
 		/* Set file system root */
 		$this->root = $root . DIRECTORY_SEPARATOR;
 
@@ -84,7 +84,7 @@ class App
 
 		/* Start session */
 		session_start();
-		
+
 
 		$this->id = md5(session_id());
 
@@ -99,7 +99,7 @@ class App
 			$this->xhttp = false;
 		}
 		$this->permissions_array = array();
-
+		$this->view              = null;
 
 		/* Handle cache */
 		header('Content-Type: text/html; charset=utf-8', true);
@@ -215,14 +215,14 @@ class App
 		$this->base_permission = 2;
 		return true;
 		/* $lowsetlevel = $this->db->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
-											if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
-												$this->base_permission = (int) $rowlowsetlevel['per_id'];
-												return true;
-											} else {
-												$this->errorHandler->customError("Failed to fetch system base permission");
-												$this->responseStatus->NotFound->response();
-											}
-											return false; */
+														if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
+															$this->base_permission = (int) $rowlowsetlevel['per_id'];
+															return true;
+														} else {
+															$this->errorHandler->customError("Failed to fetch system base permission");
+															$this->responseStatus->NotFound->response();
+														}
+														return false; */
 	}
 	public function buildPrefixList(): bool
 	{
@@ -349,12 +349,14 @@ class App
 		return 0;
 	}
 
-	public function viewFactory(string $viewName): bool
+	public function viewVendor(string $viewName): bool
 	{
 		if (class_exists('System\\Views\\' . $viewName)) {
 			$className  = 'System\\Views\\' . $viewName;
 			$this->view = new $className($this);
 			return true;
+		} else {
+			$this->view = null;
 		}
 		return false;
 	}

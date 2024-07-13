@@ -48,7 +48,7 @@ class StatementOfAccount
 					(SELECT 
 						acc_main.acm_id, acc_main.acm_beneficial, acc_main.acm_comments, acc_main.acm_ctime	,acc_main.acm_rejected,
 						acccat_name,accgrp_name,sub_uploads.up_count, acc_main.acm_editor_id, editor_image.issuer_badge,
-						editor_profile.usr_firstname,editor_profile.usr_lastname
+						editor_profile.usr_firstname,editor_profile.usr_lastname, acc_main.acm_category
 					FROM 
 						acc_main
 						JOIN (
@@ -80,7 +80,8 @@ class StatementOfAccount
 			) AS _pagination
 		LIMIT {$this->criteria->limit()}
 		;";
-		//  $this->app->errorHandler->customError($query);
+
+		
 		$stmt = $this->app->db->prepare($query);
 		$stmt->execute();
 		return $stmt->get_result();

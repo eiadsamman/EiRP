@@ -50,7 +50,7 @@ class ShuntingYard {
 	}
 	logStkOutput() {
 		for (const s of this.stkOutput) {
-			console.log("\t\t%c" + s.symbol + "\t" + s.type + (s.op == null ? "" : "\t(#" + s.op.arguments + ", ^" + s.op.precedence + ")"), 'color:#cfb;line-height:1.6em')
+			//xonsole.log("\t\t%c" + s.symbol + "\t" + s.type + (s.op == null ? "" : "\t(#" + s.op.arguments + ", ^" + s.op.precedence + ")"), 'color:#cfb;line-height:1.6em')
 		}
 	}
 
@@ -60,13 +60,13 @@ class ShuntingYard {
 		this.symPrevious = new sSymbol("0", Type.Literal_Numeric, 0);
 		this.sExpression = expression;
 		let pass = 0;
-		console.log("%c" + expression, "color: lime;font-size:1.5em");
+		//xonsole.log("%c" + expression, "color: lime;font-size:1.5em");
 		for (const c of this.sExpression) {
-			//console.log("%c\t" + c, ' color: #ee0;font-weight:bold;')
+			//xonsole.log("%c\t" + c, ' color: #ee0;font-weight:bold;')
 			if (std.isdigit(c)) {
 				this.stkOutput.push(new sSymbol(c, Type.Literal_Numeric, null));
 				this.symPrevious = this.stkOutput.at(-1);
-				//console.log("\t\t" + this.symPrevious.v())
+				//xonsole.log("\t\t" + this.symPrevious.v())
 
 			} else if (c == '(') {
 				this.stkHolding.unshift(new sSymbol(c, Type.Parenthesis_Open));
@@ -77,7 +77,7 @@ class ShuntingYard {
 					this.stkHolding.shift();
 				}
 				if (this.stkHolding.length == 0) {
-					console.log(`!!!!     ERROR! Unexpected parenthesis '${c}'`);
+					//xonsole.log(`!!!!     ERROR! Unexpected parenthesis '${c}'`);
 					return false;
 				}
 				if (this.stkHolding.length > 0 && this.stkHolding[0].type == Type.Parenthesis_Open) {
@@ -107,7 +107,7 @@ class ShuntingYard {
 				}
 				this.stkHolding.unshift(new sSymbol(c, Type.Operator, new_op));
 				this.symPrevious = this.stkHolding[0];
-				//console.log("\t\t" + this.symPrevious.v())
+				//xonsole.log("\t\t" + this.symPrevious.v())
 			} else {
 				throw new Error(`Bad Symbol: '${c}'`);
 			}
@@ -119,7 +119,7 @@ class ShuntingYard {
 			this.stkOutput.push(this.stkHolding.shift());
 		}
 
-		console.log("Output Stack:")
+		//xonsole.log("Output Stack:")
 		this.logStkOutput();
 
 
@@ -143,7 +143,7 @@ class ShuntingYard {
 					let result = 0.0;
 					if (inst.op.arguments == 2) {
 
-						console.log(" -> " + mem[1] + " " + inst.symbol + " " + mem[0]);
+						//xonsole.log(" -> " + mem[1] + " " + inst.symbol + " " + mem[0]);
 						if (inst.symbol == '/') result = mem[1] / mem[0];
 						if (inst.symbol == '*') result = mem[1] * mem[0];
 						if (inst.symbol == '+') result = mem[1] + mem[0];
@@ -159,7 +159,7 @@ class ShuntingYard {
 					break;
 			}
 		}
-		console.log("Result: %c" + this.stkSolve[0], "color:#7af;");
+		//xonsole.log("Result: %c" + this.stkSolve[0], "color:#7af;");
 	}
 }
 
