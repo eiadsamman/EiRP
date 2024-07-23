@@ -41,7 +41,7 @@ $SmartListObject  = new SmartListObject($app);
 	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js?rev=<?= $_v ?>"></script>
 	<script type="text/javascript" src="static/jquery/slo-1.4.js?rev=<?= $_v ?>"></script>
 
-	<script type="module">
+<script type="module">
 		import { Application, default as App } from "./static/javascript/modules/app.js";
 		import Account from "./static/javascript/modules/finance/account.js";
 		import Currency from "./static/javascript/modules/finance/currency.js";
@@ -49,7 +49,8 @@ $SmartListObject  = new SmartListObject($app);
 		App.Title = '<?= $app->settings->site['title']; ?>';
 		App.BaseURL = '<?php echo "{$app->http_root}"; ?>';
 		App.Instance = new Application(App.ID);
-
+		App.Instance.page['id'] = <?= $fs()->id ?>;
+		App.Instance.page['dir'] = "<?= $fs()->dir ?>";
 		<?php if ($app->user->logged) {
 			echo "App.User.id = {$app->user->info->id};";
 			echo "App.User.photo = {$app->user->info->photoid};";
@@ -64,7 +65,9 @@ $SmartListObject  = new SmartListObject($app);
 				echo '"' . $app->user->account->currency->name . '",';
 				echo '"' . $app->user->account->currency->shortname . '",';
 				echo '"' . $app->user->account->currency->symbol . '",';
-				echo ")";
+				echo "),";
+				echo "\"\",";
+				echo "\"{$app->user->account->type->keyTerm->toString()}\"";
 			} else {
 				echo "0,null,null";
 			}
@@ -121,9 +124,9 @@ $SmartListObject  = new SmartListObject($app);
 						} elseif ($app->user->account) {
 							echo "<span>{$app->user->account->currency->shortname}</span>";
 						}
-						echo "<a tabindex=\"-1\" class=\"mediabond-hide js-input_darkmode-toggle\" href=\"{$fs()->dir}/\" title=\"Toggle Dark Mode\"><span style=\"font-family:icomoon4;\">&#xe9d4;</span></a>";
+						echo "<a tabindex=\"-1\" class=\"mediabond-hide toggleLightMode\" href=\"{$fs()->dir}/\" title=\"Toggle Dark Mode\"><span style=\"font-family:icomoon4;\">&#xe9d4;</span></a>";
 						echo "<a href=\"{$fs(27)->dir}/\" tabindex=\"-1\" id=\"header-menu-useraccount-button\" title=\"User Settings\"><span style=\"font-family:icomoon4;\">&#xe971;</span></a>"; //<cite>1</cite>
-						echo "<a href=\"{$fs()->dir}/?logout=" . uniqid() . "\" tabindex=\"-1\" id=\"header-menu-logout\" title=\"Logout\"><span style=\"font-family:icomoon4;\">&#xe9b6;</span></a>";
+						echo "<a href=\"/?logout=" . uniqid() . "\" tabindex=\"-1\" id=\"header-menu-logout\" title=\"Logout\"><span style=\"font-family:icomoon4;\">&#xe9b6;</span></a>";
 					}
 					?>
 				</div>
@@ -163,7 +166,7 @@ $SmartListObject  = new SmartListObject($app);
 							?>
 						</datalist>
 					</header>
-					<div style="white-space:nowrap;" class="menu-items">
+					<div style="white-space:nowrap;" class="menu-items" id="menu-account-selection">
 						<?php
 						if (!$app->user->company) {
 							echo "<div style=\"padding-left:15px;\">No company selected</div>";
@@ -214,7 +217,7 @@ $SmartListObject  = new SmartListObject($app);
 								foreach ($company_v as $group_k => $group_v) {
 									echo "<div>$group_k</div>";
 									foreach ($group_v as $account_k => $account_v) {
-										echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account_commit&i={$account_v[0]}\" title=\"`{$account_v[1]}` Account\"><span>{$account_v[1]}</span><b>" . (is_null($account_v[2]) ? "-" : $account_v[2]) . "</b></a>";
+										echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account_commit&i={$account_v[0]}\" data-account_id=\"{$account_v[0]}\" title=\"`{$account_v[1]}` Account\"><span>{$account_v[1]}</span><b>" . (is_null($account_v[2]) ? "-" : $account_v[2]) . "</b></a>";
 									}
 								}
 							}
@@ -236,7 +239,7 @@ $SmartListObject  = new SmartListObject($app);
 							<?= $SmartListObject->userCompanies(); ?>
 						</datalist>
 					</header>
-					<div style="white-space:nowrap;" class="menu-items">
+					<div style="white-space:nowrap;" class="menu-items" id="menu-company-selection">
 						<?php
 						$r = $app->db->query(
 							"SELECT 
@@ -249,7 +252,7 @@ $SmartListObject  = new SmartListObject($app);
 						);
 						if ($r) {
 							while ($row = $r->fetch_assoc()) {
-								printf('<a href="%1$s/?--sys_sel-change=company_commit&i=%2$d" title="`%3$s` Company"><span>%3$s</span></a>', $fs()->dir, (int) $row['comp_id'], $row['comp_name']);
+								printf('<a href="%1$s/?--sys_sel-change=company_commit&i=%2$d" data-company_id="%2$d" title="`%3$s` Company"><span>%3$s</span></a>', $fs()->dir, (int) $row['comp_id'], $row['comp_name']);
 							}
 						}
 						?>
@@ -268,7 +271,7 @@ $SmartListObject  = new SmartListObject($app);
 
 						echo "<div>{$app->user->info->fullName()}</div>";
 						echo "<a href=\"{$fs(27)->dir}/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Preferences & Security\">&#xe971;</span><span>Preferences & Security</span></a>";
-						echo "<a href=\"{$fs()->dir}/\" class=\"js-input_darkmode-toggle\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Toggle Dark Mode\">&#xe9d4;</span><span>Toggle Dark Mode</span></a>";
+						echo "<a href=\"{$fs()->dir}/\" class=\"toggleLightMode\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Toggle Dark Mode\">&#xe9d4;</span><span>Toggle Dark Mode</span></a>";
 						echo "<a href=\"{$fs(263)->dir}/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Bookmarks\">&#xe9d9;</span><span>Bookmarks</span></a>"; //e9d7
 						echo "<a href=\"{$fs(17)->dir}/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Settings\">&#xe994;</span><span>Settings</span></a>";
 						echo "<a href=\"{$fs()->dir}/?logout=" . uniqid() . "\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Logout\">&#xe9b6;</span><span>Logout</span></a>";

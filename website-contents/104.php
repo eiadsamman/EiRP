@@ -7,9 +7,10 @@ $statement   = new System\Finance\Transaction\Statement($app);
 $read        = $statement->read($id ?? 0);
 
 if ($read) {
-	$grem = new Gremium\Gremium(true);
+
 	if (empty($read->debitor) && empty($read->creditor)) {
-		$grem->header()->status(Gremium\Status::Exclamation)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
+		$grem = new Gremium\Gremium(true);
+		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->status(Gremium\Status::Exclamation)->serve("<h1>{$fs()->title}</h1><cite>" . ($read ? $read->id : "") . "</cite>");
 		$grem->menu()->serve("<span class=\"small-media-hide\">Requested document is forbidden</span>");
 		$grem->article()->serve(
 			<<<HTML
@@ -23,6 +24,7 @@ if ($read) {
 		);
 		unset($grem);
 	} else {
+		$grem = new Gremium\Gremium(true);
 		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 		$grem->menu()->open();
 		echo "<span class=\"flex\"></span>";
@@ -39,7 +41,6 @@ if ($read) {
 		<iframe id="plot-iframe" name="plot-iframe" style="display:block;width:0;height:0px;visibility: hidden"></iframe>
 
 		<div class="form">
-
 			<label>
 				<h1>Statement ID</h1>
 				<div class="btn-set">
@@ -160,12 +161,11 @@ if ($read) {
 				</label>
 			</div>
 		<?php } ?>
-
 		<div class="form">
 			<label>
 				<h1>Category</h1>
 				<div class="btn-set">
-					<span><?= $read->category->group. ": ". $read->category->name ?></span>
+					<span><?= $read->category->group . ": " . $read->category->name ?></span>
 				</div>
 			</label>
 		</div>
@@ -184,21 +184,34 @@ if ($read) {
 	}
 } elseif ($id == null) {
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->serve("<h1>{$fs()->title}</h1>");
-	$grem->menu()->serve("<span class=\"small-media-hide\">No selected documents</span>");
+	$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1>");
+
+	$grem->title()->serve("<span>Bad request</span>");
+	$grem->article()->serve(
+		<<<HTML
+			<ul>
+				<li>Empty request or invalid request</li>
+				<li>Document is locked or out of scope</li>
+				<li>Your account doesn't have premissions for neither `Creditor` and `Debitor` accounts</li>
+				<li>Contact system administrator for further assistance</li>
+				<li>Back to <a href="{$fs(214)->dir}" data-href="{$fs(214)->dir}">statements list</a></li>
+			</ul>
+			HTML
+	);
 	unset($grem);
 } else {
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->serve("<h1>{$fs()->title}</h1><cite>$id</cite>");
-	$grem->menu()->serve("<span class=\"small-media-hide\">Requested document is not available</span>");
+	$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>$id</cite>");
+	$grem->title()->serve("<span class=\"small-media-hide\">Requested document is not available</span>");
 	$grem->article()->serve(
 		<<<HTML
-		<ul>
-			<li>Document `$id` is not valid or doesn't exists on the current company scope</li>
-			<li>Permission denied or not enough privileges to proceed with this document</li>
-			<li>Contact system administrator for further assistance</li>
-		</ul>
-		HTML
+			<ul>
+				<li>Document is locked or out of scope</li>
+				<li>Your account doesn't have premissions for neither `Creditor` and `Debitor` accounts</li>
+				<li>Contact system administrator for further assistance</li>
+				<li>Back to <a href="{$fs(214)->dir}" data-href="{$fs(214)->dir}">statements list</a></li>
+			</ul>
+			HTML
 	);
 	unset($grem);
 }

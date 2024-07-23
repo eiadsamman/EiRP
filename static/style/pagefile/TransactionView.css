@@ -1,9 +1,11 @@
 .table-head {
 	position: sticky;
 }
-table.statment-view>tbody>tr>td{
+
+table.statment-view>tbody>tr>td {
 	cursor: default;
 }
+
 table.statment-view>tbody>tr>td:nth-child(1)>div {
 	padding: 2px 5px;
 }
@@ -29,13 +31,13 @@ table.statment-view>tbody>tr>td:nth-child(1)>div.in-value {
 
 .statment-view>tbody>tr>td.value-comment>span {
 	display: block;
-	padding: 5px 0px;
+	padding: 0px 0px;
 	color: rgb(125, 125, 125);
 }
 
 .statment-view>tbody>tr>td.value-comment>div {
 	position: relative;
-	padding: 5px 0px;
+	margin: 2px 0px 4px 0px;
 }
 
 .statment-view>tbody>tr>td.value-comment>div>span {

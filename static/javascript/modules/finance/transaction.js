@@ -203,10 +203,10 @@ export class Ledger extends AppModule {
 		target.innerHTML = `
 			<div class="gremium limit-width">
 				<header style="position:sticky;">
-					<h1>${title}</h1><cite>0.00</cite>
+				<h1><span class=\"small-media-hide\">${App.Account.term}: </span>${App.Account.name}</h1><cite>0.00</cite>
 				</header>
 				<menu class="btn-set">
-					<a class="edge-right edge-left">Search</a>
+					<button class="edge-right edge-left search"><span class="small-media-hide"> Search</span></button>
 					<span class="small-media-hide flex"></span>
 					<input type="button" class="pagination prev edge-left" disabled value="&#xe91a;" />
 					<input type="text" placeholder="#" style="width:80px;text-align:center" value="0" />
@@ -422,6 +422,7 @@ export class Transaction extends AppModule {
 	value_field = null;
 	uploadController = null;
 	inputFieldsSorted = null;
+	slo_defines = null;
 	description_field = null;
 	pana = null;
 	exchangeObjects = {}
@@ -430,6 +431,7 @@ export class Transaction extends AppModule {
 		super();
 		this.pana = pana;
 		this.id = this.pana.navigator.url;
+
 	}
 
 	splashscreen(target, url, title, data) {
@@ -643,7 +645,6 @@ export class Transaction extends AppModule {
 
 	run() {
 		let _instance = this;
-
 		if (this.pana.navigator.state.id) {
 			const panelItem = document.querySelector('a[data-listitem_id="' + this.pana.navigator.state.id + '"]');
 			if (panelItem) {
@@ -762,22 +763,9 @@ export class Transaction extends AppModule {
 			$("#beneficiary").prop("readonly", false);
 			this.slo_objects.getElementById("beneficiary").slo.clear();
 		};
-
-		$("#js-defines").slo({
-			onselect: function (e) {
-				const selected_option = document.querySelector("#defines option[data-id='" + e.key + "']");
-				_instance.slo_objects.getElementById("target-account").slo.set(selected_option.dataset.account_bound, selected_option.dataset.account_bound);
-				_instance.slo_objects.getElementById("category").slo.set(selected_option.dataset.category, selected_option.dataset.category);
-
-				let currentDate = new Date();
-				const offset = currentDate.getTimezoneOffset()
-				currentDate = new Date(currentDate.getTime() - (offset * 60 * 1000))
-
-				_instance.slo_objects.getElementById("post-date").slo.set(currentDate.toISOString().split('T')[0], currentDate.toISOString().split('T')[0]);
-				document.querySelectorAll(".predefined").forEach(element => {
-					element.style.display = "none";
-				});
-				_instance.slo_objects.getElementById("beneficiary").slo.focus();
+		this.slo_defines = $("#js-defines").slo({
+			onselect: (e) => {
+				this.predefinedSet(e.key)
 			},
 			ondeselect: function (e) {
 				_instance.slo_objects.clear();
@@ -787,10 +775,36 @@ export class Transaction extends AppModule {
 				});
 			}
 		});
-		//firstItemFocus.focus()
+
+		if (this.pana.navigator.state['quick']) {
+			let prelist = document.getElementById("defines");
+			prelist.childNodes.forEach(e => {
+				if (e.dataset && e.dataset.id && e.dataset.id == this.pana.navigator.state['quick']) {
+					this.slo_defines.set(this.pana.navigator.state['quick'], e.innerText);
+					this.predefinedSet(this.pana.navigator.state['quick']);
+				}
+			});
+		}
+		
 		this.forexVendor();
 	}
 
+
+	predefinedSet(id) {
+		const selected_option = document.querySelector(`#defines option[data-id='${id}']`);
+		this.slo_objects.getElementById("target-account").slo.set(selected_option.dataset.account_bound, selected_option.dataset.account_bound);
+		this.slo_objects.getElementById("category").slo.set(selected_option.dataset.category, selected_option.dataset.category);
+
+		let currentDate = new Date();
+		const offset = currentDate.getTimezoneOffset()
+		currentDate = new Date(currentDate.getTime() - (offset * 60 * 1000))
+
+		this.slo_objects.getElementById("post-date").slo.set(currentDate.toISOString().split('T')[0], currentDate.toISOString().split('T')[0]);
+		document.querySelectorAll(".predefined").forEach(element => {
+			element.style.display = "none";
+		});
+		this.slo_objects.getElementById("beneficiary").slo.focus();
+	}
 	findNextInputField(target) {
 		let located = false;
 		for (let i in this.inputFieldsSorted) {

@@ -1,5 +1,6 @@
 <?php
-$r = $app->db->query(
+$rp = 1;
+$r  = $app->db->query(
 	"SELECT 
 		trd_directory,pfl_value,trd_attrib4,trd_attrib5
 	FROM 
@@ -11,9 +12,11 @@ $r = $app->db->query(
 	WHERE 
 		trd_visible = 1 AND trd_enable = 1
 	ORDER BY (usrset_value + 0) DESC, pfl_value
-	LIMIT 4");
+	LIMIT 4"
+);
 if ($r && $r->num_rows > 0) {
-	echo "<div class=\"links\"><div>";
+	$rr = $r;
+	echo "<div class=\"links rowclicks\"><span>Most frequent</span><div>";
 	while ($row = $r->fetch_assoc()) {
 		echo "<a href=\"{$row['trd_directory']}\">";
 		echo "<span style=\"color:var(--root-font-color);background-color:var(--static-bgcolor);\">&#xe{$row['trd_attrib4']};</span>";//color:var(--root-font-color);background-image: linear-gradient(to top, var(--root-background-color), var(--root-background-color));
@@ -21,7 +24,5 @@ if ($r && $r->num_rows > 0) {
 		echo "</a>";
 	}
 	echo "</div>";
-	echo "<hr />";
-	echo "<span>Most recent pages</span>";
 	echo "</div>";
 }

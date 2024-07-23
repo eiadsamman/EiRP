@@ -5,12 +5,16 @@ export default class Account {
 	name = null;
 	currency = null;
 	company = null;
+	term = null;
+	category = null;
 
-	constructor(company, id, name, currency) {
+	constructor(company, id, name, currency, category, term) {
 		this.company = parseInt(company);
 		this.id = parseInt(id);
 		this.name = name;
 		this.currency = currency;
+		this.category = category;
+		this.term = term;
 	}
 
 }

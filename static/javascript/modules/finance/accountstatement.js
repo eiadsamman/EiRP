@@ -55,9 +55,9 @@ export default class AccountStatmenet {
 	}
 
 	register(data) {
-		this.navigator.history_state = data;
-		this.navigator.history_var = data;
+		this.navigator.state = data;
 	}
+
 	run() {
 		this.xhttp_request(false);
 	}
@@ -71,39 +71,36 @@ export default class AccountStatmenet {
 			this.js_form_export.attr("method", "post");
 			this.js_form_export.attr("action", this.export_uri + "/?");
 			this.js_form_export.submit();
-
 			setTimeout(() => {
 				overlay.hide();
 			}, 1000);
 		});
 
-
 		this.js_output_page_total.addEventListener("click", () => {
-			this.navigator.setProperty("page", 0);
+			this.navigator.state['page'] = 0;
 			this.navigator.pushState();
 			this.xhttp_request(true)
 		});
 
 		this.js_input_cmd_next.addEventListener("click", () => {
 			if (parseInt(this.navigator.getProperty("page")) >= this.total_pages) { return; };
-			this.navigator.setProperty("page", parseInt(this.navigator.getProperty("page")) + 1);
+			this.navigator.state['page'] += 1;
 			this.navigator.pushState();
 			this.js_input_cmd_prev.disabled = false;
 			this.slo_page_current.set(this.navigator.getProperty("page"), this.navigator.getProperty("page"));
 			this.xhttp_request(true);
 		});
 
-
 		this.js_input_cmd_prev.addEventListener("click", () => {
 			if (parseInt(this.navigator.getProperty("page")) <= 1) { return; };
-			this.navigator.setProperty("page", parseInt(this.navigator.getProperty("page")) - 1);
+			this.navigator.state['page'] -= 1;
 			this.navigator.pushState();
 			this.slo_page_current.set(this.navigator.getProperty("page"), this.navigator.getProperty("page"))
 			this.xhttp_request(true);
 		});
 
 		this.js_input_cmd_update.addEventListener('click', () => {
-			this.navigator.setProperty("page", 0);
+			this.navigator.state['page'] = 0;
 			this.js_input_cmd_prev.disabled = true;
 			this.navigator.pushState();
 			try {
@@ -120,7 +117,7 @@ export default class AccountStatmenet {
 		this.js_input_cmd_next.disabled = parseInt(this.navigator.getProperty("page")) >= this.total_pages;
 
 		$.ajax({
-			data: { ...this.navigator.history_state, ...{ "method": "statement_report" } },
+			data: { ...this.navigator.state, ...{ "method": "statement_report" } },
 			url: this.uri,
 			type: 'POST'
 		}).done((output, textStatus, request) => {

@@ -47,8 +47,8 @@ class StatementOfAccount
 				JOIN
 					(SELECT 
 						acc_main.acm_id, acc_main.acm_beneficial, acc_main.acm_comments, acc_main.acm_ctime	,acc_main.acm_rejected,
-						acccat_name,accgrp_name,sub_uploads.up_count, acc_main.acm_editor_id, editor_image.issuer_badge,
-						editor_profile.usr_firstname,editor_profile.usr_lastname, acc_main.acm_category
+						acccat_name, accgrp_name,sub_uploads.up_count, acc_main.acm_editor_id,issuer_badge,
+						editor_profile.usr_firstname, editor_profile.usr_lastname, acc_main.acm_category
 					FROM 
 						acc_main
 						JOIN (
@@ -64,6 +64,7 @@ class StatementOfAccount
 							(
 								SELECT up_id AS issuer_badge, up_rel FROM uploads WHERE up_deleted = 0 AND up_pagefile = " . \System\Attachment\Type::HrPerson->value . " AND 1 GROUP BY up_rel 
 							) AS editor_image ON editor_image.up_rel = acm_editor_id
+
 						LEFT JOIN 
 							(
 								SELECT usr_id, usr_firstname, usr_lastname FROM users
@@ -78,6 +79,8 @@ class StatementOfAccount
 			ORDER BY
 				statements_view.acm_ctime {$sort_direction}, statements_view.acm_id {$sort_direction}
 			) AS _pagination
+		ORDER BY
+				_pagination.acm_ctime {$sort_direction}, _pagination.acm_id {$sort_direction}
 		LIMIT {$this->criteria->limit()}
 		;";
 

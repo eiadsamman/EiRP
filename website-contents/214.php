@@ -75,6 +75,7 @@ if ($app->xhttp) {
 				echo "</td>";
 
 				echo "<td class=\"value-comment\">
+					<span>{$row['usr_firstname']} {$row['usr_lastname']}</span>
 					<span>{$row['accgrp_name']}: {$row['acccat_name']}</span>
 					<div>
 						<span>" . (str_repeat("<br/>", substr_count($row['acm_comments'] ?? "", "\n"))) . "</span>

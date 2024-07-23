@@ -73,6 +73,7 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 				echo "</td>";
 
 				echo "<td class=\"value-comment\">
+					<span>{$row['usr_firstname']} {$row['usr_lastname']}</span>
 					<span>{$row['accgrp_name']}: {$row['acccat_name']}</span>
 					<div>
 						<span>" . (str_repeat("<br/>", substr_count($row['acm_comments'] ?? "", "\n"))) . "</span>
@@ -213,13 +214,13 @@ unset($grem);
 
 	.statment-view>tbody>tr>td.value-comment>span {
 		display: block;
-		padding: 5px 0px;
+		padding: 0px 0px;
 		color: rgb(125, 125, 125);
 	}
 
 	.statment-view>tbody>tr>td.value-comment>div {
 		position: relative;
-		padding: 5px 0px;
+		margin: 2px 0px 4px 0px;
 	}
 
 	.statment-view>tbody>tr>td.value-comment>div>span {
@@ -372,7 +373,6 @@ unset($grem);
 	}
 
 	@media only screen and (max-width: 480px) {
-
 		.header-title,
 		.small-media-hide,
 		.menu-date_title {
@@ -393,10 +393,10 @@ unset($grem);
 
 
 <script type="module">
-	import AccountStatmenet from './static/javascript/modules/finance/accountstatement.js';
+	import AccountStatmenet from './static/javascript/modules/finance/accountstatement.js?v=<?= $app->id ?>' ;
 	const accountStatement = new AccountStatmenet('<?= $fs()->dir; ?>');
 	accountStatement.export_uri = "<?= $fs(13)->dir ?>";
-	accountStatement.register({	
+	accountStatement.register({
 		"page": <?= $initial_values['page'] ?>,
 		"from": "<?= $initial_values['from'] ?>",
 		"to": "<?= $initial_values['to'] ?>",

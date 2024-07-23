@@ -15,7 +15,8 @@
 			/* "cpanel3/": true, */
 			"*.xlsx":true,
 		},
-		"workbench.tree.indent": 15
+		"workbench.tree.indent": 15,
+		"liveServer.settings.multiRootWorkspaceName": "eiad"
 	},
 	"launch": {
 		"configurations": [
@@ -44,9 +45,12 @@
 				"request": "launch",
 				"runtimeArgs": [
 					"--headless",
-					"--remote-debugging-port=9222"
+					"--remote-debugging-port=9222",
+					"--disable-application-cache",
+				
 				],
-				"url": "c:\\Users\\Dell\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.1\\out\\startpage\\index.html",
+				
+				"url": "http://localhost/eiad/",
 				"presentation": {
 					"hidden": true
 				}

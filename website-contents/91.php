@@ -6,8 +6,8 @@ use System\Finance\Account;
 use System\SmartListObject;
 
 $predefined  = new \System\Finance\PredefinedRules($app);
-$defines     = $predefined->incomeRules();
 $accounting  = new \System\Finance\Accounting($app);
+$defines     = $predefined->incomeRules();
 $perpage_val = 20;
 
 if ($app->xhttp) {

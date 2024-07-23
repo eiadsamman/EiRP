@@ -10,7 +10,7 @@ export class PaNa {
 		this.panelVisible = true;
 		this.scope = {};
 		this.classList = [];
-		
+
 
 		this.runtime = new Object();
 		this.runtime.isLoading = false;
@@ -27,7 +27,7 @@ export class PaNa {
 		this.runtime.informative = document.getElementById("pana-Informative").querySelector("div");
 
 		this.latencyTimer = null;
-		this.latency = 1000;
+		this.latency = 0;
 		this.runtime.scrollArea.addEventListener("scroll", () => {
 			if (this.checkAvailability() &&
 				this.runtime.scrollArea.scrollHeight - this.runtime.scrollArea.scrollTop <= this.runtime.scrollArea.clientHeight * 1.2
@@ -286,9 +286,11 @@ export class PaNa {
 	register = function (url, data) {
 		this.navigator.url = url;
 		this.navigator.state = data;
+		App.Instance.pageDir = this.navigator.url;
 	}
 
 	run = function () {
+
 		let url = this.navigator.url;
 		this.module = null;
 		this.runtime.busy = true;
@@ -324,6 +326,7 @@ export class PaNa {
 					let urlparts = el.dataset.href.split("?");
 					this.navigator.state = {};
 					this.navigator.url = urlparts[0].replace(/^\/+|\/+$/g, '');
+					App.Instance.pageDir = this.navigator.url;
 					if (urlparts.length > 1) {
 						urlparts[1] = urlparts[1].replace(/^\/+/g, '');
 						let search = new URLSearchParams(urlparts[1]);

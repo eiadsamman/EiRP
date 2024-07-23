@@ -49,6 +49,22 @@
 	--button_disabled-bgcolor: hsl(206, 10%, 94%);
 
 
+	--buttonred-font-color: white;
+	--buttonred-border: hsl(10, 100%, 46%);
+	--buttonred-bgcolor: hsl(10, 100%, 46%);
+	--buttonred_hover-bgcolor: hsl(10, 100%, 42%);
+	--buttonred_focus-bgcolor: hsl(10, 100%, 44%);
+	--buttonred_active-bgcolor: hsl(10, 100%, 37%);
+
+	--buttongreen-font-color: white;
+	--buttongreen-border: hsl(140, 100%, 40%);
+	--buttongreen-bgcolor: hsl(140, 100%, 40%);
+	--buttongreen_hover-bgcolor: hsl(140, 100%, 37%);
+	--buttongreen_focus-bgcolor: hsl(140, 100%, 38%);
+	--buttongreen_active-bgcolor: hsl(140, 100%, 34%);
+
+
+
 
 	--slo-menu-background-color: white;
 	--slo-menu-itemhover-background-color: hsl(220, 50%, 96%);
@@ -110,6 +126,25 @@
 	--button_focus-bgcolor: hsl(206, 100%, 42%);
 	--button_active-bgcolor: hsl(206, 100%, 37%);
 	--button_disabled-bgcolor: hsl(240, 11%, 12%);
+
+	--buttonred-font-color: white;
+	--buttonred-border: hsl(10, 100%, 46%);
+	--buttonred-bgcolor: hsl(10, 100%, 46%);
+	--buttonred_hover-bgcolor: hsl(10, 100%, 42%);
+	--buttonred_focus-bgcolor: hsl(10, 100%, 44%);
+	--buttonred_active-bgcolor: hsl(10, 100%, 37%);
+
+	--buttongreen-font-color: white;
+	--buttongreen-border: hsl(140, 100%, 40%);
+	--buttongreen-bgcolor: hsl(140, 100%, 40%);
+	--buttongreen_hover-bgcolor: hsl(140, 100%, 37%);
+	--buttongreen_focus-bgcolor: hsl(140, 100%, 38%);
+	--buttongreen_active-bgcolor: hsl(140, 100%, 34%);
+
+
+	
+
+
 
 
 	--slo-menu-background-color: hsl(223, 15%, 15%);

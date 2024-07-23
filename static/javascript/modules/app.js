@@ -4,8 +4,8 @@ import Currency from "./finance/currency.js";
 
 export class Application {
 	id = null;
-	
 	forex = null;
+	page = {}
 	assosiatedAccounts = [];
 
 	constructor(id) {
@@ -20,6 +20,28 @@ export class Application {
 
 	userColorCode(userId) {
 		return "hsl(" + (userId * 10 % 360) + ", 75%, 50%)";
+	}
+
+	set pageId(id) {
+		this.page['id'] = id;
+	}
+	set pageDir(dir) {
+		this.page['dir'] = dir;
+		if (document.getElementById("jqroot_sec")) {
+			document.getElementById("jqroot_sec").href = dir + "/?--sys_sel-change=account";
+		}
+		document.getElementById("company-menu-slo").dataset.url = dir;
+		document.getElementById("account-menu-slo").dataset.url = dir;
+
+		let accItem = document.getElementById("menu-account-selection").querySelectorAll("a[data-account_id]");
+		accItem.forEach(element => { element.href = dir + "/?--sys_sel-change=account_commit&i=" + element.dataset.account_id; });
+
+		accItem = document.getElementById("menu-company-selection").querySelectorAll("a[data-company_id]");
+		accItem.forEach(element => { element.href = dir + "/?--sys_sel-change=company_commit&i=" + element.dataset.company_id; });
+
+		accItem = document.querySelectorAll(".toggleLightMode");
+		accItem.forEach(element => { element.href = dir; });
+
 	}
 
 	loadAssosiatedAccount() {
@@ -94,7 +116,7 @@ export class Application {
 			}
 		});
 
-		Array.from(document.getElementsByClassName("js-input_darkmode-toggle")).forEach((elem) => {
+		Array.from(document.getElementsByClassName("toggleLightMode")).forEach((elem) => {
 			elem.addEventListener("click", (e) => {
 				e.preventDefault();
 				toggleThemeMode();

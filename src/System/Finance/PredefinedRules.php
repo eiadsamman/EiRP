@@ -21,14 +21,13 @@ class PredefinedRules
 
 	private function getRules(int $type): array
 	{
-		if(is_null($this->app->user->account)){
+		if (is_null($this->app->user->account)) {
 			return [];
 		}
 
-			
+
 		$output = array();
-		$stmt = $this->app->db->prepare(
-			"SELECT 
+		$query  = "SELECT 
 				accdef_id,
 				accdef_name,
 				accdef_in_acc_id,
@@ -49,11 +48,12 @@ class PredefinedRules
 					(accdef_in_acc_id IS NULL AND AliasOutbound.upr_prt_outbound = 1  ) OR
 					(AliasInbound.upr_prt_inbound = 1 AND AliasOutbound.upr_prt_outbound = 1  ) 
 				)
-			"
-		);
+			";
+		$stmt   = $this->app->db->prepare($query);
 		/* (accdef_in_acc_id IS NULL AND accdef_out_acc_id IS NULL ) OR */
 		$stmt->execute();
 
+		//$this->app->errorHandler->customError($query);
 		$result = $stmt->get_result();
 		while ($row = $result->fetch_assoc()) {
 			array_push(
