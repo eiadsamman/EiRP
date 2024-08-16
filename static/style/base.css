@@ -801,6 +801,8 @@ span.vs-remove {
 	position: relative;
 	max-width: 400px;
 	transition: width 0.2s ease, max-width 0.2s ease;
+
+	
 }
 
 .split-view>div.panel.hide {
@@ -829,19 +831,30 @@ span.vs-remove {
 	position: sticky;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
+	-moz-overflow-scrolling: touch;
+	-o-overflow-scrolling: touch;
+	
+	-webkit-overscroll-behavior: contain;
+	-moz-overscroll-behavior: contain;
+	-o-overscroll-behavior: contain;
 	overscroll-behavior: contain;
+
 	/* scrollbar-width: thin; */
 	outline: none;
 	max-height: calc(100vh - var(--root--menubar-height));
 	margin-right: 10px;
 	scroll-padding-top: 115px;
 	overflow-x: hidden;
+
+	
 }
 
 .split-view>div.panel>div>article {
 	padding-top: 1px;
 	padding-bottom: 5px;
 	border-radius: 7px;
+
+	
 }
 
 .split-view>div.panel>div::-webkit-scrollbar {

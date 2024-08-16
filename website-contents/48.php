@@ -3,7 +3,7 @@ use System\Template\Gremium;
 
 $arr_feild = array(
 	"gender" => array("Gender", "G000", "usr_gender"),
-	"job" => array("Job", "E002A", "lbr_type"),
+	"job" => array("Job", "E002A", "usr_jobtitle"),
 	"shift" => array("Shift", "E003", "lbr_shift"),
 	"residence" => array("Residence", "E004", "lbr_residential"),
 	"transportation" => array("Transportation", "TRANSPORTATION", "lbr_transportation"),
@@ -13,11 +13,11 @@ $grem = new Gremium\Gremium(false, false);
 
 function GetEmployeesList(&$app, $fs, $simulate_template, &$grem)
 {
-	if($simulate_template){
+	if ($simulate_template) {
 		$grem->header();
 		$grem->menu();
 	}
-	$list = array();
+	$list       = array();
 	$group_list = array(
 		"job_section" => 'lsc_name',
 		"job_title" => 'jobtitle_group',
@@ -27,9 +27,9 @@ function GetEmployeesList(&$app, $fs, $simulate_template, &$grem)
 		"transportation" => 'trans_name',
 	);
 	$group_name = isset($_POST['group']) && isset($group_list[$_POST['group']]) ? $group_list[$_POST['group']] : false;
-	$q = "SELECT 
+	$q          = "SELECT 
 			usr_firstname,usr_id,usr_lastname,lbr_resigndate,gnd_name,
-			lsc_name,lbr_permanentdate,CONCAT(lsc_name,' - ',lty_name) as jobtitle_group,ldn_name,trans_name,sel_usremp_emp_id,
+			lsc_name, CONCAT(lsc_name,' - ',lty_name) as jobtitle_group,ldn_name,trans_name,sel_usremp_emp_id,
 			lbr_fixedsalary,lbr_variable,lty_salarybasic,lsf_name,up_id
 		FROM
 			labour
@@ -41,16 +41,15 @@ function GetEmployeesList(&$app, $fs, $simulate_template, &$grem)
 						lsc_name,lty_id,lsc_id,lty_name,lty_salarybasic
 					FROM 
 						labour_section JOIN labour_type ON lsc_id=lty_section
-				) AS _labour_type ON _labour_type.lty_id=lbr_type
+				) AS _labour_type ON _labour_type.lty_id=usr_jobtitle
 				
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id = lbr_id AND sel_usremp_usr_id = {$app->user->info->id}
 				LEFT JOIN gender ON gnd_id = usr_gender
-				JOIN companies ON comp_id = lbr_company AND lbr_company = {$app->user->company->id}
-				LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " ) AND up_rel=lbr_id AND up_deleted=0
+				LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " ) AND up_rel=lbr_id AND up_deleted = 0 
 		WHERE
-			( (lbr_role & b'001') > 0 ) AND lbr_resigndate IS NULL 
+			( (usr_role & b'001') > 0 ) AND lbr_resigndate IS NULL AND usr_entity = {$app->user->company->id}
 		GROUP BY
 			lbr_id
 		ORDER BY
@@ -98,10 +97,10 @@ function GetTotalEmployees(&$app): int
 			"SELECT 
 				COUNT(lbr_id) AS count 
 			FROM 
-				labour 
-					JOIN companies ON comp_id = lbr_company AND lbr_company = {$app->user->company->id}	
+				labour JOIN users ON usr_id = lbr_id
 			WHERE 
-				( (lbr_role & b'001') > 0 ) AND lbr_resigndate IS NULL;")
+				( (usr_role & b'001') > 0 ) AND lbr_resigndate IS NULL AND usr_entity = {$app->user->company->id};"
+		)
 	) {
 		if ($row = $r->fetch_assoc()) {
 			return (int) $row['count'];
@@ -148,7 +147,8 @@ $grem->header()->serve("<h1>{$fs()->title}</h1><cite>" . GetTotalEmployees($app)
 $grem->menu()->open();
 ?>
 <button id="jQrefresh" type="button">Refresh</button>
-<input type="text" id="js-input-list_group" data-slo=":SELECT" placeholder="Group options..." readonly style="width:170px;" data-list="js-data-list_group" />
+<input type="text" id="js-input-list_group" data-slo=":SELECT" placeholder="Group options..." readonly style="width:170px;"
+	data-list="js-data-list_group" />
 <?php $grem->getLast()->close(); ?>
 
 <div class="emp_list gremium" id="emp_list">

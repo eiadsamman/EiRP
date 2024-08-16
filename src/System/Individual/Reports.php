@@ -18,11 +18,11 @@ class Reports
 			"SELECT COUNT(1) AS company_count, comp_id, comp_name
 			FROM 
 				companies 
-					JOIN labour ON comp_id = lbr_company
+					JOIN (SELECT usr_entity, lbr_resigndate FROM labour JOIN users ON usr_id=lbr_id) AS usrlbr ON comp_id = usrlbr.usr_entity
 					JOIN user_company ON comp_id = urc_usr_comp_id AND urc_usr_id = {$this->app->user->info->id}
 			WHERE 
-				lbr_resigndate IS NULL
-				" . (is_null($company_id) ? "" : " AND comp_id = {$company_id} ") . "
+				usrlbr.lbr_resigndate IS NULL
+				" . (is_null($company_id) ? "" : " AND comp_id = {$company_id} ") . " AND 1
 			GROUP BY 
 				comp_id;
 			"

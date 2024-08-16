@@ -56,6 +56,7 @@ if ($app->xhttp) {
 			header("UPDATE_STATUS: SUCCESS");
 			$app->db->commit();
 			$app->db->autocommit(true);
+			file_put_contents("{$app->root}broadcast", md5(uniqid()));
 
 			echo <<<HTML
 				<span>$postdate</span>

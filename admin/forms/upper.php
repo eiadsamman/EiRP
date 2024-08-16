@@ -126,7 +126,7 @@ $SmartListObject  = new SmartListObject($app);
 						}
 						echo "<a tabindex=\"-1\" class=\"mediabond-hide toggleLightMode\" href=\"{$fs()->dir}/\" title=\"Toggle Dark Mode\"><span style=\"font-family:icomoon4;\">&#xe9d4;</span></a>";
 						echo "<a href=\"{$fs(27)->dir}/\" tabindex=\"-1\" id=\"header-menu-useraccount-button\" title=\"User Settings\"><span style=\"font-family:icomoon4;\">&#xe971;</span></a>"; //<cite>1</cite>
-						echo "<a href=\"/?logout=" . uniqid() . "\" tabindex=\"-1\" id=\"header-menu-logout\" title=\"Logout\"><span style=\"font-family:icomoon4;\">&#xe9b6;</span></a>";
+						echo "<a href=\"$app->http_root/?logout=" . uniqid() . "\" tabindex=\"-1\" id=\"header-menu-logout\" title=\"Logout\"><span style=\"font-family:icomoon4;\">&#xe9b6;</span></a>";
 					}
 					?>
 				</div>

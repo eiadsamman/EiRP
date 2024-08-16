@@ -25,8 +25,8 @@ $arr_tables=array(
 	
 
 	"h01"=>array("-","System Users and Labour Configurations"),
-	"t28"=>array("Labours","labour","truncate",10000,array("INSERT INTO labour (lbr_id,lbr_registerdate,lbr_payment_method,lbr_workingtimes) VALUES (1,'".date("Y-m-d")."',0,0);")),
-	"t29"=>array("Users","users","truncate",10000,array("INSERT INTO users (usr_id,usr_username,usr_password,usr_firstname,usr_privileges,usr_activate) VALUES (1,'admin','admin','Admin',1,1);")),
+	"t28"=>array("Labours","labour","truncate",10000,array("INSERT INTO labour (lbr_id,lbr_payment_method,lbr_workingtimes) VALUES (1,0,0);")),
+	"t29"=>array("Users","users","truncate",10000,array("INSERT INTO users (usr_id,usr_username,usr_password,usr_firstname,usr_privileges,usr_activate,usr_registerdate) VALUES (1,'admin','admin','Admin',1,1,'".date("Y-m-d")."');")),
 	"t30"=>array("Pagefile permissions","pagefile_permissions","truncate",0,array("INSERT INTO pagefile_permissions (pfp_trd_id,pfp_per_id,pfp_value) SELECT trd_id,1,9 FROM pagefile;")), //Full permission for Administrator[1]
 	"t31"=>array("Users sessions","users_sessions","truncate",0),
 	"t32"=>array("User companies","user_company","truncate",0),

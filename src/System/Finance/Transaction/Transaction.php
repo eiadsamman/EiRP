@@ -33,6 +33,8 @@ class Instructions
 	protected ?int $individual = null;
 	protected ?array $attachments = null;
 	protected bool $isOverridenForex = false;
+	protected ?int $party = null;
+
 	protected ?ManualForexInstructions $manualForexInstructions = null;
 
 	public ?int $insert_id = null;
@@ -176,6 +178,20 @@ class Instructions
 		throw new TransactionException("Invalid category", 105);
 	}
 
+	public function party(int|string $party_id): self
+	{
+		if (gettype($party_id) == "integer" && $party_id > 0) {
+			$this->party = $party_id;
+		} else if (gettype($party_id) == "string") {
+			$party_id = (int) $party_id;
+			if ($party_id > 0) {
+				$this->party = $party_id;
+			}
+		}
+		return $this;
+	}
+
+
 	public function issuerAccount(Account $account): self
 	{
 		$this->issuer_account = $account;
@@ -315,7 +331,7 @@ abstract class Transaction extends Instructions
 			$this->value,
 			$this->issuer_account->currency->id,
 			$this->relation,
-			$this->app->user->company->id,
+			$this->party,
 			$openState,
 			$statementID
 		);
@@ -352,7 +368,7 @@ abstract class Transaction extends Instructions
 			$this->value,
 			$this->issuer_account->currency->id,
 			$this->relation,
-			$this->app->user->company->id
+			$this->party
 		);
 		if ($stmt->execute()) {
 			$this->insert_id = $stmt->insert_id;

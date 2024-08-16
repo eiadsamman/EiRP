@@ -141,7 +141,7 @@ FROM
 				lbr_id,lsc_name,lsc_id
 			FROM 
 				labour_type 
-					JOIN labour ON lbr_type=lty_id
+					JOIN labour ON usr_jobtitle=lty_id
 					JOIN labour_section ON lsc_id=lty_section
 		) AS _labor ON _labor.lbr_id=_major.ltr_usr_id
 		JOIN

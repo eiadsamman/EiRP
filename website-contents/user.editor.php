@@ -70,6 +70,7 @@ $arr_array_input = false;
 
 if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token']) && $_POST['EmployeeFormMethod'] == "proccessHandler") {
 	$defaultPermissionID = 0;
+	$currentDate         = new DateTime();
 	$rminper             = $app->db->query("SELECT per_id FROM `permissions` WHERE `per_order` = ( SELECT MIN(`per_order`) FROM `permissions` );");
 	if ($rminper) {
 		if ($rminperRow = $rminper->fetch_assoc()) {
@@ -105,7 +106,6 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 		"transportation" => "Transportation",
 		"edu_cert_image" => "*",
 		"company" => "Company",
-		"regdate" => "Registartion date",
 		"jobtitle" => "Job title",
 		"workingtimes" => "Working times",
 		"payment" => "Payment method",
@@ -128,7 +128,6 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 			"transportation" => (validateInput($_POST['transportation'][1] ?? null, "int") ? (int) $_POST['transportation'][1] : null),
 			"edu_cert_image" => (validateInput($_POST['edu_cert_image'] ?? null, "array") ? $_POST['edu_cert_image'] : null),
 			"company" => (validateInput($_POST['company'][1] ?? null, "int") ? (int) $_POST['company'][1] : false),
-			"regdate" => (validateInput($_POST['regdate'][1] ?? null, "date") ? "'" . $_POST['regdate'][1] . "'" : false),
 			"resdate" => (validateInput($_POST['resdate'][1] ?? null, "date") ? "'" . $_POST['resdate'][1] . "'" : null),
 			"jobtitle" => (validateInput($_POST['jobtitle'][1] ?? null, "int") ? (int) $_POST['jobtitle'][1] : false),
 			"workingtimes" => (validateInput($_POST['workingtimes'][1] ?? null, "int") ? (int) $_POST['workingtimes'][1] : null),
@@ -168,7 +167,11 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 				usr_phone_list,
 				usr_activate,
 				usr_birthdate,
-				usr_privileges
+				usr_privileges,
+				usr_registerdate,
+				usr_role,
+				usr_entity,
+				usr_jobtitle
 				) VALUES 
 			(	%8\$s,
 				'%1\$s',
@@ -179,14 +182,21 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 				%6\$s,
 				0,
 				%7\$s,
-				$defaultPermissionID
+				$defaultPermissionID,
+				%9\$s,
+				%10\$d,
+				%11\$d,
+				%12\$d
 			)
 				ON DUPLICATE KEY UPDATE usr_id=LAST_INSERT_ID(usr_id),
 				usr_firstname = %3\$s,
 				usr_lastname = %4\$s,
 				usr_gender = %5\$d,
 				usr_phone_list = %6\$s,
-				usr_birthdate = %7\$s
+				usr_birthdate = %7\$s,
+				usr_role = %10\$d,
+				usr_entity = %11\$d,
+				usr_jobtitle = %12\$d
 				;
 			",
 			/*username*/
@@ -203,14 +213,20 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 			$arroutput['source']['phone_list'],
 			/*birthdate*/
 			$arroutput['source']['birthdate'],
-				/*userid*/
-			($employeeID === 0 ? "NULL" : $employeeID)
+			/*userid*/
+			$employeeID === 0 ? "NULL" : $employeeID,
+			/*Register Date*/
+			"'" . $currentDate->format("Y-m-d") . "'",
+			/*Role (Customer, Vendor, Employee)*/
+			$roleoutput,
+			/*Company*/
+			$arroutput['source']['company'],
+			/*Job title*/
+			$arroutput['source']['jobtitle'],
 		);
 
 		if ($app->db->query($q)) {
-			$UserID = $app->db->insert_id;
-
-
+			$UserID       = $app->db->insert_id;
 			$UploadsIDs   = "";
 			$UploadsFound = false;
 			$UploadsSep   = "";
@@ -250,90 +266,62 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 						labour 
 							(
 								lbr_id,
-								lbr_type,
 								lbr_shift,
-								lbr_fixedtime,
-								lbr_workingdays,
 								lbr_residential,
-								lbr_registerdate,
 								lbr_socialnumber,
 								lbr_nationality,
 								lbr_payment_method,
 								lbr_workingtimes,
 								lbr_transportation,
-								lbr_resigndate,
-								lbr_company
+								lbr_resigndate
 								" . ($fs(229)->permission->edit ? ",lbr_fixedsalary,lbr_variable,lbr_allowance" : "") . "
-								,lbr_role
 								) VALUES 
 							(
 								%1\$d,
 								%2\$d,
 								%3\$d,
-								NULL,
-								NULL,
-								%4\$d,
-								%5\$s,
-								%6\$s,
-								%7\$d,
+								%4\$s,
+								%5\$d,
+								%6\$d,
+								%7\$s,
 								%8\$d,
-								%9\$s,
-								%10\$d,
-								%11\$s,
-								%12\$d
-								" . ($fs(229)->permission->edit ? ",%13\$s,%14\$s,%15\$s" : "") . "
-								,%16\$d
+								%9\$s
+								" . ($fs(229)->permission->edit ? ",%10\$s,%11\$s,%12\$s" : "") . "
 							)
 						 ON DUPLICATE KEY UPDATE lbr_id=LAST_INSERT_ID(lbr_id),
-						 	lbr_type = %2\$d,
-							lbr_shift = %3\$d,
-							lbr_fixedtime = NULL,
-							lbr_workingdays = NULL,
-							lbr_residential = %4\$d,
-							lbr_registerdate = %5\$s,
-							lbr_socialnumber = %6\$s,
-							lbr_nationality = %7\$d,
-							lbr_payment_method = %8\$d,
-							lbr_workingtimes = %9\$s,
-							lbr_transportation = %10\$d,
-							lbr_resigndate = %11\$s,
-							lbr_company = %12\$d
-							" . ($fs(229)->permission->edit ? ",lbr_fixedsalary=%13\$s,lbr_variable=%14\$s,lbr_allowance=%15\$s" : "") . "
-							,lbr_role = %16\$d
-							;",
+							lbr_shift = %2\$d,
+							lbr_residential = %3\$d,
+							lbr_socialnumber = %4\$s,
+							lbr_nationality = %5\$d,
+							lbr_payment_method = %6\$d,
+							lbr_workingtimes = %7\$s,
+							lbr_transportation = %8\$d,
+							lbr_resigndate = %9\$s
+							" . ($fs(229)->permission->edit ? ",lbr_fixedsalary = %10\$s, lbr_variable = %11\$s, lbr_allowance = %12\$s" : "") . ";",
 					/* 1: userid*/
 					$UserID,
-					/* 2: jobtitle*/
-					$arroutput['source']['jobtitle'],
 					/* 3: shift*/
 					$arroutput['source']['shift'],
 					/* 4: residence*/
 					$arroutput['source']['residence'],
-					/* 5: regdate*/
-					$arroutput['source']['regdate'],
-					/* 6: socialid*/
+					/* 5: socialid*/
 					$arroutput['source']['social_number'],
-					/* 7: nationality*/
+					/* 6: nationality*/
 					$arroutput['source']['nationality'],
-					/* 8: paymethod*/
+					/* 7: paymethod*/
 					$arroutput['source']['payment'],
-					/* 9: workingtimes*/
+					/* 8: workingtimes*/
 					$arroutput['source']['workingtimes'],
-					/*10: transpor*/
+					/* 9: transpor*/
 					is_null($arroutput['source']['transportation']) ? "NULL" : $arroutput['source']['transportation'],
-					/*11: resign*/
+					/* 10: resign*/
 					is_null($arroutput['source']['resdate']) ? "NULL" : $arroutput['source']['resdate'],
-					/*12: company*/
-					$arroutput['source']['company'],
-						/*13: salary*/
-					(isset($_POST['sal_default_salary']) ? "NULL" : (float) $_POST['salary_basic']),
-						/*14: variable*/
-					(isset($_POST['sal_default_variable']) ? "NULL" : (float) $_POST['salary_variable']),
-						/*15: allowance*/
-					(isset($_POST['sal_default_allowance']) ? "NULL" : (float) $_POST['salary_allowance']),
-					/*16: role*/
-					$roleoutput
-
+					/* 11: salary*/
+					isset($_POST['sal_default_salary']) ? "NULL" : (float) $_POST['salary_basic'],
+					/* 12: variable*/
+					isset($_POST['sal_default_variable']) ? "NULL" : (float) $_POST['salary_variable'],
+					/* 13: allowance*/
+					isset($_POST['sal_default_allowance']) ? "NULL" : (float) $_POST['salary_allowance']
 				);
 				if (!$app->db->query($q_labour_insert)) {
 					$arrparser['result']           = false;
@@ -375,9 +363,8 @@ echo "<form id=\"EmployeeForm\" method=\"POST\">";
 $grem = new Gremium(true);
 $grem->header()->prev("href=\"{$fs(30)->dir}\"")->serve("<h1 id=\"js-output_headertitle\">" . ($UserFound ? "Edit employee" : "Add employee") . "</h1><ul id=\"js-output_headercite\">" . ($UserFound ? "<li>{$UserFound['usr_id']}</li>" : "") . "</ul>");
 $grem->menu()->open();
-echo "<span>Employee ID</span>";
 echo "<input type=\"text\" id=\"employeIDFormSearch\" data-slo=\":LIST\" data-list=\"personList\" class=\"flex\" placeholder=\"Select user...\" />";
-echo "<button id=\"js-input_submit-button\">Save</button>";
+echo "<button id=\"js-input_submit-button\" type=\"button\">Save</button>";
 $grem->getLast()->close();
 echo ("<div id=\"UILoad\"></div>");
 $grem->terminate();
@@ -390,6 +377,7 @@ echo "</form>";
 
 <script type="text/javascript">
 	$(document).ready(function (e) {
+		var busy = false;
 		const js_output_headertitle = $("#js-output_headertitle"),
 			js_output_headercite = $("#js-output_headercite");
 		var $UILoad = $("#UILoad");
@@ -518,7 +506,6 @@ echo "</form>";
 				sloshif = $("#sloshift").slo(),
 				sloresi = $("#sloresidence").slo(),
 				slogend = $("#slogender").slo(),
-				sloregister = $("#sloregdate").slo(),
 				sloresister = $("#sloresdate").slo(),
 				slorbirthdate = $("#slobirthdate").slo(),
 				slocompany = $("#slocompany").slo(),
@@ -549,16 +536,20 @@ echo "</form>";
 
 
 			$Form = $("#EmployeeForm");
+			$("#js-input_submit-button").on("click", () => {
+				$Form.submit();
+			});
 			$Form.on('submit', function (e) {
-				$("#js-input_submit-button").prop("disabled", true);
 				e.preventDefault();
+				if (busy) return false;
+				busy = true;
+				$("#js-input_submit-button").prop("disabled", true);
 				$.ajax({
 					url: '<?php echo $fs()->dir; ?>',
 					type: 'POST',
 					data: $Form.serialize()
 				}).done(function (data) {
 					$("#js-input_submit-button").prop("disabled", false);
-
 					try {
 						var json = JSON.parse(data);
 					} catch (e) {
@@ -576,7 +567,6 @@ echo "</form>";
 							sloshif.clear();
 							sloresi.clear();
 							slogend.clear();
-							sloregister.clear();
 							sloresister.clear();
 							slorbirthdate.clear();
 							slocompany.clear();
@@ -601,11 +591,12 @@ echo "</form>";
 						outputMessage += "` are required";
 						messagesys.failure(outputMessage);
 					}
+					busy = false;
+				}).always(() => {
+					busy = false;
 				});
 				return false;
 			});
-
 		}
-
 	});
 </script>

@@ -222,7 +222,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 		//Release previous attached files
 		foreach ($database['fields'] as $fieldk => $fieldv) {
 			if ($fieldv[4] == "file") {
-				$app->db->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$affected_id AND up_pagefile={$fieldv[5]};");
+				$app->db->query("UPDATE uploads SET up_rel = 0 WHERE up_rel = $affected_id AND up_pagefile = {$fieldv[5]};");
 			}
 		}
 
@@ -230,6 +230,10 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 		if (sizeof($attachments) > 0) {
 			$app->db->query("UPDATE uploads SET up_rel=$affected_id, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$app->user->info->id};");
 		}
+
+
+		//Broadcast signal
+		file_put_contents("{$app->root}broadcast", md5(uniqid()));
 
 		if (isset($database['post_submit_functions']) && is_array($database['post_submit_functions'])) {
 			foreach ($database['post_submit_functions'] as $func) {
@@ -251,7 +255,6 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 if ($fs()->permission->delete && isset($_POST['method']) && $_POST['method'] == 'delete' && (!isset($database['disable-delete']) || $database['disable-delete'] != true)) {
 	$record_id = (int) $_POST['id'];
 	try {
-		include ($app->root . 'admin/class/attachlib.php');
 		$ulib = new AttachLib($app);
 		foreach ($database['fields'] as $fieldk => $fieldv) {
 			if ($fieldv[4] == "file") {
@@ -259,6 +262,7 @@ if ($fs()->permission->delete && isset($_POST['method']) && $_POST['method'] == 
 				while ($attrow = $r->fetch_assoc()) {
 					$ulib->delete($attrow['up_id']);
 				}
+				$r = $app->db->query("DELETE FROM up_id WHERE up_pagefile = {$fieldv[5]} AND up_rel = {$record_id}");
 			}
 		}
 	} catch (Exception $e) {
@@ -268,6 +272,7 @@ if ($fs()->permission->delete && isset($_POST['method']) && $_POST['method'] == 
 	try {
 		if ($r = $app->db->query("DELETE FROM {$database['table']} WHERE {$database['primary']} = {$record_id};")) {
 			if ($app->db->affected_rows > 0) {
+				file_put_contents("{$app->root}broadcast", md5(uniqid()));
 				$output = "1";
 			} else {
 				$output = "0";
@@ -591,7 +596,6 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 	.editor_miniuploads {
 		display: block;
 		cursor: pointer;
-		background-color: var(--root-background-color);
 		background-size: auto 100%;
 		background-repeat: no-repeat;
 		height: 30px;
@@ -619,7 +623,7 @@ $addButton = (!isset($database['readonly']) || (isset($database['readonly']) && 
 	'<cite style="font-size:1em;justify-content:flex-end;margin-top:5px" class="btn-set"><button type="button" class="plus" id="jQbtnAdd" title="Add new record"> Add</button></cite>' : "");
 
 
-$grem_main = new Gremium(false, true);
+$grem_main = new Gremium(true, true);
 $grem_main->header()->serve(
 	"<h1>{$fs()->title}</h1>" .
 	"<ul><li style=\"font-size:0.8em;margin-top:3px;\"><a href=\"{$fs($fs()->parent)->dir}\">" . ($fs($fs()->parent)->title) . "</a></li></ul>" .
@@ -675,7 +679,7 @@ unset($grem);
 ?>
 
 <div style="display: none;">
-	<form id="appPopupDelConfirm">
+	<form id="appPopupDelConfirm" style="display: none;">
 		<?php
 		$grem       = new Gremium(false);
 		$grem->base = "0px";
@@ -690,7 +694,7 @@ unset($grem);
 		?>
 	</form>
 
-	<form id="appPopupSearch">
+	<form id="appPopupSearch" style="display: none;">
 		<?php
 		$grem       = new Gremium(false);
 		$grem->base = "0px";
@@ -729,12 +733,14 @@ unset($grem);
 		'_search': ''
 	}, '<?= $fs()->dir; ?>');
 
-	const searchPopup = new Popup("appPopupSearch");
+	var searchPopup;
 	const confirmPopup = new Popup("appPopupDelConfirm");
-	searchPopup.height("400px");
+
 
 	$(document).ready(function (e) {
 		let searchWindowState = false;
+
+		searchPopup = new Popup("appPopupSearch");
 
 		<?php
 		if (isset($_GET['page']) && (int) $_GET['page'] > 0)
@@ -752,6 +758,10 @@ unset($grem);
 			}
 		});
 
+
+		searchPopup.addEventListener("close", function () {
+			this.destroy();
+		});
 
 		searchPopup.addEventListener("submit", function (e) {
 			slo_page_current.set(1, 1);
@@ -784,6 +794,7 @@ unset($grem);
 
 		$("#jQButtonSearch").on("click", function () {
 			searchWindowState = !searchWindowState;
+			searchPopup = new Popup("appPopupSearch")
 			searchPopup.show();
 		});
 

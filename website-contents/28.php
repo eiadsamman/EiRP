@@ -123,8 +123,8 @@ $printverified = isset($_POST['verified']) && $_POST['verified'] == '1' ? true :
 	}
 
 
-	if ($r = $app->db->query("
-	SELECT 
+	if ($r = $app->db->query(
+	"SELECT 
 		usr_id,
 		usr_id,usr_firstname,usr_lastname,
 		_labour_type.lty_id,_labour_type.lty_name,_labour_type.lsc_name,_labour_type.lsc_color,
@@ -134,7 +134,7 @@ $printverified = isset($_POST['verified']) && $_POST['verified'] == '1' ? true :
 			JOIN users ON usr_id=lbr_id
 			LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " ) AND up_rel=lbr_id AND up_deleted=0
 			LEFT JOIN 
-				(SELECT lty_id,lty_name,lsc_name,lsc_color FROM labour_type JOIN labour_section ON lty_section=lsc_id) AS _labour_type ON _labour_type.lty_id=lbr_type
+				(SELECT lty_id,lty_name,lsc_name,lsc_color FROM labour_type JOIN labour_section ON lty_section=lsc_id) AS _labour_type ON _labour_type.lty_id = usr_jobtitle
 			LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 	WHERE
 		usr_id IN (" . implode(",", $idlist) . ")

@@ -16,7 +16,7 @@ class App
 	public string $id;
 	public MySQL $db;
 	public Individual\User $user;
-
+	public string $broadcast = "";
 	public Currency $currency;
 	public ?array $currencies;
 
@@ -46,7 +46,6 @@ class App
 	function __construct(string $root, string $settings_file, ?bool $cache = true)
 	{
 
-
 		/* Set file system root */
 		$this->root = $root . DIRECTORY_SEPARATOR;
 
@@ -61,6 +60,8 @@ class App
 			$this->errorHandler->customError("Reading setting file failed");
 			$this->responseStatus->InternalServerError->response();
 		}
+
+		$this->readBroadcast();
 
 		if (!empty($this->settings->site['environment']) && $this->settings->site['environment'] === "development") {
 			error_reporting(E_ALL);
@@ -86,7 +87,8 @@ class App
 		session_start();
 
 
-		$this->id = md5(session_id());
+
+		$this->id = md5(session_id() . $this->broadcast);
 
 		/* Application session User */
 		$this->user = new Individual\User($this);
@@ -107,6 +109,15 @@ class App
 		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + ($cache ? 86400 : 0)) . ' GMT');
 		header("Cache-Control: " . ($cache ? "public, immutable, max-age=86400" : "no-cache, no-store, must-revalidate"));
 		header("Pragma: " . ($cache ? "cache" : "no-cache"));
+	}
+
+	private function readBroadcast(): void
+	{
+		if (is_file("{$this->root}broadcast")) {
+			$this->broadcast = file_get_contents("{$this->root}broadcast");
+		} else {
+			$this->broadcast = md5("default.broadcast");
+		}
 	}
 
 	private function prepareURI(string $uri): string
@@ -215,14 +226,14 @@ class App
 		$this->base_permission = 2;
 		return true;
 		/* $lowsetlevel = $this->db->query("SELECT per_id FROM permissions WHERE per_order = (SELECT MIN(per_order) FROM permissions); ");
-														if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
-															$this->base_permission = (int) $rowlowsetlevel['per_id'];
-															return true;
-														} else {
-															$this->errorHandler->customError("Failed to fetch system base permission");
-															$this->responseStatus->NotFound->response();
-														}
-														return false; */
+																													if ($lowsetlevel && $rowlowsetlevel = $lowsetlevel->fetch_assoc()) {
+																														$this->base_permission = (int) $rowlowsetlevel['per_id'];
+																														return true;
+																													} else {
+																														$this->errorHandler->customError("Failed to fetch system base permission");
+																														$this->responseStatus->NotFound->response();
+																													}
+																													return false; */
 	}
 	public function buildPrefixList(): bool
 	{

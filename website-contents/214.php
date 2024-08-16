@@ -18,6 +18,9 @@ if ($app->xhttp) {
 		if (!empty($payload['category'])) {
 			$controller->criteria->category((int) $payload['category']);
 		}
+		if (!empty($payload['party'])) {
+			$controller->criteria->party((int) $payload['party']);
+		}
 		if (!empty($payload['beneficiary'])) {
 			$controller->criteria->beneficiary($payload['beneficiary']);
 		}
@@ -71,7 +74,11 @@ if ($app->xhttp) {
 				echo "<div><a href=\"{$fs(104)->dir}/?id={$row['acm_id']}\">{$row['acm_id']}</a></div>";
 				echo "<div>{$row['acm_ctime']}</div>";
 				echo "<div class=\"in-value value-number " . ($row['atm_value'] <= 0 ? " negative" : "positive") . "\">" . number_format(abs($row['atm_value']), 2) . "</div>";
-				echo "<div>" . (!empty($row['comp_id']) && $row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") . "{$row['acm_beneficial']}</div>";
+				echo "<div>" . (!empty($row['comp_id']) && $row['comp_id'] != $app->user->company->id ? "<span class=\"value-hightlight\">[" . $row['comp_name'] . "]</span> " : "") .
+
+
+					(!is_null($row['_party_comp_id']) ? "<a>{$row['_party_comp_name']}</a><br />" : "") . "{$row['acm_beneficial']}</div>";
+
 				echo "</td>";
 
 				echo "<td class=\"value-comment\">

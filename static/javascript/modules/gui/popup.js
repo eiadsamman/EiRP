@@ -152,6 +152,7 @@ class Popup extends Modals {
 			if (this.controlContent == null || this.controlContent == undefined) {
 				this.controlContent = document.createElement("form");
 			}
+			this.controlContent.style.display = "block";
 			this.controlContainer.appendChild(this.controlContent);
 		}
 

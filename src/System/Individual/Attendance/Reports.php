@@ -15,16 +15,16 @@ class Reports
 	{
 
 		$r = $this->app->db->query(
-			"SELECT COUNT(1) AS company_count, lbr_company
+			"SELECT COUNT(1) AS company_count, usr_entity
 			FROM 
-				labour 
-				JOIN labour_track ON lbr_id = ltr_usr_id 
-				JOIN user_company ON lbr_company = urc_usr_comp_id AND urc_usr_id = {$this->app->user->info->id}
+				users
+				JOIN labour_track ON usr_id = ltr_usr_id 
+				JOIN user_company ON usr_entity = urc_usr_comp_id AND urc_usr_id = {$this->app->user->info->id}
 			WHERE 
 				ltr_otime IS NULL
-				" . (is_null($company_id) ? "" : " AND lbr_company = {$company_id} ") . "
+				" . (is_null($company_id) ? "" : " AND usr_entity = {$company_id} ") . " AND 1
 			GROUP BY 
-				lbr_company
+				usr_entity
 			"
 		);
 
@@ -32,7 +32,7 @@ class Reports
 			if (is_null($company_id)) {
 				$output = array();
 				while ($row = $r->fetch_assoc()) {
-					$output[$row['lbr_company']] = empty($row['company_count']) ? 0 : (int) $row['company_count'];
+					$output[$row['usr_entity']] = empty($row['company_count']) ? 0 : (int) $row['company_count'];
 				}
 				return $output;
 			} else {

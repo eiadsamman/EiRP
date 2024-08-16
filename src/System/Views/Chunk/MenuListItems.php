@@ -49,10 +49,8 @@ class MenuListItems extends \System\Views\Chunk\Chunk
 	}
 	protected function html(): void
 	{
+		$this->headerCache();
 		header('Content-Type: text/html; charset=utf-8', true);
-		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + (true ? 3600 : 0)) . ' GMT');
-		header("Cache-Control: " . (true ? "public, immutable, max-age=3600" : "no-cache, no-store, must-revalidate"));
-		header("Pragma: " . (true ? "cache" : "no-cache"));
 		header("Content-Encoding: gzip");
 
 		$output    = "<b class=\"index-link\"><span style=\"color:#333;font-family:icomoon;\">&#xe600;</span><a class=\"alink\" href=\"\">Homepage</a></b>";

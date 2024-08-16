@@ -47,17 +47,28 @@ if ($app->xhttp) {
 				<label>
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
-						<input class="flex" type="text" placeholder="Beneficiary name..." tabindex="4" name="beneficiary" />
+						<input class="flex" type="text" placeholder="Company name..." tabindex="4" name="party"
+						data-slo=":LIST" data-source="_/CompaniesList/slo/{$app->id}{$app->user->company->id}/slo_CompaniesList.a" />
 					</div>
 				</label>
 			</div>
+			
+			<div class="form">
+				<label>
+					<h1>Attention</h1>
+					<div class="btn-set">
+						<input class="flex" type="text" placeholder="Beneficiary name..." tabindex="5" name="beneficiary" />
+					</div>
+				</label>
+			</div>
+			
 			<div class="form">
 				<label>
 					<h1>Caregory</h1>
 					<div class="btn-set">
 						<input type="text" placeholder="Statement category"  data-slo=":LIST" title="Category"
 							data-source="_/FinanceCategoryList/slo/{$app->id}{$app->user->company->id}/slo_FinancialCategories.a" 
-							data-list="jQcategoryList" tabindex="5" class="flex" name="category" id="category" />
+							data-list="jQcategoryList" tabindex="6" class="flex" name="category" id="category" />
 					</div>
 				</label>
 			</div>
@@ -66,7 +77,7 @@ if ($app->xhttp) {
 				<label>
 					<h1>Description</h1>
 					<div class="btn-set">
-						<input class="flex" type="text" placeholder="Statement description and remarks..." tabindex="6" name="description" />
+						<input class="flex" type="text" placeholder="Statement description and remarks..." tabindex="7" name="description" />
 					</div>
 				</label>
 			</div>
@@ -76,7 +87,7 @@ if ($app->xhttp) {
 			<div class="form" style="margin-top: 30px">
 				<label for="">
 					<div class="btn-set">
-						<button type="submit" tabindex="7">Search</button><input type="button" class="edge-right" value="Cancel" data-href="{$fs(214)->dir}" />
+						<button type="submit" tabindex="8">Search</button><input type="button" class="edge-right" value="Cancel" data-href="{$fs(214)->dir}" />
 					</div>
 				</label>
 			</div>

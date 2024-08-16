@@ -30,11 +30,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 
 
 
-$curinfo = false;
-$r = $app->db->query("SELECT usr_regdate, usr_birthdate, usr_login_date FROM users WHERE usr_id={$app->user->info->id}");
-if ($r && $row = $r->fetch_assoc()) {
-	$curinfo = $row;
-}
+
 
 
 echo <<<HTML
@@ -63,14 +59,7 @@ $grem->article()->width("600px")->serve(
 			</div>
 		</label>
 	</div>
-	<div class="form">
-		<label>
-			<h1>Registration date</h1>
-			<div class="btn-set">
-				<input type="text" class="flex" tabindex="-1" value="{$curinfo['usr_regdate']}" readonly="readonly" />
-			</div>
-		</label>
-	</div>
+	
 	HTML
 );
 

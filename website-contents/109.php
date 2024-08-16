@@ -14,8 +14,8 @@ function getAttendanceReport(&$app, $dateFrom, $dateTo, $employeeID)
 if ($app->xhttp) {
 	if (isset($_POST['method'], $_POST['dateTo'], $_POST['dateFrom'], $_POST['employeeID']) && $_POST['method'] == 'fetchattendance') {
 		$employeeID = (int) $_POST['employeeID'];
-		$dateFrom = $app->dateValidate($_POST['dateFrom'], false) ?? time();
-		$dateTo = $app->dateValidate($_POST['dateTo'], true) ?? time();
+		$dateFrom   = $app->dateValidate($_POST['dateFrom'], false) ?? time();
+		$dateTo     = $app->dateValidate($_POST['dateTo'], true) ?? time();
 		if ($dateFrom <= $dateTo) {
 			getAttendanceReport($app, $dateFrom, $dateTo, $employeeID);
 		} else {
@@ -27,8 +27,8 @@ if ($app->xhttp) {
 
 	if (isset($_POST['method'], $_POST['employeeID'], $_POST['dateFrom'], $_POST['dateTo']) && $_POST['method'] == "fetchrecord") {
 		$employeeID = (int) $_POST['employeeID'];
-		$dateFrom = $app->dateValidate($_POST['dateFrom'], false) ?? time();
-		$dateTo = $app->dateValidate($_POST['dateTo'], true) ?? time();
+		$dateFrom   = $app->dateValidate($_POST['dateFrom'], false) ?? time();
+		$dateTo     = $app->dateValidate($_POST['dateTo'], true) ?? time();
 
 
 		if ($dateTo - $dateFrom > 86400 * 62) {
@@ -83,7 +83,6 @@ $grem->header()->serve("<h1>{$fs()->title}</h1>");
 $grem->legend()->serve("<span class=\"flex\">Query employee attendance</span><button class=\"edge-left\" type=\"button\" id=\"attendanceReportSearch\">Search</button>");
 $grem->article()->open();
 echo "
-
 <div class=\"form predefined\" id=\"jQformTable\">
 	<label style=\"min-width:200px;\">
 		<h1>Employee</h1>
@@ -205,7 +204,7 @@ $grem->terminate();
 		<?php
 		if (isset($_GET['id'])) {
 			$_GET['id'] = (int) $_GET['id'];
-			$r = $app->db->query("SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id={$_GET['id']};");
+			$r          = $app->db->query("SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) as user_name FROM users WHERE usr_id={$_GET['id']};");
 			if ($r && $row = $r->fetch_assoc()) {
 				echo 'SLO_employeeID.set("' . $_GET['id'] . '","' . stripcslashes(trim($row['user_name'])) . '");fn_timetable();';
 			}

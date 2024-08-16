@@ -62,6 +62,7 @@ export class Search extends AppModule {
 			let dateStart = $(this.searchFrom.querySelector("[name=\"date-start\"]")).slo();
 			let dateEnd = $(this.searchFrom.querySelector("[name=\"date-end\"]")).slo();
 			let category = $(this.searchFrom.querySelector("[name=\"category\"]")).slo();
+			let party = $(this.searchFrom.querySelector("[name=\"party\"]")).slo();
 
 			if (this.pana.navigator.state['date-start']) {
 				dateStart.set(this.pana.navigator.state['date-start'], this.pana.navigator.state['date-start'])
@@ -71,6 +72,9 @@ export class Search extends AppModule {
 			}
 			if (this.pana.navigator.state['category']) {
 				category.set(this.pana.navigator.state['category'], "")
+			}
+			if (this.pana.navigator.state['party']) {
+				category.set(this.pana.navigator.state['party'], "")
 			}
 		} catch (e) { }
 
@@ -431,7 +435,6 @@ export class Transaction extends AppModule {
 		super();
 		this.pana = pana;
 		this.id = this.pana.navigator.url;
-
 	}
 
 	splashscreen(target, url, title, data) {
@@ -805,6 +808,7 @@ export class Transaction extends AppModule {
 		});
 		this.slo_objects.getElementById("beneficiary").slo.focus();
 	}
+
 	findNextInputField(target) {
 		let located = false;
 		for (let i in this.inputFieldsSorted) {
@@ -851,7 +855,8 @@ export class Transaction extends AppModule {
 
 		/* jQuery Loop */
 		this.slo_objects.each(function () {
-			if (this.dataset.required != undefined && !this.slo.stamped) {
+			
+			if (this.dataset.required != undefined && !this.slo.stamped || this.dataset.mandatory != undefined && this.slo.get().value.trim() == "") {
 				this.slo.object.parentNode.parentNode.parentNode.querySelector("h1").classList.add("required");
 				if (!thrownerror.occured) {
 					thrownerror.occured = true;
@@ -859,15 +864,7 @@ export class Transaction extends AppModule {
 					thrownerror.object = this;
 				}
 			}
-
-			if (this.dataset.mandatory != undefined && this.slo.get().value.trim() == "") {
-				this.slo.object.parentNode.parentNode.parentNode.querySelector("h1").classList.add("required");
-				if (!thrownerror.occured) {
-					thrownerror.occured = true;
-					thrownerror.message = this.getAttribute("title") + " is required";
-					thrownerror.object = this;
-				}
-			}
+			
 		});
 
 		if (isNaN(parseFloat(this.value_field.value))) {
@@ -888,8 +885,6 @@ export class Transaction extends AppModule {
 			}
 		}
 
-
-
 		if ((this.description_field.value).trim() == "") {
 			this.description_field.parentNode.parentNode.querySelector("h1").classList.add("required");
 			if (!thrownerror.occured) {
@@ -898,6 +893,7 @@ export class Transaction extends AppModule {
 				thrownerror.object = this.description_field;
 			}
 		}
+
 		if (thrownerror.occured) {
 			thrownerror.object.focus();
 			throw (thrownerror.message);
@@ -957,7 +953,7 @@ export class Transaction extends AppModule {
 							"id": payload.insert_id,
 							"positive": payload.type == "receipt",
 							"value": (payload.type == "payment" ? "(" : "") + App.Instance.numberFormat(formData.get("value"), 2) + (payload.type == "payment" ? ")" : ""),
-							"padge_id": App.User.photo,//
+							"padge_id": App.User.photo,
 							"padge_initials": App.User.initials,
 							"padge_color": App.Instance.userColorCode(App.User.id),
 						});

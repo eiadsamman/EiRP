@@ -72,9 +72,9 @@ class VisualReport
 	private function FillGaps($from, $to, $prt, $ltrid, $latefinish, $earlystart, $closerid, $status, $maincheckinOwner, $CutDownStart = false)
 	{
 		$smonth = date("Y-m", $from);
-		$sdate = date("Y-m-d", $from);
-		$fdate = date("Y-m-d", $to);
-		$cnt = 0;
+		$sdate  = date("Y-m-d", $from);
+		$fdate  = date("Y-m-d", $to);
+		$cnt    = 0;
 		while ($sdate <= $fdate && $cnt <= 31) {
 			if (!isset($this->_arratt[$smonth])) {
 				$this->_arratt[$smonth] = array();
@@ -87,15 +87,15 @@ class VisualReport
 			$this->_arratt[$smonth][$sdate][$time] = array(
 				/*0:StartTime*/
 				$from,
-				/*1:FinishTime*/	0,
-				/*2:OpenRecordID*/	$ltrid,
-				/*3:CloseRecordID*/	$closerid,
-				/*4:Sector*/	$prt,
-				/*5:status*/	$status,
-				/*6:EarylStart*/	$earlystart,
-				/*7:LateFinish*/	$latefinish,
-				/*8:*/	"",
-				/*9:*/	$maincheckinOwner
+				/*1:FinishTime*/ 0,
+				/*2:OpenRecordID*/ $ltrid,
+				/*3:CloseRecordID*/ $closerid,
+				/*4:Sector*/ $prt,
+				/*5:status*/ $status,
+				/*6:EarylStart*/ $earlystart,
+				/*7:LateFinish*/ $latefinish,
+				/*8:*/ "",
+				/*9:*/ $maincheckinOwner
 			);
 
 			if (isset($CutDownStart) && $CutDownStart != false) {
@@ -107,9 +107,9 @@ class VisualReport
 			} else {
 				$this->_arratt[$smonth][$sdate][$time][1] = $to;
 			}
-			$from = mktime(0, 0, 0, (int) date("m", $from), (int) date("d", $from) + 1, (int) date("Y", $from));
+			$from   = mktime(0, 0, 0, (int) date("m", $from), (int) date("d", $from) + 1, (int) date("Y", $from));
 			$smonth = date("Y-m", $from);
-			$sdate = date("Y-m-d", $from);
+			$sdate  = date("Y-m-d", $from);
 			$cnt++;
 		}
 	}
@@ -123,7 +123,7 @@ class VisualReport
 			$fcurrent = mktime(23, 59, 59, (int) date("m", $currentTime), (int) date("d", $currentTime), (int) date("Y", $currentTime));
 
 			if (!isset($this->_arratt[date("Y-m", $scurrent)][date("Y-m-d", $scurrent)])) {
-				$this->_arratt[date("Y-m", $scurrent)][date("Y-m-d", $scurrent)] = array();
+				$this->_arratt[date("Y-m", $scurrent)][date("Y-m-d", $scurrent)]                         = array();
 				$this->_arratt[date("Y-m", $scurrent)][date("Y-m-d", $scurrent)][date("His", $scurrent)] = array(
 					$scurrent,
 					$fcurrent,
@@ -162,16 +162,16 @@ class VisualReport
 						$this->_arratt[$monthk][$datek]['000000'] = array(
 							/*0:StartTime*/
 							mktime(0, 0, 0, (int) date("m", $v[0]), (int) date("d", $v[0]), (int) date("Y", $v[0])),
-							/*1:FinishTime*/	$v[0],
-							/*2:OpenRecordID*/	0,
-							/*3:CloseRecordID*/	0,
-							/*4:Sector*/	0,
-							/*5:status*/	0,
-							/*6:EarylStart*/	0,
-							/*7:LateFinish*/	0,
+							/*1:FinishTime*/ $v[0],
+							/*2:OpenRecordID*/ 0,
+							/*3:CloseRecordID*/ 0,
+							/*4:Sector*/ 0,
+							/*5:status*/ 0,
+							/*6:EarylStart*/ 0,
+							/*7:LateFinish*/ 0,
 							"Starter!",
-							/*8:Comments*/	null,
-							/*9:Owner*/	null
+							/*8:Comments*/ null,
+							/*9:Owner*/ null
 						);
 
 						$temp = array($v[0], $v[1]);
@@ -179,14 +179,14 @@ class VisualReport
 						$temp = array($v[0], $v[1]);
 					} elseif ($temp != null) {
 						if (date("His", $temp[1]) < date("His", $v[0])) {
-							$this->_arratt[$monthk][$datek][date("His", $temp[1])] = array($temp[1], $v[0], 0, 0, 0, 0, 0, 0, null, null);
+							$this->_arratt[$monthk][$datek][date("His", $temp[1])]    = array($temp[1], $v[0], 0, 0, 0, 0, 0, 0, null, null);
 							$this->_arratt[$monthk][$datek][date("His", $temp[1])][8] = "Middle Earth!";
 						}
 						$temp = array($v[0], $v[1]);
 					}
 				}
 				if (date("His", $temp[1]) != "235959") {
-					$this->_arratt[$monthk][$datek][date("His", $temp[1])] = array(
+					$this->_arratt[$monthk][$datek][date("His", $temp[1])]    = array(
 						$temp[1],
 						mktime(23, 59, 59, (int) date("m", $temp[1]), (int) date("d", $temp[1]), (int) date("Y", $temp[1])),
 						0,
@@ -206,8 +206,8 @@ class VisualReport
 
 	private function GetStartTime()
 	{
-		$__start = array();
-		$__start['id'] = null;
+		$__start         = array();
+		$__start['id']   = null;
 		$__start['time'] = date("Y-m-d 00:00:00", $this->_dateFrom[2]);
 
 
@@ -215,7 +215,7 @@ class VisualReport
 	}
 	private function GetFinishTime($consider_last_checking = false)
 	{
-		$__finish = array();
+		$__finish       = array();
 		$__finish['id'] = null;
 		//date("Y-m-d 23:59:59",$this->_dateTo[2])
 
@@ -225,14 +225,13 @@ class VisualReport
 	}
 	private function GetAbsentWithNotice()
 	{
-		$q = "
-		SELECT
+		$q =
+			"SELECT
 			absdays,lbr_abs_comments as comments,lbr_abs_days as period,abs_typ_name as type,lbr_abs_start_date as starts,
 			CONCAT_WS(' ',COALESCE(usr_issuer.usr_firstname,''),IF(NULLIF(usr_issuer.usr_lastname, '') IS NULL, NULL, usr_issuer.usr_lastname))  as issuer,
 			CONCAT_WS(' ',COALESCE(usr_approval.usr_firstname,''),IF(NULLIF(usr_approval.usr_lastname, '') IS NULL, NULL, usr_approval.usr_lastname))  as approval_name,
 			usr_approval.usr_id  as approval_id
 
-			
 		FROM
 			labour_absence_request main
 			JOIN(
@@ -307,6 +306,7 @@ class VisualReport
 					) a ON a.cal_id=main.cal_id
 			WHERE
 				holicow >= '" . date("Y-m-d 00:00:00", $this->_dateFrom[2]) . "' AND holicow < '" . date("Y-m-d 23:59:59", $this->_dateTo[2]) . "'";
+
 		$r = $this->app->db->query($q);
 		if ($r) {
 			while ($row = $r->fetch_assoc()) {
@@ -319,10 +319,10 @@ class VisualReport
 	}
 	private function GetRegistrationDate()
 	{
-		$r = $this->app->db->query("SELECT UNIX_TIMESTAMP(lbr_registerdate) AS lbr_registerdate FROM labour WHERE lbr_id={$this->_user_id};");
+		$r = $this->app->db->query("SELECT UNIX_TIMESTAMP(usr_registerdate) AS usr_registerdate FROM users WHERE usr_id={$this->_user_id};");
 		if ($r) {
 			if ($row = $r->fetch_assoc()) {
-				$this->_regsitration_date = $row['lbr_registerdate'];
+				$this->_regsitration_date = $row['usr_registerdate'];
 			}
 		}
 	}
@@ -344,30 +344,27 @@ class VisualReport
 	 **/
 	public function getAttendaceList($userid, $dateFrom, $dateTo, $filldays = false, $consider_last_checking = false)
 	{
+		$currentTimeStamp = new \DateTime();
 		$currentTimeStamp = date("Y-m-d H:i:s", time());
-		;
-		$this->_arratt = array();
+
+		$this->_arratt        = array();
 		$this->_partitionlist = array(0 => array("NaN", "255,255,255", 0));
-		$this->_dateFrom = array(0 => null, 1 => null, 2 => null);
-		$this->_dateTo = array(0 => null, 1 => null, 2 => null);
+		$this->_dateFrom      = array(0 => null, 1 => null, 2 => null);
+		$this->_dateTo        = array(0 => null, 1 => null, 2 => null);
+		$this->_user_id       = (int) $userid;
 
-		$this->_user_id = (int) $userid;
-
-		$dateFrom = $dateFrom > 0 ? $dateFrom : time();
+		$dateFrom           = $dateFrom > 0 ? $dateFrom : time();
 		$this->_dateFrom[2] = $dateFrom;
 		$this->_dateFrom[1] = date("Y-m-d", $dateFrom);
 		$this->_dateFrom[0] = date("F ,Y", $dateFrom);
 
-		$dateTo = $dateTo > 0 ? $dateTo : time();
+		$dateTo           = $dateTo > 0 ? $dateTo : time();
 		$this->_dateTo[2] = $dateTo;
 		$this->_dateTo[1] = date("Y-m-d", $dateTo);
 		$this->_dateTo[0] = date("F ,Y", $dateTo);
 
 
-
-		if (
-			$ra = $this->app->db->query(
-				"SELECT 
+		$q = "SELECT 
 				lbr_id, 
 				UNIX_TIMESTAMP(IF(ltr_ctime < '{$this->_dateFrom[1]} 00:00:00','{$this->_dateFrom[1]} 00:00:00',ltr_ctime)) AS _tstart,
 				UNIX_TIMESTAMP(IF(ltr_otime > '{$this->_dateTo[1]} 23:59:59','{$this->_dateTo[1]} 23:59:59',COALESCE(ltr_otime,'$currentTimeStamp'))) AS _tend,
@@ -395,11 +392,14 @@ class VisualReport
 				DATE(ltr_ctime) <= '{$this->_dateTo[1]}' AND DATE(COALESCE(ltr_otime,'$currentTimeStamp')) >= '{$this->_dateFrom[1]}'
 				AND lbr_id = {$this->_user_id}
 			
-			;"
-			)
+			;";
+
+		//$this->app->errorHandler->customError($q);
+		if (
+			$ra = $this->app->db->query($q)
 		) {
 			while ($rowa = $ra->fetch_assoc()) {
-				$rowa['_tend'] = (int) $rowa['_tend'];
+				$rowa['_tend']   = (int) $rowa['_tend'];
 				$rowa['_tstart'] = (int) $rowa['_tstart'];
 
 				if ($rowa['_tend'] < $rowa['_tstart']) {
@@ -407,16 +407,16 @@ class VisualReport
 				}
 
 				if (!isset($this->_partitionlist[$rowa['prt_id']])) {
-					$colorlist = array();
-					$rowa['prt_color'] = substr(str_pad($rowa['prt_color'] ?? "000000", 6, "0", STR_PAD_LEFT), 0, 6);
-					$colorlist[0] = hexdec($rowa['prt_color'][0] . $rowa['prt_color'][1]);
-					$colorlist[1] = hexdec($rowa['prt_color'][2] . $rowa['prt_color'][4]);
-					$colorlist[2] = hexdec($rowa['prt_color'][4] . $rowa['prt_color'][5]);
+					$colorlist                             = array();
+					$rowa['prt_color']                     = substr(str_pad($rowa['prt_color'] ?? "000000", 6, "0", STR_PAD_LEFT), 0, 6);
+					$colorlist[0]                          = hexdec($rowa['prt_color'][0] . $rowa['prt_color'][1]);
+					$colorlist[1]                          = hexdec($rowa['prt_color'][2] . $rowa['prt_color'][4]);
+					$colorlist[2]                          = hexdec($rowa['prt_color'][4] . $rowa['prt_color'][5]);
 					$this->_partitionlist[$rowa['prt_id']] = array($rowa['comp_name'] . ": " . $rowa['ptp_name'] . ": " . $rowa['prt_name'], implode(",", $colorlist), (float) $rowa['prt_lbr_perc']);
 				}
 
 				$month = date("Y-m", $rowa['_tstart']);
-				$date = date("Y-m-d", $rowa['_tstart']);
+				$date  = date("Y-m-d", $rowa['_tstart']);
 
 				if (!isset($this->_arratt[$month])) {
 					$this->_arratt[$month] = array();
@@ -428,15 +428,15 @@ class VisualReport
 				$this->_arratt[$month][$date][date("His", $rowa['_tstart'])] = array(
 					/*0:StartTime*/
 					$rowa['_tstart'],
-					/*1:FinishTime*/	$rowa['_tend'],
-					/*2:OpenRecordID*/	$rowa['ltr_id'],
-					/*3:CloseRecordID*/	$rowa['ltr_id'],
-					/*4:Sector*/	$rowa['prt_id'],
-					/*5:status*/	1,
-					/*6:EarylStart*/	$rowa['_tstart'],
-					/*7:LateFinish*/	$rowa['_tend'],
-					/*8:Comments*/	"",
-					/*9:Owner record*/	$rowa['ltr_id']
+					/*1:FinishTime*/ $rowa['_tend'],
+					/*2:OpenRecordID*/ $rowa['ltr_id'],
+					/*3:CloseRecordID*/ $rowa['ltr_id'],
+					/*4:Sector*/ $rowa['prt_id'],
+					/*5:status*/ 1,
+					/*6:EarylStart*/ $rowa['_tstart'],
+					/*7:LateFinish*/ $rowa['_tend'],
+					/*8:Comments*/ "",
+					/*9:Owner record*/ $rowa['ltr_id']
 				);
 
 				$this->FillGaps(
@@ -520,9 +520,9 @@ class VisualReport
 				}
 			}
 
-			$totalmonth = 0;
+			$totalmonth       = 0;
 			$totalactualmonth = 0;
-			$workingdate = false;
+			$workingdate      = false;
 			echo "<div class=\"btn-set\" 
 				style=\"position: sticky;top: calc(158px - var(--gremium-header-toggle));padding: 10px 0px;z-index: 2;
 				background-color: var(--root-ribbon-menu-background-color);margin:0px -1px\"><span class=\"flex\" style=\"color: var(--root-font-lightcolor);\">$month_name</span></div><div>";
@@ -530,14 +530,14 @@ class VisualReport
 
 			foreach ($monthv as $datek => $datev) {
 				$workingdate = false;
-				$printdate = $datek;
-				$printday = $weekday = "";
+				$printdate   = $datek;
+				$printday    = $weekday = "";
 				if (preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/i", $datek, $matches)) {
 					if (checkdate((int) $matches[2], (int) $matches[3], (int) $matches[1])) {
 						$workingdate = mktime(0, 0, 0, (int) $matches[2], (int) $matches[3], (int) $matches[1]);
-						$printdate = date("d", $workingdate);
-						$printday = date("D", $workingdate);
-						$weekday = date("w", $workingdate);
+						$printdate   = date("d", $workingdate);
+						$printday    = date("D", $workingdate);
+						$weekday     = date("w", $workingdate);
 					}
 				}
 				if (!$workingdate) {
@@ -593,13 +593,13 @@ class VisualReport
 
 
 				echo "<td class=\"css_attendanceBlocks\">";
-				$totalminutes = 0;
+				$totalminutes       = 0;
 				$totalactualminutes = 0;
 
 				foreach ($datev as $k => $v) {
-					$diff = ($v[1] - $v[0]);
+					$diff    = ($v[1] - $v[0]);
 					$actdiff = ($v[1] - $v[0]) * $this->_partitionlist[$v[4]][2];
-					$per = round($diff / 1440 * 100 / 60, 3);
+					$per     = round($diff / 1440 * 100 / 60, 3);
 					if ($v[2] != 0) {
 						$totalminutes += $diff;
 						$totalmonth += $diff;
@@ -607,8 +607,8 @@ class VisualReport
 						$totalactualmonth += $actdiff;
 					}
 					$majortot = $this->formatTime($v[7] - (isset($v[10]) ? $v[10] : $v[6]));
-					$diff = $this->formatTime($diff);
-					$actual = $this->formatTime(($v[7] - (isset($v[10]) ? $v[10] : $v[6])) * $this->_partitionlist[$v[4]][2]);
+					$diff     = $this->formatTime($diff);
+					$actual   = $this->formatTime(($v[7] - (isset($v[10]) ? $v[10] : $v[6])) * $this->_partitionlist[$v[4]][2]);
 
 					echo "<div 
 							style=\"width:{$per}%;" . ($v[4] != 0 ? "background-color:rgba(" . $this->_partitionlist[$v[4]][1] . ",1);" : "") . "\"
@@ -627,16 +627,16 @@ class VisualReport
 					$totalminutes = "-";
 				} else {
 					$difference_between_actualtotal = ($totalminutes) - abs($totalactualminutes);
-					$totalminutes = $this->formatTime($totalminutes);
-					$totalactualminutes = $this->formatTime($totalactualminutes);
+					$totalminutes                   = $this->formatTime($totalminutes);
+					$totalactualminutes             = $this->formatTime($totalactualminutes);
 					$difference_between_actualtotal = $this->formatTime($difference_between_actualtotal);
-					$totalminutes = $totalminutes; //"$difference_between_actualtotal / $totalactualminutes | $totalminutes";
+					$totalminutes                   = $totalminutes; //"$difference_between_actualtotal / $totalactualminutes | $totalminutes";
 				}
 				echo "</td><th class=\"details\">$totalminutes</th></tr>";
 			}
 			echo "";
-			$totaldifference = $this->formatTime($totalmonth - abs($totalactualmonth));
-			$totalmonth = $this->formatTime($totalmonth);
+			$totaldifference  = $this->formatTime($totalmonth - abs($totalactualmonth));
+			$totalmonth       = $this->formatTime($totalmonth);
 			$totalactualmonth = $this->formatTime($totalactualmonth);
 			echo "</tbody></table></div>";
 			echo "<div class=\"attendance-monthfooter\">$totaldifference / $totalactualmonth | $totalmonth</div>";

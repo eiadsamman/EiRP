@@ -34,9 +34,10 @@ class StatementOfAccount
 
 			_slave.comp_id, _slave.comp_name, _slave.prt_id, _slave.prt_name, _slave.cur_id, _slave.cur_shortname
 			,SUM(_master.atm_value) OVER(ORDER BY statements_view.acm_ctime {$sort_direction}, statements_view.acm_id {$sort_direction}) AS cumulative_sum
-			,up_count
+			,up_count, statements_view._party_comp_id, statements_view._party_comp_name, acm_party
 			FROM 
 				acc_temp _master
+				
 				LEFT JOIN 
 					(SELECT 
 						atm_id, atm_main, comp_name, comp_id, prt_name,prt_id, cur_id,cur_shortname
@@ -48,9 +49,11 @@ class StatementOfAccount
 					(SELECT 
 						acc_main.acm_id, acc_main.acm_beneficial, acc_main.acm_comments, acc_main.acm_ctime	,acc_main.acm_rejected,
 						acccat_name, accgrp_name,sub_uploads.up_count, acc_main.acm_editor_id,issuer_badge,
-						editor_profile.usr_firstname, editor_profile.usr_lastname, acc_main.acm_category
+						editor_profile.usr_firstname, editor_profile.usr_lastname, acc_main.acm_category, comp_id AS _party_comp_id, comp_name AS _party_comp_name, acm_party
 					FROM 
 						acc_main
+						LEFT JOIN 
+							companies ON comp_id = acm_party
 						JOIN (
 							SELECT acccat_id,acccat_name,accgrp_name
 							FROM acc_categorygroups JOIN acc_categories ON accgrp_id = acccat_group
@@ -84,7 +87,7 @@ class StatementOfAccount
 		LIMIT {$this->criteria->limit()}
 		;";
 
-		
+
 		$stmt = $this->app->db->prepare($query);
 		$stmt->execute();
 		return $stmt->get_result();

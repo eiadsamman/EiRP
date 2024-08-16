@@ -57,7 +57,7 @@ if ($app->xhttp) {
 						"positive" => $row['atm_value'] >= 0 ? 1 : 0,
 						"date" => $row['acm_ctime'],
 						"category" => "{$row['accgrp_name']}: {$row['acccat_name']}",
-						"beneficial" => $row['acm_beneficial'],
+						"beneficial" => (!is_null($row['_party_comp_id']) ? "<span style=\"color:var(--root-link-color)\">{$row['_party_comp_name']}</span>: " : "") . $row['acm_beneficial'],
 						"details" => $row['acm_comments'] ?? "",
 						"padge_id" => $row['issuer_badge'] ?? 0,
 						"padge_initials" => mb_substr($row['usr_firstname'], 0, 1) . " " . mb_substr($row['usr_lastname'], 0, 1),

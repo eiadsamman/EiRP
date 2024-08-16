@@ -9,7 +9,8 @@ class FinanceBeneficiaryList extends \System\Views\Chunk\Chunk
 		$this->headerJSONCacheGzip();
 		$output = "[";
 		$smart  = "";
-		if ($r = $this->app->db->query("SELECT acm_beneficial, count(acm_beneficial) as trend FROM acc_main GROUP BY acm_beneficial ORDER BY trend DESC")) {
+		if ($r = $this->app->db->query(
+			"SELECT acm_beneficial, count(acm_beneficial) as trend FROM acc_main GROUP BY acm_beneficial ORDER BY trend DESC")) {
 			while ($row = $r->fetch_assoc()) {
 				$output .= $smart . "{";
 				$output .= "\"value\": \"" . addslashes($row['acm_beneficial']) . "\" ";

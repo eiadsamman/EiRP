@@ -110,11 +110,12 @@ if (isset($_GET['id'])) {
 			acm_id,
 			CONCAT_WS(' ',COALESCE(_editor.usr_firstname,''),IF(NULLIF(_editor.usr_lastname, '') IS NULL, NULL, _editor.usr_lastname)) AS _usr_editor_name,
 			UNIX_TIMESTAMP(acm_ctime) AS acm_ctime, acm_type, acm_beneficial, acm_comments, acm_realvalue, acm_realcurrency,
-			cur_name, cur_symbol, atm_account_id, _merge.comp_id, acm_reference,up_id
+			cur_name, cur_symbol, atm_account_id, _merge.comp_id, acm_reference,up_id, _party.comp_name AS party_name,_party.comp_id AS party_id
 		FROM 
 			acc_main
 				LEFT JOIN users AS _editor ON _editor.usr_id=acm_editor_id
 				JOIN currencies ON cur_id=acm_realcurrency
+				LEFT JOIN companies AS _party ON _party.comp_id = acm_party
 				JOIN (
 					SELECT 
 						comp_id, atm_account_id, atm_main, atm_dir, up_id
@@ -213,7 +214,9 @@ if ($statement) { ?>
 						<div class="o-flex right">
 							<div class="o-title">التاريــــــــــــــــــــــــــخ</div>
 							<div class="o-content"><?php echo date("Y-m-d", $statement['acm_ctime']); ?></div>
-							<div style="flex:1;text-align: center;"><img src="<?= $app->http_root . $fs(15)->dir . "/?c=" . $app->translatePrefix(13, $statement['acm_id']) . "&f=1&t=20"; ?>" /></div>
+							<div style="flex:1;text-align: center;"><img
+									src="<?= $app->http_root . $fs(15)->dir . "/?c=" . $app->translatePrefix(13, $statement['acm_id']) . "&f=1&t=20"; ?>" />
+							</div>
 							<div class="o-title" style="min-width:auto;">رقم</div>
 							<div class="o-content"><?php echo $app->translatePrefix(13, $statement['acm_id']); ?></div>
 						</div>
@@ -223,7 +226,14 @@ if ($statement) { ?>
 					<td>
 						<div class="o-flex right">
 							<div class="o-title"><?php echo $statement_type[$statement['acm_type']][2]; ?></div>
-							<div class="o-content fill"><?php echo $statement['acm_beneficial']; ?></div>
+							<div class="o-content fill" style="direction: rtl; line-height:1.8em;">
+								<?php
+								if (!is_null($statement['party_id'])) {
+									echo "الشركة: " . $statement['party_name'] . '<br />';
+								}
+								?>
+								<?php echo $statement['acm_beneficial']; ?>
+							</div>
 						</div>
 					</td>
 				</tr>
@@ -234,7 +244,9 @@ if ($statement) { ?>
 							<div class="o-content fill"><?php echo number_format(abs($statement['acm_realvalue']), 2, ".", ","); ?><span></div>
 							<div class="o-title" style="min-width: auto"><?= $statement['cur_symbol']; ?></div>
 							<div class="o-title" style="min-width: auto">نقداً / شيك رقم</div>
-							<div class="o-content" style="min-width:130px;"><?= is_null($statement['acm_reference']) ? "&nbsp;" : $statement['acm_reference']; ?></div>
+							<div class="o-content" style="min-width:130px;">
+								<?= is_null($statement['acm_reference']) ? "&nbsp;" : $statement['acm_reference']; ?>
+							</div>
 
 						</div>
 					</td>
@@ -243,7 +255,9 @@ if ($statement) { ?>
 					<td>
 						<div class="o-flex right">
 							<div class="o-title">&nbsp;</div>
-							<div class="o-content fill" style="border-radius:0px 4px 4px 0px"><?php echo "فقط " . numtotext($statement['acm_realvalue']); ?>&nbsp;لا غير</div>
+							<div class="o-content fill" style="border-radius:0px 4px 4px 0px">
+								<?php echo "فقط " . numtotext($statement['acm_realvalue']); ?>&nbsp;لا غير
+							</div>
 							<div class="o-content" style="border-radius:4px 0px 0px 4px"><?= $statement['cur_name']; ?></div>
 						</div>
 					</td>
@@ -252,7 +266,8 @@ if ($statement) { ?>
 					<td>
 						<div class="o-flex right">
 							<div class="o-title">وذلك لقـــــــــــــــــاء</div>
-							<div class="o-content fill"><?php echo is_null($statement['acm_comments']) ? "&nbsp;" : nl2br($statement['acm_comments']); ?></div>
+							<div class="o-content fill"><?php echo is_null($statement['acm_comments']) ? "&nbsp;" : nl2br($statement['acm_comments']); ?>
+							</div>
 						</div>
 					</td>
 				</tr>
@@ -264,11 +279,15 @@ if ($statement) { ?>
 					<td>
 						<div class="o-flex right">
 							<div class="o-title">المســـــــــــــــــــتلم</div>
-							<div class="o-content"><?php echo $statement['acm_type'] == 1 ? $statement['_usr_editor_name'] : $statement['acm_beneficial']; ?></div>
+							<div class="o-content">
+								<?php echo $statement['acm_type'] == 1 ? $statement['_usr_editor_name'] : $statement['acm_beneficial']; ?>
+							</div>
 
 							<div style="flex: 1;"></div>
 							<div class="o-title">رقم الحساب</div>
-							<div class="o-content"><?php echo $app->paddingPrefix(10, $statement['comp_id']) . "-" . $app->paddingPrefix(12, $statement['atm_account_id']) . "-" . $app->paddingPrefix(14, $app->user->account->currency->id); ?></div>
+							<div class="o-content">
+								<?php echo $app->paddingPrefix(10, $statement['comp_id']) . "-" . $app->paddingPrefix(12, $statement['atm_account_id']) . "-" . $app->paddingPrefix(14, $app->user->account->currency->id); ?>
+							</div>
 						</div>
 					</td>
 				</tr>
@@ -283,7 +302,8 @@ if ($statement) { ?>
 				<tr>
 					<td>
 						<div class="o-flex right">
-							<div class="o-title" style="flex:1;text-align:center;color: #555;">لا تعتمد الايصالات التي لا تحمل ختم الشركة وتوقيع منظم الايصال</div>
+							<div class="o-title" style="flex:1;text-align:center;color: #555;">لا تعتمد الايصالات التي لا تحمل ختم الشركة وتوقيع منظم
+								الايصال</div>
 						</div>
 					</td>
 				</tr>

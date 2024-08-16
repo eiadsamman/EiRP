@@ -236,8 +236,22 @@ if ($app->xhttp) {
 		</div>
 
 		<div class="form">
-			<label style="flex-basis:0%">
+			<label style="flex-basis:0%;">
 				<h1>Beneficiary</h1>
+				<div class="btn-set">
+					<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name" data-slo=":LIST"
+						data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" 
+						<?= $read->party ? " data-slodefaultid=\"{$read->party->id}\" " : null; ?> 	<?= $read->party ? " value=\"{$read->party->name}\" " : null; ?>
+						
+						/>
+				</div>
+			</label>
+			<label></label>
+		</div>
+
+		<div class="form">
+			<label style="flex-basis:0%">
+				<h1>Attention</h1>
 				<div class="btn-set">
 					<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="5"
 						data-slo=":LIST"

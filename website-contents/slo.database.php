@@ -96,7 +96,7 @@ $rl["B00S"] = array(
 	"select" => array("username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect" => array(),
 	"search" => array('usr_firstname' => 'usr_firstname', 'usr_lastname' => 'usr_lastname', 'usr_id' => 'usr_id'),
-	"where" => " lbr_company=" . (int) $app->user->company->id,
+	"where" => " usr_entity=" . (int) $app->user->company->id,
 	"group" => "",
 );
 
@@ -108,7 +108,7 @@ $rl["USER_COMPANY_VENDOR"] = array(
 	"select" => array("username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect" => array(),
 	"search" => array('usr_firstname' => 'usr_firstname', 'usr_lastname' => 'usr_lastname', 'usr_id' => 'usr_id'),
-	"where" => " " . (isset($_POST['slocompany']) ? " lbr_company= " . (int) $_POST['slocompany'] . " AND (lbr_role & b'100' > 0) " : " lbr_company=0 ") . " ",
+	"where" => " " . (isset($_POST['slocompany']) ? " usr_entity= " . (int) $_POST['slocompany'] . " AND (usr_role & b'100' > 0) " : " usr_entity=0 ") . " ",
 	"group" => "",
 );
 
@@ -234,8 +234,8 @@ $rl["E005"] = array(
 	"from" => "
 		labour 
 			JOIN users ON usr_id=lbr_id 
-			LEFT JOIN labour_type ON lbr_type=lty_id 
-			LEFT JOIN labour_shifts ON lsf_id=lbr_shift",
+			LEFT JOIN labour_type ON usr_jobtitle = lty_id 
+			LEFT JOIN labour_shifts ON lsf_id = lbr_shift",
 	"return_id" => array("usr_id" => "usr_id"),
 	"return_value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
 	"select" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
@@ -669,7 +669,7 @@ $rl["HIR_LABOUR"] = array(
 	"from" => "
 		labour 
 			JOIN users  ON lbr_id=usr_id 
-			JOIN job_hierarchyroles ON jhr_job_id=lbr_type
+			JOIN job_hierarchyroles ON jhr_job_id = usr_jobtitle
 			",
 	"return_id" => array("usr_id" => "usr_id"),
 	"return_value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),

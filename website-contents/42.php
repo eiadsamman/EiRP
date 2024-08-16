@@ -9,7 +9,7 @@ if (isset($_POST['manual'])) {
 			labour 
 				JOIN users ON usr_id=lbr_id
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
-				LEFT JOIN labour_type ON lty_id=lbr_type
+				LEFT JOIN labour_type ON lty_id=usr_jobtitle
 		WHERE
 			lbr_resigndate IS NULL
 		LIMIT 0,$count
@@ -35,7 +35,7 @@ if (isset($_POST['range'])) {
 			labour 
 				JOIN users ON usr_id=lbr_id
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
-				LEFT JOIN labour_type ON lty_id=lbr_type
+				LEFT JOIN labour_type ON lty_id=usr_jobtitle
 		WHERE
 			lbr_resigndate IS NULL AND usr_id>=" . ((int)$_POST['from']) . " AND usr_id<=" . ((int)$_POST['to']) . "
 		;")) {
@@ -60,7 +60,7 @@ if (isset($_POST['employee'])) {
 			labour 
 				JOIN users ON usr_id=lbr_id
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
-				LEFT JOIN labour_type ON lty_id=lbr_type
+				LEFT JOIN labour_type ON lty_id=usr_jobtitle
 		WHERE
 			lbr_id=" . ((int)$_POST['employee']) . " AND lbr_resigndate IS NULL
 		;")) {
@@ -85,7 +85,7 @@ if (isset($_POST['shift'])) {
 			labour 
 				JOIN users ON usr_id=lbr_id
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
-				LEFT JOIN labour_type ON lty_id=lbr_type
+				LEFT JOIN labour_type ON lty_id=usr_jobtitle
 		WHERE
 			lbr_shift=" . ((int)$_POST['shift']) . " AND lbr_resigndate IS NULL
 		;")) {

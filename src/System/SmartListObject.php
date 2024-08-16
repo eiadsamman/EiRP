@@ -188,7 +188,7 @@ class SmartListObject
 				users 
 					JOIN labour ON lbr_id=usr_id
 			WHERE 
-				1 " . ($company_filter != null ? " AND lbr_company=" . $company_filter : "") . ";"
+				1 " . ($company_filter != null ? " AND usr_entity = {$company_filter} "   : "") . ";"
 				)
 			) {
 				while ($row = $r->fetch_assoc()) {

@@ -1,4 +1,5 @@
 <?php
+use System\Exceptions\Finance\TransactionException;
 use System\Finance\AccountRole;
 use System\Finance\Forex;
 use System\Template\Gremium;
@@ -29,6 +30,7 @@ if ($app->xhttp) {
 			$transaction->issuerAccount($app->user->account);
 			$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1], $accountRole));
 			$transaction->date($_POST['date'][0]);
+			$transaction->party($_POST['party'][1]);
 			$transaction->category($_POST['category'][1] ?? 0);
 			$transaction->beneficiary($_POST['beneficiary'][0] ?? "");
 			$transaction->value($_POST['value'] ?? 0);
@@ -178,6 +180,17 @@ if ($app->xhttp) {
 				<label style="flex-basis:0%;">
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
+						<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name"
+							data-slo=":LIST" data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" />
+					</div>
+				</label>
+				<label></label>
+			</div>
+
+			<div class="form">
+				<label style="flex-basis:0%;">
+					<h1>Attention</h1>
+					<div class="btn-set">
 						<input name="beneficiary" id="beneficiary" type="text" placeholder="Beneficiary name" data-mandatory class="flex"
 							title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
 							data-source="_/FinanceBeneficiaryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinananceBeneficiaries.a" />
@@ -187,6 +200,8 @@ if ($app->xhttp) {
 					</div>
 				</label>
 			</div>
+
+
 
 			<div class="form">
 				<label style="min-width:300px;" for="">

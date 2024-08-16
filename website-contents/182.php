@@ -5,15 +5,15 @@ use System\Template\Gremium;
 if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchrecord") {
 	$employeeID = (int) $_POST['employeeID'];
 	$query      = "SELECT
-		usr_firstname,usr_lastname,
-		usr_id,usr_username,usr_phone_list,
+		usr_firstname, usr_lastname,
+		usr_id, usr_username, usr_phone_list,
 		gnd_name,
 		lsf_id,lsf_name,
 		lty_id,lty_name,lsc_name,
 		ldn_id,ldn_name,
-		lbr_company,
+		
 		DATE_FORMAT(usr_birthdate,'%d %M, %Y') AS usr_birthdate,
-		DATE_FORMAT(lbr_registerdate,'%d %M, %Y') AS lbr_registerdate,
+		DATE_FORMAT(usr_registerdate,'%d %M, %Y') AS usr_registerdate,
 		DATE_FORMAT(lbr_resigndate,'%d %M, %Y') AS lbr_resigndate,
 		lbr_socialnumber,
 		trans_name,lbr_mth_name,lwt_name,
@@ -22,19 +22,19 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 		lbr_typ_sal_basic_salary,lbr_typ_sal_variable,lbr_typ_sal_allowance,lbr_typ_sal_transportation
 	FROM
 		labour
-			JOIN users ON usr_id=lbr_id
+			JOIN users ON usr_id = lbr_id
 			LEFT JOIN labour_shifts ON lbr_shift=lsf_id
 			LEFT JOIN countries ON cntry_id=lbr_nationality
-			LEFT JOIN (SELECT lty_id,lty_name,lsc_name FROM labour_type JOIN labour_section ON lsc_id=lty_section) AS _labourtype ON lty_id=lbr_type
+			LEFT JOIN (SELECT lty_id,lty_name,lsc_name FROM labour_type JOIN labour_section ON lsc_id=lty_section) AS _labourtype ON lty_id = usr_jobtitle
 			LEFT JOIN gender ON gnd_id=usr_gender
 			LEFT JOIN labour_residentail ON ldn_id=lbr_residential
 			LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
 			LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 			LEFT JOIN labour_transportation ON lbr_transportation=trans_id
-			LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = lbr_type AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
-			JOIN user_company ON urc_usr_comp_id = lbr_company AND urc_usr_id = {$app->user->info->id}
+			LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = usr_jobtitle AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
+			JOIN user_company ON urc_usr_id = {$app->user->info->id}
 	WHERE
-		lbr_id = $employeeID AND usr_id != 1 ;";
+		lbr_id = $employeeID AND usr_id != 1 AND urc_usr_comp_id = usr_entity;";
 	$r          = $app->db->query($query);
 	if ($r) {
 		if ($r->num_rows > 0 && $row = $r->fetch_assoc()) {
@@ -111,7 +111,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 								</label>
 								<label>
 									<h1>Registration date</h1>
-									<div>{$row['lbr_registerdate']}</div>
+									<div>{$row['usr_registerdate']}</div>
 								</label>
 								<label>
 									<h1>Social ID</h1>
@@ -374,7 +374,7 @@ $grem->getLast()->close();
 			}).done(function (o, textStatus, request) {
 				let response = request.getResponseHeader('HTTP_X_RESPONSE');
 				let responsepid = request.getResponseHeader('HTTP_X_PID');
-
+				
 				if (response == "ERROR") {
 					clear();
 					buttonPrintID.prop("disabled", true);

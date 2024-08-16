@@ -17,9 +17,7 @@ class UserList extends \System\Views\Chunk\Chunk
 				comp_id,
 				comp_name
 			FROM 
-				users 
-					JOIN labour ON lbr_id = usr_id
-					LEFT JOIN companies ON comp_id = lbr_company
+				users LEFT JOIN companies ON comp_id = usr_entity
 			ORDER BY 
 				FIELD(comp_id, {$this->app->user->company->id}) DESC , usr_id
 			"

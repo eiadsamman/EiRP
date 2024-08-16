@@ -29,8 +29,7 @@ $stmt = $app->db->prepare(
 			usr_gender,
 			CONCAT_WS(' ',COALESCE(usr_firstname ,''),COALESCE(usr_lastname,'')) AS employeename,
 			
-			
-			lbr_registerdate,
+			usr_registerdate,
 			lty_id,lty_name,
 			lsf_id,lsf_name,
 			
@@ -56,22 +55,21 @@ $stmt = $app->db->prepare(
 						SELECT
 							lsc_id,lty_id,lty_name,lsc_name,lty_salarybasic,lty_time
 						FROM
-							labour_section JOIN labour_type ON lty_section=lsc_id
-					) AS st ON st.lty_id=lbr_type
-				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
-				LEFT JOIN gender ON gnd_id=usr_gender
+							labour_section JOIN labour_type ON lty_section = lsc_id
+					) AS st ON st.lty_id = usr_jobtitle
+				LEFT JOIN labour_shifts ON lsf_id = lbr_shift
+				LEFT JOIN gender ON gnd_id = usr_gender
 
-				LEFT JOIN workingtimes AS wt_lbr ON wt_lbr.lwt_id=lbr_fixedtime
-				LEFT JOIN workingtimes AS wt_lty ON wt_lty.lwt_id=lty_time
-				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$app->user->info->id}
+				LEFT JOIN workingtimes AS wt_lty ON wt_lty.lwt_id = lty_time
+				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id = {$app->user->info->id}
 		WHERE
 			usr_id != 1 AND
 			lbr_resigndate IS NULL AND
-			(lbr_role & B'001') = 1 AND
-			lbr_company = {$app->user->company->id} 
+			(usr_role & B'001') = 1 AND
+			usr_entity = {$app->user->company->id} 
 			" . (isset($_GET['onlyselection']) ? " AND sel_usremp_emp_id IS NOT NULL " : "") . "
 			" . (isset($_POST['user'][1]) && (int) $_POST['user'][1] != 0 ? " AND usr_id = " . ((int) $_POST['user'][1]) . "" : "") . "
-			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND lbr_type = " . ((int) $_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND usr_jobtitle = " . ((int) $_POST['job'][1]) . "" : "") . "
 			" . (isset($_POST['shift'][1]) && (int) $_POST['shift'][1] != 0 ? " AND lbr_shift = " . ((int) $_POST['shift'][1]) . "" : "") . "
 			" . (isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? " AND lsc_id = " . ((int) $_POST['section'][1]) . "" : "") . "
 		ORDER BY
@@ -105,7 +103,7 @@ if ($result->num_rows > 0) {
 				$row['employeename'],
 				$row['gnd_name'],
 				$row['usr_birthdate'],
-				$row['lbr_registerdate'],
+				$row['usr_registerdate'],
 				"{$row['lsc_name']}: {$row['lty_name']}"			)
 		);
 	}

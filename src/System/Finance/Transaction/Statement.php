@@ -8,6 +8,7 @@ use System\Exceptions\Finance\AccountNotFoundException;
 use System\Finance\Account;
 use System\Finance\AccountRole;
 use System\Finance\Currency;
+use System\Profiles\CompanyProfile;
 use System\Profiles\IndividualProfile;
 
 
@@ -31,6 +32,8 @@ class Statement
 					acm_comments,
 					acm_reference,
 					acm_category,
+					acm_party,
+					comp_id, comp_name,
 					_category.accgrp_name,
 					_category.acccat_name,
 
@@ -58,6 +61,8 @@ class Statement
 						LEFT JOIN users AS _usr ON _usr.usr_id = acm_usr_id
 						LEFT JOIN users AS _editor ON _editor.usr_id = acm_editor_id
 						LEFT JOIN currencies ON cur_id = acm_realcurrency
+						LEFT JOIN companies ON comp_id = acm_party
+						
 				WHERE 
 					acm_id = $id;"
 			)
@@ -73,6 +78,12 @@ class Statement
 				$result->description = $row['acm_comments'];
 				$result->beneficiary = $row['acm_beneficial'];
 
+				if (!is_null($row['comp_id']) && $row['comp_id'] != 0) {
+					$result->party       = new CompanyProfile();
+					$result->party->id   = (int)$row['comp_id'];
+					$result->party->name = $row['comp_name'];
+
+				}
 
 				$result->value = (float) $row['acm_realvalue'];
 				if (empty($row['acm_usr_id'])) {

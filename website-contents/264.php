@@ -3,23 +3,16 @@ $database = array(
 	'table' => 'acc_bankaccount',
 	'tableselect' => '
 	acc_bankaccount 
-		LEFT JOIN (
-			SELECT 
-				prt_id, CONCAT ("[",cur_shortname,"] " ,comp_name, ": ", prt_name) AS accountName 
-			FROM 
-				acc_accounts 
-				JOIN companies ON comp_id = prt_company_id
-				JOIN currencies ON cur_id = prt_currency
-			) AS sub ON bnkacc_owner_id = sub.prt_id
+		LEFT JOIN companies ON bnkacc_type = 1 AND bnkacc_owner_id = comp_id
 		LEFT JOIN currencies ON cur_id = bnkacc_currency_id
 		',
 	'tablename' => 'Company Bank Account',
 
 	'fields' => array(
 		'bnkacc_id' => [null, 'ID', false, null, 'primary', 'int', true, null, null],
-		'bnkacc_type' => [null, 'Type', false, null, 'hidden', 'string', true, null, null, '', '2', true],
+		'bnkacc_type' => [null, 'Type', false, null, 'hidden', 'string', true, null, null, '', '1', true,],
 
-		'accountName' => [null, 'Account', true, null, 'slo', 'string', false, 'ACC_ALL', 'bnkacc_owner_id', ''],
+		'comp_name' => [null, 'Company', true, null, 'slo', 'string', false, 'COMPANIES', 'bnkacc_owner_id', ''],
 		'bnkacc_owner_id' => [null, '', false, null, 'sloref', 'int', true, null, null],
 
 		'cur_shortname' => [null, 'Currency', true, null, 'slo', 'string', false, 'CURRENCY', 'bnkacc_currency_id', ''],
@@ -36,7 +29,7 @@ $database = array(
 
 	),
 	'order' => ['bnkacc_owner_id', 'bnkacc_bankname'],
-	'where' => ' bnkacc_type = 2 '
+	'where' => ' bnkacc_type = 1 '
 );
 
 

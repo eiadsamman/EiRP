@@ -6,6 +6,7 @@ namespace System\Finance\Transaction;
 
 use System\Finance\Currency;
 use System\Profiles\AccountProfile;
+use System\Profiles\CompanyProfile;
 use System\Profiles\IndividualProfile;
 
 class StatementCategoryProperty
@@ -36,6 +37,7 @@ class StatementProperty
 	public ?int $relation = null;
 	public ?IndividualProfile $individual = null;
 	public IndividualProfile $editor;
+	public ?CompanyProfile $party = null;
 	public array $attachments;
 	public bool $canceled = false;
 	public function __construct()

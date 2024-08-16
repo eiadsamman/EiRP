@@ -37,8 +37,8 @@ if (isset($_POST['list-absenece-report']) && isset($_POST['lbr'])) {
 				JOIN users ON usr_id=lbr_id
 				LEFT JOIN absence_calc ON 
 				(
-					abscal_period_from <= TIMESTAMPDIFF(MONTH, IF(lbr_socialinsurance IS NULL,lbr_registerdate,lbr_socialinsurance), str_to_date('" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "','%Y-%m-%d')) AND
-					abscal_period_to > TIMESTAMPDIFF(MONTH, IF(lbr_socialinsurance IS NULL,lbr_registerdate,lbr_socialinsurance), str_to_date('" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "','%Y-%m-%d')) 
+					abscal_period_from <= TIMESTAMPDIFF(MONTH, IF(socialinsurance IS NULL,usr_registerdate,socialinsurance), str_to_date('" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "','%Y-%m-%d')) AND
+					abscal_period_to > TIMESTAMPDIFF(MONTH, IF(socialinsurance IS NULL,usr_registerdate,socialinsurance), str_to_date('" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "','%Y-%m-%d')) 
 				)
 			
 		WHERE
@@ -201,8 +201,8 @@ if (isset($_POST['submit-new-absence-request'])) {
 				JOIN users ON usr_id=lbr_id
 				LEFT JOIN absence_calc ON 
 				(
-					abscal_period_from <= TIMESTAMPDIFF(MONTH, IF(lbr_socialinsurance IS NULL,lbr_registerdate,lbr_socialinsurance), str_to_date('" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "','%Y-%m-%d')) AND
-					abscal_period_to > TIMESTAMPDIFF(MONTH, IF(lbr_socialinsurance IS NULL,lbr_registerdate,lbr_socialinsurance), str_to_date('" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "','%Y-%m-%d')) 
+					abscal_period_from <= TIMESTAMPDIFF(MONTH, IF(socialinsurance IS NULL,usr_registerdate,socialinsurance), str_to_date('" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "','%Y-%m-%d')) AND
+					abscal_period_to > TIMESTAMPDIFF(MONTH, IF(socialinsurance IS NULL,usr_registerdate,socialinsurance), str_to_date('" . date("Y-m-d", mktime(0, 0, 0, date("m"), 1, date("Y"))) . "','%Y-%m-%d')) 
 				)
 			
 		WHERE

@@ -258,8 +258,7 @@
 }
 
 .gremium>h2,
-.gremium>h2>*,
-.gremium>article>h1 {
+.gremium>h2>* {
 	font-weight: normal;
 	background-color: var(--root-background-color_backdrop);
 	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
@@ -310,23 +309,24 @@
 }
 
 .gremium>article>h1 {
+	font-weight: normal;
 	position: sticky;
 	top: 0px;
-	padding: 10px 0px 30px 0px;
+	padding: 10px 0px 20px 0px;
 	margin: 0;
-	font-size: 1.5em;
+	font-size: 1.3em;
 	color: var(--root-font-lightcolor);
 	z-index: 20;
 	width: 100%;
 	margin-right: 0px;
 	margin-left: 0px;
-	background-color: var(--input_background-color);
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 	/* backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
 	-moz-backdrop-filter: blur(6px); */
@@ -419,9 +419,7 @@
 
 
 .gremium>article div.form>label>h1.required::after {
-	scale: 1;
 	opacity: 1;
-
 }
 
 .gremium>article div.form>label:hover>h1,

@@ -1,15 +1,16 @@
 <?php
-function replaceARABIC($str){
-	$str=str_replace(["أ","إ","آ"],"[أإاآ]+",$str);
-	$str=str_replace(["ة","ه"],"[ةه]+",$str);
-	$str=str_replace(["ى","ي"],"[يى]+",$str);
+function replaceARABIC($str)
+{
+	$str = str_replace(["أ", "إ", "آ"], "[أإاآ]+", $str);
+	$str = str_replace(["ة", "ه"], "[ةه]+", $str);
+	$str = str_replace(["ى", "ي"], "[يى]+", $str);
 	return $str;
 }
 
-$perpage = 50;
+$perpage   = 50;
 $arr_feild = array(
 	"gender" => array("Gender", "G000", "usr_gender", "int"),
-	"job" => array("Job", "E002A", "lbr_type", "int"),
+	"job" => array("Job", "E002A", "usr_jobtitle", "int"),
 	"payment_method" => array("Payment Method", "SALARY_PAYMENT_METHOD", "lbr_payment_method", "int"),
 	"work_time" => array("Working Time", "WORKING_TIMES", "lbr_workingtimes", "int"),
 	"shift" => array("Shift", "E003", "lbr_shift", "int"),
@@ -18,8 +19,8 @@ $arr_feild = array(
 	"resigndate" => array("Resign Date", "DATE", "lbr_resigndate", "string"),
 );
 if (isset($_POST['bulkeditorsubmit']) && $fs(154)->permission->edit) {
-	$q = "UPDATE users,labour,user_employeeselection SET ";
-	$cnt = 0;
+	$q     = "UPDATE users,labour,user_employeeselection SET ";
+	$cnt   = 0;
 	$smart = "";
 	foreach ($arr_feild as $k => $v) {
 		if (isset($_POST[$k])) {
@@ -84,7 +85,7 @@ if (isset($_POST['bulkeditorform'])) {
 }
 
 if (isset($_POST['employeecheck'])) {
-	$id = (int) $_POST['id'];
+	$id      = (int) $_POST['id'];
 	$checked = (int) $_POST['checked'];
 	if ($checked == 0) {
 		$r = $app->db->query("DELETE FROM user_employeeselection WHERE sel_usremp_usr_id={$app->user->info->id} AND sel_usremp_emp_id=$id;");
@@ -111,73 +112,71 @@ if (isset($_POST['clearselection'])) {
 	exit;
 }
 if (isset($_POST['selectsearch'])) {
-	$r = $app->db->query("
-		INSERT IGNORE INTO 
+	$r = $app->db->query(
+		"INSERT IGNORE INTO 
 			user_employeeselection (sel_usremp_usr_id,sel_usremp_emp_id) 
 		SELECT 
-			{$app->user->info->id},lbr_id 
+		 	{$app->user->info->id}, lbr_id
 		FROM 
 			labour 
-				JOIN users ON usr_id=lbr_id
-				JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
+				JOIN users ON usr_id = lbr_id
 				LEFT JOIN 
 					(
 						SELECT
 							lsc_id,lty_id,lty_name,lsc_name
 						FROM
 							labour_section JOIN labour_type ON lty_section=lsc_id
-					) AS st ON st.lty_id=lbr_type
+					) AS st ON st.lty_id = usr_jobtitle
 		WHERE 
 			lbr_resigndate IS NULL AND lbr_id!=1 
 			" . (isset($_POST['user'][1]) && (int) $_POST['user'][1] != 0 ? " AND usr_id=" . ((int) $_POST['user'][1]) . "" : "") . "
-			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND lbr_type=" . ((int) $_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND usr_jobtitle = " . ((int) $_POST['job'][1]) . "" : "") . "
 			" . (isset($_POST['shift'][1]) && (int) $_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int) $_POST['shift'][1]) . "" : "") . "
 			" . (isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? " AND lsc_id=" . ((int) $_POST['section'][1]) . "" : "") . "
 			" . (isset($_POST['onlyselection']) ? " AND sel_usremp_emp_id IS NOT NULL" : "") . "
-			AND lbr_company={$app->user->company->id}
+			AND usr_entity = {$app->user->company->id}
 		;");
 	exit;
 }
 if (isset($_POST['selectall'])) {
-	$r = $app->db->query("
-		INSERT IGNORE INTO 
+	$r = $app->db->query(
+		"INSERT IGNORE INTO 
 			user_employeeselection (sel_usremp_usr_id,sel_usremp_emp_id) 
 		SELECT 
 			{$app->user->info->id},lbr_id 
 		FROM 
-			labour JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
+			labour JOIN users on usr_id = lbr_id
 		WHERE 
-			lbr_resigndate IS NULL AND lbr_id!=1 
+			lbr_resigndate IS NULL AND lbr_id != 1 AND usr_entity = {$app->user->company->id}  
 		;");
 	exit;
 }
 if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 	if (
-		$r = $app->db->query("
-		SELECT 
+		$r = $app->db->query(
+		"SELECT 
 			usr_id
 		FROM
 			labour 
-				JOIN users ON usr_id=lbr_id
-				JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
+				JOIN users ON usr_id = lbr_id
 				LEFT JOIN 
 					(
 						SELECT
 							lsc_id,lty_id
 						FROM
 							labour_section JOIN labour_type ON lty_section=lsc_id
-					) AS st ON st.lty_id=lbr_type
+					) AS st ON st.lty_id = usr_jobtitle
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 				LEFT JOIN gender ON gnd_id=usr_gender
 				LEFT JOIN labour_residentail ON ldn_id=lbr_residential
 		WHERE
-			( (lbr_role & b'001') > 0 )
+			( (usr_role & b'001') > 0 )
 			" . (isset($_POST['displaysuspended']) ? " AND usr_id=usr_id " : " AND lbr_resigndate IS NULL") . "
 			" . (isset($_POST['user'][1]) && (int) $_POST['user'][1] != 0 ? " AND usr_id=" . ((int) $_POST['user'][1]) . "" : "") . "
-			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND lbr_type=" . ((int) $_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND usr_jobtitle=" . ((int) $_POST['job'][1]) . "" : "") . "
 			" . (isset($_POST['shift'][1]) && (int) $_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int) $_POST['shift'][1]) . "" : "") . "
 			" . (isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? " AND lsc_id=" . ((int) $_POST['section'][1]) . "" : "") . "
-			AND lbr_company={$app->user->company->id}
+			AND usr_entity = {$app->user->company->id}
 		ORDER BY
 			usr_id
 		")
@@ -188,15 +187,15 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 	}
 	exit;
 } elseif (isset($_POST['user'])) {
-	$offset = isset($_POST['offset']) ? (int) $_POST['offset'] : 0;
-	$countrow = true;
-	$total = 0;
+	$offset     = isset($_POST['offset']) ? (int) $_POST['offset'] : 0;
+	$countrow   = true;
+	$total      = 0;
 	$sort_query = false;
-	$sort_list = array(
+	$sort_list  = array(
 		"id" => "usr_id",
 		"name" => "usr_fullname",
 		"job" => "job_name",
-		"register" => "lbr_registerdate",
+		"register" => "usr_registerdate",
 		"rating" => "rating",
 		"shift" => "lbr_shift",
 		"salary_method" => "lbr_mth_id",
@@ -207,7 +206,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 	if (isset($_POST['sort_field'], $_POST['sort_dir']) && isset($sort_list[$_POST['sort_field']])) {
 		$sort_query = " ORDER BY {$sort_list[$_POST['sort_field']]} " . ((int) $_POST['sort_dir'] == 1 ? "DESC" : "ASC");
 	} else {
-		$sort_query = " ORDER BY lbr_perma DESC,usr_id ";
+		$sort_query = " ORDER BY usr_id ";
 	}
 
 	if (
@@ -217,26 +216,25 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		FROM
 			labour 
 				JOIN users ON usr_id=lbr_id
-				JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
 				LEFT JOIN 
 					(
 						SELECT
 							lsc_id,lty_id
 						FROM
 							labour_section JOIN labour_type ON lty_section=lsc_id
-					) AS st ON st.lty_id=lbr_type
+					) AS st ON st.lty_id=usr_jobtitle
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 				LEFT JOIN gender ON gnd_id=usr_gender
 		WHERE
-			( (lbr_role & b'001') > 0 )
+			( (usr_role & b'001') > 0 )
 			" . (isset($_POST['displaysuspended']) ? " AND usr_id=usr_id " : " AND lbr_resigndate IS NULL ") . "
 			" . (isset($_POST['user'][1]) && (int) $_POST['user'][1] != 0 ? " AND usr_id=" . ((int) $_POST['user'][1]) . "" : "") . "
-			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND lbr_type=" . ((int) $_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND usr_jobtitle=" . ((int) $_POST['job'][1]) . "" : "") . "
 			" . (isset($_POST['shift'][1]) && (int) $_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int) $_POST['shift'][1]) . "" : "") . "
 			" . (isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? " AND lsc_id=" . ((int) $_POST['section'][1]) . "" : "") . "
 			" . (isset($_POST['workingtime'][1]) && (int) $_POST['workingtime'][1] != 0 ? " AND lbr_workingtimes=" . ((int) $_POST['workingtime'][1]) . "" : "") . "
 			" . (isset($_POST['paymethod'][1]) && (int) $_POST['paymethod'][1] != 0 ? " AND lbr_payment_method=" . ((int) $_POST['paymethod'][1]) . "" : "") . "
-			AND lbr_company={$app->user->company->id}
+			AND usr_entity = {$app->user->company->id}
 		"
 		)
 	) {
@@ -258,14 +256,14 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 	//Handle various search keys
 	$rawselect = "";
 	if (isset($_POST['user'][1]) && (int) $_POST['user'][1] == 0 || (!isset($_POST['user'][1]))) {
-		$cols = array("usr_firstname" => "", "usr_lastname" => "", "usr_id" => "");
+		$cols             = array("usr_firstname" => "", "usr_lastname" => "", "usr_id" => "");
 		$_POST['user'][0] = empty($_POST['user'][0]) ? " " : $_POST['user'][0];
-		$q = preg_replace('/[^\p{Arabic}\da-z_\- ]/ui', " ", trim($_POST['user'][0]));
-		$sq = ' ';
-		$i = 0;
-		$sJS = "";
+		$q                = preg_replace('/[^\p{Arabic}\da-z_\- ]/ui', " ", trim($_POST['user'][0]));
+		$sq               = ' ';
+		$i                = 0;
+		$sJS              = "";
 
-		$q = trim($q);
+		$q     = trim($q);
 		$smart = "";
 		if ($q == "") {
 			$sq .= "(";
@@ -292,30 +290,29 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 	}
 
 	if (
-		$r = $app->db->query("
-		SELECT 
+		$r = $app->db->query(
+			"SELECT 
 			usr_id,
-			UNIX_TIMESTAMP(lbr_registerdate) AS lbr_registerdate,
-			usr_id,lbr_resigndate,lbr_permanentdate,
+			usr_registerdate,
+			usr_id,lbr_resigndate,
 			CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) AS usr_fullname,
 			CONCAT_WS(', ',lsc_name,lty_name) AS job_name,
 			lsf_name,
 			(4*((1* COALESCE(SUM(lbrrtg_value),0) / (COALESCE(COUNT(lbrrtg_value),0) + 1)+1)/2)+1) AS rating,
-			IF(lbr_permanentdate IS NULL,0,1) AS lbr_perma,
+			
 			sel_usremp_emp_id,
 			trans_name,
-			lbr_mth_name,lwt_name,ldn_name,lbr_role
+			lbr_mth_name,lwt_name,ldn_name,usr_role
 		FROM
 			labour 
 				JOIN users AS _users ON usr_id=lbr_id
-				JOIN companies ON comp_id = lbr_company AND comp_id={$app->user->company->id}
 				LEFT JOIN 
 					(
 						SELECT
 							lsc_id,lty_id,lty_name,lsc_name
 						FROM
 							labour_section JOIN labour_type ON lty_section=lsc_id
-					) AS st ON st.lty_id=lbr_type
+					) AS st ON st.lty_id=usr_jobtitle
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 				LEFT JOIN labour_rating ON lbrrtg_lbr_id=lbr_id AND lbrrtg_type=1
 				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id=lbr_id AND sel_usremp_usr_id={$app->user->info->id}
@@ -325,23 +322,24 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 				LEFT JOIN labour_residentail ON ldn_id = lbr_residential
 				
 		WHERE
-			( (lbr_role & b'001') > 0 )
+			( (usr_role & b'001') > 0 )
 			" . (isset($_POST['displaysuspended']) ? " AND 1 " : " AND lbr_resigndate IS NULL ") . "
 			" . (isset($_POST['user'][1]) && (int) $_POST['user'][1] != 0 ? " AND usr_id=" . ((int) $_POST['user'][1]) . "" : "") . "
-			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND lbr_type=" . ((int) $_POST['job'][1]) . "" : "") . "
+			" . (isset($_POST['job'][1]) && (int) $_POST['job'][1] != 0 ? " AND usr_jobtitle=" . ((int) $_POST['job'][1]) . "" : "") . "
 			" . (isset($_POST['workingtime'][1]) && (int) $_POST['workingtime'][1] != 0 ? " AND lbr_workingtimes=" . ((int) $_POST['workingtime'][1]) . "" : "") . "
 			" . (isset($_POST['paymethod'][1]) && (int) $_POST['paymethod'][1] != 0 ? " AND lbr_payment_method=" . ((int) $_POST['paymethod'][1]) . "" : "") . "
 			" . (isset($_POST['shift'][1]) && (int) $_POST['shift'][1] != 0 ? " AND lbr_shift=" . ((int) $_POST['shift'][1]) . "" : "") . "
 			" . (isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? " AND lsc_id=" . ((int) $_POST['section'][1]) . "" : "") . "
 			" . (isset($_POST['onlyselection']) ? " AND sel_usremp_emp_id IS NOT NULL" : "") . "
-			AND lbr_company={$app->user->company->id}
+			AND usr_entity = {$app->user->company->id}
 			$rawselect
 		GROUP BY
 			usr_id
 			$sort_query
 		LIMIT
 			" . ($offset * $perpage) . ",$perpage
-		")
+		"
+		)
 	) {
 		while ($row = $r->fetch_assoc()) {
 			if ($countrow) {
@@ -370,14 +368,14 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 			echo "<tr" . (!is_null($row['lbr_resigndate']) ? " class=\"css_suspended\"" : "") . ">";
 			echo "<td width=\"10\" class=\"checkbox\"><label><input class=\"jQempcheck\" data-id=\"{$row['usr_id']}\" " . (is_null($row['sel_usremp_emp_id']) ? "" : "checked=\"checked\"") . " type=\"checkbox\" /><span></span></label></td>";
 			echo "<td>{$row['usr_id']}</td>";
-			echo "<td>" . (!is_null($row['lbr_permanentdate']) ? "<span class=\"permanent\"></span>" : "") . "" . (!is_null($row['lbr_resigndate']) ? "<span class=\"suspended\"></span>" : "") . "{$row['usr_fullname']}</td>";
+			echo "<td>" . (!is_null($row['lbr_resigndate']) ? "<span class=\"suspended\"></span>" : "") . "{$row['usr_fullname']}</td>";
 			//echo "<td>{$row['lbr_serial']}</td>";
 			echo "<td>{$row['job_name']}</td>";
 			echo "<td>{$row['lbr_mth_name']}</td>";
 			echo "<td>{$row['lwt_name']}</td>";
 
 			echo "<td>{$row['lsf_name']}</td>";
-			echo "<td>" . date("Y-m-d", $row['lbr_registerdate']) . "</td>";
+			echo "<td>{$row['usr_registerdate']}</td>";
 			//echo "<td>".number_format($row['rating'],2)."</td>";
 			echo "<td>{$row['trans_name']}</td>";
 			echo "<td>{$row['ldn_name']}</td>";
@@ -458,7 +456,7 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 		margin: 0;
 	}
 
-	
+
 
 	.permanent:after {
 		font-family: icomoon;
@@ -508,24 +506,22 @@ if (isset($_POST['cards']) && $_POST['cards'] == '1') {
 						<button type="button" id="jQdosearch">Search</button>
 						<label class="btn-checkbox"><input type="checkbox" name="onlyselection" id="onlyselection" />
 							<span>&nbsp;Show selection only&nbsp;</span></label>
-						<label class="btn-checkbox"><input type="checkbox" name="displaysuspended"
-								id="jQdisplaySuspended" /> <span>&nbsp;Display Suspended&nbsp;</span></label>
+						<label class="btn-checkbox"><input type="checkbox" name="displaysuspended" id="jQdisplaySuspended" /> <span>&nbsp;Display
+								Suspended&nbsp;</span></label>
 					</div>
 					<div class="btn-set">
-						<input class="jsFilterFeild flex" name="user" type="text" data-slo="B00S"
-							style="min-width:160px;max-width:220px;" id="user"
+						<input class="jsFilterFeild flex" name="user" type="text" data-slo="B00S" style="min-width:160px;max-width:220px;" id="user"
 							placeholder="Employee name, serial or id" />
-						<input class="jsFilterFeild flex" name="section" type="text" data-slo="E001"
-							style="min-width:160px;max-width:220px;" id="section" placeholder="Section" />
-						<input class="jsFilterFeild flex" name="job" type="text" data-slo="E002A"
-							style="min-width:160px;max-width:220px;" id="job" placeholder="Job" />
-						<input class="jsFilterFeild flex" name="shift" type="text" data-slo="E003"
-							style="min-width:100px;max-width:220px;" id="shift" placeholder="Shift" />
+						<input class="jsFilterFeild flex" name="section" type="text" data-slo="E001" style="min-width:160px;max-width:220px;"
+							id="section" placeholder="Section" />
+						<input class="jsFilterFeild flex" name="job" type="text" data-slo="E002A" style="min-width:160px;max-width:220px;" id="job"
+							placeholder="Job" />
+						<input class="jsFilterFeild flex" name="shift" type="text" data-slo="E003" style="min-width:100px;max-width:220px;" id="shift"
+							placeholder="Shift" />
 						<input class="jsFilterFeild flex" name="workingtime" type="text" data-slo="WORKING_TIMES"
 							style="min-width:100px;max-width:220px;" id="workingtime" placeholder="Working Time" />
 						<input class="jsFilterFeild flex" name="paymethod" type="text" data-slo="SALARY_PAYMENT_METHOD"
-							style="min-width:100px;max-width:220px;" id="paymethod"
-							placeholder="Salary Payment Method" />
+							style="min-width:100px;max-width:220px;" id="paymethod" placeholder="Salary Payment Method" />
 					</div>
 				</td>
 				<td>

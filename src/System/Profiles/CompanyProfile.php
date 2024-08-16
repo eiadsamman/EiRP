@@ -16,10 +16,5 @@ class CompanyProfile
 	public ?int $businessField = null;
 	public ?string $contactNumbers = null;
 	public ?string $contactEmails = null;
-	public ?string $commercialRegistrationNumber = null;
-	public ?string $taxRegistrationNumber = null;
-	public ?string $vatRegistrationNumber = null;
-	public ?string $bankName = null;
-	public ?string $bankAccountNumber = null;
 }
 

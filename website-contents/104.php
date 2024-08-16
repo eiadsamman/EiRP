@@ -58,6 +58,7 @@ if ($read) {
 				</div>
 			</label>
 		</div>
+
 		<div class="form">
 			<label>
 				<h1>Value</h1>
@@ -76,18 +77,28 @@ if ($read) {
 				</div>
 			</label>
 		</div>
+		
 		<div class="form">
-			<label>
-				<h1>Beneficiary</h1>
-				<div class="btn-set">
-					<?= is_null($read->individual) ? "<span>{$read->beneficiary}</span>" : "<span class=\"at\"><a href=\"{$fs(182)->dir}/?id={$read->individual->id}\" title=\"{$read->individual->fullName()}\">{$read->individual->fullName()}</a></span>"; ?>
-				</div>
-			</label>
 			<label>
 				<h1>Issuer</h1>
 				<div class="btn-set">
 					<span class="at"><a href="<?= $fs(182)->dir ?>/?id=<?= $read->editor->id ?>"
 							title="<?= $read->editor->fullName() ?>"><?= $read->editor->fullName() ?></a></span>
+				</div>
+			</label>
+		</div>
+
+		<div class="form">
+			<label>
+				<h1>Beneficiary</h1>
+				<div class="btn-set">
+					<?= is_null($read->party) ? "<span>-</span>" : "<span>{$read->party->name}</span>"; ?>
+				</div>
+			</label>
+			<label>
+				<h1>Attention</h1>
+				<div class="btn-set">
+					<?= is_null($read->individual) ? "<span>{$read->beneficiary}</span>" : "<span class=\"at\"><a href=\"{$fs(182)->dir}/?id={$read->individual->id}\" title=\"{$read->individual->fullName()}\">{$read->individual->fullName()}</a></span>"; ?>
 				</div>
 			</label>
 		</div>
@@ -124,6 +135,7 @@ if ($read) {
 				<?php } ?>
 			</label>
 		</div>
+
 		<?php if (sizeof($read->attachments) > 0) { ?>
 			<div class="form predefined">
 				<label>
@@ -161,6 +173,7 @@ if ($read) {
 				</label>
 			</div>
 		<?php } ?>
+
 		<div class="form">
 			<label>
 				<h1>Category</h1>
@@ -169,6 +182,7 @@ if ($read) {
 				</div>
 			</label>
 		</div>
+		
 		<div class="form">
 			<label>
 				<h1>Description</h1>
