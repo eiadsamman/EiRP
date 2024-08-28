@@ -12,7 +12,7 @@ class CompaniesList extends \System\Views\Chunk\Chunk
 			SELECT 
 				comp_id, comp_name
 			FROM 
-				companies LEFT JOIN companies_legal ON comp_id = commercial_companyId
+				companies 
 			ORDER BY
 				comp_name, comp_id
 			SQL;

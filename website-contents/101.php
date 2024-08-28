@@ -43,6 +43,7 @@ if ($app->xhttp) {
 			}
 			$transaction->openState(empty($_POST['record-status']) ? false : true);
 			$transaction->date($_POST['date'][0]);
+			$transaction->party(!empty($_POST['party']) ? $_POST['party'][1] : null);
 			$transaction->category($_POST['category'][1] ?? 0);
 			$transaction->beneficiary($_POST['beneficiary'][0] ?? "");
 			$transaction->value($_POST['value'] ?? 0);
@@ -240,10 +241,7 @@ if ($app->xhttp) {
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
 					<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name" data-slo=":LIST"
-						data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" 
-						<?= $read->party ? " data-slodefaultid=\"{$read->party->id}\" " : null; ?> 	<?= $read->party ? " value=\"{$read->party->name}\" " : null; ?>
-						
-						/>
+						data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" <?= $read->party ? " data-slodefaultid=\"{$read->party->id}\" " : null; ?> 	<?= $read->party ? " value=\"{$read->party->name}\" " : null; ?> />
 				</div>
 			</label>
 			<label></label>

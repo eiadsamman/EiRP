@@ -153,7 +153,7 @@ $initial_values = array(
 $grem = new Gremium\Gremium(true);
 $grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
 	"<ul class=\"small-media-hide\"><li>{$app->user->account->type->keyTerm->toString()}: {$app->user->account->name}</li></ul>" .
-	"<cite><span id=\"js-output-total\">0.00</span>{$app->user->account->currency->shortname}</cite>");
+	"<cite><span id=\"navTotal\">0.00</span>{$app->user->account->currency->shortname}</cite>");
 
 $menu         = $grem->menu()->sticky(false)->open();
 $current_date = new DateTime();
@@ -171,15 +171,15 @@ $legend = $grem->legend()->open();
 echo <<<HTML
 <span id="js-output_statements-count">0</span>
 <span class="small-media-hide flex"></span>
-<input type="button" class="pagination prev edge-left" id="js-input_page-prev" disabled value="&#xe91a;" />
+<input type="button" class="pagination prev edge-left" id="navPrev" disabled value="&#xe91a;" />
 <input type="text" id="js-input_page-current" placeholder="#" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0" data-rangeend="100" />
-<input type="button" class="pagination next" id="js-input_page-next" disabled value="&#xe91d;" />
-<input type="button" class="edge-right" id="js-output_page-total" style="min-width:50px;text-align:center" value="0" />
+<input type="button" class="pagination next" id="navNext" disabled value="&#xe91d;" />
+<input type="button" class="edge-right" id="navPages" style="min-width:50px;text-align:center" value="0" />
 HTML;
 $legend->close();
 
 $article = $grem->article()->open();
-echo "<div id=\"js-container-output\" style=\"padding-bottom:50px\"></div>";
+echo "<div id=\"navOutput\" style=\"padding-bottom:50px\"></div>";
 $article->close();
 
 unset($grem);

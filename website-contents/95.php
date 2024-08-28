@@ -1,10 +1,12 @@
 <?php
-
 use System\Finance\AccountRole;
 use System\Finance\Forex;
 use System\Template\Gremium;
 use System\Finance\Account;
 use System\SmartListObject;
+use System\Timeline\Action;
+use System\Timeline\Module;
+use System\Timeline\Timeline;
 
 $predefined  = new \System\Finance\PredefinedRules($app);
 $defines     = $predefined->paymentRules();
@@ -30,7 +32,7 @@ if ($app->xhttp) {
 			$transaction->issuerAccount($app->user->account);
 			$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1], $accountRole));
 			$transaction->date($_POST['date'][0]);
-			$transaction->party($_POST['party'][1]);
+			$transaction->party(!empty($_POST['party']) ? $_POST['party'][1] : null);
 			$transaction->category($_POST['category'][1] ?? 0);
 			$transaction->beneficiary($_POST['beneficiary'][0] ?? "");
 			$transaction->value($_POST['value'] ?? 0);
@@ -59,6 +61,12 @@ if ($app->xhttp) {
 				$result['type']      = "payment";
 				$result['balance']   = ($balance < 0 ? "(" : "") . number_format(abs($balance), 2) . ($balance < 0 ? ")" : "");
 				$result['currency']  = $app->user->account->currency->shortname;
+
+				$tl = new Timeline($app);
+				$tl->register(Module::FinanceCash, Action::FinancePayment, $transaction->insert_id);
+				if (!empty($_POST['party'])) {
+					$tl->register(Module::CRMCustomer, Action::FinancePayment, $_POST['party'][1], ["id" => $transaction->insert_id, "value" => number_format((float) $_POST['value'], 2, ".", ",") . " " . $app->user->account->currency->shortname]);
+				}
 			} else {
 				$result['errno'] = 300;
 				$result['error'] = "Transaction posting failed";
@@ -177,7 +185,7 @@ if ($app->xhttp) {
 				<label style="flex-basis:0%;">
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
-						<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name"
+						<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name" tabindex="-1"
 							data-slo=":LIST" data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" />
 						<!--  data-slodefaultid="<?= $app->user->company->id; ?>" value="<?= $app->user->company->name; ?>" -->
 					</div>

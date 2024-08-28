@@ -532,7 +532,6 @@ class SmartListObject {
 		this.htmlhidden.prop("disabled", true);
 		this.htmltext.prop("disabled", true);
 		this.selection_win.css({ "visibility": "hidden", "display": "none" });
-		this.htmltext.removeClass("listvisible", "listvisibletop");
 	}
 	enable() {
 		this.disabled = false;
@@ -563,24 +562,18 @@ class SmartListObject {
 		var _dh = $(document).height();
 		this.selection_win.css({ "visibility": "hidden", "display": "block", "position": "fixed" });
 		if (_dh < this.selection_win.height() + this.htmltext.offset().top + this.htmltext.height()) {
-			this.htmltext.removeClass("listvisible").addClass("listvisibletop");
-			this.selection_win.css({
-				'bottom': '100%',
-				'top': 'auto',
-			});
+			this.selection_win.addClass("listvisiblebottom");
 		} else {
-			this.htmltext.removeClass("listvisibletop").addClass("listvisible");
-			this.selection_win.css({
-				'top': '100%',
-				'bottom': 'auto',
-			});
+			this.selection_win.addClass("listvisibletop");
+
 		}
 		this.selection_win.css({ "visibility": "visible", "position": "absolute" });
 	}
 	hide() {
 		this.state = state.idle;
+		this.selection_win.removeClass("listvisibletop");
+		this.selection_win.removeClass("listvisiblebottom");
 		this.selection_win.css({ "visibility": "hidden", "display": "none" });
-		this.htmltext.removeClass("listvisible", "listvisibletop");
 		if (this.xhttp != null)
 			this.xhttp.abort();
 	}

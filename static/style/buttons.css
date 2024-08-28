@@ -69,7 +69,7 @@
 	border: none;
 	background-color: transparent;
 	color: var(--root-font-color);
-	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
 .btn-set>textarea {
@@ -117,11 +117,10 @@
 .btn-set>button {
 	font-size: 1em;
 	background-color: var(--button-bgcolor);
-	color: var(--button-font-color) !important;
+	color: var(--button-font-color);
 	font-weight: normal;
-	cursor: pointer;
 	border-color: transparent;
-	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 	z-index: 13;
 	padding: 0px 20px;
 }
@@ -130,10 +129,9 @@
 .btn-set>a {
 	padding: 0px 15px;
 	font-size: 1em;
-	cursor: pointer;
 	border: solid 1px var(--input_border-color);
 	background-color: var(--input_background-color);
-	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 	z-index: 13;
 }
 
@@ -245,72 +243,31 @@
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* Green buttons */
+.btn-set>button.standard {
+	background-color: var(--input_background-color);
+	border: solid 1px var(--input_border-color);
+	padding-bottom: 3px;
+	cursor: default;
+	color: var(--root-font-color) !important;
+}
+
+.btn-set>button.standard::before {
+	color: var(--root-link-color) !important;
+}
+
+.btn-set>button.standard:not(:disabled):hover {
+	border-color: var(--input-hover_border-color);
+	background-color: var(--input_background-color);
+	color: var(--root-font-color);
+
+}
+
+.btn-set>button.standard:focus {
+	border-color: var(--input-hover_border-color);
+	background-color: var(--input_background-color);
+	color: var(--root-font-color);
+}
 
 
 
@@ -413,7 +370,7 @@
 	left: 10px;
 	top: 6px;
 	outline: none;
-	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
 .btn-set>label:focus-within::before {
@@ -513,21 +470,38 @@ input[type="number"]::-webkit-outer-spin-button {
  * SLO 
  */
 
-
 .slo-container {
 	position: absolute;
 	min-width: 100%;
 	display: none;
 	background-color: var(--slo-menu-background-color);
-	margin-top: 1px;
+	margin-top: 3px;
 	margin-bottom: 0px;
 	color: var(--root-font-color);
 	z-index: 99 !important;
-	border: solid 1px var(--root-ribbon-border-color);
-	border-color: rgba(82, 168, 236, 1);
-	box-shadow: 0 0 4px rgba(82, 168, 236, .5);
-	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
-	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .5);
+	border: solid 1px var(--input_border-color);
+	/* border-color: rgba(82, 168, 236, 1); */
+
+	box-shadow: 0px 0px 8px rgba(50, 50, 50, 0.1);
+
+	border-radius: 7px;
+	transform: translateY(10px);
+	opacity: 0;
+	transition: transform .3s, opacity .3s;
+}
+
+.slo-container.listvisibletop {
+	transform: translateY(0px);
+	opacity: 1;
+	top: 100%;
+	bottom: auto;
+}
+
+.slo-container.listvisiblebottom {
+	transform: translateY(-5px);
+	opacity: 1;
+	top: auto;
+	bottom: 100%;
 }
 
 .slo-container>div {
@@ -539,8 +513,8 @@ input[type="number"]::-webkit-outer-spin-button {
 	border-radius: 6px;
 	background-color: var(--slo-menu-background-color);
 	z-index: 99 !important;
-}
 
+}
 
 .slo-container>div:hover {
 	background-color: var(--slo-menu-itemhover-background-color);
@@ -551,8 +525,6 @@ input[type="number"]::-webkit-outer-spin-button {
 	background-color: var(--slo-menu-itemactive-background-color);
 	z-index: 99 !important;
 }
-
-
 
 .slo-container>div>p {
 	display: none;
@@ -582,7 +554,7 @@ input[type="number"]::-webkit-outer-spin-button {
 	border: none;
 	border-bottom: solid 2px var(--input_border-color);
 	border-color: var(--input_border-color);
-	transition: border 0.2s ease-out;
+	transition: border 0s;
 	width: 100%;
 	color: var(--root-font-color);
 	background-color: transparent;

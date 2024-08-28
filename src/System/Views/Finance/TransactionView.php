@@ -15,12 +15,12 @@ class TransactionView extends \System\Views\PanelView
 		parent::__construct($app);
 		//$this->var = $var;
 		$this->pagesScope = array(
-			91 => array(true, './finance/transaction.js', "Transaction"),
-			95 => array(true, './finance/transaction.js', "Transaction"),
-			101 => array(true, './finance/transaction.js', "Transaction"),
-			104 => array(true, './finance/transaction.js', "StatementView"),
-			170 => array(true, './finance/transaction.js', "Search"),
-			214 => array(true, './finance/transaction.js', "Ledger")
+			91 => array(true, './finance/transaction.js', "Post"),
+			95 => array(true, './finance/transaction.js', "Post"),
+			101 => array(true, './finance/transaction.js', "Post"),
+			104 => array(true, './finance/transaction.js', "Entry"),
+			170 => array(true, './finance/transaction.js', "CustomSearch"),
+			214 => array(true, './app.js', "List")
 		);
 		$this->assets     = array(
 			["css", "style/pagefile/statement-control.css"],
@@ -47,12 +47,12 @@ class TransactionView extends \System\Views\PanelView
 		echo $this->panelHtmlWrapClose();
 
 		$_getJSON = json_encode($_GET);
-
+		//import Account from './static/javascript/modules/finance/account.js';
+		
 		/* JS Payload */
 		echo <<<HTML
 			<script type="module">
 				import { PaNa } from './static/javascript/modules/panel-navigator.js';
-				import Account from './static/javascript/modules/finance/account.js';
 				
 				let pn = new PaNa();
 				pn.scope = {$this->scopeToString()};

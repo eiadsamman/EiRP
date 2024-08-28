@@ -28,12 +28,12 @@ export default class AccountStatmenet {
 			}
 		});
 
-		this.js_container_output = document.getElementById("js-container-output");
+		this.navOutput = document.getElementById("navOutput");
 		this.js_input_cmd_update = document.getElementById("js-input_cmd-update");
-		this.js_input_cmd_next = document.getElementById("js-input_page-next");
-		this.js_input_cmd_prev = document.getElementById("js-input_page-prev");
-		this.js_output_total = document.getElementById("js-output-total");
-		this.js_output_page_total = document.getElementById("js-output_page-total");
+		this.navNext = document.getElementById("navNext");
+		this.navPrev = document.getElementById("navPrev");
+		this.navTotal = document.getElementById("navTotal");
+		this.navPages = document.getElementById("navPages");
 		this.js_output_statements_count = document.getElementById("js-output_statements-count");
 		this.js_input_cmd_export = document.getElementById("js-input_cmd-export");
 		this.js_form_export = $("#js-form_export");
@@ -76,22 +76,22 @@ export default class AccountStatmenet {
 			}, 1000);
 		});
 
-		this.js_output_page_total.addEventListener("click", () => {
+		this.navPages.addEventListener("click", () => {
 			this.navigator.state['page'] = 0;
 			this.navigator.pushState();
 			this.xhttp_request(true)
 		});
 
-		this.js_input_cmd_next.addEventListener("click", () => {
+		this.navNext.addEventListener("click", () => {
 			if (parseInt(this.navigator.getProperty("page")) >= this.total_pages) { return; };
 			this.navigator.state['page'] += 1;
 			this.navigator.pushState();
-			this.js_input_cmd_prev.disabled = false;
+			this.navPrev.disabled = false;
 			this.slo_page_current.set(this.navigator.getProperty("page"), this.navigator.getProperty("page"));
 			this.xhttp_request(true);
 		});
 
-		this.js_input_cmd_prev.addEventListener("click", () => {
+		this.navPrev.addEventListener("click", () => {
 			if (parseInt(this.navigator.getProperty("page")) <= 1) { return; };
 			this.navigator.state['page'] -= 1;
 			this.navigator.pushState();
@@ -101,7 +101,7 @@ export default class AccountStatmenet {
 
 		this.js_input_cmd_update.addEventListener('click', () => {
 			this.navigator.state['page'] = 0;
-			this.js_input_cmd_prev.disabled = true;
+			this.navPrev.disabled = true;
 			this.navigator.pushState();
 			try {
 				if (this.slo_page_current[0].slo.handler instanceof NumberHandler) {
@@ -113,8 +113,8 @@ export default class AccountStatmenet {
 	}
 
 	xhttp_request(isloaded = false) {
-		this.js_input_cmd_prev.disabled = this.navigator.getProperty("page") == 1;
-		this.js_input_cmd_next.disabled = parseInt(this.navigator.getProperty("page")) >= this.total_pages;
+		this.navPrev.disabled = this.navigator.getProperty("page") == 1;
+		this.navNext.disabled = parseInt(this.navigator.getProperty("page")) >= this.total_pages;
 
 		$.ajax({
 			data: { ...this.navigator.state, ...{ "method": "statement_report" } },
@@ -128,8 +128,8 @@ export default class AccountStatmenet {
 			this.total_pages = parseInt(request.getResponseHeader('VENDOR_FN_PAGES'));
 			if (response == 'DATE_CONFLICT') {
 				messagesys.failure("Date range is not valid");
-				this.js_input_cmd_next.disabled = true
-				this.js_input_cmd_prev.disabled = true;
+				this.navNext.disabled = true
+				this.navPrev.disabled = true;
 				this.slo_page_current.disable()
 				return;
 			}
@@ -144,34 +144,34 @@ export default class AccountStatmenet {
 				this.slo_page_current.clear();
 			}
 			if (this.total_pages == 0) {
-				this.js_input_cmd_next.disabled = true;
-				this.js_input_cmd_prev.disabled = true;
-				this.js_output_page_total.disabled = true;
+				this.navNext.disabled = true;
+				this.navPrev.disabled = true;
+				this.navPages.disabled = true;
 				this.slo_page_current.disable();
 			} else if (this.total_pages == 1) {
-				this.js_input_cmd_next.disabled = true;
-				this.js_input_cmd_prev.disabled = true;
-				this.js_output_page_total.disabled = false;
+				this.navNext.disabled = true;
+				this.navPrev.disabled = true;
+				this.navPages.disabled = false;
 				this.slo_page_current.disable();
 			} else if (this.total_pages > 1) {
 				this.slo_page_current.enable()
 				if (this.navigator.getProperty("page") == 0) {
-					this.js_input_cmd_next.disabled = true;
+					this.navNext.disabled = true;
 				} else if (this.navigator.getProperty("page") >= this.total_pages) {
-					this.js_input_cmd_next.disabled = true;
+					this.navNext.disabled = true;
 				} else {
-					this.js_input_cmd_next.disabled = false;
+					this.navNext.disabled = false;
 				}
-				this.js_output_page_total.disabled = false;
+				this.navPages.disabled = false;
 			}
 
 			this.js_output_statements_count.innerText = fn_count;
-			this.js_output_total.innerText = fn_sum;
-			this.js_output_page_total.value = this.total_pages;
-			this.js_container_output.innerHTML = output;
+			this.navTotal.innerText = fn_sum;
+			this.navPages.value = this.total_pages;
+			this.navOutput.innerHTML = output;
 
 			if (isloaded) {
-				const y = this.js_output_total.getBoundingClientRect().top;
+				const y = this.navTotal.getBoundingClientRect().top;
 				window.scroll({
 					top: y - 25,
 					behavior: 'smooth'

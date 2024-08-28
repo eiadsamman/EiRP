@@ -120,7 +120,6 @@ $app->buildPrefixList();
 if ($app->xhttp) {
 	include_once $app->root . "website-contents/{$fs()->id}.php";
 } else {
-
 	$app->viewVendor($fs()->loader);
 
 	if ($fs()->headers['html-header'] == 0)

@@ -27,6 +27,11 @@ if ($read) {
 		$grem = new Gremium\Gremium(true);
 		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
 		$grem->menu()->open();
+
+		echo "<button type=\"button\" data-href=\"{$fs(91)->dir}/\" class=\"standard edge-left\" tabindex=\"-1\">{$fs(91)->title}</button>";
+		echo "<button type=\"button\" data-href=\"{$fs(95)->dir}/\" class=\"standard edge-right\" tabindex=\"-1\">{$fs(95)->title}</button>";
+
+
 		echo "<span class=\"flex\"></span>";
 		if ($fs(101)->permission->edit) {
 			echo "<input type=\"button\" data-href=\"{$fs(101)->dir}/?id={$read->id}\" id=\"js-input_edit\" value=\"Edit\" class=\"edge-left\" tabindex=\"-1\" />";

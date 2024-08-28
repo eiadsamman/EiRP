@@ -192,7 +192,7 @@ if ($statement) { ?>
 			}
 		</style>
 	</head>
-
+	<!-- <?= is_null($statement['acm_reference']) ? "&nbsp;" : $statement['acm_reference']; ?> -->
 	<body>
 		<table cellpadding="3" cellspacing="0" width="100%" style="border-collapse: collapse;font-size: 10pt;">
 			<tbody>
@@ -229,7 +229,7 @@ if ($statement) { ?>
 							<div class="o-content fill" style="direction: rtl; line-height:1.8em;">
 								<?php
 								if (!is_null($statement['party_id'])) {
-									echo "الشركة: " . $statement['party_name'] . '<br />';
+									echo "شركة: " . $statement['party_name'] . '<br />';
 								}
 								?>
 								<?php echo $statement['acm_beneficial']; ?>
@@ -244,10 +244,7 @@ if ($statement) { ?>
 							<div class="o-content fill"><?php echo number_format(abs($statement['acm_realvalue']), 2, ".", ","); ?><span></div>
 							<div class="o-title" style="min-width: auto"><?= $statement['cur_symbol']; ?></div>
 							<div class="o-title" style="min-width: auto">نقداً / شيك رقم</div>
-							<div class="o-content" style="min-width:130px;">
-								<?= is_null($statement['acm_reference']) ? "&nbsp;" : $statement['acm_reference']; ?>
-							</div>
-
+							<div class="o-content" style="min-width:130px;">&nbsp;</div>
 						</div>
 					</td>
 				</tr>

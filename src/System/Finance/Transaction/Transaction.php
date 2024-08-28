@@ -178,9 +178,10 @@ class Instructions
 		throw new TransactionException("Invalid category", 105);
 	}
 
-	public function party(int|string $party_id): self
+	public function party(int|string|null $party_id): self
 	{
-		if (gettype($party_id) == "integer" && $party_id > 0) {
+		if (is_null($party_id)) {
+		} else if (gettype($party_id) == "integer" && $party_id > 0) {
 			$this->party = $party_id;
 		} else if (gettype($party_id) == "string") {
 			$party_id = (int) $party_id;

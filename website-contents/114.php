@@ -1,49 +1,33 @@
-<style>
-	#ccc {
-		transform: translateX(calc(50vw - 50%)) translateY(10vh);
-		height: 400px;
-		overflow: auto;
-		width: 1000px;
-		scroll-snap-type: mandatory;
-		scroll-snap-stop: always;
-		scroll-snap-type: y mandatory;
-	}
+<button popovertarget="my-popover">Open popover</button>
 
-	#ccc>div {
-		padding: 2px;
-		border: solid 1px red;
-		border-radius: 3px;
-
-		height: 100px;
-
-		scroll-snap-align: start;
-		flex: none;
-
-	}
-</style>
-
-
-<div id="ccc">
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-	<div></div>
-
-
+<div id="my-popover" popover style="width: 50vw; height: 50vh; ">
+Hellloo
 </div>
+
 <?php
+
+exit;
+use System\Timeline\Action;
+use System\Timeline\Module;
+use System\Timeline\Timeline;
+
+
+
+
+$tl = new Timeline($app);
+
+echo "<pre>";
+
+
+
+exit;
+for ($i = 0; $i <= 20; $i++) {
+
+	$r = rand(0, 100) < 50 ? Action::FinancePayment : Action::FinanceReceipt;
+	$tl->register(Module::CRMCustomer, $r, 10004, ["id" => ($i * 3 + 1000), "value" => rand(1000, 99999) . ".00 EGP"]);
+
+}
+
 
 exit;
 //use System\IO\RecordManager;

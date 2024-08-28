@@ -41,4 +41,3 @@ $database = array(
 
 
 include ("website-contents/major.editor.php");
-?>

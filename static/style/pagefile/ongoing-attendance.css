@@ -39,7 +39,7 @@ table.local-force>tbody>tr>td.elapsed>span {
 
 table.local-force>tbody>tr {
 	display: inline-block;
-	min-width: 100px;
+	min-width: 90px;
 	margin: 8px;
 	padding: 20px;
 }
@@ -66,8 +66,8 @@ table.local-force>tbody>tr>td.mediabond-ignore {
 }
 
 table.local-force>tbody>tr>td.emplyee-name {
-	max-width: 130px;
-	width: 130px;
+	max-width: 120px;
+	width: 120px;
 	text-overflow: ellipsis;
 	overflow-x: hidden;
 }
@@ -140,8 +140,8 @@ table.local-force>tbody>tr>td.emplyee-name {
 	}
 
 	table.local-mediabond-table>tbody>tr>td.emplyee-name {
-		max-width: 130px;
-		width: 130px;
+		max-width: 110px;
+		width: 120px;
 		text-overflow: ellipsis;
 		overflow-x: hidden;
 	}

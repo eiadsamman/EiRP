@@ -37,11 +37,11 @@ echo <<<HTML
 	<form action="{$fs()->dir}" method="post" id="passForm">
 	<input type="hidden" name="method" value="changepassword" />
 HTML;
-$grem = new Gremium\Gremium(false);
+$grem = new Gremium\Gremium(true);
 $grem->header()->serve("<h1>My Account</h1>");
 $grem->menu()->serve("<a href=\"{$fs(17)->dir}\">{$fs(17)->title}</a><a href=\"{$fs(263)->dir}\">{$fs(263)->title}</a></span>");
 $grem->title()->serve("<span class=\"flex\">Account information</span>");
-$grem->article()->width("600px")->serve(
+$grem->article()->maxWidth("600px")->serve(
 	<<<HTML
 	<div class="form">
 		<label>
@@ -65,7 +65,7 @@ $grem->article()->width("600px")->serve(
 
 echo "<br /><br />";
 $grem->title()->serve("<span class=\"flex\">Security management</span>");
-$grem->article()->width("600px")->open();
+$grem->article()->maxWidth("600px")->open();
 echo <<<HTML
 	<div class="form">
 		<label>

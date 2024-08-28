@@ -1,15 +1,15 @@
 .theme-default {
 
-	--root-background-color: rgb(250, 250, 250);
+	--root-background-color: #F8F9FB;
 	--root-background-color_backdrop: rgb(250, 250, 250, 1);
 
 	--root-font-color: rgb(33, 37, 41);
 	--root-font-lightcolor: hsl(218, 18%, 60%);
 	--root-link-color: dodgerblue;
-	--root-ribbon-background-color: rgb(227, 227, 230);
-	--root-ribbon-border-color: #ccc;
+	--root-ribbon-background-color: white;
+	--root-ribbon-border-color: hsl(0, 0%, 85%);
 	--root-ribbon-font-color: black;
-	--root-ribbon-menu-background-color: rgba(255, 255, 255, .95);
+	--root-ribbon-menu-background-color: rgba(255, 255, 255, 1);
 	--root-ribbon-menu-header-background-color: rgba(255, 255, 255, .95);
 	--root-ribbon-menu-itemhover-background-color: rgb(233, 235, 248);
 
@@ -22,7 +22,8 @@
 
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
-	--bomtable-hover-color: hsl(60, 100%, 90%); /*  hsl(60, 100%, 90%); */
+	--bomtable-hover-color: hsl(60, 100%, 90%);
+	/*  hsl(60, 100%, 90%); */
 	--bomtable-stripes-color: hsl(60, 100%, 95%);
 
 
@@ -63,19 +64,16 @@
 	--buttongreen_focus-bgcolor: hsl(140, 100%, 38%);
 	--buttongreen_active-bgcolor: hsl(140, 100%, 34%);
 
-
-
-
 	--slo-menu-background-color: white;
 	--slo-menu-itemhover-background-color: hsl(220, 50%, 96%);
 	--slo-menu-itemactive-background-color: hsl(220, 90%, 95%);
 
 	--placeholder-bgcolor: hsl(0, 0%, 94%);
 	--placeholder-sweeping-bgcolor: white;
+	--flash-bgcolor: hsl(65, 95%, 90%);
 
 	--outline-border-color: gold;
 	/* var(--root-ribbon-menu-itemhover-background-color); */
-
 }
 
 .theme-default.dark {
@@ -101,7 +99,8 @@
 
 	--bomtable-border-color: var(--root-ribbon-border-color);
 	--bomtable-background-color: var(--root-ribbon-menu-background-color);
-	--bomtable-hover-color: hsl(220, 30%, 30%);/*  hsl(220, 30%, 30%); */
+	--bomtable-hover-color: hsl(220, 30%, 30%);
+	/*  hsl(220, 30%, 30%); */
 	--bomtable-stripes-color: #202940;
 
 
@@ -141,21 +140,15 @@
 	--buttongreen_focus-bgcolor: hsl(140, 100%, 38%);
 	--buttongreen_active-bgcolor: hsl(140, 100%, 34%);
 
-
-	
-
-
-
-
 	--slo-menu-background-color: hsl(223, 15%, 15%);
 	--slo-menu-itemhover-background-color: hsl(220, 15%, 22%);
 	--slo-menu-itemactive-background-color: hsl(220, 20%, 26%);
 
 	--placeholder-bgcolor: #202940;
 	--placeholder-sweeping-bgcolor: hsl(223, 25%, 25%);
+	--flash-bgcolor: hsl(65, 5%, 37%);
 
 	--outline-border-color: gold;
-
 
 }
 

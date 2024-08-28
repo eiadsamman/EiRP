@@ -2,6 +2,8 @@
 
 use System\IO\AttachLib;
 use System\Template\Gremium\Gremium;
+use System\Timeline\Action;
+use System\Timeline\Timeline;
 
 
 /*
@@ -228,18 +230,30 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 
 		//Attached files
 		if (sizeof($attachments) > 0) {
-			$app->db->query("UPDATE uploads SET up_rel=$affected_id, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$app->user->info->id};");
+			$app->db->query("UPDATE uploads SET up_rel = $affected_id, up_active = 1 WHERE up_id IN (" . implode(",", $attachments) . ") AND up_user = {$app->user->info->id};");
 		}
-
 
 		//Broadcast signal
 		file_put_contents("{$app->root}broadcast", md5(uniqid()));
 
+		//User defined post function
 		if (isset($database['post_submit_functions']) && is_array($database['post_submit_functions'])) {
 			foreach ($database['post_submit_functions'] as $func) {
 				call_user_func($func, $_POST, $app, $affected_id);
 			}
 		}
+
+		//Timeline register
+		if (isset($database['timeline']) && is_array($database['timeline'])) {
+			$tl = new Timeline($app);
+
+			foreach ($database['timeline'] as $module) {
+				if (gettype($module) == "object" && get_class($module) == 'System\Timeline\Module') {
+					$tl->register($module, $idvalue == 0 ? Action::Create : Action::Modify, $affected_id);
+				}
+			}
+		}
+
 		$json_output['result'] = true;
 		$json_output['method'] = $idvalue == 0 ? 0 : 1;
 	} else {

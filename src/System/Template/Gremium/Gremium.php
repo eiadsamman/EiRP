@@ -66,6 +66,13 @@ class Blocks
 	public string|null $fxwidth = null;
 
 
+	/**
+	 * Block fixed max width 
+	 * @var string
+	 */
+	public string|null $fxMaxwidth = null;
+
+
 	public array|null $options = null;
 
 	/**
@@ -161,6 +168,15 @@ class Blocks
 			$this->fxwidth = $fxwidth;
 		return $this;
 	}
+
+	public function maxWidth(?string $fxMaxwidth): self
+	{
+		if (!empty($fxMaxwidth))
+			$this->fxMaxwidth = $fxMaxwidth;
+		return $this;
+	}
+
+
 	public function options(?array $options): self
 	{
 		if (!empty($options))
@@ -274,6 +290,7 @@ class Article extends Blocks
 			echo "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo (empty($this->fxwidth) ? "" : " style=\"width:{$this->fxwidth};\" ");
+			echo (empty($this->fxMaxwidth) ? "" : " style=\"max-width:{$this->fxMaxwidth};\" ");
 			echo is_array($this->options) && in_array("nobg", $this->options) ? " class=\"nobg\" " : "";
 			echo is_array($this->options) && in_array("nopadding", $this->options) ? " class=\"nopadding\" " : "";
 			echo ">\n";

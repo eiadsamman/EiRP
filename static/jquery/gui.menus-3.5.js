@@ -110,7 +110,7 @@ $(document).ready(function (e) {
 	});
 
 
-	
+
 
 	$("#bookmark-button").on("click", function (e) {
 		if (e.target.dataset.target_id == null || e.target.dataset.role == null) { return; };
@@ -229,7 +229,7 @@ $(document).ready(function (e) {
 
 
 
-	
+
 });
 
 

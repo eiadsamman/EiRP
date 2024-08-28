@@ -41,7 +41,7 @@ $SmartListObject  = new SmartListObject($app);
 	<script type="text/javascript" src="static/jquery/gui.modals-1.4.js?rev=<?= $_v ?>"></script>
 	<script type="text/javascript" src="static/jquery/slo-1.4.js?rev=<?= $_v ?>"></script>
 
-<script type="module">
+	<script type="module">
 		import { Application, default as App } from "./static/javascript/modules/app.js";
 		import Account from "./static/javascript/modules/finance/account.js";
 		import Currency from "./static/javascript/modules/finance/currency.js";
@@ -269,7 +269,15 @@ $SmartListObject  = new SmartListObject($app);
 						$bookmark   = new Bookmark($app);
 						$bookmarked = $bookmark->isBookmarked($fs()->id);
 
-						echo "<div>{$app->user->info->fullName()}</div>";
+						$padge_type     = $app->user->info->photoid == 0 ? "initials" : "image";
+						$padge_initials = "" . mb_substr($app->user->info->firstname, 0, 1) . " " . mb_substr($app->user->info->lastname, 0, 1) . " ";
+						$padge_color    = "hsl(" . ((int) ($app->user->info->id) * 10 % 360) . ", 75%, 50%)";
+						$badge_uri      = $app->user->info->photoid != 0 ?
+							"<span class=\"cus-image\"><span style=\"background-image:url('{$fs(187)->dir}/?id={$app->user->info->photoid}&pr=t');\"></span></span>" :
+							"<span class=\"cus-initi\"><span style=\"background-color:{$padge_color}\">{$padge_initials}</span></span>";
+
+
+						echo "<div id=\"menuUserTag\">$badge_uri<i>{$app->user->info->fullName()}</i></div>";
 						echo "<a href=\"{$fs(27)->dir}/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Preferences & Security\">&#xe971;</span><span>Preferences & Security</span></a>";
 						echo "<a href=\"{$fs()->dir}/\" class=\"toggleLightMode\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Toggle Dark Mode\">&#xe9d4;</span><span>Toggle Dark Mode</span></a>";
 						echo "<a href=\"{$fs(263)->dir}/\"><span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px\" title=\"Bookmarks\">&#xe9d9;</span><span>Bookmarks</span></a>"; //e9d7
@@ -283,15 +291,17 @@ $SmartListObject  = new SmartListObject($app);
 						}
 						echo "</span></div>";
 
+						$alo = false;
 						foreach ($bookmark->list() as $bookmark) {
-							#sticky
-							#slo search
-							#add/remove from dom
+							$alo = true;
 							//color:#{$bookmark['trd_attrib5']}
 							echo "<a href=\"{$bookmark['trd_directory']}/\">
-						<span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px;\" title=\"{$bookmark['pfl_value']}\">&#xe{$bookmark['trd_attrib4']};</span><span>{$bookmark['pfl_value']}</span></a>";
+								<span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px;\" 
+								title=\"{$bookmark['pfl_value']}\">&#xe{$bookmark['trd_attrib4']};</span><span>{$bookmark['pfl_value']}</span></a>";
 						}
-
+						if (!$alo) {
+							echo "<span style=\"color: var(--root-font-lightcolor);cursor: default;\">No bookmarks found...</span>";
+						}
 						?>
 					</div>
 				</div>

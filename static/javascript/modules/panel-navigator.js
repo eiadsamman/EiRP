@@ -188,7 +188,8 @@ export class PaNa {
 			const payload = await response.json();
 			this.runtime.totalPages = parseInt(payload.headers.pages);
 
-			document.getElementById("pana-TotalRecords").innerText = payload.headers.count + " records";
+			if(document.getElementById("pana-TotalRecords"))
+				document.getElementById("pana-TotalRecords").innerText = payload.headers.count + " records";
 
 			payload.contents.forEach(element => {
 				let freePlaceholder = this.getFreePlaceholder();
@@ -290,7 +291,6 @@ export class PaNa {
 	}
 
 	run = function () {
-
 		let url = this.navigator.url;
 		this.module = null;
 		this.runtime.busy = true;
@@ -310,6 +310,7 @@ export class PaNa {
 					}
 					this.fetch();
 				}).catch(e => {
+					console.log(e)
 					messagesys.failure('Loading application modules failed');
 				});
 			}
@@ -339,6 +340,7 @@ export class PaNa {
 					return false;
 				});
 			} catch (e) {
+				console.log(e)
 			}
 		});
 	}
@@ -366,6 +368,7 @@ export class PaNa {
 			this.praseEvents(this.runtime.outputScreen);
 			if (this.module) this.module.run();
 		}).catch(response => {
+			console.log(response)
 			this.runtime.busy = false;
 			this.runtime.outputScreen.classList.remove("busy");
 			messagesys.failure("Server response `" + response.statusText + "`");
