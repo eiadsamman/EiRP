@@ -1,8 +1,14 @@
 import { Popup } from '../gui/popup.js';
-import { default as App, Application, View, Search } from '../app.js';
+import { default as App, Application, View, Search, List } from '../app.js';
 
 //import MathEvaluator from '../math-evaluator.js';
 
+
+export class CustomList extends List {
+
+	
+
+}
 
 export class Entry extends View {
 	pana = null;

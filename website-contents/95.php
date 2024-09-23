@@ -186,8 +186,9 @@ if ($app->xhttp) {
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
 						<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name" tabindex="-1"
-							data-slo=":LIST" data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" />
-						<!--  data-slodefaultid="<?= $app->user->company->id; ?>" value="<?= $app->user->company->name; ?>" -->
+							data-slo=":LIST" data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" 
+							<?= isset($_REQUEST['party']) ? " default=\"" . (int) $_REQUEST['party'] . "\" " : "" ?> />
+						
 					</div>
 				</label>
 				<label></label>

@@ -5,6 +5,7 @@ namespace System\Timeline;
 
 enum Action: int
 {
+	use \System\enumLib;
 	case Create = 110;
 	case Modify = 120;
 	case Delete = 130;
@@ -29,21 +30,6 @@ enum Action: int
 	case InventorySend = 310;
 	case InventoryReceive = 320;
 
-
-	public static function names(): array
-	{
-		return array_column(self::cases(), 'name');
-	}
-
-	public static function values(): array
-	{
-		return array_column(self::cases(), 'value');
-	}
-
-	public static function array(): array
-	{
-		return array_combine(self::values(), self::names());
-	}
 	public function toString(): string
 	{
 		return match ($this) {

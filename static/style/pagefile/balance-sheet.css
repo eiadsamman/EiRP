@@ -1,0 +1,115 @@
+.balancesheet {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 10px;
+
+	>div {
+		scroll-margin-top: 100px;
+		min-width: 400px;
+		flex: 1;
+
+		>h1 {
+			margin: 5px;
+			padding: 15px 20px 10px 20px;
+			border-bottom: double 3px var(--static-border);
+			color: var(--root-link-color);
+			position: sticky;
+			top: calc(var(--gremium-header-height) + var(--root--menubar-height) + 43px);
+			background-color: var(--root-ribbon-menu-background-color);
+			z-index: 15;
+		}
+
+		>h2 {
+			margin: 5px;
+			margin-left: 40px;
+			padding: 10px 10px;
+			border-bottom: solid 1px var(--static-border);
+			color: var(--buttongreen_hover-bgcolor);
+		}
+
+		>h3 {
+			margin: 10px 5px 2px 40px;
+			padding: 10px 10px 10px 10px;
+			color: var(--root-font-lightcolor);
+			border-bottom: solid 1px var(--static-border);
+		}
+
+		>div {
+			/* max-height: 400px;
+			overflow: auto; */
+			margin-left: 40px;
+			margin-right: 5px;
+			padding-right: 10px;
+
+			&::-webkit-scrollbar {
+				width: 5px;
+			}
+
+			&:hover::-webkit-scrollbar-thumb {
+				background-color: var(--input-hover_border-color);
+			}
+
+			&::-webkit-scrollbar-thumb {
+				background-color: var(--input_border-color);
+			}
+
+			>span.termgroup {
+				display: block;
+				padding-bottom: 10px;
+
+				>span.termtitle {
+					padding: 10px;
+					display: block;
+					cursor: pointer;
+					position: relative;
+					border-radius: 5px;
+					font-weight: bold;
+
+					&:hover {
+						background-color: var(--slo-menu-itemactive-background-color);
+					}
+
+					&:hover::after {
+						position: absolute;
+						align-content: center;
+						font-family: glyphs;
+						top: 10px;
+						left: -20px;
+						content: "\e902";
+						color: var(--root-link-color);
+					}
+				}
+
+				>div.termnew-input {
+					padding-left: 30px;
+					display: none;
+				}
+
+				>div.termaccounts {
+					margin-left: 20px;
+					cursor: default;
+
+					>span {
+						margin: 4px;
+						padding: 1px;
+						border-radius: 5px;
+
+						&:hover {
+							background-color: var(--slo-menu-itemhover-background-color);
+
+							&>button {
+								display: block;
+							}
+						}
+
+						>button {
+							display: none;
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+}

@@ -61,7 +61,6 @@ if ($app->xhttp) {
 		exit;
 	}
 
-
 	$perpage_val = 20;
 	$id          = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
 	$party       = new Company($app);
@@ -77,92 +76,134 @@ if ($app->xhttp) {
 		$mods = join(",", $mods);
 
 
-		$q    = "INSERT INTO 
-				timeline_track
-				(tlrk_tl_id, tlrk_type, tlrk_usr_id)
+		$q = "INSERT INTO 
+					timeline_track
+						(tlrk_tl_id, tlrk_type, tlrk_usr_id)
 				SELECT
 					tl_id, 1 , {$app->user->info->id}
 				FROM
 					timeline
 						LEFT JOIN `timeline_track` ON tl_id = tlrk_tl_id
 				WHERE
-					tl_owner = {$party->id} AND tl_module IN ($mods);";
-		//$r    = $app->db->execute_query($q);
+					tl_owner = {$party->id} AND tl_module IN ($mods) AND tlrk_tl_id IS NULL;";
+
+		$r = $app->db->execute_query($q);
 
 
-		$grem = new Gremium\Gremium(true,false);
+		$grem = new Gremium\Gremium(true, false);
 		$grem->header()->prev("href=\"{$fs(173)->dir}\" data-href=\"{$fs(173)->dir}\"")->serve("<h1>{$party->name}</h1>");//<cite>{$app->prefixList[10][0]}" . str_pad($party->id, $app->prefixList[10][1], "0", STR_PAD_LEFT) . "</cite>
 		$grem->title()->serve("<span class=\"flex\">Customer Information</span>");
-		$grem->article()->open(); ?>
-		<div class="form">
-			<label>
-				<h1>Customer name</h1>
-				<div class="btn-set">
-					<span><?= $party->name; ?></span>
-				</div>
-			</label>
-			<label>
-				<h1>Customer ID</h1>
-				<div class="btn-set">
-					<span><?= $app->prefixList[10][0] . str_pad($party->id, $app->prefixList[10][1], "0", STR_PAD_LEFT); ?></span>
-				</div>
-			</label>
-		</div>
 
-		<div class="form">
-			<label>
-				<h1>Address</h1>
-				<div class="btn-set">
-					<span>City: </span>
-					<span><?= $party->country ? $party->country->name . " - " : "-"; ?><?= $party->city; ?></span>
+		$grem->article()->open(); ?>
+		<div class="insection-splitview">
+			<div style="min-width:250px; max-width: 500px; flex:1;">
+
+				<div class="form">
+					<label>
+						<h1 id="for-action">Finance Tools</h1>
+						<div class="btn-set">
+							<span>Balance</span><span><?= number_format($party->financialBalance, 2) . " " . $app->currency->shortname; ?></span>
+						</div>
+						<div class="btn-set">
+							<a class="edge-left" href="<?= $fs(91)->dir ?>/?party=<?= $party->id ?>"><?= $fs(91)->title ?></a>
+							<a class="edge-right" href="<?= $fs(95)->dir ?>/?party=<?= $party->id ?>"><?= $fs(95)->title ?></a>
+						</div>
+						<div class="btn-set">
+							<a class="edge-left edge-right">New Invoice</a>
+						</div>
+					</label>
 				</div>
-				<div class="btn-set">
-					<span>Address: </span>
-					<span><?= $party->address; ?></span>
+
+				<div class="form">
+					<label for="">
+						<h1 id="for-action">Sales Management</h1>
+						<div class="btn-set">
+							<button class="standard edge-left">New sales order</button>
+						</div>
+					</label>
 				</div>
-				<?php if ($party->longitude && $party->latitude) { ?>
-					<div class="btn-set">
-						<span>Map location: </span>
-						<span><a target="_blank" href="https://www.google.com/maps/@<?= $party->latitude; ?>,<?= $party->longitude; ?>,60m">Goolge Maps</a></span>
+
+				<div class="form">
+					<label for="">
+						<h1 id="for-action">Inventory Planning</h1>
+						<div class="btn-set">
+							<button class="standard edge-left">Replenish products</button>
+						</div>
+					</label>
+				</div>
+
+			</div>
+			<div style="min-width:350px;flex: 2;">
+				<div class="form">
+					<label>
+						<h1>Customer ID / name</h1>
+						<div class="btn-set">
+							<span><?= $app->prefixList[10][0] . str_pad($party->id, $app->prefixList[10][1], "0", STR_PAD_LEFT); ?></span>
+							<span><?= $party->name; ?></span>
+						</div>
+					</label>
+				</div>
+
+				<div class="form">
+					<label>
+						<h1>Address</h1>
+						<div class="btn-set">
+							<span>City: </span>
+							<span><?= $party->country ? $party->country->name . " - " : "-"; ?><?= $party->city; ?></span>
+						</div>
+						<div class="btn-set">
+							<span>Address: </span>
+							<span><?= $party->address; ?></span>
+						</div>
+						<?php if ($party->longitude && $party->latitude) { ?>
+							<div class="btn-set">
+								<span>Map location: </span>
+								<span><a target="_blank" href="https://www.google.com/maps/@<?= $party->latitude; ?>,<?= $party->longitude; ?>,60m">Goolge
+										Maps</a></span>
+							</div>
+						<?php } ?>
+					</label>
+				</div>
+				<div class="form">
+					<label>
+						<h1>Contacts</h1>
+						<?php
+						$cont = explode("\n", $party->contactNumbers ?? "");
+						foreach ($cont as $c) {
+							echo trim($c != "") ? "<div class=\"btn-set\"><span><a href=\"tel:$c\">$c</a></span></div>" : "";
+						}
+						?>
+					</label>
+				</div>
+
+				<?php if ($party->legal && $fs(265)->permission->read) { ?>
+					<div class="form">
+						<label>
+							<h1>Commercial Registration</h1>
+							<div class="btn-set">
+								<span><?= $party->legal->registrationNumber; ?></span>
+							</div>
+						</label>
+						<label>
+							<h1>Tax Registration Number</h1>
+							<div class="btn-set">
+								<span><?= $party->legal->taxNumber; ?></span>
+							</div>
+						</label>
+					</div>
+					<div class="form">
+						<label>
+							<h1>VAT Registration Number</h1>
+							<div class="btn-set">
+								<span><?= $party->legal->vatNumber; ?></span>
+							</div>
+						</label>
 					</div>
 				<?php } ?>
-			</label>
-
-			<label>
-				<h1>Contacts</h1>
-				<?php
-				$cont = explode("\n", $party->contactNumbers ?? "");
-				foreach ($cont as $c) {
-					echo trim($c != "") ? "<div class=\"btn-set\"><span>$c</span></div>" : "";
-				}
-				?>
-			</label>
+			</div>
 		</div>
 
-		<?php if ($party->legal && $fs(265)->permission->read) { ?>
-			<div class="form">
-				<label>
-					<h1>Commercial Registration</h1>
-					<div class="btn-set">
-						<span><?= $party->legal->registrationNumber; ?></span>
-					</div>
-				</label>
-				<label>
-					<h1>Tax Registration Number</h1>
-					<div class="btn-set">
-						<span><?= $party->legal->taxNumber; ?></span>
-					</div>
-				</label>
-			</div>
-			<div class="form">
-				<label>
-					<h1>VAT Registration Number</h1>
-					<div class="btn-set">
-						<span><?= $party->legal->vatNumber; ?></span>
-					</div>
-				</label>
-			</div>
-		<?php } ?>
+
 
 		<?php
 		$grem->getLast()->close();
@@ -191,7 +232,6 @@ if ($app->xhttp) {
 
 		////box-shadow: 10px 0px 10px -15px rgba(100, 100, 100, 0.45);
 		echo <<<HTML
-		
 		<div class="insection-splitview">
 			<div style="min-width:250px; max-width: 500px; flex:1;">
 				<form id="newAactionForm" action="{$fs()->dir}">
@@ -265,7 +305,7 @@ if ($app->xhttp) {
 						" . ($entry->action->toString() != "" ? "<h1>{$entry->action->toString()}</h1>" : "") . "
 						<div>
 							{$entry->describe()}
-							{$entry->message}
+							" . nl2br($entry->message) . "
 						</div>";
 
 				if (sizeof($entry->attachments) > 0) {
@@ -309,10 +349,6 @@ if ($app->xhttp) {
 		echo <<<HTML
 		</div>
 		</div>
-		
-
-						
-						
 	HTML;
 
 		$grem->getLast()->close();
@@ -334,7 +370,6 @@ if ($app->xhttp) {
 			?>
 		</datalist>
 		<?php
-
 
 	} elseif ($id == null) {
 		$grem = new Gremium\Gremium(true);

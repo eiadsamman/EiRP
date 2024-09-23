@@ -135,8 +135,6 @@ if ($app->xhttp) {
 			<input type="hidden" name="challenge" value="<?= uniqid(); ?>" />
 			<input type="hidden" name="objective" value="transaction" />
 			<input type="hidden" name="statement-nature" id="statement-nature" value="1" />
-
-
 			<input type="hidden" name="exchange-override" id="exchange-override" value="false" />
 			<input type="hidden" name="exchange-dir-from" id="exchange-dir-from" value="" />
 			<input type="hidden" name="exchange-dir-to" id="exchange-dir-to" value="" />
@@ -189,7 +187,9 @@ if ($app->xhttp) {
 					<h1>Beneficiary</h1>
 					<div class="btn-set">
 						<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name" data-slo=":LIST"
-							tabindex="-1" data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" />
+							tabindex="-1" data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a"
+							<?= isset($_REQUEST['party']) ? " default=\"" . (int) $_REQUEST['party'] . "\" " : "" ?> />
+
 					</div>
 				</label>
 				<label></label>

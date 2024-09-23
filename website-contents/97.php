@@ -3,14 +3,7 @@ $database=array(
 'table'=>'acc_accounts',
 'tableselect'=>"
 				acc_accounts
-					JOIN (
-						SELECT ptp_id,ptp_name,trmgrp_name, CONCAT_WS(': ', trmgrp_name, ptp_name) AS typetermPair
-						FROM acc_accounttype LEFT JOIN acc_termgroup ON trmgrp_id = ptp_termgroup_id
-					) AS _account_type ON prt_type = _account_type.ptp_id 
-					
-					
 					JOIN companies ON comp_id=prt_company_id 
-					
 					LEFT JOIN currencies ON cur_id = prt_currency
 					",
 'tablename'=>'Accounts',
@@ -39,15 +32,7 @@ Crit
 	'comp_name'=>array(null,'Company'			,true	,null	,'slo'		,'string'	,false	,'COMPANIES'	,'prt_company_id'	,'<b>list</b> Company name'),
 	'prt_company_id'=>array(null,''				,false	,null	,'sloref'	,'int'		,true	,null	,null		),
 	
-	
-	'typetermPair'=>array(null,'Type'			,true	,null	,'slo'		,'string'	,false	,'D003'	,'prt_type'	,'<b>list</b> Account type'),
-	'prt_type'=>array(null,''					,false	,null	,'sloref'	,'int'		,true	,null	,null		),
-	
-	
 	'prt_name'=>array(null,'Name'				,true	,null	,'text'		,'string'	,true	,null	,null		,'<b>char(32)</b> Account name'),
-	
-	'prt_current'=>array(null,'Current'			,true	,null	,'bool'		,'int'		,true	,null	,null		,'<b>bool</b> Current/Non-current account'),
-	
 	
 	'cur_shortname'=>array(null,'Currency'		,true	,null	,'slo'		,'string'	,false	,'CURRENCY'	,'prt_currency'	,'<b>list</b> Account currency'),
 	'prt_currency'	=>array(null,''				,false	,null	,'sloref'	,'int'		,true	,null	,null		),
@@ -58,9 +43,9 @@ Crit
 	'prt_remarks'=>array(null,'Description'		,true	,"100%"	,'textarea' ,'string'	,true	,null	,null		,'<b>text</b> Account description'),
 	'prt_date'=>array("prt_date",'Creation date',false  ,null ,'hidden'	,'string'   ,false  ,null   ,null		,null,'',false),
 ),
-'order'=>array('prt_company_id','ptp_name','prt_name'),
+'order'=>array('prt_company_id','prt_name'),
 'flexablewidth'=>array(),
-'search'=>array('prt_id','comp_name','ptp_name','prt_name'),
+'search'=>array('prt_id','comp_name','prt_name'),
 'perpage'=>20
 );
 

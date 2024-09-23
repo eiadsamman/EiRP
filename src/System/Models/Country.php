@@ -9,14 +9,19 @@ namespace System\Models;
  */
 class Country
 {
-	public $id;
-	public $name;
-	public $code;
-	public $callingCodes;
+	public ?int $id;
+	public ?string $name;
+	public ?string $code = null;
+	public ?int $callingCodes = null;
 
 
 	public function __tostring(): string
 	{
 		return $this->name;
+	}
+
+	public function __construct(?int $id = null)
+	{
+		$this->id = $id;
 	}
 }

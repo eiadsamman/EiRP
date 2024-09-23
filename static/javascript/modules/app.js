@@ -309,7 +309,8 @@ export class List extends View {
 		this.fetch();
 	}
 
-	run() {
+	run(directAccess = false) {
+
 		this.slo_page_current = $("#js-input_page-current").slo({
 			onselect: (e) => {
 				this.currentPage = parseInt(e.key);
@@ -355,7 +356,7 @@ export class List extends View {
 			this.slo_page_current.set(this.currentPage, this.currentPage)
 			this.fetch();
 		});
-		this.fetch();
+		this.fetch(directAccess);
 	}
 
 	splashscreen(target, url, title, data) {
@@ -441,7 +442,7 @@ export class List extends View {
 		}
 	}
 
-	fetch() {
+	fetch(directAccess = false) {
 		this.latency = setTimeout(() => {
 			this.generatePlaceholders(20, 6);
 		}, 500);
@@ -484,8 +485,6 @@ export class List extends View {
 					}
 				};
 				let searchButton = document.getElementById("searchButton");
-
-
 				if (searchButton) {
 					searchButton.dataset.href = searchButton.dataset.target + "/?" + stringifyQurey;
 					let cancelSearchButton = document.getElementById("cancelSearchButton");

@@ -63,16 +63,11 @@ if ($app->xhttp) {
 		header("Vendor-Ouput-Sum: " . ($sum < 0 ? "(" : "") . number_format(abs($sum ?? 0), 2) . ((int) $sum < 0 ? ")" : ""));
 		header("Vendor-Ouput-Current: {$controller->criteria->getCurrentPage()}");
 
-		$app->errorHandler->customError(print_r([
-			$count,
-			$pages,
-			$controller->criteria->getCurrentPage()
-		], true));
 
 		$mysqli_result = $controller->chunk(false);
 		if ($mysqli_result->num_rows > 0) {
 			while ($row = $mysqli_result->fetch_assoc()) {
-
+				
 				$outof = (!empty($row['comp_id']) && $row['comp_id'] != $app->user->company->id ? "<div class=\"hlight\">" . $row['comp_name'] . "</div> " : "");
 
 				echo "<tr data-href=\"{$fs(104)->dir}/?id={$row['acm_id']}\">";
@@ -80,7 +75,7 @@ if ($app->xhttp) {
 				echo "<td class=\"col-1\">
 					<div>{$row['acm_id']}</div>
 					<div>{$row['acm_ctime']}</div>
-					<div class=\"in-value value-number " . ($row['atm_value'] <= 0 ? " negative" : "positive") . "\">" . number_format(abs($row['atm_value']), 2) . "</div>
+					<div class=\"in-value value-number " . ($row['atm_value'] <= 0 ? "negative" : "positive") . "\">" . number_format(abs($row['atm_value']), 2) . "</div>
 					{$outof}
 					<div class=\"light\">{$row['usr_firstname']} {$row['usr_lastname']}</div>
 					";
@@ -98,7 +93,7 @@ if ($app->xhttp) {
 				</td>";
 
 				echo "<td class=\"blank\"></td>";
-				echo "<td class=\"media-hide value-number final " . ($row['atm_value'] < 0 ? "negative" : "positive") . "\">" . number_format(abs($row['atm_value']), 2) . "</td>";
+				echo "<td class=\"media-hide value-number " . ($row['atm_value'] <= 0 ? "negative" : "positive") . "\">" . number_format(abs($row['atm_value']), 2) . "</td>";
 				echo "</tr>";
 			}
 		}
@@ -110,7 +105,7 @@ if ($app->xhttp) {
 
 
 	$grem = new Gremium\Gremium(true);
-	$grem->header()->serve("<h1><span class=\"small-media-hide\">{$app->user->account->type->keyTerm->toString()}: </span>{$app->user->account->name}</h1>" .
+	$grem->header()->serve("<h1><span class=\"small-media-hide\"></span>{$app->user->account->name}</h1>" .
 		"<cite><span id=\"navTotal\">0.00</span> {$app->user->account->currency->shortname}</cite>");
 	$legend = $grem->menu()->open();
 	echo <<<HTML
@@ -137,7 +132,7 @@ if ($app->xhttp) {
 				<td>ID</td>
 				<td>Description</td>
 				<td class="blank" style="width: 100%"></td>
-				<td class="value-number" style="padding-right:10px;">Balance</td>
+				<td class="value-number" style="padding-right:10px;">Amount</td>
 				</tr>
 			</tr>
 			</thead>

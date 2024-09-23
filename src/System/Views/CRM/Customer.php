@@ -75,7 +75,7 @@ class Customer extends \System\Views\PanelView
 				pn.init();
 				pn.register("{$fs()->dir}", {$_getJSON});
 				pn.navigator.stampState();
-				pn.run();
+				pn.run(true);
 				
 			</script>
 		HTML;

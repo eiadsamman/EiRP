@@ -98,11 +98,10 @@
 .btn-set>textarea:hover {
 	text-decoration: none;
 	border-color: var(--input-hover_border-color);
-	z-index: 12;
+	z-index: 15;
 
 }
 
-.btn-set>a:focus,
 .btn-set>input:focus,
 .btn-set>label:focus,
 .btn-set>textarea:focus {
@@ -110,7 +109,7 @@
 	/* -webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	-moz-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
 	box-shadow: 0 0 4px rgba(82, 168, 236, .7); */
-	z-index: 12;
+	z-index: 15;
 }
 
 
@@ -133,6 +132,8 @@
 	background-color: var(--input_background-color);
 	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 	z-index: 13;
+	cursor: default;
+
 }
 
 .btn-set>button:not(:disabled):hover {
@@ -151,6 +152,7 @@
 }
 
 .btn-set>button:focus,
+.btn-set>a:focus,
 .btn-set>input[type=button]:focus {
 	outline: solid 2px var(--outline-border-color);
 	outline-offset: 1px;
@@ -166,7 +168,8 @@
 	z-index: 15;
 }
 
-.btn-set>input[type=button]:not(:disabled):active {
+.btn-set>input[type=button]:not(:disabled):active,
+.btn-set>a:active {
 	border-color: var(--input-hover_border-color);
 	transform: translateY(0.08rem);
 	z-index: 15;
@@ -243,13 +246,17 @@
 }
 
 
-/* Green buttons */
+/* Standard buttons */
 .btn-set>button.standard {
 	background-color: var(--input_background-color);
 	border: solid 1px var(--input_border-color);
-	padding-bottom: 3px;
+	padding-bottom: 2px;
 	cursor: default;
 	color: var(--root-font-color) !important;
+}
+
+.btn-set>button.standard.error::before {
+	color:var(--buttonred_focus-bgcolor) !important;
 }
 
 .btn-set>button.standard::before {
@@ -284,16 +291,15 @@
 .btn-set>*.filter:before,
 .btn-set>*.lock:before,
 .btn-set>*.unlock:before {
+
 	display: inline-block;
+	align-content: center;
 	font-family: glyphs;
 	font-size: 1.1em;
 	position: relative;
 	top: 0px;
 }
 
-.btn-set>button:before {
-	top: 2px !important;
-}
 
 
 .btn-set>*.success:before {
@@ -336,6 +342,10 @@
 .btn-set>button.plus:before,
 .btn-set>button.error:before {
 	color: var(--button-font-color);
+}
+
+.btn-set>button:before {
+	top: 2px !important;
 }
 
 /* #endregion - Glyphs*/

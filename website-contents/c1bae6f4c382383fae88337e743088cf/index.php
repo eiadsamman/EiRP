@@ -16,7 +16,6 @@ $arr_tables=array(
 	"t09"=>array("Companies","companies","truncate",1000),
 	"t02"=>array("Accounts category groups","acc_categorygroups","truncate",1000),
 	"t01"=>array("Accounts categories","acc_categories","truncate",10000),
-	"t26"=>array("Accounts type","acc_accounttype","truncate",100),
 	"t25"=>array("Accounts","acc_accounts","truncate",1000),
 	"t03"=>array("Fincancial statements","acc_main","truncate",100000),
 	"t05"=>array("Fincancial statements records","acc_temp","truncate",100000),

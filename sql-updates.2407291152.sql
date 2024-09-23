@@ -160,4 +160,56 @@ CREATE TABLE `timeline_track` (
 	`tlrk_isread` BOOLEAN NOT NULL DEFAULT '0'
 ) ENGINE = InnoDB;
 
-ALTER TABLE `timeline` ADD INDEX (`tl_id`, `tl_module`);
+
+ALTER TABLE
+	`timeline`
+ADD
+	INDEX (`tl_id`, `tl_module`);
+
+
+ALTER TABLE
+	`acc_accounts` DROP `prt_ale`,
+	DROP `prt_current`;
+
+
+DROP TABLE `acc_termgroup`;
+
+
+UPDATE
+	pagefile
+SET
+	trd_visible = 0,
+	trd_enable = 0
+WHERE
+	trd_id = 262
+	OR trd_id = 11;
+
+
+DROP TABLE `acc_transtypes`;
+
+
+ALTER TABLE
+	`acc_accounts`
+ADD
+	`prt_term` MEDIUMINT UNSIGNED NULL DEFAULT NULL AFTER `prt_name`;
+
+
+/* view_financial_accounts VIEW */
+SELECT
+	`acc_accounts`.`prt_id` AS `prt_id`,
+	`acc_accounts`.`prt_name` AS `prt_name`,
+	`acc_accounts`.`prt_term` AS `prt_term`,
+	`companies`.`comp_name` AS `comp_name`,
+	`companies`.`comp_id` AS `comp_id`,
+	`currencies`.`cur_id` AS `cur_id`,
+	`currencies`.`cur_name` AS `cur_name`,
+	`currencies`.`cur_shortname` AS `cur_shortname`,
+	`currencies`.`cur_symbol` AS `cur_symbol`
+FROM
+	`acc_accounts`
+	JOIN `currencies` ON (
+		`currencies`.`cur_id` = `acc_accounts`.`prt_currency`
+	)
+	JOIN `companies` ON (
+		`acc_accounts`.`prt_company_id` = `companies`.`comp_id`
+	);

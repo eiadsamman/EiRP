@@ -33,7 +33,7 @@ class SmartListObject
 		try {
 			if (
 				$r = $this->app->db->query("SELECT 
-				prt_id, comp_name, ptp_name, prt_name, cur_name, cur_shortname
+				prt_id, comp_name,  prt_name, cur_name, cur_shortname
 			FROM
 				view_financial_accounts
 			WHERE
@@ -41,7 +41,7 @@ class SmartListObject
 			")
 			) {
 				while ($row = $r->fetch_assoc()) {
-					$output .= $this->template($row['prt_id'], "[{$row['cur_shortname']}] {$row['comp_name']}: {$row['ptp_name']}: {$row['prt_name']}", "");
+					$output .= $this->template($row['prt_id'], "[{$row['cur_shortname']}] {$row['comp_name']}: {$row['prt_name']}", "");
 				}
 			}
 		} catch (\mysqli_sql_exception $e) {
@@ -69,7 +69,7 @@ class SmartListObject
 			if (
 				$r = $this->app->db->query(
 					"SELECT 
-				prt_id, comp_name, ptp_name, prt_name, cur_id, cur_shortname, usrset_value
+				prt_id, comp_name, prt_name, cur_id, cur_shortname, usrset_value
 			FROM
 				view_financial_accounts
 				JOIN user_partition ON prt_id = upr_prt_id AND upr_usr_id=" . $this->app->user->info->id . (!is_null($role) ? " AND " . $role->sqlClause() : "") . "
@@ -85,10 +85,10 @@ class SmartListObject
 					}
 					$output .= $this->template(
 						$row['prt_id'],
-						"[" . $row['cur_shortname'] . "] " . ($company_id != null ? "" : $row['comp_name'] . ": ") . $row['ptp_name'] . ": " . $row['prt_name'],
+						"[" . $row['cur_shortname'] . "] " . ($company_id != null ? "" : $row['comp_name'] . ": ") . $row['prt_name'],
 						"",
 						$select == $row['prt_id'],
-						" data-curId=\"{$row['cur_id']}\" "
+						" data-curId = \"{$row['cur_id']}\" "
 					);
 				}
 			}
@@ -188,7 +188,7 @@ class SmartListObject
 				users 
 					JOIN labour ON lbr_id=usr_id
 			WHERE 
-				1 " . ($company_filter != null ? " AND usr_entity = {$company_filter} "   : "") . ";"
+				1 " . ($company_filter != null ? " AND usr_entity = {$company_filter} " : "") . ";"
 				)
 			) {
 				while ($row = $r->fetch_assoc()) {
@@ -226,6 +226,27 @@ class SmartListObject
 		) {
 			while ($row = $r->fetch_assoc()) {
 				$output .= $this->template($row['acccat_id'], "{$row['acccat_name']}: {$row['accgrp_name']}", $row['category_name']);
+			}
+		}
+
+		return $output;
+	}
+
+
+
+	/**
+	 * Returns SmartList Accounts List for finanace categories\sub categories
+	 *
+	 * @return string HTML string `<option />` tags based on `System\SmartListObject\template` function
+	 */
+	public function countries(): string
+	{
+		$output = "";
+		if (
+			$r = $this->app->db->query("SELECT SELECT cntry_id ,cntry_name, cntry_abrv FROM countries;")
+		) {
+			while ($row = $r->fetch_assoc()) {
+				$output .= $this->template($row['cntry_id'], "{$row['cntry_name']}", $row['cntry_abrv']);
 			}
 		}
 

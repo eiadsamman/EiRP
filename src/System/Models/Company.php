@@ -65,10 +65,18 @@ class Company extends CompanyProfile
 				cntry_name,
 				cntry_abrv,
 				cntry_id,
-				cntry_code
+				cntry_code,
+				financial_balance
 			FROM 
 				companies
 					LEFT JOIN countries ON cntry_id = comp_country
+
+					LEFT JOIN (
+						SELECT acm_party, SUM( acm_realvalue * IF( acm_type = 1 , 1 , -1) * curexg_value ) AS financial_balance
+						FROM acc_main JOIN currency_exchange ON acm_realcurrency = curexg_from 
+						GROUP BY acm_party
+					) AS _cash
+					ON _cash.acm_party = comp_id
 			WHERE 
 				comp_id = ?
 			"
@@ -88,12 +96,13 @@ class Company extends CompanyProfile
 				$this->address        = $row['comp_address'] ?? "-";
 				$this->city           = $row['comp_city'] ?? "-";
 
-				$this->longitude = is_null($row['comp_longitude']) ? null : (float) $row['comp_longitude'];
-				$this->latitude  = is_null($row['comp_latitude']) ? null : (float) $row['comp_latitude'];
+				$this->financialBalance = $row['financial_balance'];
+				$this->longitude        = is_null($row['comp_longitude']) ? null : (float) $row['comp_longitude'];
+				$this->latitude         = is_null($row['comp_latitude']) ? null : (float) $row['comp_latitude'];
 
 				$this->creationDate = is_null($row['comp_date']) ? null : new \DateTime($row['comp_date']);
 
-				if (  !is_null($row['cntry_id'])) {
+				if (!is_null($row['cntry_id'])) {
 					$this->country               = new Country();
 					$this->country->id           = $row['cntry_id'];
 					$this->country->name         = $row['cntry_name'];
@@ -127,30 +136,52 @@ class Company extends CompanyProfile
 		return false;
 	}
 
-	public function insert(): bool|null
+
+
+	private function checkIntegrity(): bool
+	{
+		if (null == $this->name || "" == trim($this->name)) {
+			throw new \System\Exceptions\Company\InvalidData("Invalid company name");
+		} else {
+			$this->name = trim($this->name);
+
+			$r = $this->app->db->execute_query("SELECT comp_id FROM companies WHERE comp_name = ?", [
+				$this->name
+			]);
+			if ($r->num_rows > 0) {
+				throw new \System\Exceptions\Company\InvalidData("Company name already exists", 100);
+			}
+		}
+
+		return true;
+	}
+	public function add(): bool|null
 	{
 		if (!$this->app->file->find($this->companySystemFileId)->permission->add) {
 			throw new \System\Exceptions\Exceptions("Permissions denied");
 		}
-		$this->prepare();
-		$stmt = $this->app->db->prepare(
+		$this->checkIntegrity();
+		$stmt = $this->app->db->execute_query(
 			"INSERT INTO companies
-				(comp_name, comp_tellist, comp_emaillist, comp_address, comp_country, comp_field, comp_sys_default)
+				(comp_name, comp_tellist, comp_emaillist, comp_address, comp_country, comp_city, comp_field, comp_sys_default,
+				comp_latitude,comp_longitude)
 				VALUES
-				(?,?,?,?,?,?,0);
-				"
+				(?,?,?,?,?,?,?,0,?,?);",
+			[
+				$this->name,
+				$this->contactNumbers,
+				$this->contactEmails,
+				$this->address,
+				$this->country->id,
+				$this->city,
+				$this->businessField,
+				$this->latitude,
+				$this->longitude
+			]
 		);
-		$stmt->bind_param(
-			"ssssiisss",
-			$this->name,
-			$this->contactNumbers,
-			$this->contactEmails,
-			$this->address,
-			$this->country->id,
-			$this->businessField
-		);
-		if ($stmt->execute()) {
-			$this->internalId = $stmt->insert_id;
+
+		if ($stmt) {
+			$this->internalId = $this->app->db->insert_id;
 			$this->id         = $this->internalId;
 			return true;
 		} else {

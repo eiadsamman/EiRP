@@ -56,6 +56,13 @@ class ListHandler extends SmartListObjectHandler {
 				.then((payload) => {
 					this.dataset = payload;
 					this.isLoading = false;
+
+					if (initial.attr("default") !== undefined) {
+						let selected = this.dataset.find((e) => e.id == initial.attr("default"));
+						if (selected !== undefined) {
+							initial[0].slo.set(selected.id, selected.value)
+						}
+					}
 				}).catch(error => {
 					initial[0].style.background = "yellow";
 					initial[0].value = error;
@@ -510,6 +517,7 @@ class SmartListObject {
 			handler = new DateHandler(this.htmltext.val() ?? null, this.htmltext.attr("data-rangestart") ?? null, this.htmltext.attr("data-rangeend") ?? null);
 		} else if (this.role == ":LIST") {
 			handler = new ListHandler(this.htmltext);
+
 		} else if (this.role == ":SELECT") {
 			this.container.addClass("slo-select");
 			this.htmltext.prop("readonly", true);

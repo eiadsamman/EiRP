@@ -21,7 +21,6 @@ if ($app->xhttp) {
 		$current = (int) ($payload['page']);
 		$current = $current < 0 ? 1 : $current;
 
-
 		$filters      = [
 			'search' => [
 				'get' => 'company',
@@ -63,10 +62,10 @@ if ($app->xhttp) {
 
 		if ($count > 0) {
 
-
 			$pos = ($current - 1) * Customer::$perpage_val;
 			$q   = "SELECT
-				comp_id, comp_name, _cashValue, _tltot, _tlread, (_tltot - _tlread) AS _tlnew, mm.tl_timestamp,
+				comp_id, comp_name, _cashValue, _tltot, _tlread, (_tltot - _tlread) AS _tlnew,tl_timestamp, 
+				DATE_FORMAT(mm.tl_timestamp, '%b %D, %Y') AS _datestamp, DATE_FORMAT(mm.tl_timestamp, '%H:%i ') AS _timestamp,
 				mm.usr_firstname, mm.usr_lastname
 			FROM 
 				companies
@@ -76,7 +75,6 @@ if ($app->xhttp) {
 						GROUP BY acm_party
 					) AS _cash
 					ON _cash.acm_party = comp_id
-
 
 					LEFT JOIN 
 					(
@@ -107,23 +105,23 @@ if ($app->xhttp) {
 
 			if ($mysqli_result->num_rows > 0) {
 				while ($row = $mysqli_result->fetch_assoc()) {
+					$row['_tlnew'] = $row['_tlnew'] ?? 0;
+					$row['_tltot'] = $row['_tltot'] ?? 0;
 					echo "<tr data-href=\"{$fs(267)->dir}/?id={$row['comp_id']}\">";
 					echo "<td class=\"col-1\">
 						<div class=\"light\">{$row['comp_id']}</div>
 						<div><span>{$row['comp_name']}</span>" . ($row['_tlnew'] > 0 ? "<span class=\"smallbadge\">{$row['_tlnew']}</span>" : "") . "</div>
-						<div class=\"in-value value-number\">" . number_format($row['_cashValue'] ?? 0, 2) . " {$app->currency->shortname}</div>";
+						<div class=\"in-value value-number " . ($row['_cashValue'] <= 0 ? " negative" : "positive") . "\">" . number_format(abs($row['_cashValue'] ?? 0), 2) . "</div>
+						";
 					echo "</td>";
 					echo "<td class=\"value-comment col-2\">
-						<span>{$row['usr_firstname']} {$row['usr_lastname']}</span>
-						<span>{$row['tl_timestamp']}</span>
-						" . ($row['_tlnew'] > 0 ? "<span>({$row['_tlnew']} <span class=\"light\">New feebacks</span>)</span>" : null) . "
+						<span>" . ($row['usr_firstname'] ? "{$row['usr_firstname']} {$row['usr_lastname']}" : "-") . "</span>
+						<span>{$row['_datestamp']} <span class=\"light\">{$row['_timestamp']}</span></span>
+						<span>{$row['_tlnew']} <i class=\"light\"> / {$row['_tltot']} feedbacks</i></span>
 					</td>";
 					echo "<td class=\"blank\"></td>";
 
-					echo "<td class=\"media-hide\">
-							<div class=\"value-number\">" . number_format($row['_cashValue'] ?? 0, 2) . " {$app->currency->shortname}</div>
-							
-						</td>";
+					echo "<td class=\"media-hide value-number final " . (($row['_cashValue'] ?? 0) < 0 ? "negative" : "positive") . "\">" . number_format(abs($row['_cashValue'] ?? 0), 2) . "</td>";
 
 					echo "</tr>";
 				}
@@ -141,7 +139,6 @@ if ($app->xhttp) {
 	echo <<<HTML
 		<button id="searchButton" class="edge-left edge-right search" data-href="{$fs(269)->dir}" data-target="{$fs(269)->dir}"><span class="small-media-hide"> Search</span></button>
 		<input type="button" id="cancelSearchButton" style="display: none;font-family: glyphs" class="edge-right error" data-href="{$fs()->dir}" href="{$fs()->dir}" value="&#xe901;" />
-
 
 		<span class="flex" style="justify-content: flex-end"><span class="small-media-hide" id="navEntries">0 records</span></span>
 		<input type="button" class="pagination prev edge-left" id="navPrev" disabled value="&#xe91a;" />

@@ -209,12 +209,11 @@ function id_maping(&$app, &$array, $array_exclusions, $map)
 		"account" => "
 			SELECT 
 				prt_id AS _id,
-				CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name) AS _name 
+				CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \", \": \", prt_name) AS _name 
 			FROM 
 				`acc_accounts` 
 					JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id='{$app->user->info->id}' AND upr_prt_view=1
 					JOIN currencies ON cur_id=prt_currency
-					JOIN `acc_accounttype` ON prt_type=ptp_id
 					JOIN companies ON prt_company_id=comp_id
 			WHERE 
 				prt_id IN (",
@@ -550,13 +549,12 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 
 				$sub_q = (
 					"SELECT 
-						atm_value,atm_main,prt_name,cur_shortname,atm_dir,comp_name,ptp_name
+						atm_value,atm_main,prt_name,cur_shortname,atm_dir,comp_name
 					FROM
 						acc_accounts
 							JOIN acc_temp ON prt_id = atm_account_id
 							JOIN currencies ON cur_id = prt_currency 
 							JOIN companies ON comp_id = prt_company_id 
-							JOIN `acc_accounttype` ON ptp_id = prt_type
 					WHERE atm_main = {$row['acm_id']};"
 				);
 
@@ -569,13 +567,13 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 							$array_output[$row['acm_id']]["details"]['creditor']              = array();
 							$array_output[$row['acm_id']]["details"]['creditor']['raw_value'] = number_format(abs($row_q['atm_value']), 2, ".", ",");
 							$array_output[$row['acm_id']]["details"]['creditor']['value']     = ($row_q['atm_value'] < 0 ? "(" . number_format(abs($row_q['atm_value']), 2, ".", ",") . ")" : number_format($row_q['atm_value'], 2, ".", ","));
-							$array_output[$row['acm_id']]["details"]['creditor']['account']   = $row_q['comp_name'] . ": " . $row_q['ptp_name'] . ": " . $row_q['prt_name'];
+							$array_output[$row['acm_id']]["details"]['creditor']['account']   = $row_q['comp_name'] . ": "  . $row_q['prt_name'];
 							$array_output[$row['acm_id']]["details"]['creditor']['currency']  = $row_q['cur_shortname'];
 						} elseif ($row_q['atm_dir'] == 1) {
 							//debitor
 							$array_output[$row['acm_id']]["details"]['debitor']             = array();
 							$array_output[$row['acm_id']]["details"]['debitor']['value']    = ($row_q['atm_value'] < 0 ? "(" . number_format(abs($row_q['atm_value']), 2, ".", ",") . ")" : number_format($row_q['atm_value'], 2, ".", ","));
-							$array_output[$row['acm_id']]["details"]['debitor']['account']  = $row_q['comp_name'] . ": " . $row_q['ptp_name'] . ": " . $row_q['prt_name'];
+							$array_output[$row['acm_id']]["details"]['debitor']['account']  = $row_q['comp_name'] . ": "  . $row_q['prt_name'];
 							$array_output[$row['acm_id']]["details"]['debitor']['currency'] = $row_q['cur_shortname'];
 						}
 					}
@@ -653,7 +651,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 				" . (isset($arr_group['category_family']) && $arr_group['category_family']['active'] ? " accgrp_id,accgrp_name, " : "") . "
 				" . (isset($arr_group['category']) && $arr_group['category']['active'] ? " acccat_id,acccat_name, " : "") . "
 				" . (isset($arr_group['type']) && $arr_group['type']['active'] ? " acm_type, " : "") . "
-				" . (isset($arr_group['account']) && $arr_group['account']['active'] ? " account_id, CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", account_name) AS account_name, " : "") . "
+				" . (isset($arr_group['account']) && $arr_group['account']['active'] ? " account_id, CONCAT (\"[\", cur_shortname , \"] \" , comp_name , \": \", account_name) AS account_name, " : "") . "
 				" . (isset($arr_group['benifical']) && $arr_group['benifical']['active'] ? " acm_usr_id,CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,''))  AS benifical, " : "") . "
 				" . (isset($arr_group['benifical_t']) && $arr_group['benifical_t']['active'] ? " acm_beneficial, " : "") . "
 				" . (isset($arr_group['reference']) && $arr_group['reference']['active'] ? " acm_reference, " : "") . "
@@ -667,7 +665,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 						SELECT
 							atm_main,prt_name AS account_name,prt_id AS account_id,
 							( atm_value * _rates._rate ) AS atm_value,
-							cur_symbol,cur_shortname,comp_name,ptp_name
+							cur_symbol,cur_shortname,comp_name
 						FROM
 							`acc_accounts` 
 								JOIN acc_temp ON prt_id=atm_account_id
@@ -677,7 +675,6 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 								) AS _rates ON _rates._rate_from = prt_currency AND _rates._rate_to = {$arr_listfixed['filtercurrency']}
 								JOIN user_partition ON upr_prt_id=atm_account_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1
 								JOIN currencies ON cur_id = prt_currency
-								JOIN `acc_accounttype` ON prt_type=ptp_id
 								JOIN companies ON comp_id = prt_company_id AND comp_id = {$app->user->company->id}
 							WHERE
 								1 

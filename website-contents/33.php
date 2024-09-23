@@ -18,10 +18,10 @@ $article = $grem->article()->open();
 	$ptp = array();
 	if (
 		$r = $app->db->query(
-			"SELECT prt_id, prt_name, ptp_name, cur_shortname, comp_name
+			"SELECT prt_id, prt_name,prt_type, cur_shortname, comp_name
 				FROM view_financial_accounts JOIN user_partition ON upr_prt_id = prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_fetch = 1
 				WHERE comp_id = {$app->user->company->id}
-				ORDER BY comp_name, cur_id, ptp_name, prt_name;"
+				ORDER BY comp_name, cur_id, prt_name;"
 		)
 	) {
 		while ($row = $r->fetch_assoc()) {
@@ -29,10 +29,10 @@ $article = $grem->article()->open();
 			if (!isset($ptp[$row['comp_name']])) {
 				$ptp[$row['comp_name']] = array();
 			}
-			if (!isset($ptp[$row['comp_name']][$row['ptp_name']])) {
-				$ptp[$row['comp_name']][$row['ptp_name']] = array();
+			if (!isset($ptp[$row['comp_name']][$row['prt_type']])) {
+				$ptp[$row['comp_name']][$row['prt_type']] = array();
 			}
-			$ptp[$row['comp_name']][$row['ptp_name']][] = array($row['prt_id'], $row['prt_name'], $row['cur_shortname']);
+			$ptp[$row['comp_name']][$row['prt_type']][] = array($row['prt_id'], $row['prt_name'], $row['cur_shortname']);
 		}
 	}
 	echo "<table id=\"screenSectorCol\"><tbody>";

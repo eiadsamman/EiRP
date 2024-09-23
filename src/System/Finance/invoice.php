@@ -95,8 +95,8 @@ class Invoice
 
 	public function GetNextSerial(int $docType, int $company, int $costcenter): int
 	{
-		$query = "
-			SELECT 
+		$query = 
+			"SELECT 
 				IFNULL(MAX(po_serial) , 0) + 1 AS doc_serial
 			FROM 
 				inv_main

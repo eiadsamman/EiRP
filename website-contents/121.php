@@ -60,7 +60,7 @@ if ($app->xhttp) {
 						"beneficial" => (!is_null($row['_party_comp_id']) ? "<span style=\"color:var(--root-link-color)\">{$row['_party_comp_name']}</span>: " : "") . $row['acm_beneficial'],
 						"details" => $row['acm_comments'] ?? "",
 						"padge_id" => $row['issuer_badge'] ?? 0,
-						"padge_initials" => mb_substr($row['usr_firstname'], 0, 1) . " " . mb_substr($row['usr_lastname'], 0, 1),
+						"padge_initials" => mb_substr($row['usr_firstname'] ?? "", 0, 1) . " " . mb_substr($row['usr_lastname'] ?? "", 0, 1),
 						"padge_color" => "hsl(" . ((int) ($row['acm_editor_id']) * 10 % 360) . ", 75%, 50%)",
 						"attachements" => $row['up_count'] ?? 0
 					);

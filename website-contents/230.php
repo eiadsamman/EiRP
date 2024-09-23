@@ -1,7 +1,6 @@
 <?php
 
-use \System\Finance\Invoice;
-use System\Template\Body;
+/*
 
 $material = new Materials();
 
@@ -261,7 +260,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 	echo json_encode($output);
 	exit;
 }
-/*AJAX-END*/
+
 
 if ($h__requested_with_ajax) {
 	exit;
@@ -269,7 +268,7 @@ if ($h__requested_with_ajax) {
 
 
 $_TEMPLATE = new Body("Test");
-$_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ true,/*Sticky Frame*/ true);
+$_TEMPLATE->SetLayout(true, true true);
 $_TEMPLATE->FrameTitlesStack(false);
 
 ?>
@@ -385,136 +384,136 @@ $_TEMPLATE->TailGap();
 			limit: 7,
 		});
 		var $jQcostcenter = $("#jQcostcenter").slo();;
-		<?php /*var $jQinputShipto=$("#jQinputShipto").slo();
-		$jQinputShipto.setparam({'slocompany':<?php echo $_UXSEXR['company']['id'];?>});*/ ?>
+		<?php var $jQinputShipto=$("#jQinputShipto").slo();
+		$jQinputShipto.setparam({'slocompany':<?php echo $_UXSEXR['company']['id'];?>}); ?>
 
-		var DisplayBOM = function(mat, qty) {
-			$.ajax({
-				url: "<?php echo $fs()->dir; ?>",
-				type: "POST",
-				data: {
-					"method": "displaybom",
-					"id": mat,
-					"qty": qty
-				}
-			}).done(function(output) {
-				popup.content(output).show();
-				$(popup.controller()).find(".jQcheckB").on('click', function() {
-					var _stat = $(this).prop("checked");
-					var _type = $(this).attr("data-rel");
-					$(popup.controller()).find("input[data-lev=" + _type + "]").prop("checked", _stat);
-				});
-			});
-		}
+var DisplayBOM = function(mat, qty) {
+$.ajax({
+url: "<?php echo $fs()->dir; ?>",
+type: "POST",
+data: {
+"method": "displaybom",
+"id": mat,
+"qty": qty
+}
+}).done(function(output) {
+popup.content(output).show();
+$(popup.controller()).find(".jQcheckB").on('click', function() {
+var _stat = $(this).prop("checked");
+var _type = $(this).attr("data-rel");
+$(popup.controller()).find("input[data-lev=" + _type + "]").prop("checked", _stat);
+});
+});
+}
 
-		var fnFormSubmit = function() {
-			$.ajax({
-				url: "<?php echo $fs()->dir; ?>",
-				type: "POST",
-				data: $("#jQpopForm").serialize()
-			}).done(function(enchantress) {
-				$jQBuilder.append($(enchantress));
-				$jQbomSelector.clear();
-				$jQbomSelector.focus();
-				$jQbomQuantity.val("");
-				popup.close();
-			});
-		}
-		var fnInsertMaterial = function() {
-			if (~~$jQbomSelector.key[0].val() == 0 || ~~$jQbomQuantity.val() == 0) {
-				messagesys.failure("Material item and Quantity are required");
-				return;
-			}
-			$.ajax({
-				url: "<?php echo $fs()->dir; ?>",
-				type: "POST",
-				data: {
-					"method": "checkitem",
-					"id": $jQbomSelector.key[0].val(),
-					"qty": $jQbomQuantity.val()
-				}
-			}).done(function(output) {
-				try {
-					json = JSON.parse(output);
-				} catch (e) {
-					messagesys.failure("Parsing output failed");
-					return false;
-				}
-				if (json.result == 2) {
-					$newrow = "";
-					$newrow += "<tr class=\"cssc\">";
-					$newrow += "<td><span class=\"css_rowNum\"></span>\
-						<input type=\"hidden\" name=\"po_item[][" + json.item_id + "]\" value=\"" + json.item_qty + "\" />\
-						<input type=\"hidden\" name=\"po_bom_part[][0]\" value=\"0\" />\
-						</td>";
-					$newrow += "<td>" + json.item_qtyx + "</td>";
-					$newrow += "<td>" + json.item_unit + "</td>";
-					$newrow += "<td>" + json.long_id + "</td>";
-					$newrow += "<td>" + json.item_name + "</td>";
-					$newrow += "<td>" + json.item_type + "</td>";
-					$newrow += "<td class=\"op-remove noselect\"><span></span></td>";
-					$newrow += "</tr>";
-					$jQBuilder.append($($newrow));
-					$jQbomSelector.clear();
-					$jQbomSelector.focus();
+var fnFormSubmit = function() {
+$.ajax({
+url: "<?php echo $fs()->dir; ?>",
+type: "POST",
+data: $("#jQpopForm").serialize()
+}).done(function(enchantress) {
+$jQBuilder.append($(enchantress));
+$jQbomSelector.clear();
+$jQbomSelector.focus();
+$jQbomQuantity.val("");
+popup.close();
+});
+}
+var fnInsertMaterial = function() {
+if (~~$jQbomSelector.key[0].val() == 0 || ~~$jQbomQuantity.val() == 0) {
+messagesys.failure("Material item and Quantity are required");
+return;
+}
+$.ajax({
+url: "<?php echo $fs()->dir; ?>",
+type: "POST",
+data: {
+"method": "checkitem",
+"id": $jQbomSelector.key[0].val(),
+"qty": $jQbomQuantity.val()
+}
+}).done(function(output) {
+try {
+json = JSON.parse(output);
+} catch (e) {
+messagesys.failure("Parsing output failed");
+return false;
+}
+if (json.result == 2) {
+$newrow = "";
+$newrow += "<tr class=\"cssc\">";
+	$newrow += "<td><span class=\"css_rowNum\"></span>\
+		<input type=\"hidden\" name=\"po_item[][" + json.item_id + "]\" value=\"" + json.item_qty + "\" />\
+		<input type=\"hidden\" name=\"po_bom_part[][0]\" value=\"0\" />\
+	</td>";
+	$newrow += "<td>" + json.item_qtyx + "</td>";
+	$newrow += "<td>" + json.item_unit + "</td>";
+	$newrow += "<td>" + json.long_id + "</td>";
+	$newrow += "<td>" + json.item_name + "</td>";
+	$newrow += "<td>" + json.item_type + "</td>";
+	$newrow += "<td class=\"op-remove noselect\"><span></span></td>";
+	$newrow += "</tr>";
+$jQBuilder.append($($newrow));
+$jQbomSelector.clear();
+$jQbomSelector.focus();
 
-					$jQbomQuantity.val("");
-				} else if (json.result == 1) {
-					DisplayBOM($jQbomSelector.key[0].val(), $jQbomQuantity.val());
-				} else {
-					messagesys.failure("Adding material failed, material not found");
-				}
-			});
-		}
-
-
-
-		$($(popup.controller())).on("click", "#jQpopBtnCancle", function() {
-			popup.close();
-		});
-		$($(popup.controller())).on("click", "#jQpopBtnSubmit", function() {
-			fnFormSubmit();
-		});
-		$($jQBuilder).on("click", ".op-remove", function() {
-			$(this).closest("tr").remove();
-		});
-		$("#jQbtnItemAdd").on("click", function() {
-			fnInsertMaterial();
-		});
-		$("#jQaddItem").on("click", function() {
-			fnInsertMaterial();
-		});
-		$("#jQbomqty").on("keydown", function(e) {
-			var keycode = (e.keyCode ? e.keyCode : e.which);
-			if (keycode == 13) {
-				fnInsertMaterial();
-			}
-		});
+$jQbomQuantity.val("");
+} else if (json.result == 1) {
+DisplayBOM($jQbomSelector.key[0].val(), $jQbomQuantity.val());
+} else {
+messagesys.failure("Adding material failed, material not found");
+}
+});
+}
 
 
-		$("#jQpostSubmit").on('click', function() {
-			overlay.show();
-			$.ajax({
-				url: "<?php echo $fs()->dir; ?>",
-				type: "POST",
-				data: $("#jQpostFormDetails").serialize() + "&" + $("#jQpostFormMaterials").serialize(),
-			}).done(function(o, textStatus, request) {
-				let response = request.getResponseHeader('HTTP_X_RESPONSE');
-				if (response == "INERR") {
-					messagesys.failure(o);
-				} else if (response == "SUCCESS") {
-					messagesys.success("Material Request posted successfully");
-					Template.PageRedirect("<?php echo $fs(240)->dir; ?>" + o, "<?php echo "{$c__settings['site']['title']} - " . $fs(240)->title; ?>", true);
-					Template.ReloadSidePanel();
-				} else if (response == "DBERR") {
-					messagesys.failure(o);
-				}
-			}).fail(function(m) {
-				messagesys.failure(m);
-			}).always(function() {
-				overlay.hide();
-			});
-		});
 
-	});
+$($(popup.controller())).on("click", "#jQpopBtnCancle", function() {
+popup.close();
+});
+$($(popup.controller())).on("click", "#jQpopBtnSubmit", function() {
+fnFormSubmit();
+});
+$($jQBuilder).on("click", ".op-remove", function() {
+$(this).closest("tr").remove();
+});
+$("#jQbtnItemAdd").on("click", function() {
+fnInsertMaterial();
+});
+$("#jQaddItem").on("click", function() {
+fnInsertMaterial();
+});
+$("#jQbomqty").on("keydown", function(e) {
+var keycode = (e.keyCode ? e.keyCode : e.which);
+if (keycode == 13) {
+fnInsertMaterial();
+}
+});
+
+
+$("#jQpostSubmit").on('click', function() {
+overlay.show();
+$.ajax({
+url: "<?php echo $fs()->dir; ?>",
+type: "POST",
+data: $("#jQpostFormDetails").serialize() + "&" + $("#jQpostFormMaterials").serialize(),
+}).done(function(o, textStatus, request) {
+let response = request.getResponseHeader('HTTP_X_RESPONSE');
+if (response == "INERR") {
+messagesys.failure(o);
+} else if (response == "SUCCESS") {
+messagesys.success("Material Request posted successfully");
+Template.PageRedirect("<?php echo $fs(240)->dir; ?>" + o, "<?php echo "{$c__settings['site']['title']} - " . $fs(240)->title; ?>", true);
+Template.ReloadSidePanel();
+} else if (response == "DBERR") {
+messagesys.failure(o);
+}
+}).fail(function(m) {
+messagesys.failure(m);
+}).always(function() {
+overlay.hide();
+});
+});
+
+});
 </script>

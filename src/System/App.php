@@ -14,8 +14,8 @@ use System\Views\Views;
 class App
 {
 	public string $id;
-	public MySQL $db;
-	public Individual\User $user;
+	public readonly MySQL $db;
+	public readonly Individual\User $user;
 	public string $broadcast = "";
 	public Currency $currency;
 	public ?array $currencies;

@@ -8,32 +8,32 @@ $arrayGroups = array(
 );
 
 $groupby = null;
-$hours = null;
+$hours   = null;
 
 if (isset($_POST['hours'][1]) && preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $_POST['hours'][1], $match)) {
 	if (checkdate($match[2], $match[3], $match[1])) {
-		$hours = mktime(0, 0, 0, $match[2], $match[3], $match[1]);
+		$hours   = mktime(0, 0, 0, $match[2], $match[3], $match[1]);
 		$groupby = 'hour';
 	}
 }
 if (isset($_POST['year'][1]) && preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $_POST['year'][1], $match)) {
 	if (checkdate($match[2], $match[3], $match[1])) {
-		$year = mktime(0, 0, 0, 1, 1, $match[1]);
+		$year    = mktime(0, 0, 0, 1, 1, $match[1]);
 		$groupby = 'month';
 	}
 }
 if (isset($_POST['month'][1]) && preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $_POST['month'][1], $match)) {
 	if (checkdate($match[2], $match[3], $match[1])) {
-		$month = mktime(0, 0, 0, $match[2], 1, $match[1]);
+		$month   = mktime(0, 0, 0, $match[2], 1, $match[1]);
 		$groupby = 'day';
 	}
 }
 if (sizeof($_POST) == 0 || $groupby == null) {
-	$_POST['month'] = array();
+	$_POST['month']    = array();
 	$_POST['month'][1] = date("Y-m-d");
 	$_POST['month'][0] = date("F ,Y");
-	$month = time();
-	$groupby = "day";
+	$month             = time();
+	$groupby           = "day";
 }
 
 
@@ -106,71 +106,74 @@ $colorlist = array(
 </style>
 
 <form action="<?php echo $fs()->dir; ?>" method="post">
-	<div class="btn-set" style="margin-bottom:5px;"><span style="min-width:160px;">Group by Months in</span><input id="year" value="<?php echo (isset($_POST['year'][0]) ? $_POST['year'][0] : ""); ?>" data-slo="YEAR" name="year" type="text" /><button>Filter</button></div>
+	<div class="btn-set" style="margin-bottom:5px;"><span style="min-width:160px;">Group by Months in</span><input id="year"
+			value="<?php echo (isset($_POST['year'][0]) ? $_POST['year'][0] : ""); ?>" data-slo="YEAR" name="year"
+			type="text" /><button>Filter</button></div>
 </form>
 <form action="<?php echo $fs()->dir; ?>" method="post">
-	<div class="btn-set" style="margin-bottom:5px;"><span style="min-width:160px;">Group by Days in</span><input id="month" value="<?php echo (isset($_POST['month'][0]) ? $_POST['month'][0] : ""); ?>" data-slo="MONTH" name="month" type="text" /><button>Filter</button></div>
+	<div class="btn-set" style="margin-bottom:5px;"><span style="min-width:160px;">Group by Days in</span><input id="month"
+			value="<?php echo (isset($_POST['month'][0]) ? $_POST['month'][0] : ""); ?>" data-slo="MONTH" name="month"
+			type="text" /><button>Filter</button></div>
 </form>
 <form action="<?php echo $fs()->dir; ?>" method="post">
-	<div class="btn-set" style="margin-bottom:5px;"><span style="min-width:160px;">Group by Hours in</span><input id="date" value="<?php echo (isset($_POST['hours'][0]) ? $_POST['hours'][0] : ""); ?>" data-slo="DATE" name="hours" type="text" /><button>Filter</button></div>
+	<div class="btn-set" style="margin-bottom:5px;"><span style="min-width:160px;">Group by Hours in</span><input id="date"
+			value="<?php echo (isset($_POST['hours'][0]) ? $_POST['hours'][0] : ""); ?>" data-slo="DATE" name="hours"
+			type="text" /><button>Filter</button></div>
 </form>
 
 
 <hr />
 <h1 style="font-size:1.5em;color:#ff3c00;text-align:center;">Filtering by <?php
-																			if ($groupby == "day") {
-																				echo " Days on `" . date("F ,Y", $month) . "`";
-																			}
-																			if ($groupby == "month") {
-																				echo " Months on `" . date("Y", $year) . "`";
-																			}
-																			if ($groupby == "hour") {
-																				echo " Hours on `" . date("F d,Y", $hours) . "`";
-																			}
-																			?>
+if ($groupby == "day") {
+	echo " Days on `" . date("F ,Y", $month) . "`";
+}
+if ($groupby == "month") {
+	echo " Months on `" . date("Y", $year) . "`";
+}
+if ($groupby == "hour") {
+	echo " Hours on `" . date("F d,Y", $hours) . "`";
+}
+?>
 </h1>
 <?php
 $arrout = array();
-if ($r = $app->db->query("
+if (
+	$r = $app->db->query("
 SELECT 
 	DATE_FORMAT(ltr_ctime, '{$arrayGroups[$groupby]}') AS grpdate,
 	UNIX_TIMESTAMP(ltr_ctime) AS ltr_ctime,
 	count(DISTINCT _major.ltr_usr_id) AS pcnt,
+	_partition.prt_type,
+	_partition.prt_name,
+	_partition.prt_id
 	
-	_partition.prt_name,_partition.prt_id,
-	
-	_partition.ptp_name AS ptp_name,
-	_partition.ptp_id AS ptp_id
 FROM
 	labour_track AS _major
 		JOIN
 		(
-			SELECT
-				prt_id,ptp_id,ptp_name,prt_name,prt_color
-			FROM
-				`acc_accounts` 
-					JOIN `acc_accounttype` ON ptp_id=prt_type
-		) AS _partition ON _partition.prt_id=ltr_prt_id
+			SELECT prt_id, prt_type, prt_name,prt_color FROM acc_accounts`
+		) AS _partition ON _partition.prt_id = ltr_prt_id
 WHERE
 	ltr_type=1
 	" . ($groupby == 'hour' ? "AND DATE_FORMAT(ltr_ctime,'%Y-%m-%d') = '" . (date("Y-m-d", $hours)) . "'" : "") . "
 	" . ($groupby == 'day' ? "AND DATE_FORMAT(ltr_ctime,'%Y-%m') = '" . (date("Y-m", $month)) . "'" : "") . "
 GROUP BY
-	grpdate,ptp_id,prt_id
+	grpdate,prt_id
 ORDER BY
 	grpdate ASC
-")) {
+")
+) {
 	while ($row = $r->fetch_assoc()) {
-		if (!isset($arrout[$row['ptp_id']])) {
-			$arrout[$row['ptp_id']] = array($row['ptp_name'], array(), array());
+		if (!isset($arrout[$row['prt_type']])) {
+			$arrout[$row['prt_type']] = array($row['prt_type'], array(), array());
 		}
-		if (!isset($arrout[$row['ptp_id']][1][$row['grpdate']])) {
-			$arrout[$row['ptp_id']][1][$row['grpdate']] = array();
+		if (!isset($arrout[$row['prt_type']][1][$row['grpdate']])) {
+			$arrout[$row['prt_type']][1][$row['grpdate']] = array();
 		}
-		if (!isset($arrout[$row['ptp_id']][2][$row['prt_id']])) {
-			$arrout[$row['ptp_id']][2][$row['prt_id']] = $row['prt_name'];
+		if (!isset($arrout[$row['prt_type']][2][$row['prt_id']])) {
+			$arrout[$row['prt_type']][2][$row['prt_id']] = $row['prt_name'];
 		}
-		$arrout[$row['ptp_id']][1][$row['grpdate']][$row['prt_id']] = $row['pcnt'];
+		$arrout[$row['prt_type']][1][$row['grpdate']][$row['prt_id']] = $row['pcnt'];
 	}
 }
 
@@ -191,7 +194,7 @@ foreach ($arrout as $k => $v) {
 if ($groupby == 'day') {
 	foreach ($arrout as $cotk => $cotv) {
 		$first = null;
-		$last = null;
+		$last  = null;
 		foreach ($cotv[1] as $datek => $datav) {
 			if ($first == null) {
 				$first = $datek;
@@ -205,7 +208,7 @@ if ($groupby == 'day') {
 			$last = mktime(0, 0, 0, $match[2], $match[3], $match[1]);
 		}
 		$current = $first;
-		$cnt = 0;
+		$cnt     = 0;
 		while ($current <= $last) {
 			if (!isset($arrout[$cotk][1][date("Y-m-d", $current)])) {
 				$arrout[$cotk][1][date("Y-m-d", $current)] = array();
@@ -224,10 +227,10 @@ if ($groupby == 'day') {
 }
 if ($groupby == 'hour') {
 	foreach ($arrout as $cotk => $cotv) {
-		$first = $hours;
-		$last = mktime(0, 0, 0, date("m", $hours), date("d", $hours) + 1, date("Y", $hours));
+		$first   = $hours;
+		$last    = mktime(0, 0, 0, date("m", $hours), date("d", $hours) + 1, date("Y", $hours));
 		$current = $first;
-		$cnt = 0;
+		$cnt     = 0;
 		while ($current <= $last) {
 			if (!isset($arrout[$cotk][1][date("Y-m-d H:i", $current)])) {
 				$arrout[$cotk][1][date("Y-m-d H:i", $current)] = array();
@@ -246,7 +249,7 @@ if ($groupby == 'hour') {
 	foreach ($arrout as $cotk => $cotv) {
 		foreach ($cotv[1] as $datek => $datev) {
 			if (preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) ([0-9]{2}):([0-9]{2})$/", $datek, $match)) {
-				$time = mktime($match[4], $match[5], 0, $match[2], $match[3], $match[1]);
+				$time                               = mktime($match[4], $match[5], 0, $match[2], $match[3], $match[1]);
 				$arrout[$cotk][1][date("H", $time)] = $arrout[$cotk][1][$datek];
 				unset($arrout[$cotk][1][$datek]);
 			}
@@ -266,7 +269,7 @@ foreach ($arrout as $cotk => $cotv) {
 ?>
 <div id="chartjs-tooltip"></div>
 <script>
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 		var datesel = $("#date").slo({
 			"limit": 7
 		});
@@ -285,9 +288,9 @@ foreach ($arrout as $cotk => $cotv) {
 			echo "var barChart{$cotk} = new Chart(ctx{$cotk}).Line({
 			labels: [\"\",";
 			$smart = "";
-			$even = false;
-			$swap = 3;
-			$cnt = 0;
+			$even  = false;
+			$swap  = 3;
+			$cnt   = 0;
 			if (sizeof($cotv[1]) > 30) {
 				$even = true;
 			}
@@ -309,7 +312,7 @@ foreach ($arrout as $cotk => $cotv) {
 			datasets: [
 				";
 			$smart = "";
-			$cnt = 0;
+			$cnt   = 0;
 			foreach ($cotv[2] as $legenedk => $legenedv) {
 				echo $smart;
 				echo "{";
@@ -327,7 +330,7 @@ foreach ($arrout as $cotk => $cotv) {
 					if (!isset($valv[$legenedk])) {
 						echo "0";
 					} else {
-						echo ((int)$valv[$legenedk]);
+						echo ((int) $valv[$legenedk]);
 					}
 					$cute = ",";
 				}

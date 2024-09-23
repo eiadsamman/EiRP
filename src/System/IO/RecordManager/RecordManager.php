@@ -5,24 +5,14 @@ namespace System\IO\RecordManager;
 
 enum InputType: int
 {
+	use \System\enumLib;
 	case Text = 1;
 	case Number = 2;
 	case Hidden = 3;
 	case CheckBox = 4;
 	case Radio = 5;
 	case SmartListObject = 6;
-	public static function names(): array
-	{
-		return array_column(self::cases(), 'name');
-	}
-	public static function values(): array
-	{
-		return array_column(self::cases(), 'value');
-	}
-	public static function array(): array
-	{
-		return array_combine(self::values(), self::names());
-	}
+
 }
 
 
@@ -52,21 +42,11 @@ class Text extends InputField
 
 enum RecordType: int
 {
+	use \System\enumLib;
 	case Int = 1;
 	case Float = 2;
 	case Text = 3;
-	public static function names(): array
-	{
-		return array_column(self::cases(), 'name');
-	}
-	public static function values(): array
-	{
-		return array_column(self::cases(), 'value');
-	}
-	public static function array(): array
-	{
-		return array_combine(self::values(), self::names());
-	}
+
 }
 
 

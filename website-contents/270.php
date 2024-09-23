@@ -1,10 +1,11 @@
 <?php
+use System\Models\Company;
+use System\Models\Country;
 use System\Template\Gremium;
 use System\SmartListObject;
 use System\Timeline\Action;
 use System\Timeline\Module;
 use System\Timeline\Timeline;
-
 
 if ($app->xhttp) {
 	if (isset($_POST['objective']) && $_POST['objective'] == 'transaction') {
@@ -14,54 +15,44 @@ if ($app->xhttp) {
 			"errno" => 0,
 			"error" => "",
 			"insert_id" => 0,
-			"type" => "insert",
-			"debug" => ""
 		);
-		/* try {
-															$transaction = new System\Finance\Transaction\Receipt($app);
-															$transaction->issuerAccount($app->user->account);
-															
-															if (isset($_POST['attachments']) && is_array($_POST['attachments'])) {
-																$transaction->attachments($_POST['attachments']);
-															}
 
-															if ($transaction->post()) {
-																new System\Personalization\FrequentAccountUse($app, (int) $_POST['target-account'][1]);
-																$balance             = $app->user->account->getBalance();
-																$result['result']    = true;
-																$result['insert_id'] = $transaction->insert_id;
-																$result['type']      = "receipt";
-																$result['balance']   = ($balance < 0 ? "(" : "") . number_format(abs($balance), 2) . ($balance < 0 ? ")" : "");
-																$result['currency']  = $app->user->account->currency->shortname;
 
-																$tl = new Timeline($app);
-																$tl->register(Module::FinanceCash, Action::FinanceReceipt, $transaction->insert_id);
-																if (!empty($_POST['party'])) {
-																	$tl->register(Module::CRMCustomer, Action::FinanceReceipt, $_POST['party'][1], ["id" => $transaction->insert_id, "value" => number_format((float) $_POST['value'], 2, ".", ",") . " " . $app->user->account->currency->shortname]);
-																}
-															} else {
-																$result['errno'] = 300;
-																$result['error'] = "Transaction posting failed";
-															}
+		$cord = false;
+		$res  = preg_match_all("/-?([0-9]{1,2}|1[0-7][0-9]|180)(\.[0-9]{1,10})/", $_POST['mapurl'] ?? "", $matches);
+		if (is_array($matches) && sizeof($matches) > 0 && sizeof($matches[0]) > 1) {
+			$cord = [$matches[0][0], $matches[0][1]];
+		}
 
-														} catch (TypeError $e) {
-															$result['errno'] = 300;
-															$result['error'] = 'Uknown error, contact system administrator';
-															$app->errorHandler->logError($e);
-														} catch (System\Exceptions\Finance\TransactionException $e) {
-															$result['errno'] = $e->getCode();
-															$result['error'] = $e->getMessage();
-														} catch (System\Exceptions\Finance\AccountNotFoundException $e) {
-															$result['errno'] = 203;
-															$result['error'] = $e->getMessage();
-														} catch (System\Exceptions\Finance\ForexException $e) {
-															$result['errno'] = 300;
-															$result['error'] = "Forex conversion failed";
-														} catch (\mysqli_sql_exception $e) {
-															$result['errno'] = 300;
-															$result['error'] = "Server error, try again later";
-															$app->errorHandler->logError($e);
-														} */
+		$entry = new Company($app);
+		try {
+			$entry->name           = $_POST['company'] ?? null;
+			$entry->city           = $_POST['city'] ?? null;
+			$entry->address        = $_POST['address'] ?? null;
+			$entry->country        = isset($_POST['country'], $_POST['country'][1]) ? new Country((int) $_POST['country'][1]) : null;
+			$entry->contactNumbers = !empty($_POST['phone']) && is_array($_POST['phone']) ? implode("\n", $_POST['phone']) : null;
+			if ($cord) {
+				$entry->latitude  = (float) $cord[0];
+				$entry->longitude = (float) $cord[1];
+			}
+			if ($entry->add()) {
+				$result['result']    = true;
+				$result['insert_id'] = $entry->id;
+
+				$tl = new Timeline($app);
+				$tl->register(Module::Company, Action::Create, $entry->id);
+			} else {
+				$result['error'] = "Database error, try again later";
+				$result['errno'] = 1;
+			}
+		} catch (TypeError $e) {
+			$result['error'] = "Provide all required fields";
+			$result['errno'] = $e->getCode();
+		} catch (\System\Exceptions\Company\InvalidData $e) {
+			$result['error'] = $e->getMessage();
+			$result['errno'] = $e->getCode();
+		}
+
 		echo json_encode($result);
 		exit;
 	}
@@ -70,7 +61,7 @@ if ($app->xhttp) {
 
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->prev("href=\"{$fs(173)->dir}\" data-href=\"{$fs(173)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\">
-			<button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Add Customer</button></div>");
+			<button class=\"plus\" id=\"js-input_submit\" tabindex=\"9\">&nbsp;Save</button></div>");
 
 	$grem->article()->open();
 	?>
@@ -79,62 +70,38 @@ if ($app->xhttp) {
 		<input type="hidden" name="objective" value="transaction" />
 
 		<div class="form predefined">
-			<label style="max-width:560px;">
+			<label>
 				<h1>Customer name</h1>
 				<div class="btn-set">
-					<input tabindex="1" placeholder="Customer company name" data-required title="Creditor account" type="text" class="flex" name="name"
-						id="name" />
+					<input tabindex="1" placeholder="Customer company name" data-required title="Creditor account" type="text" class="flex" name="company"
+						id="company" />
 				</div>
 			</label>
-		</div>
-
-
-		<div class="form predefined">
-			<label>
-				<h1>Country</h1>
-				<div class="btn-set">
-					<input tabindex="2" placeholder="Country name" data-required title="Country name" type="text" class="flex" name="country"
-						id="country" />
-				</div>
-			</label>
-			<label>
-				<h1>City</h1>
-				<div class="btn-set">
-					<input tabindex="3" placeholder="City name" data-required title="City name" type="text" class="flex" name="city" id="city" />
-				</div>
-			</label>
-		</div>
-
-
-		<div class="form predefined">
-			<label>
-				<h1>Address</h1>
-				<div class="btn-set">
-					<input tabindex="4" placeholder="Customer address" data-required title="Customer address" type="text" class="flex" name="address"
-						id="address" />
-				</div>
-			</label>
-		</div>
-
-		<div class="form predefined">
-			<label style="max-width:560px;" for="">
+			<label for="" style="min-width:250px">
 				<h1>Contact numbers</h1>
 				<div class="btn-set">
-					<input tabindex="5" placeholder="" data-required title="Phone number" type="text" class="flex" name="phone[]" id="phone[]" />
-				</div>
-				<div class="btn-set" style="margin-top:15px;">
-					<input tabindex="5" data-required title="Phone number" type="text" class="flex" name="phone[]" id="phone[]" />
+					<input style="min-width:50px;width:50px" tabindex="2" placeholder="Mobile phone number" title="Phone number" type="text" class="flex"
+						name="phone[]" id="phone[]" />
+					<input style="min-width:50px;width:50px" tabindex="3" placeholder="Work phone number" title="Phone number" type="text" class="flex"
+						name="phone[]" id="phone[]" />
 				</div>
 			</label>
 		</div>
 
 
 		<div class="form">
-			<label style="flex:0" for="">
+			<label>
+				<h1>Map location</h1>
+				<div class="btn-set">
+					<input tabindex="4" placeholder="Map location URL" title="Map location URL" type="text" class="flex" name="mapurl" id="mapurl"
+						value="https://www.google.com/maps/@30.0156998,31.420846,60m" />
+				</div>
+			</label>
+			<label for="" style="min-width:250px">
 				<h1>Attachments</h1>
 				<div class="btn-set">
 					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
-					<input type="button" tabindex="6" id="js_upload_trigger" class="js_upload_trigger edge-right edge-left" value="Upload" />
+					<input type="button" tabindex="5" id="js_upload_trigger" class="js_upload_trigger edge-right edge-left" value="Upload" />
 					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
 					<span id="js_upload_list" class="js_upload_list">
 						<div id="UploadDOMHandler">
@@ -155,7 +122,32 @@ if ($app->xhttp) {
 					</span>
 				</div>
 			</label>
+		</div>
 
+		<div class="form predefined">
+			<label>
+				<h1>Country</h1>
+				<div class="btn-set">
+					<input tabindex="6" placeholder="Country name" title="Country name" data-slo="COUNTRIES" type="text" class="flex" name="country"
+						id="country" />
+				</div>
+			</label>
+			<label>
+				<h1>City</h1>
+				<div class="btn-set">
+					<input tabindex="7" placeholder="City name" title="City name" type="text" class="flex" name="city" id="city" />
+				</div>
+			</label>
+		</div>
+
+		<div class="form predefined">
+			<label>
+				<h1>Address</h1>
+				<div class="btn-set">
+					<textarea tabindex="8" placeholder="Customer address" title="Customer address" type="text" class="flex" name="address"
+						style="height:100px;" id="address"></textarea>
+				</div>
+			</label>
 		</div>
 
 
@@ -164,15 +156,6 @@ if ($app->xhttp) {
 	$grem->getLast()->close();
 	$grem->terminate();
 	unset($grem);
-	?>
-
-	<div>
-
-		<datalist id="datalistCountries" style="display: none;">
-			<?= $SmartListObject->userAccountsOutbound(null, [$app->user->account->id], \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
-		</datalist>
-	</div>
-	<?php
 
 }
 ?>

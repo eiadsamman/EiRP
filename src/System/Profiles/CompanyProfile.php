@@ -16,13 +16,20 @@ class CompanyProfile
 	public ?string $address = null;
 	public ?string $city = null;
 	public ?int $businessField = null;
-	
-	
+
+	public ?float $financialBalance = 0;
 	public ?float $latitude = null;
 	public ?float $longitude = null;
 
 	public ?string $contactNumbers = null;
 	public ?string $contactEmails = null;
 	public ?CompanyLegal $legal = null;
+
+
+
+	public function __tostring(): string
+	{
+		return $this->name;
+	}
 }
 

@@ -222,6 +222,7 @@ body::-webkit-scrollbar {
 
 body::-webkit-scrollbar-track {
 	/* background-color: var(--root-ribbon-background-color); */
+	line-height: 1;
 }
 
 /* body::-webkit-scrollbar-button {
@@ -293,13 +294,6 @@ span.header-ribbon>div {
 	height: 16px;
 	text-align: center;
 }
-
-
-
-
-
-
-
 
 
 
@@ -1106,98 +1100,93 @@ span.loadingScreen-placeholderBody>span:last-child {
 
 /* #endregion */
 
-/* #region Timeline*/
+
+
 div.timeline {
 	position: relative;
-}
-
-div.timeline>div {
-	display: flex;
-	flex-wrap: wrap;
-	flex-direction: column;
-	position: relative;
 	padding-bottom: 30px;
-	padding: 12px;
-	margin-left: 25px;
-	margin-right: 10px;
-	border-radius: 10px;
-	transition: background-color var(--transition-speed), border-color var(--transition-speed);
-	/* background-color: hsla(51, 100%, 50%,0.1); */
+
+	>div {
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: column;
+		position: relative;
+		padding-bottom: 30px;
+		padding: 12px;
+		margin-left: 25px;
+		margin-right: 10px;
+		border-radius: 10px;
+		transition: background-color var(--transition-speed), border-color var(--transition-speed);
+		/* background-color: hsla(51, 100%, 50%,0.1); */
+	}
+
+	&::before {
+		position: absolute;
+		top: 0px;
+		left: 10px;
+		bottom: 0px;
+		content: " ";
+		width: 1px;
+		border-left: dashed 1px var(--bomtable-border-color);
+	}
+
+	>div:hover {
+		border-color: var(--input-hover_border-color);
+		background-color: var(--slo-menu-itemhover-background-color);
+	}
+
+	>div>span {
+		position: relative;
+		min-width: 300px;
+		color: hsl(150, 60%, 50%);
+		color: var(--root-link-color);
+		color: var(--root-font-lightcolor);
+	}
+
+	>div>span::before {
+		transition: outline-color var(--transition-speed);
+	}
+
+	>div:hover>span::before {
+		outline-color: var(--root-link-color);
+	}
+
+	>div>span:before {
+		display: block;
+		position: absolute;
+		content: " ";
+		top: 6px;
+		left: -31.5px;
+		width: 10px;
+		height: 10px;
+		outline: solid 4px var(--bomtable-border-color);
+		background-color: var(--root-ribbon-menu-background-color);
+		border-radius: 100%;
+	}
+
+	>div>h1 {
+		margin: 0;
+		padding: 0;
+		padding-top: 10px;
+		font-weight: normal;
+	}
+
+	>div>span>i {
+		display: block;
+		font-size: 0.9em;
+		font-style: normal;
+	}
+
+	>div>cite {
+		padding-top: 10px;
+		font-style: normal;
+		color: var(--root-font-lightcolor);
+	}
+
+	>div>div {
+		line-height: 1.4em;
+	}
 }
-
-div.timeline::before {
-	position: absolute;
-	top: 0px;
-	left: 10px;
-	bottom: 0px;
-	content: " ";
-	width: 1px;
-	border-left: dashed 1px var(--bomtable-border-color);
-}
-
-div.timeline>div:hover {
-	border-color: var(--input-hover_border-color);
-	background-color: var(--slo-menu-itemhover-background-color);
-}
-
-div.timeline>div>span {
-	position: relative;
-	min-width: 300px;
-	color: hsl(150, 60%, 50%);
-	color: var(--root-link-color);
-	color: var(--root-font-lightcolor);
-}
-
-div.timeline>div>span::before {
-	transition: outline-color var(--transition-speed);
-}
-
-div.timeline>div:hover>span::before {
-	outline-color: var(--root-link-color);
-}
-
-div.timeline>div>span:before {
-	display: block;
-	position: absolute;
-	content: " ";
-	top: 6px;
-	left: -31.5px;
-	width: 10px;
-	height: 10px;
-	outline: solid 4px var(--bomtable-border-color);
-	background-color: var(--root-ribbon-menu-background-color);
-	border-radius: 100%;
-}
-
-div.timeline>div>h1 {
-	margin: 0;
-	padding: 0;
-	padding-top: 10px;
-	font-weight: normal;
-}
-
-
-
-div.timeline>div>span>i {
-	display: block;
-	font-size: 0.9em;
-	font-style: normal;
-}
-
-div.timeline>div>cite {
-	padding-top: 10px;
-	font-style: normal;
-	color: var(--root-font-lightcolor);
-}
-
-div.timeline>div>div {
-	line-height: 1.4em;
-}
-
-/* #endregion*
-
-
-
 
 
 /* #region Media*/

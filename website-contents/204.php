@@ -22,10 +22,9 @@ if (isset($_POST['wo_id']) || isset($_GET['wo_id'])) {
 				JOIN users AS _a_usr ON _a_usr.usr_id = wo_creator_id
 				LEFT JOIN users AS _b_usr ON _a_usr.usr_id = wo_manager
 				JOIN 
-				(SELECT CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name) AS _wo_site,prt_id 
+				(SELECT CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name) AS _wo_site,prt_id 
 					FROM `acc_accounts`  
 						JOIN currencies ON cur_id=prt_currency
-						JOIN `acc_accounttype` ON prt_type=ptp_id
 						JOIN companies ON prt_company_id=comp_id
 				) AS _c_prt ON _c_prt.prt_id = wo_site
 		WHERE

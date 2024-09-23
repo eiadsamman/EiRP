@@ -152,30 +152,16 @@ $rl["D001"] = array(
 $rl["D002"] = array(
 	"from" => "`acc_accounts` 
 				JOIN companies ON comp_id = prt_company_id
-				JOIN `acc_accounttype` ON ptp_id = prt_type
 				JOIN currencies ON cur_id = prt_currency
 				",
 	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("zname" => "CONCAT('[',cur_shortname,'] ', CONCAT_WS(': ', comp_name, ptp_name, prt_name))"),
-	"select" => array("zname" => "CONCAT('[',cur_shortname,']', CONCAT_WS(': ', comp_name, ptp_name, prt_name))"),
+	"return_value" => array("zname" => "CONCAT('[',cur_shortname,'] ', CONCAT_WS(': ', comp_name, prt_name))"),
+	"select" => array("zname" => "CONCAT('[',cur_shortname,']', CONCAT_WS(': ', comp_name, prt_name))"),
 	"minselect" => array(),
-	"search" => array("prt_name" => "prt_name", "comp_name" => "comp_name", "ptp_name" => "ptp_name", "cur_shortname" => "cur_shortname", "cur_name" => "cur_name"),
+	"search" => array("prt_name" => "prt_name", "comp_name" => "comp_name", "cur_shortname" => "cur_shortname", "cur_name" => "cur_name"),
 	"where" => "",
 	"group" => "",
 );
-
-$rl["D003"] = array(
-	"from" => "acc_accounttype LEFT JOIN acc_termgroup ON ptp_termgroup_id = trmgrp_id",
-	"return_id" => array("ptp_id" => "ptp_id"),
-
-	"return_value" => array("ptp_name" => "CONCAT_WS(': ', trmgrp_name, ptp_name)"),
-	"select" => array("ptp_name" => "CONCAT_WS(': ', trmgrp_name, ptp_name)"),
-	"minselect" => array(),
-	"search" => array("trmgrp_name" => "trmgrp_name", "ptp_name" => "ptp_name"),
-	"where" => "",
-	"group" => "",
-);
-
 
 $rl["E001"] = array(
 	"from" => "labour_section",
@@ -499,7 +485,6 @@ $rl["ACC_788"] = array(
 	"from" => " `acc_accounts`  
 		JOIN currencies ON cur_id=prt_currency
 		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_fetch=1
-		JOIN `acc_accounttype` ON prt_type=ptp_id
 		JOIN (
 			SELECT 
 				comp_id,comp_name 
@@ -512,10 +497,10 @@ $rl["ACC_788"] = array(
 		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::SystemCountAccountSelection->value . "
 		",
 	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name ,\": \" , ptp_name, \": \", prt_name)"),
-	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name ,\": \" , ptp_name, \": \", prt_name)"),
+	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name, \": \", prt_name)"),
+	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name, \": \", prt_name)"),
 	"minselect" => array(),
-	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "ptp_name" => "ptp_name", "comp_name" => "_companies.comp_name"),
+	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "_companies.comp_name"),
 	"where" => " " . (isset($_POST['exclude']) ? " prt_id!= {$_POST['exclude']} " : "") . " upr_usr_id={$app->user->info->id} ",
 	"group" => "",
 	"order" => array("(usrset_value + 0) DESC")
@@ -526,15 +511,14 @@ $rl["ACC_OPERATION"] = array(
 	"from" => " `acc_accounts`  
 		JOIN currencies ON cur_id=prt_currency
 		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id}
-		JOIN `acc_accounttype` ON prt_type=ptp_id
 		JOIN companies ON prt_company_id=comp_id
 		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Personalization\Identifiers::SystemCountAccountOperation->value . "
 		",
 	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
-	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
+	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
+	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"minselect" => array(),
-	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "ptp_name" => "ptp_name", "comp_name" => "comp_name"),
+	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "comp_name"),
 	"where" => " " . (isset($_POST['exclude']) ? " prt_id!= {$_POST['exclude']} " : "") . " upr_usr_id={$app->user->info->id} ",
 	"group" => "",
 	"order" => array("(usrset_value+0) DESC")
@@ -544,15 +528,14 @@ $rl["ACC_VIEW"] = array(
 	"from" => " `acc_accounts`  
 		JOIN currencies ON cur_id=prt_currency
 		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1
-		JOIN `acc_accounttype` ON prt_type=ptp_id
 		JOIN companies ON prt_company_id=comp_id
 		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Personalization\Identifiers::SystemCountAccountOperation->value . "
 		",
 	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
-	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
+	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
+	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"minselect" => array(),
-	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "ptp_name" => "ptp_name", "comp_name" => "comp_name"),
+	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "comp_name"),
 	"where" => " " . (isset($_POST['exclude']) ? " prt_id!= {$_POST['exclude']} " : "") . " upr_usr_id={$app->user->info->id} ",
 	"group" => "",
 	"order" => array("(usrset_value+0) DESC")
@@ -572,15 +555,14 @@ $rl["ACC_OUTBOUND"] = array(
 	"from" => " `acc_accounts`  
 		JOIN currencies ON cur_id=prt_currency
 		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_outbound=1
-		JOIN `acc_accounttype` ON prt_type=ptp_id
 		JOIN companies ON prt_company_id=comp_id
 		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Personalization\Identifiers::SystemCountAccountOperation->value . "
 		",
 	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
-	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
+	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
+	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"minselect" => array(),
-	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "ptp_name" => "ptp_name", "comp_name" => "comp_name"),
+	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "comp_name"),
 	"where" => " " . (isset($_POST['exclude']) ? " prt_id!= {$_POST['exclude']} AND" : "") . "
 				" . (isset($_POST['company']) ? " comp_id= " . (int) $_POST['company'] . " AND " : "") . " 
 				upr_usr_id={$app->user->info->id} ",
@@ -595,17 +577,16 @@ $rl["ACC_OUTBOUND"] = array(
 $rl["ACC_ALL"] = array(
 	"from" => " `acc_accounts`  
 		JOIN currencies ON cur_id=prt_currency
-		JOIN `acc_accounttype` ON prt_type=ptp_id
 		JOIN companies ON prt_company_id=comp_id
 		",
 	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
-	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name ,\": \" , ptp_name, \": \", prt_name)"),
+	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
+	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"minselect" => array(),
-	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "ptp_name" => "ptp_name", "comp_name" => "comp_name"),
+	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "comp_name"),
 	"where" => "",
 	"group" => "",
-	"order" => array("comp_name", "ptp_name", "prt_name", "cur_shortname")
+	"order" => array("comp_name", "prt_name", "cur_shortname")
 );
 
 
@@ -969,17 +950,4 @@ $rl["COSTCENTER_USER"] = array(
 	"where" => "",
 	"group" => "",
 	"order" => array("ccc_name")
-);
-
-
-$rl["ACCOUNTING_TERM"] = array(
-	"from" => " acc_termgroup ",
-	"return_id" => array("trmgrp_id" => "trmgrp_id"),
-	"return_value" => array("trmgrp_name" => "trmgrp_name"),
-	"select" => array("trmgrp_name" => "trmgrp_name"),
-	"minselect" => array(),
-	"search" => array('trmgrp_name' => 'trmgrp_name'),
-	"where" => "",
-	"group" => "",
-	"order" => array("trmgrp_name")
 );

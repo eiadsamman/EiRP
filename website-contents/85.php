@@ -7,7 +7,7 @@ $database = array(
 
 		LEFT JOIN ( 
 			SELECT 
-				prt_id , CONCAT ("[", cur_shortname ,"]: ", comp_name, ": ", ptp_name,": ", prt_name) AS  __inbound_account
+				prt_id , CONCAT ("[", cur_shortname ,"]: ", comp_name,": ", prt_name) AS  __inbound_account
 			FROM 
 				view_financial_accounts
 			)
@@ -15,14 +15,12 @@ $database = array(
 		
 		LEFT JOIN ( 
 				SELECT 
-					prt_id , CONCAT ("[", cur_shortname ,"]: ", comp_name, ": ", ptp_name,": ", prt_name) AS  __outbound_account
+					prt_id , CONCAT ("[", cur_shortname ,"]: ", comp_name, ": ", prt_name) AS  __outbound_account
 				FROM 
 					view_financial_accounts
 				)
 				AS AliaOutbound ON AliaOutbound.prt_id = accdef_out_acc_id 
 				
-		LEFT JOIN
-			acc_transtypes	ON acctyp_type = accdef_operation
 		LEFT JOIN (
 			SELECT 
 				acccat_id,CONCAT_WS(" : ",acccat_name,accgrp_name) AS acc_catdet 

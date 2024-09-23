@@ -30,14 +30,13 @@ if (!$defaultcurrency) {
 
 			if ($r = $app->db->query("
 	SELECT 
-		prt_company_id,prt_id,prt_name ,comp_name,
+		prt_company_id,prt_id,prt_name,prt_type ,comp_name,
 		
 		SUM( _rates._rate * IF(atm_value IS NULL,0,atm_value) * IF (acm_rejected IS NULL OR acm_rejected!=1,1,0) ) AS atm_value_exchange,
-		
 		SUM(IF(atm_value IS NULL,0,atm_value) * IF (acm_rejected IS NULL OR acm_rejected!=1,1,0)) AS atm_value_real,
 		
 		cur_shortname,cur_name,comp_id,
-		ptp_id,ptp_name,COUNT(atm_id) AS atm_records_count
+		COUNT(atm_id) AS atm_records_count
 	FROM 
 		`acc_accounts` 
 			LEFT JOIN acc_temp ON prt_id=atm_account_id
@@ -53,11 +52,6 @@ if (!$defaultcurrency) {
 					FROM currency_exchange AS _from INNER JOIN currency_exchange AS _to
 			) AS _rates ON _rates._rate_from = prt_currency AND _rates._rate_to = {$defaultcurrency['id']}
 			
-			
-			
-			
-			JOIN
-				`acc_accounttype` ON prt_type=ptp_id
 	GROUP BY
 		prt_id
 	ORDER BY
@@ -74,23 +68,23 @@ if (!$defaultcurrency) {
 						$arroutput[$row['comp_id']]['types'] = array();
 					}
 
-					if (!isset($arroutput[$row['comp_id']]['types'][$row['ptp_id']])) {
-						$arroutput[$row['comp_id']]['types'][$row['ptp_id']]['balance'] = 0;
-						$arroutput[$row['comp_id']]['types'][$row['ptp_id']]['name'] = $row['ptp_name'];
-						$arroutput[$row['comp_id']]['types'][$row['ptp_id']]['accounts'] = array();
+					if (!isset($arroutput[$row['comp_id']]['types'][$row['prt_type']])) {
+						$arroutput[$row['comp_id']]['types'][$row['prt_type']]['balance'] = 0;
+						$arroutput[$row['comp_id']]['types'][$row['prt_type']]['name'] = $row['prt_type'];
+						$arroutput[$row['comp_id']]['types'][$row['prt_type']]['accounts'] = array();
 					}
 
 					$arroutput[$row['comp_id']]['colspan']++;
 					$arroutput[$row['comp_id']]['balance'] += $row['atm_value_exchange'];
-					$arroutput[$row['comp_id']]['types'][$row['ptp_id']]['balance'] += $row['atm_value_exchange'];
+					$arroutput[$row['comp_id']]['types'][$row['prt_type']]['balance'] += $row['atm_value_exchange'];
 
-					$arroutput[$row['comp_id']]['types'][$row['ptp_id']]['accounts'][$row['prt_id']]['name'] = $row['prt_name'];
-					$arroutput[$row['comp_id']]['types'][$row['ptp_id']]['accounts'][$row['prt_id']]['balance'] = $row['atm_value_exchange'];
-					$arroutput[$row['comp_id']]['types'][$row['ptp_id']]['accounts'][$row['prt_id']]['real'] = $row['atm_value_real'];
-					$arroutput[$row['comp_id']]['types'][$row['ptp_id']]['accounts'][$row['prt_id']]['count'] = number_format($row['atm_records_count'], 0, ".", ",");
+					$arroutput[$row['comp_id']]['types'][$row['prt_type']]['accounts'][$row['prt_id']]['name'] = $row['prt_name'];
+					$arroutput[$row['comp_id']]['types'][$row['prt_type']]['accounts'][$row['prt_id']]['balance'] = $row['atm_value_exchange'];
+					$arroutput[$row['comp_id']]['types'][$row['prt_type']]['accounts'][$row['prt_id']]['real'] = $row['atm_value_real'];
+					$arroutput[$row['comp_id']]['types'][$row['prt_type']]['accounts'][$row['prt_id']]['count'] = number_format($row['atm_records_count'], 0, ".", ",");
 
 
-					$arroutput[$row['comp_id']]['types'][$row['ptp_id']]['accounts'][$row['prt_id']]['currency'] = $row['cur_shortname'];
+					$arroutput[$row['comp_id']]['types'][$row['prt_type']]['accounts'][$row['prt_id']]['currency'] = $row['cur_shortname'];
 					$totalbalance += $row['atm_value_exchange'];
 				}
 

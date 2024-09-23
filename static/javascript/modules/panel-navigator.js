@@ -188,7 +188,7 @@ export class PaNa {
 			const payload = await response.json();
 			this.runtime.totalPages = parseInt(payload.headers.pages);
 
-			if(document.getElementById("pana-TotalRecords"))
+			if (document.getElementById("pana-TotalRecords"))
 				document.getElementById("pana-TotalRecords").innerText = payload.headers.count + " records";
 
 			payload.contents.forEach(element => {
@@ -290,7 +290,7 @@ export class PaNa {
 		App.Instance.pageDir = this.navigator.url;
 	}
 
-	run = function () {
+	run = function (directAccess = false) {
 		let url = this.navigator.url;
 		this.module = null;
 		this.runtime.busy = true;
@@ -308,7 +308,7 @@ export class PaNa {
 							this.module.splashscreen(this.runtime.outputScreen, url, this.scope[url].title, this.navigator.state);
 						}, this.latency);
 					}
-					this.fetch();
+					this.fetch(directAccess);
 				}).catch(e => {
 					console.log(e)
 					messagesys.failure('Loading application modules failed');
@@ -345,7 +345,7 @@ export class PaNa {
 		});
 	}
 
-	fetch = function () {
+	fetch = function (directAccess = false) {
 		let formData = new FormData();
 		for (var key in this.navigator.state)
 			formData.append(key, this.navigator.state[key]);
@@ -366,7 +366,7 @@ export class PaNa {
 			this.runtime.outputScreen.innerHTML = body;
 			this.runtime.outputScreen.classList.remove("busy");
 			this.praseEvents(this.runtime.outputScreen);
-			if (this.module) this.module.run();
+			if (this.module) this.module.run(directAccess);
 		}).catch(response => {
 			console.log(response)
 			this.runtime.busy = false;

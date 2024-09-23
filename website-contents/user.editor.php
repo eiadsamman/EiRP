@@ -258,8 +258,6 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 			}
 
 
-
-
 			if ($arrparser['result']) {
 				$q_labour_insert = sprintf(
 					"INSERT INTO 
@@ -461,6 +459,14 @@ echo "</form>";
 			}
 		<?php } ?>
 
+
+		var $Form = $("#EmployeeForm");
+		$("#js-input_submit-button").on("click", () => {
+			if ($Form)
+				$Form.submit();
+		});
+
+
 		var RaiseEvenets = function () {
 			var UploadUserPersonalImage = $.Upload({
 				objectHandler: $("#js_upload_list"),
@@ -502,33 +508,33 @@ echo "</form>";
 					salary_clear();
 				},
 				'limit': 10
-			}),
-				sloshif = $("#sloshift").slo(),
-				sloresi = $("#sloresidence").slo(),
-				slogend = $("#slogender").slo(),
-				sloresister = $("#sloresdate").slo(),
-				slorbirthdate = $("#slobirthdate").slo(),
-				slocompany = $("#slocompany").slo(),
-				sloworktimes = $("#sloworkingtimes").slo({
-					onselect: function (value) {
-						get_salary_information();
-					},
-					ondeselect: function () {
-						salary_clear();
-					},
-					'limit': 10
-				}),
-				slorpaymethod = $("#slopayment").slo({
-					onselect: function (value) {
-						get_salary_information();
-					},
-					ondeselect: function () {
-						salary_clear();
-					},
-					'limit': 10
-				}),
-				slortransportation = $("#slortransportation").slo(),
-				slonationality = $("#slonationality").slo();
+			});
+			var sloshif = $("#sloshift").slo();
+			var sloresi = $("#sloresidence").slo();
+			var slogend = $("#slogender").slo();
+			var sloresister = $("#sloresdate").slo();
+			var slorbirthdate = $("#slobirthdate").slo();
+			var slocompany = $("#slocompany").slo();
+			var sloworktimes = $("#sloworkingtimes").slo({
+				onselect: function (value) {
+					get_salary_information();
+				},
+				ondeselect: function () {
+					salary_clear();
+				},
+				'limit': 10
+			});
+			var slorpaymethod = $("#slopayment").slo({
+				onselect: function (value) {
+					get_salary_information();
+				},
+				ondeselect: function () {
+					salary_clear();
+				},
+				'limit': 10
+			});
+			var slortransportation = $("#slortransportation").slo();
+			var slonationality = $("#slonationality").slo();
 
 			<?php if ($fs(229)->permission->edit) { ?>
 				$(".derive_function").on('change', function () { var $this = $(this); var _result = $this.prop("checked"); $this.parent().prev().prop("disabled", _result); if (_result) { $("[name=" + $this.attr('data-rel') + "]").val($("input[name=" + $this.attr('data-rel') + "]").attr("data-basicvalue")); } else { $("[name=" + $this.attr('data-rel') + "]").val("0.00"); } });
@@ -536,9 +542,6 @@ echo "</form>";
 
 
 			$Form = $("#EmployeeForm");
-			$("#js-input_submit-button").on("click", () => {
-				$Form.submit();
-			});
 			$Form.on('submit', function (e) {
 				e.preventDefault();
 				if (busy) return false;

@@ -355,10 +355,10 @@ if ($app->xhttp) {
 	?>
 	<div>
 		<datalist id="js-ref_creditor-list" style="display: none;">
-			<?= $read->creditor ? $SmartListObject->userAccountsOutbound($read->creditor->id, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value) : ""; ?>
+			<?= $SmartListObject->userAccountsOutbound($read->creditor ? $read->creditor->id : null, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
 		</datalist>
 		<datalist id="js-ref_debitor-list" style="display: none;">
-			<?= $read->debitor ? $SmartListObject->userAccountsInbound($read->debitor->id, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value) : ""; ?>
+			<?= $SmartListObject->userAccountsInbound($read->debitor ? $read->debitor->id : null, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
 		</datalist>
 		<datalist id="js-ref_nature-list">
 			<?= $SmartListObject->financialTransactionNature($read->type->value); ?>

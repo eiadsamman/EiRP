@@ -138,11 +138,10 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 		if (isset($_POST['id'], $_POST['relative']) && $_GET['modify-user'] == $_POST['relative'] && $_GET['modify-user'] == $modify_user->info->id && $_POST['invoke'] == "add-account") {
 			$id = (int) $_POST['id'];
 			$r  = $app->db->query("SELECT 
-				prt_id, prt_name, ptp_name, cur_shortname, comp_name, ptp_id, comp_id, upr_prt_id
+				prt_id, prt_name, cur_shortname, comp_name, comp_id, upr_prt_id
 			FROM 
 				acc_accounts 
 					LEFT JOIN user_partition ON upr_prt_id = prt_id AND upr_usr_id = '{$modify_user->info->id}'
-					JOIN acc_accounttype ON ptp_id=prt_type
 					JOIN currencies ON cur_id = prt_currency
 					JOIN companies ON comp_id=prt_company_id
 			WHERE 
@@ -155,7 +154,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						echo "<tr>";
 						echo "<td class=\"op-remove noselect\"><span></span></td>";
 						echo "<td>{$row['comp_name']}<input type=\"hidden\" name=\"a[{$row['prt_id']}]\" value=\"\" /></td>";
-						echo "<td>{$row['ptp_name']}: {$row['prt_name']}</td>";
+						echo "<td>{$row['prt_name']}</td>";
 						echo "<td>{$row['cur_shortname']}</td>";
 						echo "<td style=\"padding:0px;\"><label style=\"padding:5px;display:block\"><input name=\"b[{$row['prt_id']}][0]\" type=\"checkbox\" /></label></td>";
 						echo "<td style=\"padding:0px;\"><label style=\"padding:5px;display:block\"><input name=\"b[{$row['prt_id']}][1]\" type=\"checkbox\" /></label></td>";
@@ -436,22 +435,21 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						<tbody id="FormAccountList">
 							<?php
 							$r = $app->db->query("SELECT 
-									prt_id,prt_name,ptp_name,cur_shortname,comp_name,upr_prt_id,ptp_id,comp_id,
+									prt_id,prt_name,cur_shortname,comp_name,upr_prt_id,comp_id,
 									upr_prt_inbound,upr_prt_outbound,upr_prt_fetch,upr_prt_view
 								FROM 
 									`acc_accounts` 
 										JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id='{$modify_user->info->id}'
-										JOIN `acc_accounttype` ON ptp_id=prt_type
 										JOIN currencies ON cur_id = prt_currency
 										JOIN companies ON comp_id=prt_company_id
 								ORDER BY
-									comp_name,ptp_name,prt_name,cur_id;");
+									comp_name,prt_name,cur_id;");
 							if ($r) {
 								while ($row = $r->fetch_assoc()) {
 									echo "<tr data-account_id=\"{$row['prt_id']}\">";
 									echo "<td class=\"op-remove noselect\"><span></span></td>";
 									echo "<td>{$row['comp_name']}<input type=\"hidden\" name=\"a[{$row['prt_id']}]\" value=\"\" /></td>";
-									echo "<td>{$row['ptp_name']}: {$row['prt_name']}</td>";
+									echo "<td>{$row['prt_name']}</td>";
 									echo "<td>{$row['cur_shortname']}</td>";
 									echo "<td style=\"padding:0px;\"><label style=\"padding:5px;display:block\"><input name=\"b[{$row['prt_id']}][0]\" " . ((int) $row['upr_prt_inbound'] == 1 ? "checked=\"checked\"" : "") . " type=\"checkbox\" /></label></td>";
 									echo "<td style=\"padding:0px;\"><label style=\"padding:5px;display:block\"><input name=\"b[{$row['prt_id']}][1]\" " . ((int) $row['upr_prt_outbound'] == 1 ? "checked=\"checked\"" : "") . " type=\"checkbox\" /></label></td>";

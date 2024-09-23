@@ -6,11 +6,10 @@ $database=array(
 		LEFT JOIN
 		(
 			SELECT 
-				prt_id, CONCAT("[",cur_shortname,"] ", CONCAT_WS(": ", comp_name, ptp_name, prt_name)) AS prt_name
+				prt_id, CONCAT_WS(": ", comp_name, prt_name) AS prt_name
 			FROM
 				`acc_accounts` 
 				JOIN companies ON comp_id = prt_company_id
-				JOIN `acc_accounttype` ON ptp_id = prt_type
 				JOIN currencies ON cur_id = prt_currency
 		
 		) AS _sub ON _main.prtlbr_prt_id = _sub.prt_id

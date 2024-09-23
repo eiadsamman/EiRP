@@ -349,8 +349,8 @@ class VisualReport
 
 		$this->_arratt        = array();
 		$this->_partitionlist = array(0 => array("NaN", "255,255,255", 0));
-		$this->_dateFrom      = array(0 => null, 1 => null, 2 => null);
-		$this->_dateTo        = array(0 => null, 1 => null, 2 => null);
+		$this->_dateFrom      = array(0 => 0, 1 => 0, 2 => 0);
+		$this->_dateTo        = array(0 => 0, 1 => 0, 2 => 0);
 		$this->_user_id       = (int) $userid;
 
 		$dateFrom           = $dateFrom > 0 ? $dateFrom : time();
@@ -375,17 +375,16 @@ class VisualReport
 						IF(ltr_ctime < '{$this->_dateFrom[1]} 00:00:00','{$this->_dateFrom[1]} 00:00:00',ltr_ctime)
 					)
 				)  AS diff, 
-				prt_lbr_perc,prt_color,prt_id,prt_name,comp_name,ptp_name
+				prt_lbr_perc,prt_color,prt_id,prt_name,comp_name
 			FROM
 				labour_track
 					JOIN labour ON ltr_usr_id = lbr_id 
 					JOIN (
 						SELECT 
-							comp_name, prt_lbr_perc,prt_color,prt_id,prt_name,ptp_name
+							comp_name, prt_lbr_perc,prt_color,prt_id,prt_name
 						FROM 
 							`acc_accounts` 
 								JOIN companies ON comp_id = prt_company_id
-								JOIN `acc_accounttype`  ON prt_type = ptp_id 
 						) AS prtcomp ON ltr_prt_id = prtcomp.prt_id
 				
 			WHERE
@@ -412,7 +411,7 @@ class VisualReport
 					$colorlist[0]                          = hexdec($rowa['prt_color'][0] . $rowa['prt_color'][1]);
 					$colorlist[1]                          = hexdec($rowa['prt_color'][2] . $rowa['prt_color'][4]);
 					$colorlist[2]                          = hexdec($rowa['prt_color'][4] . $rowa['prt_color'][5]);
-					$this->_partitionlist[$rowa['prt_id']] = array($rowa['comp_name'] . ": " . $rowa['ptp_name'] . ": " . $rowa['prt_name'], implode(",", $colorlist), (float) $rowa['prt_lbr_perc']);
+					$this->_partitionlist[$rowa['prt_id']] = array($rowa['comp_name'] . ": " . $rowa['prt_name'], implode(",", $colorlist), (float) $rowa['prt_lbr_perc']);
 				}
 
 				$month = date("Y-m", $rowa['_tstart']);

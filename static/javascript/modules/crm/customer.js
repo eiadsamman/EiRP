@@ -221,7 +221,254 @@ export class Post extends View {
 			</article>
 		</div>`
 	}
-	run() {
 
+
+	busy = null;
+	addwin = null;
+	formMain = null;
+	inputFields = null;
+	slo_input = null;
+	slo_objects = null;
+	value_field = null;
+	uploadController = null;
+	inputFieldsSorted = null;
+	slo_defines = null;
+	description_field = null;
+	pana = null;
+	exchangeObjects = {}
+
+	constructor(pana) {
+		super();
+		this.pana = pana;
+		this.id = this.pana.navigator.url;
+	}
+
+
+
+	run() {
+		let _instance = this;
+
+		/* Main application form */
+		this.formMain = document.getElementById("js-ref_form-main");
+
+
+		this.uploadController = $.Upload({
+			objectHandler: $("#js_upload_list"),
+			domselector: $("#js_uploader_btn"),
+			dombutton: $("#js_upload_trigger"),
+			list_button: $("#js_upload_count"),
+			emptymessage: "[No files uploaded]",
+			delete_method: 'permanent',
+			upload_url: 'upload',
+			relatedpagefile: 188,
+			multiple: true,
+			inputname: "attachments",
+			domhandler: $("#UploadDOMHandler"),
+			popupview: new Popup()
+		});
+
+		this.uploadController.update();
+
+		/* Get application form input field sorted by tabIndex value */
+		this.inputFields = this.formMain.querySelectorAll("input,textarea");
+		this.inputFieldsSorted = new Array();
+		let firstItemFocus = null;
+		for (const field of this.inputFields) {
+			if (field.tabIndex && field.tabIndex > 0) {
+				this.inputFieldsSorted[parseInt(field.tabIndex)] = field;
+				/** Ordinary input field */
+				if (field.dataset.slo == undefined) {
+					field.addEventListener("keydown", function (e) {
+						if (e.key === "Enter") {
+							if (e.ctrlKey) {
+								_instance.post();
+								return;
+							}
+							if (this.value.trim() == "") {
+								return;
+							}
+							if (field.tagName !== "TEXTAREA") {
+								e.preventDefault();
+
+							} else {
+								return
+							}
+
+							let nextField = _instance.findNextInputField(this);
+							if (nextField) {
+								nextField.focus({ focusVisible: true, data: "" });
+								if (nextField.selectionStart)
+									nextField.selectionStart = nextField.selectionEnd = nextField.value.length
+							}
+							return false;
+						}
+					});
+				}
+				if (!firstItemFocus) {
+					firstItemFocus = field;
+				}
+			}
+		}
+
+		/* Run SLO object excluding pre defined operation field */
+		this.slo_input = $("#js-ref_form-main [data-slo]").not("#js-defines");
+		this.slo_objects = this.slo_input.slo({
+			onselect: function (e) {
+			}, onkeydown: function (e) {
+				if (this.stamped && e.key == "Enter") {
+					if (e.ctrlKey) {
+						_instance.post();
+						return;
+					}
+					let nextField = _instance.findNextInputField(this.object);
+					if (nextField) {
+						nextField.focus({ focusVisible: true })
+					}
+				}
+			}
+		});
+
+
+		/* this.addwin = new Popup("appPopupAddBenif");
+		document.getElementById("js-input_add-benif")?.addEventListener("click", () => {
+			this.addwin.show();
+		}); */
+
+
+		document.getElementById("js-input_submit")?.addEventListener("click", () => {
+			this.post();
+		});
+
+		this.formMain.addEventListener("submit", (e) => {
+			e.preventDefault();
+			this.post();
+			return false;
+		});
+
+
+	}
+
+
+	findNextInputField(target) {
+		let located = false;
+		for (let i in this.inputFieldsSorted) {
+			if (located) {
+				return this.inputFieldsSorted[i];
+			}
+
+			if (this.inputFieldsSorted[i] == target) {
+				located = true;
+			}
+		}
+		return false;
+	}
+
+	disableForm(state) {
+		if (document.getElementById("js-input_submit"))
+			document.getElementById("js-input_submit").disabled = state;
+		this.formMain.querySelectorAll("input, textarea, button").forEach(function (elm) {
+			if (elm != undefined)
+				elm.disabled = state;
+		});
+	}
+
+	clearFields() {
+
+	}
+
+	validateFields() {
+		let thrownerror = {
+			occured: false,
+			message: "",
+			object: undefined
+		};
+		return true;
+
+		for (const reqmark of document.querySelectorAll("label>h1")) {
+			reqmark.classList.remove("required");
+		}
+
+		/* jQuery Loop */
+		this.slo_objects.each(function () {
+			if (this.dataset.required != undefined && !this.slo.stamped || this.dataset.mandatory != undefined && this.slo.get().value.trim() == "") {
+				this.slo.object.parentNode.parentNode.parentNode.querySelector("h1").classList.add("required");
+				if (!thrownerror.occured) {
+					thrownerror.occured = true;
+					thrownerror.message = this.getAttribute("title") + " is required";
+					thrownerror.object = this;
+				}
+			}
+
+		});
+
+		if ((this.description_field.value).trim() == "") {
+			this.description_field.parentNode.parentNode.querySelector("h1").classList.add("required");
+			if (!thrownerror.occured) {
+				thrownerror.occured = true;
+				thrownerror.message = "Provide a description for the statment";
+				thrownerror.object = this.description_field;
+			}
+		}
+
+		if (thrownerror.occured) {
+			thrownerror.object.focus();
+			throw (thrownerror.message);
+		}
+	}
+
+	async post() {
+		if (this.busy)
+			return;
+		try {
+			this.validateFields();
+		} catch (e) {
+			messagesys.failure(e);
+			return false;
+		}
+		this.busy = true;
+
+		try {
+			const formData = new FormData(this.formMain);
+			this.disableForm(true)
+			overlay.show();
+			let response = await fetch(this.formMain.action, {
+				method: 'POST',
+				mode: "cors",
+				cache: "no-cache",
+				credentials: "same-origin",
+				referrerPolicy: "no-referrer",
+				headers: {
+					"Application-From": "same",
+					"X-Requested-With": "fetch",
+				},
+				body: formData,
+			});
+			overlay.hide();
+			this.disableForm(false);
+
+			if (response.ok) {
+				const payload = await response.json();
+				console.log(payload)
+				this.busy = false;
+				if (payload.result == true) {
+					messagesys.success("Customer added successfully");
+
+					this.pana.navigator.state = {};
+					this.pana.navigator.url = "crm/customers/view";
+					this.pana.navigator.state['id'] = payload.insert_id;
+					this.pana.navigator.pushState();
+					this.pana.run();
+
+					App.Instance.pageDir = this.pana.navigator.url;
+
+				} else {
+					messagesys.failure(payload.error);
+				}
+			}
+		} catch (error) {
+			this.busy = false;
+			console.log(error)
+			messagesys.failure(error);
+		}
 	}
 }

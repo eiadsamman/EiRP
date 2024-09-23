@@ -20,7 +20,7 @@ class TransactionView extends \System\Views\PanelView
 			101 => array(true, './finance/transaction.js', "Post"),
 			104 => array(true, './finance/transaction.js', "Entry"),
 			170 => array(true, './finance/transaction.js', "CustomSearch"),
-			214 => array(true, './app.js', "List")
+			214 => array(true, './finance/transaction.js', "CustomList")
 		);
 		$this->assets     = array(
 			["css", "style/pagefile/statement-control.css"],
@@ -48,7 +48,7 @@ class TransactionView extends \System\Views\PanelView
 
 		$_getJSON = json_encode($_GET);
 		//import Account from './static/javascript/modules/finance/account.js';
-		
+
 		/* JS Payload */
 		echo <<<HTML
 			<script type="module">
@@ -87,7 +87,7 @@ class TransactionView extends \System\Views\PanelView
 				pn.init();
 				pn.register("{$fs()->dir}", {$_getJSON});
 				pn.navigator.stampState();
-				pn.run();
+				pn.run(true);
 				
 			</script>
 		HTML;

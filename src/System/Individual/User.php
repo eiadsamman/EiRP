@@ -7,8 +7,6 @@ use System\Exceptions\Finance\AccountNotFoundException;
 use System\Finance\Account;
 use System\Finance\AccountRole;
 use System\Finance\Currency;
-use System\Finance\KeyTerm;
-use System\Finance\Type;
 use System\Personalization\FrequentAccountSelection;
 use System\Personalization\FrequentCompanySelection;
 use System\Profiles\AccountProfile;
@@ -60,12 +58,11 @@ class User extends Individual
 				"SELECT 
 					prt_id,prt_name,cur_symbol,cur_name,cur_id,cur_shortname,
 					upr_prt_inbound,upr_prt_outbound,upr_prt_fetch,upr_prt_view,
-					prt_ale,ptp_name,ptp_id,prt_company_id,comp_name
+					prt_company_id,comp_name
 				FROM 
 					acc_accounts
 						JOIN currencies ON cur_id = prt_currency
 						JOIN user_partition ON upr_prt_id = prt_id AND upr_usr_id = {$this->app->user->info->id} 
-						JOIN acc_accounttype ON ptp_id = prt_type
 						JOIN companies ON comp_id = prt_company_id
 				"
 			)
@@ -78,23 +75,21 @@ class User extends Individual
 				$accProf->currency = new Currency();
 				$accProf->role     = new AccountRole();
 				$accProf->company  = new CompanyProfile();
-				$accProf->type     = new Type();
 
-				$accProf->name                         = $row['prt_name'];
-				$accProf->company->id                  = (int) $row['prt_company_id'];
-				$accProf->company->name                = $row['comp_name'];
-				$accProf->currency->id                 = (int) $row['cur_id'];
-				$accProf->currency->name               = $row['cur_name'] ?? "";
-				$accProf->currency->symbol             = $row['cur_symbol'] ?? "";
-				$accProf->currency->shortname          = $row['cur_shortname'] ?? "";
-				$accProf->role->inbound                = isset($row['upr_prt_inbound']) && (int) $row['upr_prt_inbound'] == 1 ? true : false;
-				$accProf->role->outbound               = isset($row['upr_prt_outbound']) && (int) $row['upr_prt_outbound'] == 1 ? true : false;
-				$accProf->role->access                 = isset($row['upr_prt_fetch']) && (int) $row['upr_prt_fetch'] == 1 ? true : false;
-				$accProf->role->view                   = isset($row['upr_prt_view']) && (int) $row['upr_prt_view'] == 1 ? true : false;
-				$accProf->balance                      = null;
-				$accProf->type->id                     = (int) $row['ptp_id'];
-				$accProf->type->name                   = $row['ptp_name'];
-				$accProf->type->keyTerm                = is_null($row['prt_ale']) ? null : KeyTerm::tryFrom($row['prt_ale']);
+
+				$accProf->name                = $row['prt_name'];
+				$accProf->company->id         = (int) $row['prt_company_id'];
+				$accProf->company->name       = $row['comp_name'];
+				$accProf->currency->id        = (int) $row['cur_id'];
+				$accProf->currency->name      = $row['cur_name'] ?? "";
+				$accProf->currency->symbol    = $row['cur_symbol'] ?? "";
+				$accProf->currency->shortname = $row['cur_shortname'] ?? "";
+				$accProf->role->inbound       = isset($row['upr_prt_inbound']) && (int) $row['upr_prt_inbound'] == 1 ? true : false;
+				$accProf->role->outbound      = isset($row['upr_prt_outbound']) && (int) $row['upr_prt_outbound'] == 1 ? true : false;
+				$accProf->role->access        = isset($row['upr_prt_fetch']) && (int) $row['upr_prt_fetch'] == 1 ? true : false;
+				$accProf->role->view          = isset($row['upr_prt_view']) && (int) $row['upr_prt_view'] == 1 ? true : false;
+				$accProf->balance             = null;
+
 				$this->assosiateAccounts[$accProf->id] = $accProf;
 			}
 		}
@@ -105,6 +100,9 @@ class User extends Individual
 	private function loadSession(): void
 	{
 		$this->loadAssosiatedAccounts();
+		$accessRole         = new AccountRole();
+		$accessRole->access = true;
+
 		$mysqli_result = (
 			"SELECT 
 				comp_id, comp_name, up_id, usrset_usr_defind_name, sub_sessionAccount.session_account
@@ -120,6 +118,7 @@ class User extends Individual
 							usrset_value AS session_account , usrset_usr_defind_name AS session_accountcompany
 						FROM 
 							user_settings 
+							JOIN user_partition ON upr_prt_id = usrset_value AND upr_usr_id = {$this->app->user->info->id} AND {$accessRole->sqlClause()}
 						WHERE
 							usrset_type = " . \System\Personalization\Identifiers::SystemWorkingAccount->value . " AND
 							usrset_usr_id = {$this->app->user->info->id} 
@@ -136,8 +135,11 @@ class User extends Individual
 				$this->company->id   = (int) $row['comp_id'];
 				$this->company->name = $row['comp_name'];
 				$this->company->logo = empty($row['up_id']) ? null : (int) $row['up_id'];
-				if ($row['session_account'] != null)
-					$this->account = new Account($this->app, (int) $row['session_account']);
+				try {
+					if ($row['session_account'] != null)
+						$this->account = new Account($this->app, (int) $row['session_account']);
+				} catch (AccountNotFoundException $e) {
+				} 
 			}
 		}
 	}
@@ -153,9 +155,9 @@ class User extends Individual
 								VALUES (" . $this->app->user->info->id . ",	" . \System\Personalization\Identifiers::SystemWorkingCompany->value . ",'UNIQUE', $company_id) 
 									ON DUPLICATE KEY UPDATE usrset_value = $company_id;");
 
-			new FrequentCompanySelection($this->app, $company_id);
 
 			if ($r) {
+				new FrequentCompanySelection($this->app, $company_id);
 				return true;
 			} else {
 				throw new \System\Exceptions\HR\CompanyRegisteringException();
@@ -169,31 +171,28 @@ class User extends Individual
 		$iden = \System\Personalization\Identifiers::SystemWorkingAccount->value;
 		$r    = $this->app->db->query(
 			"SELECT 
-				prt_id,prt_name,cur_symbol,cur_name,cur_id,cur_shortname ,comp_id, upr_prt_inbound, upr_prt_outbound, upr_prt_fetch, upr_prt_view 
+				prt_id,prt_company_id 
 			FROM
 				acc_accounts
-					JOIN companies ON comp_id = prt_company_id
-					LEFT JOIN currencies ON cur_id = prt_currency
 					JOIN user_partition ON upr_prt_id = prt_id AND upr_usr_id = {$this->app->user->info->id} AND upr_prt_id = {$account_id} AND upr_prt_fetch = 1;"
 		);
 		if ($r->num_rows > 0) {
 			if ($row = $r->fetch_assoc()) {
 				$r = $this->app->db->query(
 					"INSERT INTO 
-						user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value) 
+						user_settings (usrset_usr_id, usrset_type, usrset_usr_defind_name, usrset_value) 
 					VALUES 
 					(
 						{$this->app->user->info->id}, 
 						$iden, 
-						{$row['comp_id']}, 
+						{$row['prt_company_id']}, 
 						{$row['prt_id']}
 					) 
 					ON DUPLICATE KEY UPDATE usrset_value = $account_id;"
 				);
 
-				new FrequentAccountSelection($this->app, $account_id);
-
 				if ($r) {
+					new FrequentAccountSelection($this->app, $account_id);
 					return true;
 				} else {
 					throw new \System\Exceptions\HR\CompanyRegisteringException();
@@ -206,7 +205,7 @@ class User extends Individual
 		}
 	}
 
-	private function set_login_session(string $sessionid, int $userid): void
+	private function set_login_session(#[\SensitiveParameter] string $sessionid, int $userid): void
 	{
 		$stmt = $this->app->db->prepare("INSERT INTO users_sessions SET usrses_session_id=?, usrses_usr_id=? ON DUPLICATE KEY UPDATE usrses_usr_id=usrses_usr_id;");
 		$stmt->bind_param('ss', $sessionid, $userid);
@@ -214,7 +213,7 @@ class User extends Individual
 		$_SESSION["sur"] = $sessionid;
 	}
 
-	public function login(string $username, string $password, bool $rememberuser = false): bool
+	public function login(#[\SensitiveParameter] string $username, #[\SensitiveParameter] string $password, bool $rememberuser = false): bool
 	{
 		$stmt = $this->app->db->prepare("SELECT usr_id, usr_username, usr_password, usr_activate FROM users WHERE usr_username = ?;");
 		$stmt->execute([$username]);
@@ -271,7 +270,7 @@ class User extends Individual
 	{
 		if ($this->info) {
 			session_regenerate_id();
-			
+
 			if (isset($_COOKIE) && sizeof($_COOKIE) > 0 && isset($_COOKIE['cur'])) {
 				$this->app->db->query("DELETE FROM cookies WHERE id='{$_COOKIE['cur']}' AND data='" . $this->app->user->info->id . "';");
 			}
