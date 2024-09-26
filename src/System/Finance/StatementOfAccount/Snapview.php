@@ -15,7 +15,10 @@ class Snapview
 
 	public function chunk(): \mysqli_result|bool
 	{
-		$query          = "SELECT * 
+		if (is_null($this->app->user->account)) {
+			return false;
+		}
+		$query = "SELECT * 
 		FROM ( 
 			SELECT 
 			 _master.atm_value, 
@@ -65,11 +68,11 @@ class Snapview
 				_pagination.acm_ctime DESC, _pagination.acm_id DESC
 		LIMIT {$this->criteria->limit()}
 		;";
-
+		$this->app->errorHandler->customError($query);
 		$stmt = $this->app->db->prepare($query);
 		$stmt->execute();
 		return $stmt->get_result();
 	}
 
-	
+
 }

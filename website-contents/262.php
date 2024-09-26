@@ -267,6 +267,7 @@ $balanceSheetView->view();
 			this.submitCaller = () => { };
 			this.init();
 		}
+		
 		accountExists(accountId) {
 			let inputs = document.querySelectorAll(".-input-accounts");
 			for (const el of inputs) {
@@ -314,6 +315,7 @@ $balanceSheetView->view();
 			}
 
 		}
+
 		init() {
 			document.addEventListener('DOMContentLoaded', () => {
 				this.pop = new Popup("appPopupAssign");
@@ -352,7 +354,6 @@ $balanceSheetView->view();
 				});
 			}, false);
 		}
-
 
 		insertAccount(termId, accountId, accountName) {
 			this.popInvalidMessage.style.display = "none";

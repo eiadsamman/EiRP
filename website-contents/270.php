@@ -93,8 +93,8 @@ if ($app->xhttp) {
 			<label>
 				<h1>Map location</h1>
 				<div class="btn-set">
-					<input tabindex="4" placeholder="Map location URL" title="Map location URL" type="text" class="flex" name="mapurl" id="mapurl"
-						value="https://www.google.com/maps/@30.0156998,31.420846,60m" />
+					<input tabindex="4" placeholder="https://www.google.com/maps/@#,#,#m" title="Map location URL" type="text" class="flex" name="mapurl" id="mapurl"
+						aria-placeholder="https://www.google.com/maps/@#,#,#m" />
 				</div>
 			</label>
 			<label for="" style="min-width:250px">

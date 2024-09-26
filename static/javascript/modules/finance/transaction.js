@@ -6,9 +6,34 @@ import { default as App, Application, View, Search, List } from '../app.js';
 
 export class CustomList extends List {
 
-	
-
 }
+
+
+export class PanelItem {
+	pana = null;
+	constructor(pana) {
+
+	}
+	
+	build(data) {
+		let statementTypeIcon = data.positive ? `<span class="stm inc active"></span>` : `<span class="stm pay active"></span>`;
+		let lockIcon = `<span class="stt chk"></span>`;
+		let attachments = parseInt(data.attachements) > 0 ? `<span class="atch"></span>` : "";
+		let badgeType = parseInt(data.padge_id) ? "image" : "initials";
+		let badgeURI = parseInt(data.padge_id) ? `<span style="background-image:url('{0}/?id=${data.padge_id}&pr=t');"></span>` : `<b style="background-color:${data.padge_color}">${data.padge_initials}</b>`;
+		return `` +
+			`<div>` +
+			`	<span style="flex: 1">` +
+			`		<div><h1>${data.beneficial}</h1><cite>${attachments}\</cite><cite>${data.id}</cite></div>` +
+			`		<div><cite>${statementTypeIcon}</cite><h1>${data.value}</h1><cite>${data.date}</cite></div>` +
+			`		<div><h1>${data.category}</h1></div>` +
+			`	</span>` +
+			`	<i class="padge ${badgeType}">${badgeURI}</i>` +
+			`</div>` +
+			`<div><h1 class=\"description\">${data.details}</h1></div>`;
+	}
+}
+
 
 export class Entry extends View {
 	pana = null;

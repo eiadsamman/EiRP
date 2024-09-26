@@ -3,6 +3,26 @@ import { default as App, View, Search, List } from '../app.js';
 
 //import MathEvaluator from '../math-evaluator.js';
 
+export class PanelItem {
+	pana = null;
+	constructor(pana) {
+
+	}
+
+	build(data) {
+		console.log(data)
+		return `` +
+			`<div data-crmlistItem="${data.id}">` +
+			`	<span style="flex: 1">` +
+			`		<div><h1>${data.name}</h1><cite> </cite><cite>${data.id}</cite></div>` +
+			`		<div><h1>${data.payments}</h1>${data.news}</div>` +
+			`	</span>` +
+			`</div>` +
+			``;
+	}
+}
+
+
 export class Entry extends View {
 	pana = null;
 	formMain = null;

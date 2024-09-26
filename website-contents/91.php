@@ -215,8 +215,8 @@ if ($app->xhttp) {
 				<label style="min-width:300px;" for="">
 					<h1>Amount</h1>
 					<div class="btn-set">
-						<input type="text" inputmode="decimal" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101"
-							title="Transaction value" min="0" name="value" id="value" />
+						<input type="text" inputmode="decimal" min="0" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101"
+							title="Transaction value" name="value" id="value" />
 						<span id="currency-hint"><?= "{$app->user->account->currency->shortname}" ?></span>
 					</div>
 					<div class="btn-set" id="exchange-form" style="margin-top:15px;display: none">

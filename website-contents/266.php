@@ -1,6 +1,7 @@
 <?php
 use System\Timeline\Module;
-use System\Views\CRM\Customer;
+use System\Views\PanelView;
+
 header("Content-Type: application/json; charset=utf-8");
 $mods = [
 	Module::Company->value,
@@ -31,17 +32,16 @@ if ($app->xhttp) {
 		if ($r && $row = $r->fetch_array()) {
 			$count = $row[0];
 		}
-		$pages = ceil($count / Customer::$perpage_val);
+		$pages = ceil($count / PanelView::$itemsPerRequest);
 
 		$json_output['headers']['count']       = $count;
 		$json_output['headers']['pages']       = $pages;
 		$json_output['headers']['landing_uri'] = $fs(173)->dir;
 		$json_output['headers']['current']     = $current;
-
 		
 
 		//SELECT up_id,up_name,up_size,up_mime FROM 
-		$pos = ($current - 1) * Customer::$perpage_val;
+		$pos = ($current - 1) * PanelView::$itemsPerRequest;
 		$q   = "SELECT
 				comp_id, comp_name,
 				_cashValue, _tltot, _tlread, (_tltot - _tlread) AS _tlnew
@@ -79,14 +79,11 @@ if ($app->xhttp) {
 			ORDER BY 
 				_tlnew DESC, tl_timestamp DESC, comp_id
 
-			LIMIT $pos, " . Customer::$perpage_val . ";";
+			LIMIT $pos, " . PanelView::$itemsPerRequest . ";";
 
 		$mysqli_result = $app->db->query($q);
-
-
 		if ($mysqli_result->num_rows > 0) {
 			while ($row = $mysqli_result->fetch_assoc()) {
-
 				$json_output['contents'][] = [
 					"id" => $row['comp_id'],
 					"name" => $row['comp_name'],

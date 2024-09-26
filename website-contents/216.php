@@ -1,7 +1,7 @@
 <?php
 use System\Graphics\SVG\CurveRelative;
 
-if (!$app->xhttp) {
+if ($app->user->account && !$app->xhttp) {
 	echo "<div class=\"account-ticket\"><div data-uri=\"{$fs(216)->dir}\">";
 	echo "</div></div>";
 } else {

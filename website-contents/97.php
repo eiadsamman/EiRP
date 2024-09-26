@@ -4,6 +4,7 @@ $database=array(
 'tableselect'=>"
 				acc_accounts
 					JOIN companies ON comp_id=prt_company_id 
+					JOIN user_company ON comp_id = urc_usr_comp_id AND urc_usr_id = {$app->user->info->id} 
 					LEFT JOIN currencies ON cur_id = prt_currency
 					",
 'tablename'=>'Accounts',
@@ -25,6 +26,8 @@ Crit
 9:	null|string					Feild description
 10:	string						Default value
 */
+
+
 'fields'=>array(
 	'prt_id'=>array(null,'ID'					,true	,null	,'primary'	,'int'		,true	,null	,null		),
 	

@@ -1,6 +1,6 @@
 <?php
+use System\Views\PanelView;
 header("Content-Type: application/json; charset=utf-8");
-$perpage_val = 20;
 
 if ($app->xhttp) {
 	$request = json_decode(file_get_contents('php://input'), true);
@@ -20,7 +20,7 @@ if ($app->xhttp) {
 
 		$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
 
-		$controller->criteria->setRecordsPerPage($perpage_val);
+		$controller->criteria->setRecordsPerPage(PanelView::$itemsPerRequest);
 		//$controller->criteria->statementID(7207);
 		//$controller->criteria->statementBeneficiary('مصطفى');
 

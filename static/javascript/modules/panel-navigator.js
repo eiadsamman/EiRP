@@ -2,7 +2,6 @@ import { Navigator } from "./app.js";
 import App from "./app.js";
 export class PaNa {
 	constructor(id) {
-		this.sidePanelUrl = "";
 		this.onClickUrl = "";
 		this.itemPerRequest = 20;
 		this.navigator = new Navigator({}, '');
@@ -10,7 +9,7 @@ export class PaNa {
 		this.panelVisible = true;
 		this.scope = {};
 		this.classList = [];
-
+		this.panelBuilderModule = null;
 
 		this.runtime = new Object();
 		this.runtime.isLoading = false;
@@ -21,7 +20,6 @@ export class PaNa {
 		this.runtime.activeItem = null;
 		this.runtime.scrollArea = document.getElementById("pana-Scroll");
 		this.runtime.container = document.getElementById("pana-Window");
-
 		this.runtime.outputSide = document.getElementById("pana-Side");
 		this.runtime.outputScreen = document.getElementById("pana-Body");
 		this.runtime.informative = document.getElementById("pana-Informative").querySelector("div");
@@ -46,6 +44,9 @@ export class PaNa {
 	}
 
 	onclick = function () {
+		this.register(pn.onClickUrl, { "id": event.dataset.listitem_id });
+		this.navigator.pushState();
+		this.run();
 	}
 
 	listitemHandler = function () {
@@ -61,7 +62,8 @@ export class PaNa {
 		}
 	}
 
-	init = function () {
+	init = function (url, getRequest) {
+		this.register(url, getRequest);
 		this.sidePanelLoader();
 		this.navigator.stampState();
 		this.navigator.onPopState((event) => {
@@ -161,6 +163,27 @@ export class PaNa {
 		return emptyPlaceholdersCount;
 	}
 
+	getFile = function (url) {
+		let output = false;
+		for (const [grpkey, grpvalue] of Object.entries(this.scope)) {
+			for (const [key, value] of Object.entries(grpvalue.modules)) {
+				if (key == url) {
+					output = {
+						"id": value[0],
+						"title": grpvalue.title,
+						"panelurl": grpvalue.url,
+						"visible": value[1],
+						"module": {
+							"js": grpvalue.js,
+							"js": grpvalue.js,
+							"class": value[2],
+						},
+					};
+				}
+			}
+		}
+		return output;
+	}
 	sidePanelLoader = async () => {
 		if (this.runtime.isFinished) {
 			this.clearEmptyPlaceholders();
@@ -168,8 +191,9 @@ export class PaNa {
 		}
 		this.runtime.informative.innerText = "Loading...";
 		this.generatePlaceholders();
+		let file = this.getFile(this.navigator.url)
 
-		let response = await fetch(this.sidePanelUrl, {
+		let response = await fetch(file.panelurl, {
 			method: 'POST',
 			mode: "cors",
 			cache: "no-cache",
@@ -191,14 +215,23 @@ export class PaNa {
 			if (document.getElementById("pana-TotalRecords"))
 				document.getElementById("pana-TotalRecords").innerText = payload.headers.count + " records";
 
-			payload.contents.forEach(element => {
-				let freePlaceholder = this.getFreePlaceholder();
-				if (freePlaceholder) {
-					freePlaceholder.classList.remove("place-holder");
-					this.buildItem(freePlaceholder, element);//payload.headers.landing_uri
-					this.assigneEvents(freePlaceholder);
-				}
+			import(file.module.js).then((m) => {
+				console.log(file.module.js)
+				this.panelBuilderModule = new (m["PanelItem"])(this);
+				payload.contents.forEach(element => {
+					let freePlaceholder = this.getFreePlaceholder();
+					if (freePlaceholder) {
+						freePlaceholder.classList.remove("place-holder");
+						this.buildItem(freePlaceholder, element);
+						this.assigneEvents(freePlaceholder);
+					}
+				});
+			}).catch(e => {
+				console.log(e)
+				messagesys.failure('Application failed to loaded properly');
 			});
+
+
 			this.runtime.isFinished = !this.checkAvailability() && this.clearEmptyPlaceholders() > 0;
 			if (this.runtime.isFinished) {
 				this.runtime.informative.innerText = "No more records";
@@ -223,7 +256,8 @@ export class PaNa {
 			content = document.createElement("a");
 			content.classList.add("panel-item");
 			content.classList.add("place-holder");
-			content.classList.add(...this.classList);
+			if (this.classList != "")
+				content.classList.add(this.classList);
 			this.runtime.container.append(content);
 		}
 	}
@@ -269,7 +303,7 @@ export class PaNa {
 
 	buildItem = function (obj, data = {}) {
 		obj.dataset.listitem_id = data.id;
-		obj.innerHTML = (this.listitemHandler(data));
+		obj.innerHTML = (this.panelBuilderModule.build(data));
 		obj.href = this.onClickUrl + "/?id=" + data.id;
 	}
 
