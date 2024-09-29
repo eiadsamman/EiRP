@@ -1,8 +1,6 @@
 <?php
 use System\Timeline\Module;
 use System\Views\PanelView;
-
-header("Content-Type: application/json; charset=utf-8");
 $mods = [
 	Module::Company->value,
 	Module::FinanceCash->value,
@@ -14,15 +12,6 @@ $mods = join(",", $mods);
 if ($app->xhttp) {
 	$payload = json_decode(file_get_contents('php://input'), true);
 	if (!empty($payload['method']) && $payload['method'] == "fetch") {
-		$json_output = [
-			"headers" => [
-				"count" => 0,/* Total count of records */
-				"pages" => 0,/* Total number of pages */
-				"current" => 0,/* Current navigation position on pages variable */
-			],
-			"contents" => []
-		];
-
 
 		$current = (int) ($payload['page']);
 		$current = $current < 0 ? 1 : $current;
@@ -34,11 +23,9 @@ if ($app->xhttp) {
 		}
 		$pages = ceil($count / PanelView::$itemsPerRequest);
 
-		$json_output['headers']['count']       = $count;
-		$json_output['headers']['pages']       = $pages;
-		$json_output['headers']['landing_uri'] = $fs(173)->dir;
-		$json_output['headers']['current']     = $current;
-		
+		header("res_count: {$count}");
+		header("res_pages: {$pages}");
+		header("res_current: {$current}");
 
 		//SELECT up_id,up_name,up_size,up_mime FROM 
 		$pos = ($current - 1) * PanelView::$itemsPerRequest;
@@ -81,19 +68,27 @@ if ($app->xhttp) {
 
 			LIMIT $pos, " . PanelView::$itemsPerRequest . ";";
 
+
+
 		$mysqli_result = $app->db->query($q);
 		if ($mysqli_result->num_rows > 0) {
 			while ($row = $mysqli_result->fetch_assoc()) {
-				$json_output['contents'][] = [
-					"id" => $row['comp_id'],
-					"name" => $row['comp_name'],
-					"news" => $row['_tlnew'] ?? 0,
-					"payments" => is_null($row['_cashValue']) ? "00.0" : number_format($row['_cashValue'], 2) . $app->currency->shortname
-				];
+				$news = (!is_null($row['_tlnew']) && (int) $row['_tlnew'] > 0) ? "<cite class=\"badge\">{$row['_tlnew']}</cite>" : "";
+				$pay = is_null($row['_cashValue']) ? "00.0" : number_format($row['_cashValue'], 2) . $app->currency->shortname;
+
+				echo <<<HTML
+					<a class="panel-item crm-panel" href="{$fs(267)->dir}/?id={$row['comp_id']}" data-listitem_id="{$row['comp_id']}" data-href="{$fs(267)->dir}">
+						<div data-crmlistItem="{$row['comp_id']}">
+							<span style="flex: 1">
+								<div><h1>{$row['comp_name']}</h1><cite> </cite><cite>{$row['comp_id']}</cite></div>
+								<div><h1>{$pay}</h1>{$news}</div>
+							</span>
+						</div>
+					</a>
+				HTML;
 			}
 		}
-		echo json_encode($json_output);
-		exit;
 
+		exit;
 	}
 }

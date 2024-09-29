@@ -1,7 +1,8 @@
 <?php
 use System\Template\Gremium;
 use System\Timeline\Module;
-use System\Views\CRM\Customer;
+use System\Views\PanelView;
+
 $mods = [
 	Module::Company->value,
 	Module::FinanceCash->value,
@@ -52,7 +53,7 @@ if ($app->xhttp) {
 		if ($r && $row = $r->fetch_array()) {
 			$count = $row[0];
 		}
-		$pages = ceil($count / Customer::$perpage_val);
+		$pages = ceil($count / PanelView::$itemsPerRequest);
 
 
 		header("Vendor-Ouput-Count: $count");
@@ -62,7 +63,7 @@ if ($app->xhttp) {
 
 		if ($count > 0) {
 
-			$pos = ($current - 1) * Customer::$perpage_val;
+			$pos = ($current - 1) * PanelView::$itemsPerRequest;
 			$q   = "SELECT
 				comp_id, comp_name, _cashValue, _tltot, _tlread, (_tltot - _tlread) AS _tlnew,tl_timestamp, 
 				DATE_FORMAT(mm.tl_timestamp, '%b %D, %Y') AS _datestamp, DATE_FORMAT(mm.tl_timestamp, '%H:%i ') AS _timestamp,
@@ -99,7 +100,7 @@ if ($app->xhttp) {
 
 			WHERE 1 $filterQuery
 			ORDER BY tl_timestamp DESC ,comp_id
-			LIMIT $pos, " . Customer::$perpage_val . ";";
+			LIMIT $pos, " . PanelView::$itemsPerRequest . ";";
 
 			$mysqli_result = $app->db->execute_query($q, $filterValues);
 
@@ -137,6 +138,7 @@ if ($app->xhttp) {
 		"<button class=\"edge-right standard plus\" data-href=\"{$fs(270)->dir}\" data-target=\"{$fs(270)->dir}\"><span class=\"small-media-hide\"> Add</span></button></div>");
 	$legend = $grem->menu()->open();
 	echo <<<HTML
+		<a href="acc/trs/inc" data-href="acc/trs/inc">Click here</a>
 		<button id="searchButton" class="edge-left edge-right search" data-href="{$fs(269)->dir}" data-target="{$fs(269)->dir}"><span class="small-media-hide"> Search</span></button>
 		<input type="button" id="cancelSearchButton" style="display: none;font-family: glyphs" class="edge-right error" data-href="{$fs()->dir}" href="{$fs()->dir}" value="&#xe901;" />
 

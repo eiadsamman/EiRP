@@ -1,15 +1,19 @@
 import { Navigator } from "./app.js";
+import Route from "../../../route";
 import App from "./app.js";
 export class PaNa {
-	constructor(id) {
-		this.onClickUrl = "";
+	constructor() {
 		this.itemPerRequest = 20;
 		this.navigator = new Navigator({}, '');
-		this.module = null;
 		this.panelVisible = true;
-		this.scope = {};
 		this.classList = [];
 		this.panelBuilderModule = null;
+		this.loadedModule = Array();
+		this.runningModule = {
+			"name": null,
+			"module": null,
+			"instance": null,
+		};
 
 		this.runtime = new Object();
 		this.runtime.isLoading = false;
@@ -39,17 +43,14 @@ export class PaNa {
 				this.fetchNewItems();
 			}
 		});
-		return this;
 
+		return this;
 	}
 
-	onclick = function () {
-		this.register(pn.onClickUrl, { "id": event.dataset.listitem_id });
+	onclick = function (event) {
+		this.register(event.dataset.href, { "id": event.dataset.listitem_id });
 		this.navigator.pushState();
 		this.run();
-	}
-
-	listitemHandler = function () {
 	}
 
 	highlightItemById = function (id) {
@@ -64,16 +65,13 @@ export class PaNa {
 
 	init = function (url, getRequest) {
 		this.register(url, getRequest);
-		this.sidePanelLoader();
 		this.navigator.stampState();
 		this.navigator.onPopState((event) => {
 			this.register(event.state[':url'], event.state);
 			this.highlightItemById(event.state.id);
-
-
-			if (this.module && this.module.id == event.state[':url'] && typeof this.module['onPopState'] == "function") {
-				if (typeof this.module.onPopState == "function") {
-					this.module.onPopState();
+			if (this.runningModule.instance && this.runningModule.instance.id == event.state[':url'] && typeof this.runningModule.instance['onPopState'] == "function") {
+				if (typeof this.runningModule.instance.onPopState == "function") {
+					this.runningModule.instance.onPopState();
 				}
 			} else {
 				this.run();
@@ -165,35 +163,39 @@ export class PaNa {
 
 	getFile = function (url) {
 		let output = false;
-		for (const [grpkey, grpvalue] of Object.entries(this.scope)) {
+		for (const [grpkey, grpvalue] of Object.entries(Route)) {
 			for (const [key, value] of Object.entries(grpvalue.modules)) {
 				if (key == url) {
 					output = {
+						"key": grpkey,
 						"id": value[0],
-						"title": grpvalue.title,
+						"paneltitle": grpvalue.title,
 						"panelurl": grpvalue.url,
-						"visible": value[1],
+						"title": value[1],
+						"visible": value[2],
 						"module": {
 							"js": grpvalue.js,
-							"js": grpvalue.js,
-							"class": value[2],
+							"class": value[3],
 						},
+						"assets": grpvalue.assets
 					};
 				}
 			}
 		}
 		return output;
 	}
-	sidePanelLoader = async () => {
+
+	sidePanelLoader = function () {
 		if (this.runtime.isFinished) {
 			this.clearEmptyPlaceholders();
 			return;
 		}
+		//console.log((new Error()).stack?.split("\n")[1]?.trim().split(" ")[1]) 
+
 		this.runtime.informative.innerText = "Loading...";
 		this.generatePlaceholders();
-		let file = this.getFile(this.navigator.url)
-
-		let response = await fetch(file.panelurl, {
+		let file = this.getFile(this.navigator.url);
+		fetch(file.panelurl, {
 			method: 'POST',
 			mode: "cors",
 			cache: "no-cache",
@@ -206,33 +208,18 @@ export class PaNa {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ ...{ "method": "fetch", "page": this.runtime.currentPage } })
-		});
+		}).then(response => {
+			this.runtime.totalPages = response.headers.has("res_pages") ? response.headers.get("res_pages") : 0;
+			document.getElementById("pana-TotalRecords").innerText = (response.headers.has("res_count") ? response.headers.get("res_count") : 0) + " records";
 
-		if (response.ok) {
-			const payload = await response.json();
-			this.runtime.totalPages = parseInt(payload.headers.pages);
-
-			if (document.getElementById("pana-TotalRecords"))
-				document.getElementById("pana-TotalRecords").innerText = payload.headers.count + " records";
-
-			import(file.module.js).then((m) => {
-				console.log(file.module.js)
-				this.panelBuilderModule = new (m["PanelItem"])(this);
-				payload.contents.forEach(element => {
-					let freePlaceholder = this.getFreePlaceholder();
-					if (freePlaceholder) {
-						freePlaceholder.classList.remove("place-holder");
-						this.buildItem(freePlaceholder, element);
-						this.assigneEvents(freePlaceholder);
-					}
-				});
-			}).catch(e => {
-				console.log(e)
-				messagesys.failure('Application failed to loaded properly');
-			});
-
-
-			this.runtime.isFinished = !this.checkAvailability() && this.clearEmptyPlaceholders() > 0;
+			this.runtime.isLoading = false;
+			if (response.ok) return response.text();
+			return Promise.reject(response);
+		}).then(body => {
+			this.clearEmptyPlaceholders();
+			this.runtime.container.insertAdjacentHTML('beforeend', body);
+			this.assigneEvents();
+			this.runtime.isFinished = !this.checkAvailability();
 			if (this.runtime.isFinished) {
 				this.runtime.informative.innerText = "No more records";
 				return;
@@ -240,12 +227,15 @@ export class PaNa {
 			if (this.checkAvailability() &&
 				this.runtime.scrollArea.scrollHeight > 0 &&
 				this.runtime.scrollArea.clientHeight > 0 &&
-				(this.runtime.scrollArea.scrollHeight <= this.runtime.scrollArea.clientHeight)) {
+				this.runtime.scrollArea.scrollHeight <= this.runtime.scrollArea.clientHeight
+			) {
 				this.runtime.currentPage += 1;
 				this.sidePanelLoader();
 			}
-			this.runtime.isLoading = false;
-		}
+		}).catch(response => {
+			console.log(response);
+			messagesys.failure("Application failed to load properly");
+		});
 	}
 
 	generatePlaceholders = function () {
@@ -256,8 +246,6 @@ export class PaNa {
 			content = document.createElement("a");
 			content.classList.add("panel-item");
 			content.classList.add("place-holder");
-			if (this.classList != "")
-				content.classList.add(this.classList);
 			this.runtime.container.append(content);
 		}
 	}
@@ -266,10 +254,9 @@ export class PaNa {
 		let item = document.createElement("a");
 		item.classList.add("panel-item");
 		item.classList.add("flash");
-		item.classList.add(...this.classList);
+		item.classList.add(this.classList);
 		this.runtime.container.prepend(item);
-		this.buildItem(item, content);
-		this.assigneEvents(item);
+		this.assigneEvents();
 	}
 
 	setActiveItem = function (item) {
@@ -286,25 +273,24 @@ export class PaNa {
 		}
 	}
 
-	assigneEvents = function (element) {
+	assigneEvents = function () {
 		let instance = this;
-		element.addEventListener("click", function (e) {
-			e.preventDefault();
-			if (instance.runtime.activeItem != null) {
-				if (instance.runtime.activeItem.dataset.listitem_id === this.dataset.listitem_id)
-					return;
-				instance.clearActiveItem();
+		this.runtime.container.querySelectorAll("a").forEach(e => {
+			if (e.dataset.rasied == undefined) {
+				e.dataset.rasied = 1;
+				e.addEventListener("click", function (e) {
+					e.preventDefault();
+					if (instance.runtime.activeItem != null) {
+						if (instance.runtime.activeItem.dataset.listitem_id === this.dataset.listitem_id)
+							return;
+						instance.clearActiveItem();
+					}
+					instance.setActiveItem(this);
+					instance.onclick(this);
+					return false;
+				});
 			}
-			instance.setActiveItem(this);
-			instance.onclick(this);
-			return false;
 		});
-	}
-
-	buildItem = function (obj, data = {}) {
-		obj.dataset.listitem_id = data.id;
-		obj.innerHTML = (this.panelBuilderModule.build(data));
-		obj.href = this.onClickUrl + "/?id=" + data.id;
 	}
 
 	checkAvailability = function () {
@@ -324,33 +310,54 @@ export class PaNa {
 		App.Instance.pageDir = this.navigator.url;
 	}
 
-	run = function (directAccess = false) {
-		let url = this.navigator.url;
-		this.module = null;
+	loadAssets = function (assets) {
+		for (let asset of assets.css) {
+			var styles = document.createElement('link');
+			styles.rel = 'stylesheet';
+			styles.type = 'text/css';
+			styles.media = 'screen';
+			styles.href = "static/" + asset;
+			document.getElementsByTagName('head')[0].appendChild(styles);
+		}
+	}
+
+	run = async (directAccess = false) => {
 		this.runtime.busy = true;
 		this.runtime.outputScreen.classList.add("busy");
 
-		/* Import page custome module file */
-		if (this.scope[url] !== undefined) {
-			document.title = App.Title + " - " + this.scope[url].title;
-			this.sidePanelVisibility(this.scope[url].side);
-			if (this.scope[url].module != undefined && this.scope[url].import != undefined && this.scope[url].module != null) {
-				import(this.scope[url].import).then((m) => {
-					this.module = new (m[this.scope[url].module])(this);
-					if (typeof this.module['splashscreen'] == "function") {
-						this.latencyTimer = window.setTimeout(() => {
-							this.module.splashscreen(this.runtime.outputScreen, url, this.scope[url].title, this.navigator.state);
-						}, this.latency);
-					}
-					this.fetch(directAccess);
-				}).catch(e => {
-					console.log(e)
-					messagesys.failure('Loading application modules failed');
-				});
+		let file = this.getFile(this.navigator.url);
+		if (file) {
+
+			if (!this.loadedModule.includes(file.key)) {
+				this.loadedModule.push(file.key);
+				this.loadAssets(file.assets);
 			}
+
+			document.title = App.Title + " - " + file.title;
+			this.sidePanelVisibility(file.visible);
+			if (this.runningModule.name != file.key) {
+				this.runningModule.name = file.key;
+				const m = await import(file.module.js);
+				this.runningModule.module = m;
+				this.runtime.totalPages = 1;
+				this.runtime.currentPage = 1;
+				this.runtime.isFinished = false;
+				this.runtime.scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+				this.runtime.container.innerHTML = "";
+				document.getElementById("pana-PanelTitle").innerText = file.paneltitle;
+				document.getElementById("pana-TotalRecords").innerText = "";
+				this.runtime.isLoading = false;
+				this.sidePanelLoader();
+			}
+
+			this.runningModule.instance = new (this.runningModule.module[file.module.class])(this);
+			if (typeof this.runningModule.instance['splashscreen'] == "function") {
+				this.latencyTimer = window.setTimeout(() => {
+					this.runningModule.instance.splashscreen(this.runtime.outputScreen, this.navigator.url, file.title, this.navigator.state);
+				}, this.latency);
+			}
+			this.fetch(directAccess);
 		}
-
-
 	}
 
 	praseEvents = function (target) {
@@ -358,6 +365,7 @@ export class PaNa {
 			try {
 				el.addEventListener("click", (e) => {
 					e.preventDefault();
+
 					let urlparts = el.dataset.href.split("?");
 					this.navigator.state = {};
 					this.navigator.url = urlparts[0].replace(/^\/+|\/+$/g, '');
@@ -369,10 +377,11 @@ export class PaNa {
 							this.navigator.state[key] = value;
 						}
 					}
+
 					this.run();
 					this.navigator.pushState();
 					return false;
-				});
+				}, { once: true });
 			} catch (e) {
 				console.log(e)
 			}
@@ -400,9 +409,8 @@ export class PaNa {
 			this.runtime.outputScreen.innerHTML = body;
 			this.runtime.outputScreen.classList.remove("busy");
 			this.praseEvents(this.runtime.outputScreen);
-			if (this.module) this.module.run(directAccess);
+			if (this.runningModule.instance) this.runningModule.instance.run(directAccess);
 		}).catch(response => {
-			console.log(response)
 			this.runtime.busy = false;
 			this.runtime.outputScreen.classList.remove("busy");
 			messagesys.failure("Server response `" + response.statusText + "`");

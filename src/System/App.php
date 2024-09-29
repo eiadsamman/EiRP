@@ -88,7 +88,7 @@ class App
 
 
 
-		$this->id = md5(session_id() . $this->broadcast);
+		$this->id = substr(md5(session_id() . $this->broadcast),0,6);
 
 		/* Application session User */
 		$this->user = new Individual\User($this);

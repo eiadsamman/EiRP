@@ -72,6 +72,7 @@ class Blocks
 	 */
 	public string|null $fxMaxwidth = null;
 
+	public string $alignmentTab = "\t\t\t\t\t\t";
 
 	public array|null $options = null;
 
@@ -98,13 +99,13 @@ class Blocks
 			if (!$this->opened) {
 				$this->open();
 			}
-			echo "\t" . $inline . "\n";
+			echo $this->alignmentTab . "\t" . $inline . "\n";
 			$this->close();
 		} else {
 			if (!$this->opened) {
 				$this->open();
 			}
-			echo "\t" . $this->message . "\n";
+			echo $this->alignmentTab . "\t" . $this->message . "\n";
 			$this->close();
 		}
 		return $this;
@@ -124,7 +125,7 @@ class Blocks
 	public function close(): self
 	{
 		if ($this->opened) {
-			echo "</{$this->id}>\n";
+			echo $this->alignmentTab . "</{$this->id}>\n";
 			$this->opened = false;
 		}
 		return $this;
@@ -208,13 +209,13 @@ class Header extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo "<{$this->id}";
+			echo $this->alignmentTab . "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top});\" " : "");
 			echo ">\n";
 
-			echo $this->prev == null ? "" : "\t<a $this->prev class=\"previous\" draggable=\"false\" data-role=\"previous\"></a>\n";
-			echo $this->status == null ? "" : "\t<span class=\"$this->status\"></span>\n";
+			echo $this->prev == null ? "" : $this->alignmentTab . "\t<a $this->prev class=\"previous\" draggable=\"false\" data-role=\"previous\"></a>\n";
+			echo $this->status == null ? "" : $this->alignmentTab . "\t<span class=\"$this->status\"></span>\n";
 			$this->opened = true;
 		}
 		return $this;
@@ -229,7 +230,7 @@ class Menu extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo "<{$this->id}";
+			echo $this->alignmentTab . "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo " class=\"btn-set\"";
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top} - var(--gremium-header-toggle));\" " : "");
@@ -249,7 +250,7 @@ class Legend extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo "<{$this->id}";
+			echo $this->alignmentTab . "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo " class=\"btn-set\"";
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top} - var(--gremium-header-toggle));\" " : "");
@@ -268,7 +269,7 @@ class Title extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo "<{$this->id}";
+			echo $this->alignmentTab . "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top} - var(--gremium-header-toggle));\" " : "");
 			echo ">\n";
@@ -287,7 +288,7 @@ class Article extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo "<{$this->id}";
+			echo $this->alignmentTab . "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo (empty($this->fxwidth) ? "" : " style=\"width:{$this->fxwidth};\" ");
 			echo (empty($this->fxMaxwidth) ? "" : " style=\"max-width:{$this->fxMaxwidth};\" ");
@@ -323,6 +324,7 @@ class Article extends Blocks
  */
 class Gremium
 {
+	private string $alignmentTab = "\t\t\t\t\t";
 	/**
 	 * Base `top` attribute for block elements
 	 * @var string
@@ -350,7 +352,7 @@ class Gremium
 		$this->legends_stackable = $legends_stackable;
 		$this->stack             = array();
 		if (!$omit_html)
-			echo "<div " . (!is_null($html_id) ? " id=\"$html_id\" " : "") . " class=\"gremium " . ($limit_width ? "limit-width" : "") . "\">\n\n\n\n";
+			echo $this->alignmentTab . "<div " . (!is_null($html_id) ? " id=\"$html_id\" " : "") . " class=\"gremium " . ($limit_width ? "limit-width" : "") . "\">\n";
 	}
 
 	/**
@@ -446,7 +448,7 @@ class Gremium
 
 	public function terminate()
 	{
-		echo "</div>";
+		echo $this->alignmentTab . "</div>";
 	}
 	/**
 	 * Summary of __destruct

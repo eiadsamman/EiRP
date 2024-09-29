@@ -1,20 +1,15 @@
 <?php
 use System\Views\PanelView;
-header("Content-Type: application/json; charset=utf-8");
 
 if ($app->xhttp) {
 	$request = json_decode(file_get_contents('php://input'), true);
 	if (!empty($request['method']) && $request['method'] == "fetch") {
-		$json_output = array(
-			"headers" => array(
-				"count" => 0,/* Total count of records */
-				"pages" => 0,/* Total number of pages */
-				"current" => 0,/* Current navigation position on pages variable */
-			),
-			"contents" => array()
-		);
+
 		if (!$app->user->account) {
-			echo json_encode($json_output);
+			header("res_count: 0");
+			header("res_pages: 0");
+			header("res_current: 0");
+			echo '';
 			exit;
 		}
 
@@ -41,33 +36,43 @@ if ($app->xhttp) {
 			$controller->criteria->setCurrentPage(1);
 		}
 
-		$json_output['headers']['count']       = $count;
-		$json_output['headers']['pages']       = $pages;
-		$json_output['headers']['landing_uri'] = $fs(104)->dir;
-		$json_output['headers']['current']     = $controller->criteria->getCurrentPage();
+		header("res_count: {$count}");
+		header("res_pages: {$pages}");
+		header("res_current: {$controller->criteria->getCurrentPage()}");
 
+		$downloadurl = $fs(187)->dir;
 
 		if ($count > 0) {
 			$mysqli_result = $controller->chunk(false);
 			if ($mysqli_result->num_rows > 0) {
 				while ($row = $mysqli_result->fetch_assoc()) {
-					$json_output['contents'][] = array(
-						"id" => $row['acm_id'],
-						"value" => ($row['atm_value'] <= 0 ? "(" . number_format(abs($row['atm_value']), 2) . ")" : "" . number_format(abs($row['atm_value']), 2)),
-						"positive" => $row['atm_value'] >= 0 ? 1 : 0,
-						"date" => $row['acm_ctime'],
-						"category" => "{$row['accgrp_name']}: {$row['acccat_name']}",
-						"beneficial" => (!is_null($row['_party_comp_id']) ? "<span style=\"color:var(--root-link-color)\">{$row['_party_comp_name']}</span>: " : "") . $row['acm_beneficial'],
-						"details" => $row['acm_comments'] ?? "",
-						"padge_id" => $row['issuer_badge'] ?? 0,
-						"padge_initials" => mb_substr($row['usr_firstname'] ?? "", 0, 1) . " " . mb_substr($row['usr_lastname'] ?? "", 0, 1),
-						"padge_color" => "hsl(" . ((int) ($row['acm_editor_id']) * 10 % 360) . ", 75%, 50%)",
-						"attachements" => $row['up_count'] ?? 0
-					);
+					$pos = $row['atm_value'] >= 0 ? '<span class="stm inc active"></span>' : '<span class="stm pay active"></span>';
+					$att = !is_null($row['up_count']) && (int) $row['up_count'] > 0 ? '<span class="atch"></span>' : "";
+					$ben = (!is_null($row['_party_comp_id']) ? "<span style=\"color:var(--root-link-color)\">{$row['_party_comp_name']}</span>: " : "") . $row['acm_beneficial'];
+					$val = ($row['atm_value'] <= 0 ? "(" . number_format(abs($row['atm_value']), 2) . ")" : "" . number_format(abs($row['atm_value']), 2));
+					
+
+					$ini = mb_substr($row['usr_firstname'] ?? "", 0, 1) . " " . mb_substr($row['usr_lastname'] ?? "", 0, 1);
+					$car = "hsl(" . ((int) ($row['acm_editor_id']) * 10 % 360) . ", 75%, 50%)";
+					$bad = is_null($row['issuer_badge']) ? "initials" : "image";
+					$bar = is_null($row['issuer_badge']) ? "<b style=\"background-color:{$car}\">{$ini}</b>" : "<span style=\"background-image:url('{$downloadurl}/?id={$row['issuer_badge']}&pr=t');\"></span>";
+
+					echo <<<HTML
+						<a class="panel-item statment-panel" href="{$fs(104)->dir}/?id={$row['acm_id']}" data-listitem_id="{$row['acm_id']}" data-href="{$fs(104)->dir}">
+							<div>
+								<span style="flex: 1">
+									<div><h1>{$ben}</h1><cite>{$att}</cite><cite>{$row['acm_id']}</cite></div>
+									<div><cite>{$pos}</cite><h1>{$val}</h1><cite>{$row['acm_ctime']}</cite></div>
+									<div><h1>{$row['accgrp_name']}: {$row['acccat_name']}</h1></div>
+								</span>
+								<i class="padge {$bad}">{$bar}</i>
+							</div>
+							<div><h1 class="description">{$row['acm_comments']}</h1></div>
+						</a>
+					HTML;
 				}
 			}
 		}
-		echo json_encode($json_output);
 		exit;
 
 	}

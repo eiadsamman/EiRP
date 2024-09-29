@@ -105,8 +105,8 @@ if ($app->xhttp) {
 							<span>Balance</span><span><?= number_format($party->financialBalance, 2) . " " . $app->currency->shortname; ?></span>
 						</div>
 						<div class="btn-set">
-							<a class="edge-left" href="<?= $fs(91)->dir ?>/?party=<?= $party->id ?>"><?= $fs(91)->title ?></a>
-							<a class="edge-right" href="<?= $fs(95)->dir ?>/?party=<?= $party->id ?>"><?= $fs(95)->title ?></a>
+							<a class="edge-left" href="<?= $fs(91)->dir ?>/?party=<?= $party->id ?>"  data-href="<?= $fs(91)->dir ?>/?party=<?= $party->id ?>"><?= $fs(91)->title ?></a>
+							<a class="edge-right" href="<?= $fs(95)->dir ?>/?party=<?= $party->id ?>" data-href="<?= $fs(95)->dir ?>/?party=<?= $party->id ?>"><?= $fs(95)->title ?></a>
 						</div>
 						<div class="btn-set">
 							<a class="edge-left edge-right">New Invoice</a>

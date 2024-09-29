@@ -21,8 +21,15 @@ export class Application {
 	page = {}
 	assosiatedAccounts = [];
 
-	constructor(id) {
+	constructor(id, apptitle, appbaseurl, pageid, pagedir) {
+		App.ID = id;
+		App.BaseURL = appbaseurl;
+		App.Title = apptitle;
+
 		this.id = id;
+		this.page.id = pageid;
+		this.page.dir = pagedir;
+
 		document.addEventListener("DOMContentLoaded", async () => {
 			await this.chunkLoaders();
 			this.dispatchEvents();
@@ -219,9 +226,6 @@ export class View {
 }
 
 
-
-
-
 export class Search extends View {
 	pana = null;
 	postUrl = "";
@@ -275,8 +279,6 @@ export class Search extends View {
 		</div>`;
 	}
 }
-
-
 
 export class List extends View {
 	pana = null;

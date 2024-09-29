@@ -97,7 +97,7 @@ if ($read) {
 			<label>
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
-					<?= is_null($read->party) ? "<span>-</span>" : "<span>{$read->party->name}</span>"; ?>
+					<?= is_null($read->party) ? "<span>-</span>" : "<span class=\"at\"><a href=\"{$fs(267)->dir}/?id={$read->party->id}\" data-href=\"{$fs(267)->dir}/?id={$read->party->id}\">{$read->party->name}</a></span>"; ?>
 				</div>
 			</label>
 			<label>

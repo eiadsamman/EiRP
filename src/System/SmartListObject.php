@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace System;
 
-#[\System\Finance\Account]
 class SmartListObject
 {
 	protected App $app;

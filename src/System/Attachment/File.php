@@ -36,6 +36,7 @@ class File
 		$output->datetime = new \DateTime($res['up_date']);
 		return $output;
 	}
+	
 	public function load(int $file_id): Properties|bool
 	{
 		$stmt = $this->app->db->prepare(

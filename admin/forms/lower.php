@@ -1,5 +1,5 @@
 <?php if ($app->user->logged && !$fs()->permission->deny) { ?>
-	</div>
+		</div>
 	</article>
 <?php } ?>
 </body>

@@ -14,6 +14,5 @@ interface Views
 
 	public function htmlAssets(string $version): void;
 
-
-
+	public function groupBuildJSON(): string;
 }
