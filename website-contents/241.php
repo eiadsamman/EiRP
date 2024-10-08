@@ -19,7 +19,7 @@ function SidePanelContent(&$app, $pageUrl, $pageTitle, $newUrl, $newTitle)
 				JOIN inv_costcenter ON ccc_id = po_costcenter
 				JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id={$app->user->info->id}
 		WHERE 
-			po_close_date IS NULL AND po_type = " . Invoice::map['MAT_REQ'] . " AND (po_canceled = 0 OR po_canceled = NULL) ORDER BY po_date DESC");
+			po_close_date IS NULL AND po_type = " . Invoice::map['MAT_REQ'] . " AND (po_voided = 0 OR po_voided = NULL) ORDER BY po_date DESC");
 	if ($mysqli_result) {
 		if ($mysqli_result->num_rows == 0) {
 			echo "<div><span>No pending quotations</span></div>";

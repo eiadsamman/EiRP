@@ -374,7 +374,7 @@ $grem->getLast()->close();
 echo "<br /><br />";
 $grem->title()->serve("<span class=\"flex\">Query Result</span>");
 $grem->article()->serve("<div id=\"jQoutput\">No requests applied</div>");
-unset($grem);
+$grem->terminate();
 
 
 ?>

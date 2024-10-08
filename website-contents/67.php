@@ -104,7 +104,7 @@ echo "<input type=\"text\" class=\"edge-left\" id=\"js-input_filter-list\" data-
 echo "<button id=\"btn-card_view\" data-state=\"$ui_view_selection\" tabindex=\"1\">" . $ui_view[$ui_view_selection] . "</button>";
 $grem->getLast()->close();
 echo ("<div id=\"ajax-content\"></div>");
-unset($grem);
+$grem->terminate();
 
 ?>
 <datalist id="js-data-list_group">

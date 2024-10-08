@@ -14,7 +14,7 @@ export class Entry extends View {
 
 	splashscreen(target, url, title, data) {
 		return `
-		<div class="gremium limit-width">
+		<div class="gremium"><div class="content">
 			<header style="position:sticky;">
 				<h1>${title}</h1><cite></cite>
 			</header>
@@ -25,7 +25,7 @@ export class Entry extends View {
 			<article>
 				<span class="loadingScreen-placeholderBody"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>
 			</article>
-		</div>`;
+		</div></div>`;
 	}
 
 	run() {
@@ -189,7 +189,7 @@ export class CustomList extends List {
 
 	splashscreen(target, url, title, data) {
 		target.innerHTML = `
-			<div class="gremium limit-width">
+			<div class="gremium"><div class="content">
 				<header style="position:sticky;">
 				<h1>${title}</h1>
 				</header>
@@ -203,7 +203,7 @@ export class CustomList extends List {
 				</menu>
 				<article>
 				</article>
-			</div>`;
+			</div></div>`;
 	}
 }
 
@@ -211,7 +211,7 @@ export class CustomList extends List {
 export class Post extends View {
 	splashscreen(target, url, title, data) {
 		target.innerHTML = `
-		<div class="gremium limit-width">
+		<div class="gremium"><div class="content">
 			<header style="position:sticky;">
 				<a style="pointer-events: none;" class="previous" data-role="previous"></a>
 				<h1>${title}</h1><cite></cite>
@@ -219,7 +219,7 @@ export class Post extends View {
 			<article>
 				<span class="loadingScreen-placeholderBody"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>
 			</article>
-		</div>`
+		</div></div>`
 	}
 
 

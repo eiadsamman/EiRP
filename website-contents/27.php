@@ -103,7 +103,7 @@ HTML;
 
 
 $grem->getLast()->close();
-unset($grem);
+$grem->terminate();
 ?>
 </form>
 

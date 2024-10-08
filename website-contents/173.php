@@ -89,7 +89,7 @@ if ($app->xhttp) {
 
 					LEFT JOIN (
 						WITH s1 AS (
-							SELECT m.tl_issuer, m.tl_owner,m.tl_timestamp, ROW_NUMBER() OVER (PARTITION BY tl_owner ORDER BY tl_timestamp DESC ) AS rn
+							SELECT m.tl_issuer, m.tl_owner,m.tl_timestamp, ROW_NUMBER() OVER(PARTITION BY tl_owner ORDER BY tl_timestamp DESC ) AS rn
 							FROM timeline AS m
 						)
 						SELECT tl_owner, tl_timestamp , usr_firstname, usr_lastname
@@ -176,7 +176,6 @@ if ($app->xhttp) {
 
 
 	$grem->terminate();
-	unset($grem);
 
 
 }

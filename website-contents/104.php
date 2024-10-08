@@ -22,7 +22,7 @@ if ($read) {
 				</ul>
 				HTML
 		);
-		unset($grem);
+		$grem->terminate();
 	} else {
 		$grem = new Gremium\Gremium(true);
 		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
@@ -199,7 +199,6 @@ if ($read) {
 		<?php
 		$grem->getLast()->close();
 		$grem->terminate();
-		unset($grem);
 	}
 } elseif ($id == null) {
 	$grem = new Gremium\Gremium(true);
@@ -217,7 +216,7 @@ if ($read) {
 			</ul>
 			HTML
 	);
-	unset($grem);
+	$grem->terminate();
 } else {
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>$id</cite>");
@@ -232,6 +231,6 @@ if ($read) {
 			</ul>
 			HTML
 	);
-	unset($grem);
+	$grem->terminate();
 }
 ?>

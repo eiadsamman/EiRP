@@ -36,6 +36,10 @@ enum IncomeStatement: int
 	case Administration = 45240;
 	case Other = 45250;
 
+	public function range(): array
+	{
+		return [40000, 49999];
+	}
 	public function termType(): string
 	{
 		return "Income Statement";

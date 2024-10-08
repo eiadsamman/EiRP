@@ -188,7 +188,6 @@ class BalanceSheetView
 		HTML;
 		$grem->getLast()->close();
 		$grem->terminate();
-		unset($grem);
 
 		echo <<<HTML
 				</form>

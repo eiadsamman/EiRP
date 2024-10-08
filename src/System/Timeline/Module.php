@@ -16,6 +16,10 @@ enum Module: int
 	case CRMCustomer = 1410;
 	case Inventory = 1510;
 
+	case InvoicingMaterialRequest = 1600;
+	case InvoicingPurchaseQuotation = 1610;
+	case InvoicingOrder = 1620;
+
 	public function toString(): string
 	{
 		return match ($this) {
@@ -26,8 +30,12 @@ enum Module: int
 			self::AccountBank => 'Account Linked Bank',
 			self::FinanceCash => 'Finanace - Cash',
 			self::HR => 'HR',
-			self::CRMCustomer  => 'CRM Customers',
+			self::CRMCustomer => 'CRM Customers',
 			self::Inventory => 'Inventory',
+
+			self::InvoicingMaterialRequest => "Material request",
+			self::InvoicingPurchaseQuotation => "Material request quotation",
+			self::InvoicingOrder => "Purchase order",
 
 		};
 	}

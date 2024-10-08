@@ -8,7 +8,7 @@ if ($access_error == 403) {
 		<br />You don't have permission to access '<i>{$fs()->dir}</i>' on this server!<br /><br />
 		Contact system administrator, or <a href=\"{$fs(20)->dir}/?refer={$fs()->dir}\">sign in</a> with an authorized account and try again
 	");
-	unset($grem);
+	$grem->terminate();
 	exit;
 } else {
 	?>
@@ -78,7 +78,7 @@ if ($access_error == 403) {
 					</div>
 					HTML;
 				$grem->getLast()->close();
-				unset($grem);
+				$grem->terminate();
 				?>
 			</div>
 		</div>

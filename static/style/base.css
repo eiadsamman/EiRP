@@ -145,6 +145,12 @@ select {
 	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }
 
+fieldset {
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+
 input[type=text]::placeholder,
 input[type=number]::placeholder,
 input[type=password]::placeholder,
@@ -856,7 +862,7 @@ span.vs-remove {
 	flex: 2;
 	z-index: 1;
 	position: relative;
-	max-width: 400px;
+	max-width: 360px;
 	transition: width 0.2s ease, max-width 0.2s ease;
 }
 
@@ -901,16 +907,12 @@ span.vs-remove {
 	margin-right: 10px;
 	scroll-padding-top: 115px;
 	overflow-x: hidden;
-
-
 }
 
-.split-view>div.panel>div>article {
+#pana-Window {
 	padding-top: 1px;
 	padding-bottom: 5px;
 	border-radius: 7px;
-
-
 }
 
 .split-view>div.panel>div::-webkit-scrollbar {
@@ -925,7 +927,7 @@ span.vs-remove {
 	background-color: var(--input_border-color);
 }
 
-.split-view>div.panel>div a.panel-item {
+#pana-Window a.panel-item {
 	display: block;
 	/* border-bottom: solid 1px var(--bomtable-border-color); */
 	margin: 5px;
@@ -939,7 +941,7 @@ span.vs-remove {
 	color: var(--root-font-color);
 }
 
-.split-view>div.panel>div a.panel-item:not(.place-holder)::before {
+#pana-Window a.panel-item:not(.place-holder)::before {
 	position: relative;
 	display: block;
 	content: " ";
@@ -949,38 +951,38 @@ span.vs-remove {
 	border-top: solid 1px var(--static-border);
 }
 
-.split-view>div.panel>div a.panel-item:first-child::before {
+#pana-Window a.panel-item:first-child::before {
 	border: none;
 }
 
-.split-view>div.panel>div a.panel-item:not(.place-holder) {
+#pana-Window a.panel-item:not(.place-holder) {
 	cursor: pointer;
 }
 
-.split-view>div.panel>div a.panel-item:not(.place-holder):hover {
+#pana-Window a.panel-item:not(.place-holder):hover {
 	text-decoration: none;
 	z-index: 2;
 	background-color: var(--slo-menu-itemhover-background-color);
 }
 
-.split-view>div.panel>div a.panel-item.active {
+#pana-Window a.panel-item.active {
 	background-color: var(--slo-menu-itemactive-background-color) !important;
 }
 
-.split-view>div.panel>div a.panel-item:not(.place-holder):focus {
+#pana-Window a.panel-item:not(.place-holder):focus {
 	outline: solid 2px var(--root-link-color);
 	outline-offset: -1px;
 	text-decoration: none;
 	z-index: 3;
 }
 
-.split-view>div.panel>div a.panel-item:last-child {
+#pana-Window a.panel-item:last-child {
 	border-bottom: none;
 	margin-bottom: 0;
 }
 
-.split-view>div.panel>div a.panel-item.place-holder::after,
-.split-view>div.panel>div a.panel-item.place-holder::before {
+#pana-Window a.panel-item.place-holder::after,
+#pana-Window a.panel-item.place-holder::before {
 	height: 12px;
 	display: inline-block;
 	content: " ";
@@ -995,12 +997,12 @@ span.vs-remove {
 	position: absolute;
 }
 
-.split-view>div.panel>div a.panel-item.place-holder::after {
+#pana-Window a.panel-item.place-holder::after {
 	top: 15px;
 	width: 100px;
 }
 
-.split-view>div.panel>div a.panel-item.place-holder::before {
+#pana-Window a.panel-item.place-holder::before {
 	top: 37px;
 	left: 10px;
 	right: 10px;
@@ -1105,15 +1107,15 @@ div.timeline {
 	position: relative;
 	padding-bottom: 30px;
 
+	padding-left: 25px;
 	>div {
+		cursor: default;
 		display: flex;
 		flex-wrap: wrap;
 		flex-direction: column;
 		position: relative;
 		padding-bottom: 30px;
 		padding: 12px;
-		margin-left: 25px;
-		margin-right: 10px;
 		border-radius: 10px;
 		transition: background-color var(--transition-speed), border-color var(--transition-speed);
 		/* background-color: hsla(51, 100%, 50%,0.1); */
@@ -1136,7 +1138,7 @@ div.timeline {
 
 	>div>span {
 		position: relative;
-		min-width: 300px;
+		min-width: 200px;
 		color: hsl(150, 60%, 50%);
 		color: var(--root-link-color);
 		color: var(--root-font-lightcolor);

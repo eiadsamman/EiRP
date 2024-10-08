@@ -53,7 +53,7 @@ $grem->header()->serve("<h1>{$fs()->title}</h1>");
 $grem->menu()->serve('<input type="number" id="jQserialAdd" autocomplete="off" class="flex" placeholder="Serial Number" /><button type="button" style="min-width:100px;" id="jQserialSubmit">Submit</button>');
 $grem->title()->serve("<span class=\"flex\">Attendance records</span>");
 $grem->article()->serve("<div id=\"jqOutput\" data-empty class=\"att-submitionlist\">No records requested...</div>");
-unset($grem);
+$grem->terminate();
 
 ?>
 

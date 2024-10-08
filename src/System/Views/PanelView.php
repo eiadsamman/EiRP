@@ -104,10 +104,13 @@ class PanelView implements Views
 		$panel->javascriptLib = './invoicing/MaterialRequest.js';
 		$panel->title         = "Requests";
 		$panel->sidePanelUrl  = $this->app->file->find(238)->dir;
-		$panel->pages         = [230];
-		$panel->assets        = [];
+		$panel->pages         = [230, 240];
+		$panel->assets        = [
+			["css", "style/pagefile/Invoicing.css"]
+		];
 		$panel->modules       = [
-			new PageAssets(230, 'Entry', true),
+			new PageAssets(230, 'Post', true),
+			new PageAssets(240, 'Entry', true),
 		];
 		$this->panelGroups[]  = $panel;
 	}
@@ -180,7 +183,7 @@ class PanelView implements Views
 			$grem_panel->menu()->serve("<span class=\"flex\" id=\"pana-TotalRecords\"></span>");
 			$grem_panel->article("pana-Window")->options(array("nopadding"))->serve();
 			$grem_panel->title("pana-Informative")->serve("<div style=\"text-align:center;font-size:0.8em\">No more records</div>");
-			unset($grem_panel);
+			$grem_panel->terminate();
 			$tab = str_repeat("\t", 3);
 			echo "\n$tab\t</div>\n";
 			echo "$tab\t<div class=\"body\" id=\"pana-Body\"></div>";

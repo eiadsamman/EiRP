@@ -214,7 +214,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				HTML;
 				$grem->getLast()->close();
 			}
-			unset($grem);
+			$grem->terminate();
 			exit;
 		} else {
 
@@ -229,7 +229,7 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				<li>Permission denied or not enough privileges to proceed with this document</li>
 				</ul>
 				');
-			unset($grem);
+			$grem->terminate();
 			exit;
 		}
 	}

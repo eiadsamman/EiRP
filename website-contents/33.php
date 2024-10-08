@@ -61,7 +61,7 @@ $article = $grem->article()->open();
 
 <?php
 $article->close();
-unset($grem);
+$grem->terminate();
 ?>
 <a href="" id="triggerselector"></a>
 <script>

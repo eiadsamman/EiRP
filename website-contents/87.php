@@ -202,7 +202,7 @@ echo <<<HTML
 HTML;
 
 $grem->getLast()->close();
-unset($grem);
+$grem->terminate();
 
 ?>
 <script type="text/javascript">

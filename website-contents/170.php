@@ -96,6 +96,5 @@ if ($app->xhttp) {
 	HTML;
 	$grem->getLast()->close();
 	$grem->terminate();
-	unset($grem);
 
 }

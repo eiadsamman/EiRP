@@ -25,33 +25,27 @@ if ($app->xhttp) {
 		header("res_pages: {$pages}");
 		header("res_current: {$current}");
 
-
-
-
 		$pos = ($current - 1) * PanelView::$itemsPerRequest;
 
 		$q = "SELECT 
 				_main.po_id,
 				CONCAT(prx_value,LPAD(po_serial,prx_placeholder,'0')) AS doc_id,
-				_main.po_canceled,
+				_main.po_voided,
 				_main.po_title,
 				DATE_FORMAT(_main.po_date,'%Y-%m-%d') AS po_date,
 				DATE_FORMAT(_main.po_date,'%H:%i') AS po_time,
 				CONCAT_WS(' ',usr_firstname,usr_lastname) AS doc_usr_name,
-				COUNT(pols_id) AS matcount,
-				_sub._subcount AS qutcount,
 				_main.po_close_date,
 				ccc_name,ccc_id
 			FROM
 				inv_main AS _main
-					JOIN users ON usr_id = _main.po_usr_id
+					JOIN users ON usr_id = _main.po_issuedby_id
 					JOIN system_prefix ON prx_id = $rm_type
 					LEFT JOIN inv_records ON pols_po_id = _main.po_id
-					LEFT JOIN (SELECT po_rel, COUNT(po_id) AS _subcount FROM inv_main WHERE po_type = 2 GROUP BY po_rel) AS _sub ON _sub.po_rel = _main.po_id
 					JOIN inv_costcenter ON ccc_id = po_costcenter
-					JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id={$app->user->info->id}
+					JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
 			WHERE
-				_main.po_type = $rm_type AND _main.po_comp_id={$app->user->company->id}
+				_main.po_type = $rm_type AND _main.po_comp_id = {$app->user->company->id}
 			GROUP BY
 				_main.po_id
 			ORDER BY _main.po_date DESC
@@ -64,11 +58,10 @@ if ($app->xhttp) {
 
 				$closed = (is_null($row['po_close_date']) ? "Open" : "Closed");
 				echo <<<HTML
-					<a class="panel-item " href="{$fs(240)->dir}/?id={$row['po_id']}" data-listitem_id="{$row['po_id']}" data-href="{$fs(240)->dir}">
+					<a class="panel-item invoicing" href="{$fs(240)->dir}/?id={$row['po_id']}" data-listitem_id="{$row['po_id']}" data-href="{$fs(240)->dir}">
 						<div>
 							<span style="flex: 1">
 								<div><h1>{$row['po_title']}</h1><cite> </cite><cite>{$row['doc_id']}</cite></div>
-								<div><h1>({$row['matcount']} items)</h1><cite> </cite><cite>({$row['qutcount']} Quotations)</cite></div>
 								<div><h1>{$row['po_date']}</h1><cite>{$closed}</cite><cite>{$row['doc_usr_name']}</cite></div>
 							</span>
 						</div>

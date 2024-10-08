@@ -80,7 +80,7 @@ echo ('<ul id="js-output_disclaimer" ' . $tempview . '>
 	<ul>');
 
 $grem->getLast()->close();
-unset($grem);
+$grem->terminate();
 
 
 

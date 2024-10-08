@@ -182,7 +182,7 @@ if ($doc_id) {
 	$r = $app->db->query("
 		SELECT 
 			po_id,po_rel,po_serial,po_rel
-			po_canceled,
+			po_voided,
 			po_title,
 			DATE_FORMAT(po_date,'%Y-%m-%d') AS po_date,
 			DATE_FORMAT(po_date,'%H:%i') AS po_time,

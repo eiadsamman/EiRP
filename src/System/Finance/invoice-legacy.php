@@ -59,7 +59,7 @@ class DocumentToken extends Exception
 
 
 
-class Invoice
+class InvoiceLegacy
 {
 	private const permissionlist_pageid = 246;
 	private $permission_list = array();

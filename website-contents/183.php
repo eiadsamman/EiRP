@@ -29,7 +29,7 @@ if ($r && $r->num_rows > 0) {
 	}
 }
 $grem->getLast()->close();
-unset($grem);
+$grem->terminate();
 echo "</tbody>";
 echo "</table>";
 

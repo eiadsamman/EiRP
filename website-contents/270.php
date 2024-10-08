@@ -155,7 +155,6 @@ if ($app->xhttp) {
 	<?php
 	$grem->getLast()->close();
 	$grem->terminate();
-	unset($grem);
 
 }
 ?>

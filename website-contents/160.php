@@ -261,7 +261,7 @@ $grem->article()->serve("<div id=\"jQdesc\"></div>");
 $grem->title()->serve("Bill of materials");
 $grem->legend()->serve("<span class=\"flex\"></span><button type=\"button\" disabled class=\"edge-left\" id=\"jqAddmaterial\">Add material</button>");
 $grem->article()->serve("<form action=\"\" id=\"jQmainform\"><input type=\"hidden\" name=\"method\" value=\"save\" /><div id=\"jQmain\"></div></form>");
-unset($grem);
+$grem->terminate();
 ?>
 <script>
 	$(function () {

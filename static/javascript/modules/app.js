@@ -206,7 +206,7 @@ export class View {
 	}
 	splashscreenTemplate(title) {
 		return `
-		<div class="gremium limit-width">
+		<div class="gremium"><div class="content">
 			<header style="position:sticky;">
 				<a style="pointer-events: none;" class="previous" data-role="previous"></a>
 				<h1>${title}</h1><cite></cite>
@@ -218,7 +218,7 @@ export class View {
 			<article>
 				<span class="loadingScreen-placeholderBody"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>
 			</article>
-		</div>`;
+		</div></div>`;
 	}
 	splashscreen(target, url, title, data) {
 		target.innerHTML = this.splashscreenTemplate(title);
@@ -267,7 +267,7 @@ export class Search extends View {
 
 	splashscreenTemplate(title) {
 		return `
-		<div class="gremium limit-width">
+		<div class="gremium"><div class="content">
 			<header style="position:sticky;">
 				<a style="pointer-events: none;" class="previous" data-role="previous"></a>
 				<h1>${title}</h1><cite></cite>
@@ -276,7 +276,7 @@ export class Search extends View {
 			<article>
 				<span class="loadingScreen-placeholderBody"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>
 			</article>
-		</div>`;
+		</div></div>`;
 	}
 }
 
@@ -363,7 +363,7 @@ export class List extends View {
 
 	splashscreen(target, url, title, data) {
 		target.innerHTML = `
-			<div class="gremium limit-width">
+			<div class="gremium"><div class="content">
 				<header style="position:sticky;">
 				<h1>${title}</h1>
 				</header>
@@ -378,7 +378,7 @@ export class List extends View {
 				<article>
 					
 				</article>
-			</div>`;
+			</div></div>`;
 	}
 
 	paginationUpdate(currentPage, totalPages, recordsCount, recordsSum) {

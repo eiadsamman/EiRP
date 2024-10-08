@@ -234,6 +234,53 @@ dialog.appHtmlDialog {
 	}
 }
 
+.table {
+
+	display: grid;
+	grid-template-columns: auto auto;
+	background-color: var(--bomtable-background-color);
+	transition: background-color var(--transition-speed) ease;
+	position: relative;
+
+
+	>div,
+	>main>div,
+	>main>span,
+	>span {
+		border-top: solid 1px var(--bomtable-border-color);
+		padding: 15px 8px;
+		white-space: nowrap;
+		color: var(--root-font-color);
+		transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+	}
+
+	>main:hover>div {
+		background-color: var(--bomtable-hover-color) !important;
+	}
+
+	>div.ellipsis,
+	>main>div.ellipsis,
+	>span.ellipsis {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	>span ,
+	>main>span {
+		border: none;
+		background-color: var(--bomtable-background-color);
+		border-bottom: solid 1px var(--bomtable-border-color);
+		transition: color var(--transition-speed) ease;
+		padding: 10px 8px;
+		cursor: default;
+		font-weight: normal;
+		text-transform: uppercase;
+		color: var(--root-font-lightcolor);
+	}
+
+}
+
 table {
 	border-collapse: collapse;
 	width: 100%;

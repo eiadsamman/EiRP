@@ -174,7 +174,7 @@ if ($doc_id) {
 		SELECT 
 			_main.po_id,_main.po_rel,
 			CONCAT(_sp10.prx_value,LPAD(po_serial,_sp10.prx_placeholder,'0')) AS doc_id,
-			_main.po_canceled,
+			_main.po_voided,
 			_main.po_title,
 			DATE_FORMAT(_main.po_date,'%Y-%m-%d') AS po_date,
 			DATE_FORMAT(_main.po_date,'%H:%i') AS po_time,

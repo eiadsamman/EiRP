@@ -6,7 +6,7 @@ $debugarr = [];
 $dashboard = new DashboardReports($app);
 $grem = new Gremium\Gremium(false);
 $grem->header()->sticky(false)->serve("<h1><span style=\"color:var(--input-hover_border-color)\">Welcome </span> {$app->user->info->fullName()}</h1>");
-unset($grem);
+$grem->terminate();
 echo "<div class=\"dashboard\">";
 foreach ($dashboard->overview(true) as $item) {
 	if ($debug)
@@ -56,7 +56,7 @@ if ($debug) {
 		}).then(body => {
 			container.innerHTML = body;
 		}).catch(response => {
-		})
+		});
 	}
 	document.addEventListener('DOMContentLoaded', function () {
 		let mainpageDashboards = document.querySelectorAll(".dashboard > div > div");

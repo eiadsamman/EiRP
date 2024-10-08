@@ -51,7 +51,7 @@ $grem->article()->open();
 
 <?php
 $grem->getLast()->close();
-unset($grem);
+$grem->terminate();
 ?>
 <?php if ($fs()->permission->edit) { ?>
 	<script>

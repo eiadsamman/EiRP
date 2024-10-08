@@ -46,16 +46,17 @@ class Modals extends EventTarget {
 
 	contentForm(header = {}, data = "") {
 		header.title = header.title ?? "";
+		header.submitButton = header.submitButton == true ? "<cite><button data-role=\"submit\" type=\"submit\"></button></cite>" : "";
 		this.controlContent.innerHTML = `
-			<div class="gremium">
+			<div class="gremium"><div class="content">
 				<header style="position:sticky; top: calc(0px);">
 					<a href="#" class="previous" data-role="previous"></a>
-					<h1>${header.title}</h1>
+					<h1>${header.title}</h1>${header.submitButton}
 				</header>
 				<article style="width:auto;">
 					${data}
 				</article>
-			</div>`;
+			</div></div>`;
 		//<cite><button data-role="submit" type="submit" id="jQsubmit"></button></cite>
 		return this;
 	}

@@ -116,7 +116,7 @@ if ($app->xhttp) {
 		</ul>
 		HTML
 		);
-		unset($grem);
+		$grem->terminate();
 		exit;
 	}
 	/**
@@ -137,7 +137,7 @@ if ($app->xhttp) {
 		</ul>
 		HTML
 		);
-		unset($grem);
+		$grem->terminate();
 		exit;
 	}
 
@@ -351,7 +351,6 @@ if ($app->xhttp) {
 	<?php
 	$grem->getLast()->close();
 	$grem->terminate();
-	unset($grem);
 	?>
 	<div>
 		<datalist id="js-ref_creditor-list" style="display: none;">

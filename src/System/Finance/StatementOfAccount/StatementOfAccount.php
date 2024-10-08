@@ -19,7 +19,7 @@ class StatementOfAccount
 		 * @running_total := @running_total + _master.atm_value AS cumulative_sum
 		 * JOIN (SELECT @running_total := 0) r
 		 * 
-		 * Using Windowed query `OVER (ORDER BY ....)` worked like a charm
+		 * Using Windowed query `OVER(ORDER BY ....)` worked like a charm
 		 * 
 		 *  UNIX_TIMESTAMP(acm_ctime) AS acm_ctime ???? timestamp issue
 		 */

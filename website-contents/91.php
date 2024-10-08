@@ -113,7 +113,7 @@ if ($app->xhttp) {
 		</ul>
 		HTML
 		);
-		unset($grem);
+		$grem->terminate();
 
 	} else {
 		$grem = new Gremium\Gremium(true);
@@ -132,158 +132,160 @@ if ($app->xhttp) {
 		$forex = new Forex($app);
 		?>
 		<form name="js-ref_form-main" id="js-ref_form-main" action="<?= $fs()->dir; ?>">
-			<input type="hidden" name="challenge" value="<?= uniqid(); ?>" />
-			<input type="hidden" name="objective" value="transaction" />
-			<input type="hidden" name="statement-nature" id="statement-nature" value="1" />
-			<input type="hidden" name="exchange-override" id="exchange-override" value="false" />
-			<input type="hidden" name="exchange-dir-from" id="exchange-dir-from" value="" />
-			<input type="hidden" name="exchange-dir-to" id="exchange-dir-to" value="" />
+			<fieldset>
+				<input type="hidden" name="challenge" value="<?= uniqid(); ?>" />
+				<input type="hidden" name="objective" value="transaction" />
+				<input type="hidden" name="statement-nature" id="statement-nature" value="1" />
+				<input type="hidden" name="exchange-override" id="exchange-override" value="false" />
+				<input type="hidden" name="exchange-dir-from" id="exchange-dir-from" value="" />
+				<input type="hidden" name="exchange-dir-to" id="exchange-dir-to" value="" />
 
-			<div class="form predefined">
-				<label style="min-width:200px;">
-					<h1>Creditor</h1>
-					<div class="btn-set">
-						<input tabindex="1" placeholder="Creditor account" data-required title="Creditor account" data-touch="200" type="text"
-							data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
-					</div>
-				</label>
-				<label>
-					<h1>Debitor</h1>
-					<div class="btn-set">
-						<?php
-						echo "<span>{$app->user->account->name}</span>"; /* {$app->user->account->type->name}:  */
-						if ($app->user->account->role->view) {
-							echo "<span id=\"issuer-account-balance\" class=\"flex\">" . number_format($app->user->account->balance, 2, ".", ",") . "</span>";
-						}
-						echo "<span>{$app->user->account->currency->shortname}</span>";
-						?>
-					</div>
-				</label>
-			</div>
+				<div class="form predefined">
+					<label style="min-width:200px;">
+						<h1>Creditor</h1>
+						<div class="btn-set">
+							<input tabindex="1" placeholder="Creditor account" data-required title="Creditor account" data-touch="200" type="text"
+								   data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="target-account" id="target-account" />
+						</div>
+					</label>
+					<label>
+						<h1>Debitor</h1>
+						<div class="btn-set">
+							<?php
+							echo "<span>{$app->user->account->name}</span>"; /* {$app->user->account->type->name}:  */
+							if ($app->user->account->role->view) {
+								echo "<span id=\"issuer-account-balance\" class=\"flex\">" . number_format($app->user->account->balance, 2, ".", ",") . "</span>";
+							}
+							echo "<span>{$app->user->account->currency->shortname}</span>";
+							?>
+						</div>
+					</label>
+				</div>
 
-			<div class="form predefined">
-				<label style="min-width:150px">
-					<h1>Date</h1>
-					<div class="btn-set">
-						<input id="post-date" type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date"
-							value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date" data-required />
-						<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value=""
-							data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
-					</div>
-				</label>
-				<label style="min-width:300px">
-					<h1>Category</h1>
-					<div class="btn-set">
-						<input type="text" placeholder="Statement category" data-required data-slo=":LIST" data-touch="105" title="Category"
-							data-source="_/FinanceCategoryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinancialCategories.a" tabindex="3"
-							class="flex" name="category" id="category" />
-					</div>
-				</label>
-			</div>
-			<!-- <hr style="border:none;border-top:solid 1px rgb(230,230,230);margin:20px 0px 30px 0px" /> -->
+				<div class="form predefined">
+					<label style="min-width:150px">
+						<h1>Date</h1>
+						<div class="btn-set">
+							<input id="post-date" type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date"
+								   value="<?= $current_date ?>" data-rangeend="<?= $current_date ?>" tabindex="2" name="date" data-required />
+							<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value=""
+								   data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
+						</div>
+					</label>
+					<label style="min-width:300px">
+						<h1>Category</h1>
+						<div class="btn-set">
+							<input type="text" placeholder="Statement category" data-required data-slo=":LIST" data-touch="105" title="Category"
+								   data-source="_/FinanceCategoryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinancialCategories.a"
+								   tabindex="3" class="flex" name="category" id="category" />
+						</div>
+					</label>
+				</div>
+				<!-- <hr style="border:none;border-top:solid 1px rgb(230,230,230);margin:20px 0px 30px 0px" /> -->
 
-			<div class="form">
-				<label style="flex-basis:0%;">
-					<h1>Beneficiary</h1>
-					<div class="btn-set">
-						<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name" data-slo=":LIST"
-							tabindex="-1" data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a"
-							<?= isset($_REQUEST['party']) ? " default=\"" . (int) $_REQUEST['party'] . "\" " : "" ?> />
+				<div class="form">
+					<label style="flex-basis:0%;">
+						<h1>Beneficiary</h1>
+						<div class="btn-set">
+							<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name" data-slo=":LIST"
+								   tabindex="-1" data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a"
+						   		<?= isset($_REQUEST['party']) ? " default=\"" . (int) $_REQUEST['party'] . "\" " : "" ?> />
 
-					</div>
-				</label>
-				<label></label>
-			</div>
+						</div>
+					</label>
+					<label></label>
+				</div>
 
-			<div class="form">
-				<label style="flex-basis:0%;">
-					<h1>Attention</h1>
-					<div class="btn-set">
-						<input name="beneficiary" id="beneficiary" type="text" placeholder="Beneficiary name" data-mandatory class="flex"
-							title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
-							data-source="_/FinanceBeneficiaryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinananceBeneficiaries.a" />
-						<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user"
-							step=".1" data-slo=":LIST" data-source="_/UserList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_userList.a" />
-						<!-- <button type="button" value="New" class="edge-right edge-left plus" id="js-input_add-benif"></button> -->
-					</div>
-				</label>
-			</div>
+				<div class="form">
+					<label style="flex-basis:0%;">
+						<h1>Attention</h1>
+						<div class="btn-set">
+							<input name="beneficiary" id="beneficiary" type="text" placeholder="Beneficiary name" data-mandatory class="flex"
+								   title="Beneficiary name" data-touch="102" tabindex="4" data-slo=":LIST"
+								   data-source="_/FinanceBeneficiaryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinananceBeneficiaries.a" />
+							<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user"
+								   step=".1" data-slo=":LIST" data-source="_/UserList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_userList.a" />
+							<!-- <button type="button" value="New" class="edge-right edge-left plus" id="js-input_add-benif"></button> -->
+						</div>
+					</label>
+				</div>
 
 
 
-			<div class="form">
-				<label style="min-width:300px;" for="">
-					<h1>Amount</h1>
-					<div class="btn-set">
-						<input type="text" inputmode="decimal" min="0" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101"
-							title="Transaction value" name="value" id="value" />
-						<span id="currency-hint"><?= "{$app->user->account->currency->shortname}" ?></span>
-					</div>
-					<div class="btn-set" id="exchange-form" style="margin-top:15px;display: none">
-						<?= $fs(87)->permission->edit ? "<span><a id=\"exchange-action\" href=\"{$fs(87)->dir}\"></a></span>" : "<span id=\"exchange-action\"></span>"; ?>
-						<span><a id="exchange-action" href="<?= $fs(87)->dir; ?>"></a></span>
-						<input type="text" inputmode="decimal" placeholder="Exchange rate" data-required tabindex="-1" style="display:none"
-							id="exchange-value" name="exchange-value" data-default="" <?= $fs(87)->permission->edit ? "" : "disabled"; ?> class="flex" />
-						<span id="exchange-hint" class="flex"></span>
-					</div>
-				</label>
-				<label style="min-width:300px;">
-				</label>
-			</div>
+				<div class="form">
+					<label style="min-width:300px;" for="">
+						<h1>Amount</h1>
+						<div class="btn-set">
+							<input type="text" inputmode="decimal" min="0" placeholder="Payment value" data-required tabindex="5" class="flex"
+								   data-touch="101" title="Transaction value" name="value" id="value" />
+							<span id="currency-hint"><?= "{$app->user->account->currency->shortname}" ?></span>
+						</div>
+						<div class="btn-set" id="exchange-form" style="margin-top:15px;display: none">
+							<?= $fs(87)->permission->edit ? "<span><a id=\"exchange-action\" href=\"{$fs(87)->dir}\"></a></span>" : "<span id=\"exchange-action\"></span>"; ?>
+							<span><a id="exchange-action" href="<?= $fs(87)->dir; ?>"></a></span>
+							<input type="text" inputmode="decimal" placeholder="Exchange rate" data-required tabindex="-1" style="display:none"
+								   id="exchange-value" name="exchange-value" data-default="" <?= $fs(87)->permission->edit ? "" : "disabled"; ?>
+								   class="flex" />
+							<span id="exchange-hint" class="flex"></span>
+						</div>
+					</label>
+					<label style="min-width:300px;">
+					</label>
+				</div>
 
-			<div class="form">
-				<label style="flex:0" for="">
-					<h1>Attachments</h1>
-					<div class="btn-set">
-						<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
-						<input type="button" id="js_upload_trigger" class="js_upload_trigger edge-right edge-left" value="Upload" />
-						<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
-						<span id="js_upload_list" class="js_upload_list">
-							<div id="UploadDOMHandler">
-								<table class="hover">
-									<tbody>
-										<?php
-										$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
-										$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
-										if ($r_release) {
-											while ($row_release = $r_release->fetch_assoc()) {
-												echo \System\Attachment\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
+				<div class="form">
+					<label style="flex:0" for="">
+						<h1>Attachments</h1>
+						<div class="btn-set">
+							<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
+							<input type="button" id="js_upload_trigger" class="js_upload_trigger edge-right edge-left" value="Upload" />
+							<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
+							<span id="js_upload_list" class="js_upload_list">
+								<div id="UploadDOMHandler">
+									<table class="hover">
+										<tbody>
+											<?php
+											$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
+											$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
+											if ($r_release) {
+												while ($row_release = $r_release->fetch_assoc()) {
+													echo \System\Attachment\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
+												}
 											}
-										}
-										?>
-									</tbody>
-								</table>
-							</div>
-						</span>
-					</div>
-				</label>
-				<label style="min-width:300px">
-					<h1>Reference</h1>
-					<div class="btn-set">
-						<input type="text" placeholder="Statement reference..." data-slo="ACC_REFERENCE" title="Reference" tabindex="-1" name="reference"
-							class="flex" />
-						<input type="text" placeholder="Related ID" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1"
-							placeholder="Related ID" name="relation" />
-					</div>
-				</label>
-			</div>
+											?>
+										</tbody>
+									</table>
+								</div>
+							</span>
+						</div>
+					</label>
+					<label style="min-width:300px">
+						<h1>Reference</h1>
+						<div class="btn-set">
+							<input type="text" placeholder="Statement reference..." data-slo="ACC_REFERENCE" title="Reference" tabindex="-1" name="reference"
+								   class="flex" />
+							<input type="text" placeholder="Related ID" style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1"
+								   placeholder="Related ID" name="relation" />
+						</div>
+					</label>
+				</div>
 
-			<div class="form">
-				<label>
-					<h1>Description</h1>
-					<div class="btn-set">
-						<textarea type="text" placeholder="Statement description..." data-required tabindex="6" title="Statement Description" data-touch="103"
-							style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" name="description" id="description"
-							rows="7"></textarea>
-					</div>
-				</label>
-			</div>
+				<div class="form">
+					<label>
+						<h1>Description</h1>
+						<div class="btn-set">
+							<textarea type="text" placeholder="Statement description..." data-required tabindex="6" title="Statement Description"
+									  data-touch="103" style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" name="description"
+									  id="description" rows="7"></textarea>
+						</div>
+					</label>
+				</div>
 
+			</fieldset>
 		</form>
 		<?php
 		$grem->getLast()->close();
 		$grem->terminate();
-		unset($grem);
 		?>
 		<form id="appPopupAddBenif" style="display:none">
 			<?php
@@ -332,7 +334,6 @@ if ($app->xhttp) {
 			<?php
 			$grem->getLast()->close();
 			$grem->terminate();
-			unset($grem);
 			?>
 		</form>
 		<div>

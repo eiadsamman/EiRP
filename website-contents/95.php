@@ -112,7 +112,7 @@ if ($app->xhttp) {
 		</ul>
 		HTML
 		);
-		unset($grem);
+		$grem->terminate();
 	} else {
 		$grem = new Gremium\Gremium(true);
 		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite></cite>
@@ -279,7 +279,6 @@ if ($app->xhttp) {
 		<?php
 		$grem->getLast()->close();
 		$grem->terminate();
-		unset($grem);
 		?>
 		<div>
 			<datalist id="defines">

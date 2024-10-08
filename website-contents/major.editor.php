@@ -450,7 +450,6 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 	}
 	$grem->getLast()->close();
 	$grem->terminate();
-	unset($grem);
 	exit;
 }
 
@@ -689,7 +688,6 @@ $grem_main->article()->open();
 <?php
 $grem_main->getLast()->close();
 $grem_main->terminate();
-unset($grem);
 ?>
 
 <div style="display: none;">
@@ -704,7 +702,6 @@ unset($grem);
 		echo "<div style=\"margin-top:20px\" class=\"btn-set right\"><button type=\"submit\">Delete</button><input type=\"button\" autofocus data-role=\"previous\" value=\"Cancel\" class=\"edge-right\" /></div>";
 		$grem->getLast()->close();
 		$grem->terminate();
-		unset($grem);
 		?>
 	</form>
 
@@ -732,7 +729,6 @@ unset($grem);
 		}
 		$grem->getLast()->close();
 		$grem->terminate();
-		unset($grem);
 		?>
 	</form>
 </div>

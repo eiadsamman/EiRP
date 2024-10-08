@@ -145,7 +145,7 @@ if ($app->xhttp) {
 
 
 	$grem->terminate();
-	unset($grem);
+	$grem->terminate();
 
 
 }

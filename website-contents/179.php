@@ -124,7 +124,7 @@ if (is_null($app->user->account)) {
 		<li>Permission denied or not enough privileges to proceed with this document</li>
 		<ul>';
 	$article->serve();
-	unset($grem);
+	$grem->terminate();
 	exit;
 } elseif (!$app->user->account->role->view) {
 	$grem = new Gremium\Gremium(true);
@@ -138,7 +138,7 @@ if (is_null($app->user->account)) {
 		<li>Permission denied or not enough privileges to proceed with this document</li>
 		<ul>';
 	$article->serve();
-	unset($grem);
+	$grem->terminate();
 	exit;
 }
 
@@ -182,7 +182,7 @@ $article = $grem->article()->open();
 echo "<div id=\"navOutput\" style=\"padding-bottom:50px\"></div>";
 $article->close();
 
-unset($grem);
+$grem->terminate();
 ?>
 <style>
 	.table-head {

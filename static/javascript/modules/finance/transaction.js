@@ -88,7 +88,7 @@ export class Post extends View {
 
 	splashscreen(target, url, title, data) {
 		target.innerHTML = `
-		<div class="gremium limit-width">
+		<div class="gremium"><div class="content">
 			<header style="position:sticky;">
 				<a style="pointer-events: none;" class="previous" data-role="previous"></a>
 				<h1>${title}</h1><cite></cite>
@@ -97,7 +97,7 @@ export class Post extends View {
 			<article>
 				<span class="loadingScreen-placeholderBody"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></span>
 			</article>
-		</div>`
+		</div></div>`
 	}
 
 	forexFieldState(state) {

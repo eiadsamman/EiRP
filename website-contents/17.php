@@ -112,7 +112,7 @@ echo <<<HTML
 </tbody></table>
 HTML;
 $grem->getLast()->close();
-unset($grem);
+$grem->terminate();
 ?>
 
 <datalist id="perpage">

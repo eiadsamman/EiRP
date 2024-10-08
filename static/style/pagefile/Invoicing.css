@@ -1,0 +1,78 @@
+.invoicing div {
+	display: flex;
+	line-height: 1.5em;
+}
+
+.invoicing div>h1 {
+	font-size: 1em;
+	font-weight: normal;
+	flex: 1;
+	margin: 0;
+	padding: 0;
+}
+
+.invoicing div>cite {
+	font-style: normal;
+	color: var(--root-font-lightcolor);
+}
+
+
+
+
+#jQWOBuilder>tr>td:nth-child(2) {
+	text-align: right;
+}
+
+.counter>i {
+	font-style: normal;
+}
+
+.cssc>td>input[type="number"] {
+	width: 120px;
+	text-align: right;
+	background-color: transparent;
+	border: none;
+	color: var(--root-link-color);
+	margin: 0;
+}
+
+.css_partofbom {
+	color: #888;
+}
+
+tr.partsElement>td {
+	background-color: var(--slo-menu-itemhover-background-color);
+}
+
+tr.partsRoot>td {
+	border-bottom: solid 2px var(--bomtable-border-color);
+}
+
+.boundedPartQty {
+	text-align: right;
+	padding-right: 15px;
+}
+
+.partOf>td {
+	color: var(--root-font-lightcolor);
+}
+
+.subMaterial {
+	width: 100%;
+	white-space: wrap;
+	line-height: 1em
+}
+
+.subMaterial>span {
+	color: var(--root-font-lightcolor);
+}
+
+.subMaterial>div,
+.subMaterial>span {
+	display: block;
+	margin-bottom: 10px;
+}
+
+#appMaterialsTable>tbody>tr>td:nth-child(4) {
+	width: 100%;
+}

@@ -295,56 +295,7 @@ if ($app->xhttp) {
 			<div style="min-width:350px;flex: 2;" class="limit-height">
 	HTML;
 		if ($query->execute()) {
-			echo "<div class=\"timeline\" id=\"timelineContainer\">";
-			$al = false;
-			foreach ($query->fetch() as $entry) {
-				$al = true;
-				echo "
-					<div>
-						<span>" . $entry->timestamp->format("dS M, Y") . "<i>" . $entry->timestamp->format("H:i") . "</i></span>
-						" . ($entry->action->toString() != "" ? "<h1>{$entry->action->toString()}</h1>" : "") . "
-						<div>
-							{$entry->describe()}
-							" . nl2br($entry->message) . "
-						</div>";
-
-				if (sizeof($entry->attachments) > 0) {
-					echo "<div class=\"attachments-view\" id=\"attachementsList\">";
-					foreach ($entry->attachments as $file) {
-
-						if (explode("/", $file->mime)[0] == "image") {
-							echo "<a title=\"{$file->name}\" href=\"{$fs(187)->dir}?id={$file->id}&pr=v\">";
-							echo "<img src=\"{$fs(187)->dir}?id={$file->id}&pr=t\" />";
-							echo "</a>";
-						} else {
-							echo "<a title=\"{$file->name}\" href=\"{$fs(187)->dir}?id={$file->id}\" data-attachment=\"force\" target=\"_blank\">";
-							$extpos = strrpos($file->name, ".", -1);
-							if ($extpos !== false) {
-								$ext      = strtolower(substr($file->name, $extpos + 1));
-								$clr      = crc32($ext) % 360;
-								$filename = substr($file->name, 0, $extpos);
-							} else {
-								$ext      = ".";
-								$clr      = 0;
-								$filename = "";
-							}
-							echo "<span>";
-							echo "<span style=\"color: hsl($clr, 50%, 50%);\">{$ext}</span>";
-							echo "<div>" . (number_format($file->size / 1024, 0)) . "KB</div>";
-							echo "<div>{$filename}</div>";
-							echo "</span>";
-							echo "</a>";
-						}
-					}
-					echo "</div>";
-				}
-
-				echo "
-						<cite>{$entry->issuer->fullName()}</cite>
-					</div>";
-				//$entry->timestamp->getTimezone()->getLocation()['country_code']
-			}
-			echo "</div>";
+			echo $query->plot();
 		}
 		echo <<<HTML
 		</div>
@@ -353,7 +304,6 @@ if ($app->xhttp) {
 
 		$grem->getLast()->close();
 		$grem->terminate();
-		unset($grem);
 		?>
 
 		<datalist id="js-actionsList">
@@ -386,7 +336,7 @@ if ($app->xhttp) {
 			</ul>
 			HTML
 		);
-		unset($grem);
+		$grem->terminate();
 	} else {
 		$grem = new Gremium\Gremium(true);
 		$grem->header()->prev("href=\"{$fs(173)->dir}\" data-href=\"{$fs(173)->dir}\"")->serve("<h1>{$fs(173)->title}</h1><cite>$id</cite>");
@@ -400,6 +350,6 @@ if ($app->xhttp) {
 			</ul>
 			HTML
 		);
-		unset($grem);
+		$grem->terminate();
 	}
 }

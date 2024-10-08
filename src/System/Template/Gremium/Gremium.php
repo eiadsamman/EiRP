@@ -72,7 +72,6 @@ class Blocks
 	 */
 	public string|null $fxMaxwidth = null;
 
-	public string $alignmentTab = "\t\t\t\t\t\t";
 
 	public array|null $options = null;
 
@@ -99,13 +98,13 @@ class Blocks
 			if (!$this->opened) {
 				$this->open();
 			}
-			echo $this->alignmentTab . "\t" . $inline . "\n";
+			echo "\t" . $inline . "\n";
 			$this->close();
 		} else {
 			if (!$this->opened) {
 				$this->open();
 			}
-			echo $this->alignmentTab . "\t" . $this->message . "\n";
+			echo "\t" . $this->message . "\n";
 			$this->close();
 		}
 		return $this;
@@ -125,7 +124,7 @@ class Blocks
 	public function close(): self
 	{
 		if ($this->opened) {
-			echo $this->alignmentTab . "</{$this->id}>\n";
+			echo "</{$this->id}>\n";
 			$this->opened = false;
 		}
 		return $this;
@@ -209,13 +208,13 @@ class Header extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo $this->alignmentTab . "<{$this->id}";
+			echo "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top});\" " : "");
 			echo ">\n";
 
-			echo $this->prev == null ? "" : $this->alignmentTab . "\t<a $this->prev class=\"previous\" draggable=\"false\" data-role=\"previous\"></a>\n";
-			echo $this->status == null ? "" : $this->alignmentTab . "\t<span class=\"$this->status\"></span>\n";
+			echo $this->prev == null ? "" : "\t<a $this->prev class=\"previous\" draggable=\"false\" data-role=\"previous\"></a>\n";
+			echo $this->status == null ? "" : "\t<span class=\"$this->status\"></span>\n";
 			$this->opened = true;
 		}
 		return $this;
@@ -230,7 +229,7 @@ class Menu extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo $this->alignmentTab . "<{$this->id}";
+			echo "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo " class=\"btn-set\"";
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top} - var(--gremium-header-toggle));\" " : "");
@@ -250,7 +249,7 @@ class Legend extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo $this->alignmentTab . "<{$this->id}";
+			echo "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo " class=\"btn-set\"";
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top} - var(--gremium-header-toggle));\" " : "");
@@ -269,7 +268,7 @@ class Title extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo $this->alignmentTab . "<{$this->id}";
+			echo "<{$this->id}";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top} - var(--gremium-header-toggle));\" " : "");
 			echo ">\n";
@@ -288,7 +287,30 @@ class Article extends Blocks
 	public function open(): self
 	{
 		if (!$this->opened) {
-			echo $this->alignmentTab . "<{$this->id}";
+			echo "<{$this->id}";
+			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
+			echo (empty($this->fxwidth) ? "" : " style=\"width:{$this->fxwidth};\" ");
+			echo (empty($this->fxMaxwidth) ? "" : " style=\"max-width:{$this->fxMaxwidth};\" ");
+			echo is_array($this->options) && in_array("nobg", $this->options) ? " class=\"nobg\" " : "";
+			echo is_array($this->options) && in_array("nopadding", $this->options) ? " class=\"nopadding\" " : "";
+			echo ">\n";
+			$this->opened = true;
+		}
+		return $this;
+	}
+}
+
+
+class Column extends Blocks
+{
+	protected string $id = "aside";
+	public bool $stackable = false;
+	public int $height = 0;
+
+	public function open(): self
+	{
+		if (!$this->opened) {
+			echo "<{$this->id} class=\"column\"";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
 			echo (empty($this->fxwidth) ? "" : " style=\"width:{$this->fxwidth};\" ");
 			echo (empty($this->fxMaxwidth) ? "" : " style=\"max-width:{$this->fxMaxwidth};\" ");
@@ -312,19 +334,12 @@ class Article extends Blocks
 
 
 
-
-
-
-
-
-
-
 /**
  * Gremium extension for build a stackable HTML object with a sticky blocks
  */
 class Gremium
 {
-	private string $alignmentTab = "\t\t\t\t\t";
+	private int $columnRows = 0;
 	/**
 	 * Base `top` attribute for block elements
 	 * @var string
@@ -342,6 +357,7 @@ class Gremium
 	 */
 	private array $stack;
 
+
 	/**
 	 * Open Gremium HTML Tags
 	 * @param bool $limit_width
@@ -351,9 +367,12 @@ class Gremium
 	{
 		$this->legends_stackable = $legends_stackable;
 		$this->stack             = array();
-		if (!$omit_html)
-			echo $this->alignmentTab . "<div " . (!is_null($html_id) ? " id=\"$html_id\" " : "") . " class=\"gremium " . ($limit_width ? "limit-width" : "") . "\">\n";
+		if (!$omit_html) {
+			echo "<div " . (!is_null($html_id) ? " id=\"$html_id\" " : "") . " class=\"gremium\">\n";
+			echo "\t<div class=\"content " . ($limit_width ? "limit-width" : "") . "\">\n";
+		}
 	}
+
 
 	/**
 	 * Add a new block to the stack
@@ -385,6 +404,18 @@ class Gremium
 		return $block;
 	}
 
+
+	/**
+	 * Add a new column to the stack
+	 * @return \System\Template\Gremium\Column
+	 */
+	public function column(?string $domid = null): Column
+	{
+		$this->columnRows++;
+		return $this->add(new Column($domid));
+	}
+
+
 	/**
 	 * Add a new header to the stack
 	 * @return \System\Template\Gremium\Header
@@ -413,6 +444,7 @@ class Gremium
 	{
 		return $this->add(new Title($domid));
 	}
+
 	/**
 	 * Add a new article
 	 * @return \System\Template\Gremium\Article
@@ -448,16 +480,15 @@ class Gremium
 
 	public function terminate()
 	{
-		echo $this->alignmentTab . "</div>";
+		echo "</div>";
+		echo "</div>";
 	}
 	/**
 	 * Summary of __destruct
 	 */
 	public function __destruct()
 	{
-		$this->terminate();
+		//$this->terminate();
 	}
 
 }
-
-?>

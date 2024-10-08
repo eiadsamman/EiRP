@@ -796,7 +796,7 @@ $SmartListObject = new SmartListObject($app);
 $grem            = new Gremium\Gremium();
 
 $grem->header()->serve("<h1>Ledger Report</h1>");
-unset($grem);
+$grem->terminate();
 
 ?><br />
 <iframe style="display:none;" name="iframe" id="iframe"></iframe>

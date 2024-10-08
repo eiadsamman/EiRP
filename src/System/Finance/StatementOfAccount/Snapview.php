@@ -68,7 +68,7 @@ class Snapview
 				_pagination.acm_ctime DESC, _pagination.acm_id DESC
 		LIMIT {$this->criteria->limit()}
 		;";
-		$this->app->errorHandler->customError($query);
+		//$this->app->errorHandler->customError($query);
 		$stmt = $this->app->db->prepare($query);
 		$stmt->execute();
 		return $stmt->get_result();
