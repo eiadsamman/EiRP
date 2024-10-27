@@ -1,5 +1,10 @@
 
 class SmartListObjectHandler {
+	initial = null;
+	output = null;
+	range = null;
+	items_limit = null;
+	items_embeds = {};
 	constructor(initial = null, start = null, end = null) {
 		this.initial = initial;
 		this.output = false;
@@ -21,11 +26,11 @@ class SmartListObjectHandler {
 	toString() {
 		return (this.output === false) ? "" : this.output;
 	}
-	itemGenerator(title = "", return_id = "", return_value = "", highlight = null) {
+	itemGenerator(title = "", return_id = "", return_value = "", highlight = null, embedIndex = 0) {
 		let output = "";
-		output += `<div data-return_id="${return_id}">`;
+		output += `<div data-return_id="${return_id}" data-embedIndex="${embedIndex}">`;
 		output += `<div>${title}</div>`;
-		output += highlight != null && highlight != "" ? `<span>${highlight}</span>` : "";
+		output += highlight != null && highlight != "" ? `<span>${highlight}</span>` : ``;
 		output += `<p>${return_value}</p>`;
 		output += `</div>`;
 		return output;
@@ -149,11 +154,15 @@ class ListHandler extends SmartListObjectHandler {
 	}
 	generate() {
 		if (this.isLoading) return "";
+		this.items_embeds = {};
 		let buffer = "";
+		let index = 0;
 		if (this.output !== false) {
 			this.output.forEach(listitem => {
-				/* Use `value` instead of `id` when chuck loader dosen't provide an `id` field*/
-				buffer += super.itemGenerator(listitem.value, listitem.id ?? listitem.value, listitem.value, listitem.highlight);
+				index++;
+				/* Use `value` instead of `id` when the loader dosen't provide an `id` attribute*/
+				this.items_embeds[index] = listitem;
+				buffer += super.itemGenerator(listitem.value, listitem.id ?? listitem.value, listitem.value, listitem.highlight, index);
 			});
 		}
 		return buffer;
@@ -658,12 +667,18 @@ class SmartListObject {
 	}
 	call_onselect() {
 		if (typeof (this.events.onselect) == "function") {
+			let embededIndex = this.selection.attr("data-embedIndex");
+			let embededObject = {};
+			if (embededIndex != undefined && !isNaN(parseInt(embededIndex)) && parseInt(embededIndex) != 0 && this.handler.items_embeds[parseInt(embededIndex)] != undefined) {
+				embededObject = this.handler.items_embeds[parseInt(embededIndex)];
+			}
 			this.events.onselect.call(this, {
 				/* this: _parent, */
 				object: this.htmltext,
 				value: this.htmltext.val(),
 				key: this.htmlhidden.val(),
 				text: $(this.selection).find("span").html(),
+				embeds: embededObject
 			});
 		}
 	}

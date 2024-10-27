@@ -138,7 +138,6 @@ if ($app->xhttp) {
 		"<button class=\"edge-right standard plus\" data-href=\"{$fs(270)->dir}\" data-target=\"{$fs(270)->dir}\"><span class=\"small-media-hide\"> Add</span></button></div>");
 	$legend = $grem->menu()->open();
 	echo <<<HTML
-		<a href="acc/trs/inc" data-href="acc/trs/inc">Click here</a>
 		<button id="searchButton" class="edge-left edge-right search" data-href="{$fs(269)->dir}" data-target="{$fs(269)->dir}"><span class="small-media-hide"> Search</span></button>
 		<input type="button" id="cancelSearchButton" style="display: none;font-family: glyphs" class="edge-right error" data-href="{$fs()->dir}" href="{$fs()->dir}" value="&#xe901;" />
 

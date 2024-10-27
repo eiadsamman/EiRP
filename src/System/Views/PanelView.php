@@ -59,6 +59,13 @@ class PanelView implements Views
 			["css", "style/style.upload.css"],
 			["js", "jquery/uploader-1.0.js"]
 		];
+
+
+
+
+
+
+
 		/* Transaction */
 		$panel                = new PanelGroup();
 		$panel->name          = "Transaction";
@@ -66,10 +73,7 @@ class PanelView implements Views
 		$panel->title         = "Statements";
 		$panel->sidePanelUrl  = $this->app->file->find(121)->dir;
 		$panel->pages         = [91, 95, 101, 104, 170, 214];
-		$panel->assets        = [
-			["css", "style/pagefile/statement-control.css"],
-			["css", "style/pagefile/TransactionView.css"],
-		];
+		$panel->assets        = [["css", "style/pagefile/statement-control.css"], ["css", "style/pagefile/TransactionView.css"]];
 		$panel->modules       = [
 			new PageAssets(91, 'Post', true),
 			new PageAssets(95, 'Post', true),
@@ -80,6 +84,12 @@ class PanelView implements Views
 		];
 		$this->panelGroups[]  = $panel;
 
+
+
+
+
+
+
 		/* CRM */
 		$panel                = new PanelGroup();
 		$panel->name          = "Customer";
@@ -87,9 +97,7 @@ class PanelView implements Views
 		$panel->title         = "Customers";
 		$panel->sidePanelUrl  = $this->app->file->find(266)->dir;
 		$panel->pages         = [173, 269, 267, 270];
-		$panel->assets        = [
-			["css", "style/pagefile/crm-customer.css"],
-		];
+		$panel->assets        = [["css", "style/pagefile/crm-customer.css"]];
 		$panel->modules       = [
 			new PageAssets(173, 'CustomList', true),
 			new PageAssets(269, 'CustomSearch', true),
@@ -98,21 +106,60 @@ class PanelView implements Views
 		];
 		$this->panelGroups[]  = $panel;
 
+
+
+
+
+
+
 		/* Invoicing - Material Request */
 		$panel                = new PanelGroup();
 		$panel->name          = "InvMaterialRequest";
 		$panel->javascriptLib = './invoicing/MaterialRequest.js';
 		$panel->title         = "Requests";
 		$panel->sidePanelUrl  = $this->app->file->find(238)->dir;
-		$panel->pages         = [230, 240];
-		$panel->assets        = [
-			["css", "style/pagefile/Invoicing.css"]
-		];
+		$panel->pages         = [210, 230, 240];
+		$panel->assets        = [["css", "style/pagefile/Invoicing.css"]];
 		$panel->modules       = [
 			new PageAssets(230, 'Post', true),
+			new PageAssets(210, 'CustomList', true),
 			new PageAssets(240, 'Entry', true),
 		];
 		$this->panelGroups[]  = $panel;
+
+
+
+
+		/* Invoicing - Material Request Quotation */
+		$panel                = new PanelGroup();
+		$panel->name          = "InvMaterialQuotation";
+		$panel->javascriptLib = './invoicing/MaterialQuotation.js';
+		$panel->title         = "Quotations";
+		$panel->sidePanelUrl  = $this->app->file->find(241)->dir;
+		$panel->pages         = [209, 233, 234];
+		$panel->assets        = [["css", "style/pagefile/Invoicing.css"]];
+		$panel->modules       = [
+			new PageAssets(233, 'Post', true),
+			new PageAssets(209, 'CustomList', true),
+			new PageAssets(234, 'Entry', true),
+		];
+		$this->panelGroups[]  = $panel;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	}
 
 	public function htmlAssets(string $version = ""): void
@@ -193,7 +240,7 @@ class PanelView implements Views
 			/* JS Payload */
 			echo <<<HTML
 			{$tab}<script type="module">
-				{$tab}import { PaNa } from './static/javascript/modules/panel-navigator.js';
+				{$tab}import { PaNa } from './static/javascript/modules/PanelNavigator.js';
 				{$tab}let pn = new PaNa();
 				{$tab}pn.itemPerRequest = {$perpage};
 				{$tab}pn.init("{$fs()->dir}", {$_getJSON});

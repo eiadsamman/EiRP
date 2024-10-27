@@ -191,7 +191,7 @@ class Blocks
 class Header extends Blocks
 {
 	protected string $id = "header";
-	public int $height = 70;
+	public int $height = 60;
 	private string|null $status = null;
 	private string|null $prev = null;
 
@@ -224,7 +224,7 @@ class Header extends Blocks
 class Menu extends Blocks
 {
 	protected string $id = "menu";
-	public int $height = 45;
+	public int $height = 50;
 
 	public function open(): self
 	{
@@ -312,7 +312,6 @@ class Column extends Blocks
 		if (!$this->opened) {
 			echo "<{$this->id} class=\"column\"";
 			echo (empty($this->domid) ? "" : " id=\"{$this->domid}\"");
-			echo (empty($this->fxwidth) ? "" : " style=\"width:{$this->fxwidth};\" ");
 			echo (empty($this->fxMaxwidth) ? "" : " style=\"max-width:{$this->fxMaxwidth};\" ");
 			echo is_array($this->options) && in_array("nobg", $this->options) ? " class=\"nobg\" " : "";
 			echo is_array($this->options) && in_array("nopadding", $this->options) ? " class=\"nopadding\" " : "";
@@ -330,16 +329,12 @@ class Column extends Blocks
 
 
 
-
-
-
-
 /**
  * Gremium extension for build a stackable HTML object with a sticky blocks
  */
 class Gremium
 {
-	private int $columnRows = 0;
+	private bool $isColumnAdded = false;
 	/**
 	 * Base `top` attribute for block elements
 	 * @var string
@@ -411,7 +406,10 @@ class Gremium
 	 */
 	public function column(?string $domid = null): Column
 	{
-		$this->columnRows++;
+		if ($this->isColumnAdded) {
+			throw new \Exception("Template column already added");
+		}
+		$this->isColumnAdded = true;
 		return $this->add(new Column($domid));
 	}
 

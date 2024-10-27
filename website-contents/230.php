@@ -1,11 +1,12 @@
 <?php
-
+use System\Finance\CostCenter;
 use System\Finance\Invoice\Item;
 use System\Finance\Invoice\MaterialRequest;
 use System\Models\Material;
 use System\Profiles\MaterialProfile;
 use System\Template\Gremium\Gremium;
 
+const ERROR_ROOT = 230000;
 if ($app->xhttp) {
 
 	if (isset($_POST['method']) && $_POST['method'] == "post") {
@@ -15,9 +16,27 @@ if ($app->xhttp) {
 		try {
 			$invoice->comments($_POST['comments']);
 			$invoice->title($_POST['title']);
-			$invoice->costCenter((int) $_POST['costcenter']);
-			$invoice->curreny(null);
 
+
+			if ((int) $_POST['departement'] > 0) {
+				$app->errorHandler->customError("1" . $_POST['departement']);
+				$invoice->departement((int) $_POST['departement']);
+			} else {
+				throw new Exception("Select requesting departement", ERROR_ROOT + 110);
+			}
+
+			if (isset($_POST['costcenter'])) {
+				$invoice->costCenter((int) $_POST['costcenter']);
+			} else {
+				$costCenter        = new CostCenter($app);
+				$defaultCostCenter = $costCenter->getSystemDefault();
+				if (!$defaultCostCenter) {
+					throw new Exception("Posting request failed, system financial failure", ERROR_ROOT + 100);
+				}
+				$invoice->costCenter($defaultCostCenter->id);
+			}
+
+			$invoice->curreny(null);
 			foreach ($_POST['inv_material'] as $ident => $material) {
 				$item                 = new Item();
 				$item->isGroupingItem = !strpos($ident, "@") ? false : true;
@@ -30,11 +49,11 @@ if ($app->xhttp) {
 				$invoice->appendItem($item);
 			}
 
-
 			$insert_id = $invoice->post();
 			$result    = array(
 				"result" => true,
 				"insert_id" => $insert_id,
+				"forward" => $fs(240)->dir,
 			);
 
 		} catch (Exception $e) {
@@ -131,7 +150,7 @@ if ($app->xhttp) {
 
 
 	$grem = new Gremium(true);
-	$grem->header()->prev("href=\"{$fs(240)->dir}\" data-href=\"{$fs(240)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"appApplicationPost\" tabindex=\"9\">&nbsp;Submit Request</button></div>");
+	$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"appApplicationPost\" tabindex=\"9\">&nbsp;Submit Request</button></div>");
 	$grem->title()->serve("Request information");
 	$grem->article()->open();
 	$hash = md5($app->id . $app->user->company->id);

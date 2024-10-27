@@ -110,7 +110,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 		if (isset($_POST['id'], $_POST['relative']) && $_GET['modify-user'] == $_POST['relative'] && $_GET['modify-user'] == $modify_user->info->id && $_POST['invoke'] == "add-costcenter") {
 			$id = (int) $_POST['id'];
 			$r  = $app->db->query("SELECT 
-				ccc_id,ccc_name,usrccc_ccc_id
+				ccc_id,ccc_name,usrccc_ccc_id, ccc_vat
 			FROM 
 				inv_costcenter 
 					LEFT JOIN  user_costcenter ON usrccc_usr_id={$modify_user->info->id} AND usrccc_ccc_id=ccc_id
@@ -124,6 +124,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						echo "<tr>";
 						echo "<td class=\"op-remove noselect\"><span></span></td>";
 						echo "<td>{$row['ccc_name']}<input type=\"hidden\" name=\"a[{$row['ccc_id']}]\" value=\"\" /></td>";
+						echo "<td>{$row['ccc_vat']}%</td>";
 						echo "</tr>";
 					}
 				} else {
@@ -389,17 +390,19 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 						<thead>
 							<tr>
 								<td></td>
-								<td width="100%">Cost Center</td>
+								<td>Cost Center</td>
+								<td width="100%">VAT rate</td>
 							</tr>
 						</thead>
 						<tbody id="FormCostCenterList">
 							<?php
-							$r = $app->db->query("SELECT ccc_id,ccc_name FROM inv_costcenter JOIN user_costcenter  ON usrccc_usr_id={$modify_user->info->id} AND usrccc_ccc_id=ccc_id;");
+							$r = $app->db->query("SELECT ccc_id,ccc_name,ccc_vat FROM inv_costcenter JOIN user_costcenter  ON usrccc_usr_id={$modify_user->info->id} AND usrccc_ccc_id=ccc_id;");
 							if ($r) {
 								while ($row = $r->fetch_assoc()) {
 									echo "<tr>";
 									echo "<td class=\"op-remove noselect\" data-costcenter_id=\"{$row['ccc_id']}\"><span></span></td>";
-									echo "<td>{$row['ccc_name']}<input type=\"hidden\" name=\"a[{$row['ccc_id']}]\" value=\"\" /></td>";
+									echo "<td>{$row['ccc_name']}<input type=\"hidden\" name=\"a[{$row['ccc_id']}]\"/></td>";
+									echo "<td>{$row['ccc_vat']}%</td>";
 									echo "</tr>";
 								}
 							}

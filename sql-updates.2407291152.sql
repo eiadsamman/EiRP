@@ -265,3 +265,11 @@ ALTER TABLE `inv_records` CHANGE `pols_grouping_item` `pols_grouping_item` BOOLE
 
 
 ALTER TABLE `inv_main` CHANGE `po_canceled` `po_voided` BIT (1) NOT NULL DEFAULT b '0';
+
+
+
+ALTER TABLE `inv_main` ADD `po_payment_term` SMALLINT UNSIGNED NULL DEFAULT NULL AFTER `po_discount`;
+
+
+
+ALTER TABLE `inv_main` CHANGE `po_shipping_term` `po_shipping_term` SMALLINT UNSIGNED NULL DEFAULT NULL;

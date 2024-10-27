@@ -1,6 +1,10 @@
 import { default as App, Application, View, Search, List } from '../app.js';
 import { Popup } from '../gui/popup.js';
 
+export class CustomList extends List {
+
+}
+
 
 export class Entry extends View {
 	pana = null;
@@ -15,12 +19,22 @@ export class Entry extends View {
 	}
 
 	run() {
-		
+
 	}
 }
 
 export class Post extends View {
 	pana = null;
+	popupBomSelection = null;
+	busy = false;
+	materialQuantity = null;
+	materialSelection = null;
+	materialsList = null;
+	formCostcenter = null;
+	materialAddButton = null;
+	formMaterialAdd = null;
+
+
 	constructor(pana) {
 		super();
 		this.pana = pana;
@@ -32,24 +46,10 @@ export class Post extends View {
 	}
 
 	run() {
-		new MaterialRequest();
-	}
-}
-
-
-class MaterialRequest {
-	popupBomSelection = null;
-	busy = false;
-	materialQuantity = null;
-	materialSelection = null;
-	materialsList = null;
-	formCostcenter = null;
-	materialAddButton = null;
-	formMaterialAdd = null;
-	constructor() {
 		this.popup = new Popup();
 		this.init();
 	}
+
 
 	readDataset = function (payload, dataset) {
 		payload.id = dataset.id;
@@ -70,7 +70,6 @@ class MaterialRequest {
 		this.formDepartement = $("#po_departement").slo();
 		this.formCostcenter = $("#formCostcenter").slo();
 		this.materialSelection = $("#materialSelection").slo({ onselect: (e) => { /* this.materialQuantity.focus(); */ } });
-
 		this.materialAddButton.addEventListener("click", () => {
 			this.materialAdd();
 		});
@@ -84,15 +83,11 @@ class MaterialRequest {
 			this.post();
 		});
 
-
 		this.formMaterialList.addEventListener("submit", (event) => {
 			event.preventDefault();
-			this.post();
+
 			return false;
 		});
-
-
-
 
 		this.popupBomSelection.addEventListener("submit", (event) => {
 			let importStyle = event.target.controlContainer.querySelectorAll("[name=\"importStyle\"]:checked");
@@ -155,10 +150,12 @@ class MaterialRequest {
 	}
 
 	post() {
+
 		const formData = new FormData(this.formMaterialList);
 		formData.append("method", "post");
 		formData.append("departement", this.formDepartement.get()[0].id);
-		formData.append("costcenter", this.formCostcenter.get()[0].id);
+		if (this.formCostcenter.get().length > 0)
+			formData.append("costcenter", this.formCostcenter.get()[0].id);
 		formData.append("title", document.getElementsByName("po_title")[0].value);
 		formData.append("comments", document.getElementsByName("po_comments")[0].value);
 
@@ -175,11 +172,24 @@ class MaterialRequest {
 			},
 			body: formData,
 		}).then(response => {
-
-			if (response.ok) return response.text();
+			if (response.ok) return response.json();
 			return Promise.reject(response);
-		}).then(body => {
-			console.log(body);
+		}).then(res => {
+			if (res.result) {
+				messagesys.success("Material request posted successfully");
+
+				this.pana.register(res.forward, { "id": res.insert_id });
+				this.pana.run();
+			} else {
+				if (res.errno == 901120) {
+					this.formCostcenter.focus()
+				} else if (res.errno == 230110) {
+					this.formDepartement.focus()
+				} else if (res.errno == 901110) {
+					this.materialSelection.focus();
+				}
+				messagesys.failure(res.error);
+			}
 		}).catch(response => {
 			console.log(response);
 		});
@@ -277,7 +287,7 @@ class MaterialRequest {
 				inputFieldName = `inv_material[${payload.identifier}][${payload.id}]`;
 			}
 			html += root ? `<td></td>` : `<td class="counter"><i>1</i></td>`;
-			html += `<td><input type="number" name="${inputFieldName}" value="${payload.qty}" ${controlIdentifier} /></td>`;
+			html += `<td style="min-width:100px"><input class="numberField" type="text" inputmode="decimal" name="${inputFieldName}" value="${payload.qty}" ${controlIdentifier} /></td>`;
 		} else {
 			materialRow.classList.add("partOf");
 			let portionOfMain = Application.numberFormat(bounded.quantity * payload.portion, 2);
@@ -357,4 +367,7 @@ class MaterialRequest {
 			}
 		}
 	}
+
+
 }
+

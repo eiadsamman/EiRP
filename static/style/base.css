@@ -172,7 +172,7 @@ input[type=number]:disabled {
 	background-color: #eee;
 }
 
-ul>li {
+ul > li {
 	padding: 8px 0px;
 }
 
@@ -198,7 +198,7 @@ body {
 	padding: 0px;
 }
 
-body>article {
+body > article {
 	display: flex;
 	justify-content: left;
 	height: 100%;
@@ -207,7 +207,7 @@ body>article {
 	margin: 0 auto;
 }
 
-body>article>div {
+body > article > div {
 	flex: 1;
 	/* max-width: var(--dim-max-width); */
 	margin-top: var(--root--menubar-height);
@@ -217,7 +217,7 @@ body>article>div {
 	transition: filter 0.2s ease-out;
 }
 
-body>article>div.blur {
+body > article > div.blur {
 	filter: blur(2px);
 }
 
@@ -262,14 +262,14 @@ span.header-ribbon {
 	border-bottom: solid 1px var(--input_border-color);
 }
 
-span.header-ribbon>div {
+span.header-ribbon > div {
 	display: inline-block;
 	position: relative;
 	width: 100%;
 	/* max-width: var(--dim-max-width); */
 }
 
-.ico-home>span:before {
+.ico-home > span:before {
 	display: inline-block;
 	content: "\e600";
 	font-family: "icomoon";
@@ -285,7 +285,7 @@ span.header-ribbon>div {
 	position: relative;
 }
 
-#header-menu-useraccount-button>cite {
+#header-menu-useraccount-button > cite {
 	position: absolute;
 	font-size: 0.8em;
 	font-style: normal;
@@ -312,11 +312,11 @@ span.header-ribbon>div {
 	align-items: center;
 }
 
-#menuUserTag>span>span {
+#menuUserTag > span > span {
 	border: solid 1px var(--input_border-color);
 }
 
-#menuUserTag>span.cus-image>span {
+#menuUserTag > span.cus-image > span {
 	background-repeat: no-repeat;
 	background-size: 100% auto;
 	background-position: 50% 50%;
@@ -331,7 +331,7 @@ span.header-ribbon>div {
 	text-align: center;
 }
 
-#menuUserTag>span.cus-initi>span {
+#menuUserTag > span.cus-initi > span {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -347,7 +347,7 @@ span.header-ribbon>div {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
-#menuUserTag>i {
+#menuUserTag > i {
 	font-weight: normal;
 	font-style: normal;
 	text-align: center;
@@ -391,7 +391,7 @@ span.header-menu.hide {
 	visibility: hidden;
 }
 
-span.header-menu>div {
+span.header-menu > div {
 	display: inline-block;
 	width: 100%;
 	padding: 0px;
@@ -401,7 +401,7 @@ span.header-menu>div {
 	height: 10px;
 }
 
-span.header-menu>div>div {
+span.header-menu > div > div {
 	min-width: 400px;
 	height: auto;
 	max-height: 500px;
@@ -416,23 +416,23 @@ span.header-menu>div>div {
 	padding-bottom: 10px;
 }
 
-span.header-menu>div>div::-webkit-scrollbar {
+span.header-menu > div > div::-webkit-scrollbar {
 	width: 5px;
 }
 
-span.header-menu>div>div:hover::-webkit-scrollbar-thumb {
+span.header-menu > div > div:hover::-webkit-scrollbar-thumb {
 	background-color: var(--input-hover_border-color);
 }
 
-span.header-menu>div>div::-webkit-scrollbar-thumb {
+span.header-menu > div > div::-webkit-scrollbar-thumb {
 	background-color: var(--input_border-color);
 }
 
-span.header-menu>div>div>div.menu-items {
+span.header-menu > div > div > div.menu-items {
 	text-align: left;
 }
 
-span.header-menu>div>div>header {
+span.header-menu > div > div > header {
 	position: sticky;
 	top: 0px;
 	z-index: 2;
@@ -445,12 +445,12 @@ span.header-menu>div>div>header {
 /* #endregion */
 
 /* #region - Left hand menus*/
-span.header-menu.lefthand>div>div {
+span.header-menu.lefthand > div > div {
 	text-align: left;
 	left: 10px;
 }
 
-span.header-menu.lefthand>div>div>div.menu-items b {
+span.header-menu.lefthand > div > div > div.menu-items b {
 	font-weight: normal;
 	display: block;
 	padding: 14px;
@@ -458,7 +458,7 @@ span.header-menu.lefthand>div>div>div.menu-items b {
 	color: var(--input-hover_border-color);
 }
 
-span.header-menu.lefthand>div>div>div.menu-items b.nested:before {
+span.header-menu.lefthand > div > div > div.menu-items b.nested:before {
 	position: absolute;
 	display: block;
 	content: "\e91d";
@@ -467,32 +467,32 @@ span.header-menu.lefthand>div>div>div.menu-items b.nested:before {
 	right: 10px;
 }
 
-span.header-menu.lefthand>div>div>div.menu-items b>a.alink {
+span.header-menu.lefthand > div > div > div.menu-items b > a.alink {
 	color: var(--root-font-color);
 }
 
-span.header-menu.lefthand>div>div>div.menu-items b>a.alink:hover {
+span.header-menu.lefthand > div > div > div.menu-items b > a.alink:hover {
 	color: var(--root-font-color);
 }
 
-span.header-menu.lefthand>div>div>div.menu-items b:hover {
+span.header-menu.lefthand > div > div > div.menu-items b:hover {
 	text-decoration: none;
 	background-color: var(--root-ribbon-menu-itemhover-background-color);
 }
 
-span.header-menu.lefthand>div>div>div.menu-items div {
+span.header-menu.lefthand > div > div > div.menu-items div {
 	display: none;
 	position: relative;
 }
 
-span.header-menu.lefthand>div>div>div.menu-items b>span {
+span.header-menu.lefthand > div > div > div.menu-items b > span {
 	font-family: icomoon4;
 	display: inline-block;
 	padding-right: 14px;
 	font-size: 10px;
 }
 
-span.header-menu.lefthand>div>div>div.menu-items b.index-link {
+span.header-menu.lefthand > div > div > div.menu-items b.index-link {
 	display: none;
 }
 
@@ -501,12 +501,12 @@ span.header-menu.lefthand>div>div>div.menu-items b.index-link {
 /* #endregion */
 
 /* #region - Right hand menus*/
-span.header-menu.righthand>div>div {
+span.header-menu.righthand > div > div {
 	text-align: right;
 	right: 10px;
 }
 
-span.header-menu.righthand>div>div>div.menu-items div {
+span.header-menu.righthand > div > div > div.menu-items div {
 	display: block;
 	padding: 15px 13px 10px 13px;
 	color: var(--root-font-color);
@@ -516,8 +516,8 @@ span.header-menu.righthand>div>div>div.menu-items div {
 	border-bottom: solid 1px #ccc;
 }
 
-span.header-menu.righthand>div>div>div.menu-items>a,
-span.header-menu.righthand>div>div>div.menu-items>span {
+span.header-menu.righthand > div > div > div.menu-items > a,
+span.header-menu.righthand > div > div > div.menu-items > span {
 	font-weight: normal;
 	display: -webkit-box;
 	display: -moz-box;
@@ -530,7 +530,7 @@ span.header-menu.righthand>div>div>div.menu-items>span {
 	text-align: left;
 }
 
-span.header-menu.righthand>div>div>div.menu-items a>span {
+span.header-menu.righthand > div > div > div.menu-items a > span {
 	overflow-x: hidden;
 	min-height: 14px;
 	text-overflow: ellipsis;
@@ -538,19 +538,19 @@ span.header-menu.righthand>div>div>div.menu-items a>span {
 	padding: 1px 0px;
 }
 
-span.header-menu.righthand>div>div>div.menu-items a>b {
+span.header-menu.righthand > div > div > div.menu-items a > b {
 	font-weight: normal;
 	color: var(--root-font-color);
 }
 
-span.header-menu.righthand>div>div>div.menu-items a:hover {
+span.header-menu.righthand > div > div > div.menu-items a:hover {
 	text-decoration: none;
 	color: var(--root-font-color);
 	cursor: default;
 	background-color: var(--root-ribbon-menu-itemhover-background-color);
 }
 
-span.header-menu.righthand>div>div>div.menu-items a:hover>b {
+span.header-menu.righthand > div > div > div.menu-items a:hover > b {
 	color: var(--root-font-color);
 }
 
@@ -574,8 +574,8 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 	justify-content: center
 }
 
-.btnheader-set>a,
-.btnheader-set>span {
+.btnheader-set > a,
+.btnheader-set > span {
 	display: inline;
 	height: auto;
 	color: inherit;
@@ -593,27 +593,27 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 	user-select: none;
 }
 
-.btnheader-set>input:hover,
-.btnheader-set>button:hover,
-.btnheader-set>a:hover,
-.btnheader-set>label:hover {
+.btnheader-set > input:hover,
+.btnheader-set > button:hover,
+.btnheader-set > a:hover,
+.btnheader-set > label:hover {
 	background-color: rgba(0, 0, 0, 0.2);
 	text-decoration: none;
 }
 
-.btnheader-set>label.active,
-.btnheader-set>a.active,
-.btnheader-set>button.active {
+.btnheader-set > label.active,
+.btnheader-set > a.active,
+.btnheader-set > button.active {
 	background-color: rgba(0, 0, 0, 0.6);
 	color: white;
 }
 
-.btnheader-set>span {
+.btnheader-set > span {
 	cursor: default;
 	white-space: nowrap;
 }
 
-.btnheader-set>span.gap {
+.btnheader-set > span.gap {
 	background-color: transparent;
 	-webkit-box-flex: 1;
 	-moz-box-flex: 1;
@@ -744,7 +744,7 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 	flex-wrap: nowrap;
 }
 
-.loading_overlay>div {
+.loading_overlay > div {
 	margin-top: 80px;
 	padding: 33px 20px 10px 20px;
 	border-radius: 0px;
@@ -763,22 +763,22 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 	min-width: 400px;
 }
 
-#screenSectorCol>tbody>tr>td>div>div>a {
+#screenSectorCol > tbody > tr > td > div > div > a {
 	min-width: 150px;
 	color: #333;
 }
 
-#screenSectorCol>tbody>tr>td {
+#screenSectorCol > tbody > tr > td {
 	white-space: normal;
 }
 
-#screenSectorCol>tbody>tr>td>div>div>span {
+#screenSectorCol > tbody > tr > td > div > div > span {
 	background-color: #fff;
 	min-width: 60px;
 	text-align: center;
 }
 
-#screenSectorCol>tbody>tr>td>div {
+#screenSectorCol > tbody > tr > td > div {
 	display: inline-block;
 	margin: 0px 3px;
 }
@@ -786,7 +786,7 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 /* #endregion */
 
 /* #region General*/
-.op-done>*:before {
+.op-done > *:before {
 	display: inline-block;
 	content: "\f00c";
 	font-family: "icomoon2";
@@ -795,7 +795,7 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 	color: #06c
 }
 
-.op-error>*:before {
+.op-error > *:before {
 	display: inline-block;
 	content: "\f00d";
 	font-family: "icomoon2";
@@ -804,7 +804,7 @@ span.header-menu.righthand>div>div>div.menu-items a:hover>b {
 	color: #f03
 }
 
-.op-down>*:before {
+.op-down > *:before {
 	display: inline-block;
 	content: "\e60c";
 	font-family: "icomoon";
@@ -827,7 +827,7 @@ span.vs-remove {
 	font-size: 0.9em
 }
 
-.css_fieldDesc>span>b {
+.css_fieldDesc > span > b {
 	display: inline-block;
 	min-width: 60px;
 	font-style: normal;
@@ -840,7 +840,7 @@ span.vs-remove {
 }
 
 
-.css_maxfieldwidth>span {
+.css_maxfieldwidth > span {
 	position: absolute;
 	max-width: 100%;
 	inset: 0 0 0 0px;
@@ -858,7 +858,7 @@ span.vs-remove {
 	height: 100%;
 }
 
-.split-view>div.panel {
+.split-view > div.panel {
 	flex: 2;
 	z-index: 1;
 	position: relative;
@@ -866,12 +866,12 @@ span.vs-remove {
 	transition: width 0.2s ease, max-width 0.2s ease;
 }
 
-.split-view>div.panel.hide {
+.split-view > div.panel.hide {
 	max-width: 0px;
 	width: 0px;
 }
 
-.split-view>div.body {
+.split-view > div.body {
 	flex: 5;
 	background-color: var(--root-background-color);
 	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
@@ -887,7 +887,7 @@ span.vs-remove {
 }
  */
 
-.split-view>div.panel>div {
+.split-view > div.panel > div {
 	min-width: 200px;
 	top: var(--root--menubar-height);
 	position: sticky;
@@ -915,15 +915,15 @@ span.vs-remove {
 	border-radius: 7px;
 }
 
-.split-view>div.panel>div::-webkit-scrollbar {
+.split-view > div.panel > div::-webkit-scrollbar {
 	width: 5px;
 }
 
-.split-view>div.panel>div:hover::-webkit-scrollbar-thumb {
+.split-view > div.panel > div:hover::-webkit-scrollbar-thumb {
 	background-color: var(--input-hover_border-color);
 }
 
-.split-view>div.panel>div::-webkit-scrollbar-thumb {
+.split-view > div.panel > div::-webkit-scrollbar-thumb {
 	background-color: var(--input_border-color);
 }
 
@@ -1041,11 +1041,11 @@ span.vs-remove {
 	cursor: wait;
 }
 
-span.loadingScreen-placeholderBody>span {
+span.loadingScreen-placeholderBody > span {
 	display: block;
 }
 
-span.loadingScreen-placeholderBody>span::after {
+span.loadingScreen-placeholderBody > span::after {
 	height: 12px;
 	display: inline-block;
 	content: " ";
@@ -1061,7 +1061,7 @@ span.loadingScreen-placeholderBody>span::after {
 	width: 100%;
 }
 
-span.loadingScreen-placeholderBody>span:last-child {
+span.loadingScreen-placeholderBody > span:last-child {
 	width: 33%;
 }
 
@@ -1108,7 +1108,8 @@ div.timeline {
 	padding-bottom: 30px;
 
 	padding-left: 25px;
-	>div {
+
+	> div {
 		cursor: default;
 		display: flex;
 		flex-wrap: wrap;
@@ -1131,12 +1132,12 @@ div.timeline {
 		border-left: dashed 1px var(--bomtable-border-color);
 	}
 
-	>div:hover {
+	> div:hover {
 		border-color: var(--input-hover_border-color);
 		background-color: var(--slo-menu-itemhover-background-color);
 	}
 
-	>div>span {
+	> div > span {
 		position: relative;
 		min-width: 200px;
 		color: hsl(150, 60%, 50%);
@@ -1144,15 +1145,15 @@ div.timeline {
 		color: var(--root-font-lightcolor);
 	}
 
-	>div>span::before {
+	> div > span::before {
 		transition: outline-color var(--transition-speed);
 	}
 
-	>div:hover>span::before {
+	> div:hover > span::before {
 		outline-color: var(--root-link-color);
 	}
 
-	>div>span:before {
+	> div > span:before {
 		display: block;
 		position: absolute;
 		content: " ";
@@ -1165,26 +1166,26 @@ div.timeline {
 		border-radius: 100%;
 	}
 
-	>div>h1 {
+	> div > h1 {
 		margin: 0;
 		padding: 0;
 		padding-top: 10px;
 		font-weight: normal;
 	}
 
-	>div>span>i {
+	> div > span > i {
 		display: block;
 		font-size: 0.9em;
 		font-style: normal;
 	}
 
-	>div>cite {
+	> div > cite {
 		padding-top: 10px;
 		font-style: normal;
 		color: var(--root-font-lightcolor);
 	}
 
-	>div>div {
+	> div > div {
 		line-height: 1.4em;
 	}
 }
@@ -1192,7 +1193,7 @@ div.timeline {
 
 /* #region Media*/
 @media only screen and (max-width: 1080px) {
-	.split-view>div.panel {
+	.split-view > div.panel {
 		max-width: 0px;
 		width: 0px;
 	}
@@ -1205,11 +1206,11 @@ div.timeline {
 		display: none;
 	}
 
-	span.header-menu.lefthand>div>div>div.menu-items b.index-link {
+	span.header-menu.lefthand > div > div > div.menu-items b.index-link {
 		display: block;
 	}
 
-	body>article>div {
+	body > article > div {
 		padding: 0px;
 	}
 }
@@ -1219,8 +1220,8 @@ div.timeline {
 		display: none;
 	}
 
-	.btnheader-set>a,
-	.btnheader-set>span {
+	.btnheader-set > a,
+	.btnheader-set > span {
 		padding: 18px 7px;
 	}
 
@@ -1241,22 +1242,22 @@ div.timeline {
 		display: none;
 	}
 
-	span.header-menu.righthand>div>div>div.menu-items a,
-	span.header-menu.lefthand>div>div>div.menu-items b {
+	span.header-menu.righthand > div > div > div.menu-items a,
+	span.header-menu.lefthand > div > div > div.menu-items b {
 		padding: 17px 23px;
 	}
 
-	span.header-menu.lefthand>div>div>div.menu-items b.nested:before {
+	span.header-menu.lefthand > div > div > div.menu-items b.nested:before {
 		top: 17px;
 	}
 
-	span.header-menu.lefthand>div>div,
-	span.header-menu.righthand>div>div {
+	span.header-menu.lefthand > div > div,
+	span.header-menu.righthand > div > div {
 		left: 0px;
 		right: 0px;
 	}
 
-	span.header-menu>div>div {
+	span.header-menu > div > div {
 		padding: 0;
 		margin: 0;
 		max-height: 100%;

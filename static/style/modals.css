@@ -67,7 +67,7 @@
 		opacity: 1;
 	}
 
-	>form {
+	> form {
 		overflow-y: auto;
 		overflow-x: auto;
 		text-align: left;
@@ -190,7 +190,7 @@ dialog.appHtmlDialog {
 	pointer-events: none;
 	z-index: 110;
 
-	>div {
+	> div {
 		display: inline-block;
 		max-width: 700px;
 		min-width: 100px;
@@ -202,21 +202,21 @@ dialog.appHtmlDialog {
 		color: #fff;
 		border-radius: 5px;
 
-		>span,
-		>div {
+		> span,
+		> div {
 			display: inline-block;
 			vertical-align: top;
 			white-space: normal;
 		}
 
-		>span:before {
+		> span:before {
 			font-family: icomoon2;
 			margin-right: 10px;
 			position: relative;
 			top: 0px;
 		}
 
-		&.success>span:before {
+		&.success > span:before {
 			content: "\f00c";
 		}
 
@@ -224,7 +224,7 @@ dialog.appHtmlDialog {
 			background-color: rgba(40, 200, 90, 0.75);
 		}
 
-		&.failure>span:before {
+		&.failure > span:before {
 			content: "\f00d";
 		}
 
@@ -238,45 +238,57 @@ dialog.appHtmlDialog {
 
 	display: grid;
 	grid-template-columns: auto auto;
-	background-color: var(--bomtable-background-color);
-	transition: background-color var(--transition-speed) ease;
+
 	position: relative;
 
 
-	>div,
-	>main>div,
-	>main>span,
-	>span {
-		border-top: solid 1px var(--bomtable-border-color);
+	> div,
+	> main > div,
+	> footer > div,
+	> header > div {
 		padding: 15px 8px;
+		line-height: 1.5em;
 		white-space: nowrap;
+		vertical-align: middle;
 		color: var(--root-font-color);
-		transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+		border-top: solid 1px var(--bomtable-border-color);
+		background-color: var(--bomtable-background-color);
+		transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 	}
 
-	>main:hover>div {
+	> main,
+	> footer,
+	> header {
+		display: contents;
+	}
+
+	> main:hover > div {
 		background-color: var(--bomtable-hover-color) !important;
 	}
 
-	>div.ellipsis,
-	>main>div.ellipsis,
-	>span.ellipsis {
-		text-overflow: ellipsis;
+	> div.ellipsis,
+	> footer > div.ellipsis,
+	> main > div.ellipsis {
 		overflow: hidden;
 		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
-	>span ,
-	>main>span {
+	> header > div {
 		border: none;
-		background-color: var(--bomtable-background-color);
-		border-bottom: solid 1px var(--bomtable-border-color);
-		transition: color var(--transition-speed) ease;
-		padding: 10px 8px;
 		cursor: default;
+		font-size: 0.9em;
+		padding: 10px 8px;
 		font-weight: normal;
 		text-transform: uppercase;
 		color: var(--root-font-lightcolor);
+		border-bottom: solid 1px var(--bomtable-border-color);
+	}
+
+	> footer > div {
+		border: none;
+		cursor: default;
+		padding: 10px 8px;
 	}
 
 }
@@ -288,35 +300,35 @@ table {
 	background-color: var(--bomtable-background-color);
 	transition: background-color var(--transition-speed) ease;
 
-	>tfoot>tr>th,
-	>thead>tr>th,
-	>tbody>tr>th {
+	> tfoot > tr > th,
+	> thead > tr > th,
+	> tbody > tr > th {
 		font-weight: normal;
 	}
 
-	>tbody>tr:not(:first-child)>td,
-	>tbody>tr:not(:first-child)>th,
-	>tfoot>tr:not(:first-child)>td {
+	> tbody > tr:not(:first-child) > td,
+	> tbody > tr:not(:first-child) > th,
+	> tfoot > tr:not(:first-child) > td {
 		border-top: solid 1px var(--bomtable-border-color);
 	}
 
-	>tbody>tr>td,
-	>tfoot>tr>td,
-	>tbody>tr>th,
-	>tfoot>tr>th {
+	> tbody > tr > td,
+	> tfoot > tr > td,
+	> tbody > tr > th,
+	> tfoot > tr > th {
 		padding: 12px 8px;
 		white-space: nowrap;
 		color: var(--root-font-color);
 		transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 	}
 
-	>tbody>tr>td.console {
+	> tbody > tr > td.console {
 		font-family: "Lucida Console", Monaco, monospace;
 		font-size: 0.9em;
 	}
 
-	>tbody>tr>th,
-	>tfoot>tr>th {
+	> tbody > tr > th,
+	> tfoot > tr > th {
 		padding: 10px 8px;
 		color: var(--root-link-color);
 		border-bottom: none;
@@ -325,12 +337,12 @@ table {
 		cursor: default;
 	}
 
-	>thead>tr>td {
+	> thead > tr > td {
 		background-color: var(--bomtable-background-color);
 	}
 
-	>thead>tr>td,
-	>tfoot>tr>td {
+	> thead > tr > td,
+	> tfoot > tr > td {
 		color: var(--root-font-color);
 		border: solid 1px var(--bomtable-border-color);
 		transition: color var(--transition-speed) ease;
@@ -342,48 +354,48 @@ table {
 		font-weight: normal;
 	}
 
-	>thead>tr>td {
+	> thead > tr > td {
 		border-bottom: solid 1px var(--bomtable-border-color);
 		text-transform: uppercase;
 		color: var(--root-font-lightcolor);
 		font-size: 0.9em
 	}
 
-	>tfoot>tr>td {
+	> tfoot > tr > td {
 		border-top: solid 1px var(--bomtable-border-color);
 	}
 
-	>thead>tr:first-child>td,
-	>thead>tr:first-child>th {
+	> thead > tr:first-child > td,
+	> thead > tr:first-child > th {
 		border-top: none;
 	}
 
-	>thead>tr>th {
+	> thead > tr > th {
 		border: solid 1px var(--bomtable-border-color);
 		height: 25px;
 	}
 
-	&.strip>tbody>tr:nth-child(2n)>td {
+	&.strip > tbody > tr:nth-child(2n) > td {
 		/* background-color: var(--bomtable-stripes-color); */
 		font-size: 1em;
 	}
 
-	&.hover>tbody>tr:hover>td:not(.placeholder) {
+	&.hover > tbody > tr:hover > td:not(.placeholder) {
 		background-color: var(--bomtable-hover-color);
 	}
 
-	>thead.sticky {
+	> thead.sticky {
 		position: sticky;
 		background-color: var(--bomtable-background-color);
 		outline: solid .5px gainsboro;
 	}
 
-	tr>td.op-edit,
-	tr>td.op-remove,
-	tr>td.op-add,
-	tr>td.op-print,
-	tr>td.op-donwload,
-	tr>td.op-display {
+	tr > td.op-edit,
+	tr > td.op-remove,
+	tr > td.op-add,
+	tr > td.op-print,
+	tr > td.op-donwload,
+	tr > td.op-display {
 		padding: 0;
 		cursor: pointer;
 		-webkit-touch-callout: none;
@@ -394,12 +406,12 @@ table {
 		user-select: none;
 	}
 
-	tr>td.op-edit>*,
-	tr>td.op-remove>*,
-	tr>td.op-add>*,
-	tr>td.op-print>*,
-	tr>td.op-donwload>*,
-	tr>td.op-display>* {
+	tr > td.op-edit > *,
+	tr > td.op-remove > *,
+	tr > td.op-add > *,
+	tr > td.op-print > *,
+	tr > td.op-donwload > *,
+	tr > td.op-display > * {
 		display: block;
 		padding: 0px 8px;
 		color: var(--root-font-lightcolor);
@@ -413,11 +425,11 @@ table {
 	}
 
 
-	>tbody>tr>td.placeholder {
+	> tbody > tr > td.placeholder {
 		cursor: wait;
 	}
 
-	>tbody>tr>td.placeholder::after {
+	> tbody > tr > td.placeholder::after {
 		height: 12px;
 		display: inline-block;
 		content: " ";
@@ -432,7 +444,7 @@ table {
 		width: 100%;
 	}
 
-	tr>td.op-edit>*:before {
+	tr > td.op-edit > *:before {
 		display: inline-block;
 		content: "\e906";
 		font-family: "icomoon4";
@@ -440,11 +452,11 @@ table {
 		text-align: center;
 	}
 
-	tr>td.op-edit:hover>* {
+	tr > td.op-edit:hover > * {
 		color: #06c
 	}
 
-	tr>td.op-remove>*:before {
+	tr > td.op-remove > *:before {
 		display: inline-block;
 		content: "\e62b";
 		font-family: "icomoon";
@@ -452,11 +464,11 @@ table {
 		text-align: center;
 	}
 
-	tr>td.op-remove:hover>* {
+	tr > td.op-remove:hover > * {
 		color: #f03;
 	}
 
-	tr>td.op-add>*:before {
+	tr > td.op-add > *:before {
 		display: inline-block;
 		content: "\e630";
 		font-family: "icomoon";
@@ -464,11 +476,11 @@ table {
 		text-align: center;
 	}
 
-	tr>td.op-add:hover>* {
+	tr > td.op-add:hover > * {
 		color: #0066cc;
 	}
 
-	tr>td.op-print>*:before {
+	tr > td.op-print > *:before {
 		display: inline-block;
 		content: "\e63b";
 		font-family: "icomoon";
@@ -476,11 +488,11 @@ table {
 		text-align: center;
 	}
 
-	tr>td.op-print:hover>* {
+	tr > td.op-print:hover > * {
 		color: #ff3c00;
 	}
 
-	tr>td.op-display>*:before {
+	tr > td.op-display > *:before {
 		display: inline-block;
 		content: "\e9ce";
 		font-family: "icomoon4";
@@ -488,11 +500,11 @@ table {
 		text-align: center;
 	}
 
-	tr>td.op-display:hover>* {
+	tr > td.op-display:hover > * {
 		color: #00cc33;
 	}
 
-	tr>td.op-donwload>*:before {
+	tr > td.op-donwload > *:before {
 		display: inline-block;
 		content: "\e60c";
 		font-family: "icomoon";
@@ -500,31 +512,31 @@ table {
 		text-align: center;
 	}
 
-	tr>td.op-donwload:hover>* {
+	tr > td.op-donwload:hover > * {
 		color: var(--root-link-color);
 	}
 
 
-	&.form-table>tbody>tr>td,
-	&.form-table>tbody>tr>th,
-	&.form-table>thead>tr>td,
-	&.form-table>thead>tr>th {
+	&.form-table > tbody > tr > td,
+	&.form-table > tbody > tr > th,
+	&.form-table > thead > tr > td,
+	&.form-table > thead > tr > th {
 		padding: 10px 8px;
 		border: none;
 		background-color: transparent;
 	}
 
-	&.form-table>tbody>tr>th {
+	&.form-table > tbody > tr > th {
 		color: var(--root-font-lightcolor);
 	}
 
 
-	>tbody>tr>td.checkbox {
+	> tbody > tr > td.checkbox {
 		position: relative;
 		min-width: 38px;
 		text-align: center;
 
-		>label {
+		> label {
 			position: absolute;
 			display: flex;
 			align-items: center;
@@ -539,14 +551,14 @@ table {
 			user-select: none;
 		}
 
-		&:not(.disabled)>label:hover,
-		&:not(.disabled)>label:focus {
+		&:not(.disabled) > label:hover,
+		&:not(.disabled) > label:focus {
 			outline: solid 2px var(--outline-border-color);
 			z-index: 1;
 			border-radius: 2px;
 		}
 
-		>label>input {
+		> label > input {
 			visibility: hidden;
 			-webkit-appearance: none;
 			-moz-appearance: none;
@@ -561,7 +573,7 @@ table {
 			position: absolute;
 		}
 
-		>label>input::before {
+		> label > input::before {
 			visibility: visible;
 			display: block;
 			position: absolute;
@@ -573,19 +585,19 @@ table {
 			transition: border-color 0.2s ease-out;
 		}
 
-		>label>input:not(:disabled)::before {
+		> label > input:not(:disabled)::before {
 			background-color: var(--bomtable-background-color);
 			border-color: var(--input-hover_border-color);
 		}
 
-		>label>input:after {
+		> label > input:after {
 			display: block;
 			content: " ";
 			visibility: visible;
 		}
 
-		>label>input::after,
-		>label>input[type=radio]::after {
+		> label > input::after,
+		> label > input[type=radio]::after {
 			border-radius: 10px;
 			background-color: var(--root-link-color);
 			width: 6px;
@@ -594,30 +606,30 @@ table {
 			transition: transform ease .2s;
 		}
 
-		>label>input:checked::after {
+		> label > input:checked::after {
 			transform: scale(1);
 		}
 
-		>label>input:checked::before {
+		> label > input:checked::before {
 			border-color: var(--root-link-color);
 		}
 	}
 
 }
 
-table.dynamic>tbody>tr {
+table.dynamic > tbody > tr {
 
 	td {
 		cursor: default;
 		vertical-align: top;
 	}
 
-	td.col-1>div {
+	td.col-1 > div {
 		padding: 2px 5px;
 		line-height: 1.3em;
 	}
 
-	td>div.in-value {
+	td > div.in-value {
 		display: none;
 	}
 
@@ -626,34 +638,34 @@ table.dynamic>tbody>tr {
 		line-height: 1.3em;
 	}
 
-	td.col-2>span {
+	td.col-2 > span {
 		display: block;
 		margin: 2px 0px 4px 0px;
 	}
 
-	td.col-2>span>b {
+	td.col-2 > span > b {
 		font-weight: normal;
 		display: inline-block;
 		padding-right: 8px;
 	}
 
-	td.col-2>span>span {
+	td.col-2 > span > span {
 		display: inline-block;
 	}
 
-	td.col-2>div {
+	td.col-2 > div {
 		position: relative;
 		margin: 2px 0px 10px 0px;
 
 	}
 
-	td.col-2>div>span {
+	td.col-2 > div > span {
 		display: block;
 		width: 0px;
 		padding-bottom: 10px;
 	}
 
-	td.col-2>div>div {
+	td.col-2 > div > div {
 		position: absolute;
 		padding-bottom: 2px;
 		right: 0px;
@@ -738,69 +750,69 @@ table.dynamic>tbody>tr {
 		border: none;
 	}
 
-	table.dynamic>thead,
-	table.dynamic>tfoot {
+	table.dynamic > thead,
+	table.dynamic > tfoot {
 		display: none;
 	}
 
-	table.dynamic>tbody {
+	table.dynamic > tbody {
 		display: block;
 	}
 
-	table.dynamic>tbody>tr {
+	table.dynamic > tbody > tr {
 		border-bottom: solid 1px var(--bomtable-border-color);
 		display: flex;
 		flex-wrap: wrap;
 		margin: 0px 0px;
 	}
 
-	table.dynamic>tbody>tr>td {
+	table.dynamic > tbody > tr > td {
 		border: none;
 		padding: 8px 10px;
 	}
 
-	table.dynamic>tbody>tr>td.col-1 {
+	table.dynamic > tbody > tr > td.col-1 {
 		display: flex;
 		flex-flow: wrap;
 		flex: 1;
 	}
 
-	table.dynamic>tbody>tr>td.col-1>div {
+	table.dynamic > tbody > tr > td.col-1 > div {
 		padding-left: 0px;
 		padding-right: 10px;
 	}
 
-	table.dynamic>tbody>tr>td.col-1>div:nth-child(3) {
+	table.dynamic > tbody > tr > td.col-1 > div:nth-child(3) {
 		flex: 1;
 	}
 
-	table.dynamic>tbody>tr>td.col-1>div.in-value {
+	table.dynamic > tbody > tr > td.col-1 > div.in-value {
 		text-align: right;
 		display: inline-block;
 	}
 
-	table.dynamic>tbody>tr>td.col-1>div:nth-child(4) {
+	table.dynamic > tbody > tr > td.col-1 > div:nth-child(4) {
 		flex-basis: 100%;
 		width: 100%;
 	}
 
-	table.dynamic>tbody>tr>td.col-2 {
+	table.dynamic > tbody > tr > td.col-2 {
 		flex: 1;
 		flex-basis: 100%;
 	}
 
-	table.dynamic>tbody>tr>td:nth-child(3) {
+	table.dynamic > tbody > tr > td:nth-child(3) {
 		flex: 1;
 		display: none;
 	}
 
-	table.dynamic>tbody>tr>td.value-number,
+	table.dynamic > tbody > tr > td.value-number,
 	td.value-number {
 		width: auto;
 		min-width: auto;
 	}
 
-	table.dynamic>tbody>tr>td.media-hide {
+	table.dynamic > tbody > tr > td.media-hide {
 		display: none;
 	}
 
@@ -831,7 +843,7 @@ table.dynamic>tbody>tr {
 		padding-top: 0px;
 	}
 
-	.appHtmlPopup>form {
+	.appHtmlPopup > form {
 		min-width: auto;
 		flex: 1;
 		height: 100% !important;

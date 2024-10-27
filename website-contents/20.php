@@ -45,43 +45,46 @@ if ($access_error == 403) {
 			padding-bottom: 20px;
 		}
 	</style>
+
 	<form action="<?php echo $fs()->dir; ?>" method="post" id="login-form">
-		<div>
-			<input type="hidden" name="login" />
+		<div style="max-width:500px;width:100%">
 			<?= (isset($_GET['refer']) ? "<input type=\"hidden\" name=\"refer\" value=\"" . urlencode($_GET['refer']) . "\" />" : ""); ?>
-			<div style="max-width:500px;">
-				<?php
-				$grem   = new Gremium\Gremium();
-				$header = $grem->header();
-				$grem->article()->open();
-				$prev_username = $_POST['username'] ?? "";
-				echo "<h1>Login</h1>";
-				echo ($access_error == 2 ? "<div class=\"error\">Incorrect username or password</div>" : null);
-				echo ($access_error == 3 ? "<div class=\"error\">Inactive account</div>" : null);
-				echo <<<HTML
-					<div class="form">
-						<label style="min-width:150px">
-							<h1>Username</h1>
-							<div class="btn-set">
+			<input type="hidden" name="login" />
+
+			<?php
+			$grem = new Gremium\Gremium();
+			$grem->article()->open();
+			$prev_username = $_POST['username'] ?? "";
+			echo "<h1>Login</h1>";
+			echo ($access_error == 2 ? "<div class=\"error\">Incorrect username or password</div>" : null);
+			echo ($access_error == 3 ? "<div class=\"error\">Inactive account</div>" : null);
+			echo <<<HTML
+				<div class="form" style="row-gap: 10px;">
+					<label style="min-width:150px">
+						<h1>Username</h1>
+						<div class="btn-set">
 							<input type="text" autofocus class="flex" list="browsers" autocomplete="off" name="log_username" id="username" value="{$prev_username}" />
-							</div>
-						</label>
-						<label style="min-width:300px; flex: 1 1 100%">
-							<h1>Password</h1>
-							<div class="btn-set">
+						</div>
+					</label>
+					<span style="width: 100%;"></span>
+
+					<label style="min-width:150px;">
+						<h1>Password</h1>
+						<div class="btn-set">
 							<input type="password" class="flex" class="password" name="log_password" autocomplete="off" value="" />
-							</div>
-						</label>
-						<div class="btn-set"><label><input type="checkbox" name="remember" /><span> Remember me</span></label></div>
-						<div style="flex:1"></div>
-						<div class="btn-set"><button style="width:100px;">Login</button></div>
-					</div>
-					HTML;
-				$grem->getLast()->close();
-				$grem->terminate();
-				?>
-			</div>
+						</div>
+					</label>
+					<span style="width: 100%;"></span>
+
+					<div class="btn-set"><label><input type="checkbox" name="remember" /><span> Remember me</span></label></div>
+					<div style="flex:1"></div>
+					<div class="btn-set"><button style="width:100px;">Login</button></div>
+				</div>
+			HTML;
+			$grem->getLast()->close();
+			?>
 		</div>
 	</form>
+
 	<?php
 } ?>

@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace System;
@@ -7,7 +6,6 @@ namespace System;
 use System\Exceptions\HR\InactiveAccountException;
 use System\Exceptions\HR\InvalidLoginException;
 use System\Finance\Currency;
-use System\Views\PanelView\TransactionView;
 use System\Views\Views;
 
 //$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);

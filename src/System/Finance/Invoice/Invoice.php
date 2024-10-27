@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace System\Finance\Invoice;
 use System\Finance\Currency;
+use System\Finance\Invoice\enums\PaymentTerm;
+use System\Finance\Invoice\enums\ShippingTerm;
 use System\Models\Country;
 use System\Models\Material;
+use System\Profiles\AccountProfile;
 use System\Profiles\CompanyProfile;
 use System\Profiles\CostCenterProfile;
 use System\Profiles\IndividualProfile;
@@ -16,21 +19,26 @@ use System\Timeline\Action;
 use System\Timeline\Module;
 use System\Timeline\Timeline;
 
+
+const ERROR_ROOT = 901000;
+
+
 abstract class Invoice
 {
+
 	protected Information $information;
 	protected array $items;
 
 	public function appendItem(Item $item): void
 	{
 		if ($item->quantity <= 0) {
-			throw new \Exception("Invalid material quantity", 210);
+			throw new \Exception("Invalid material quantity", ERROR_ROOT + 210);
 		}
 		if ($item->material->id <= 0) {
-			throw new \Exception("Invalid material ID", 220);
+			throw new \Exception("Invalid material ID", ERROR_ROOT + 220);
 		}
 		if ($item->value < 0) {
-			throw new \Exception("Invalid material value", 230);
+			throw new \Exception("Invalid material value", ERROR_ROOT + 230);
 		}
 		$this->items[] = $item;
 	}
@@ -64,6 +72,16 @@ abstract class Invoice
 			]
 		);
 		return $this->app->db->affected_rows > 0;
+	}
+
+
+	public function discountRate(float $discountRate): void
+	{
+		$this->information->discountRate = $discountRate;
+	}
+	public function addtionalAmmout(float $addtionalAmmout): void
+	{
+		$this->information->addtionalAmmout = $addtionalAmmout;
 	}
 
 	public function post(): bool|int
@@ -109,11 +127,11 @@ abstract class Invoice
 			[
 				$this->information->companyId,
 				$this->information->costCenter->id,
-				$this->information->currency->id,
+				$this->information->currency->id ?? null,
 				$this->information->type->value,
 				$this->information->issuedBy->id,
 
-				0,
+				$this->information->departement->id ?? 0,
 				0,/* Serial */
 				$this->information->title,
 				$this->information->issuingDate->format("Y-m-d H:i:s"),
@@ -143,7 +161,7 @@ abstract class Invoice
 			$this->registerSerialNumber();
 		} else {
 			$this->app->db->rollback();
-			throw new \Exception("Item insertion failed", 100);
+			throw new \Exception("Item insertion failed", ERROR_ROOT + 100);
 		}
 
 		foreach ($this->items as $item) {
@@ -178,7 +196,7 @@ abstract class Invoice
 			);
 			if (!$itemInsert) {
 				$this->app->db->rollback();
-				throw new \Exception("Item insertion failed", 100);
+				throw new \Exception("Item insertion failed", ERROR_ROOT + 100);
 			}
 			$item->id = $this->app->db->insert_id;
 			if ($item->isGroupingItem) {
@@ -214,7 +232,7 @@ abstract class Invoice
 					);
 					if (!$itemInsert) {
 						$this->app->db->rollback();
-						throw new \Exception("Item insertion failed", 100);
+						throw new \Exception("Item insertion failed", ERROR_ROOT + 100);
 					}
 				}
 			}
@@ -231,7 +249,7 @@ abstract class Invoice
 	private function validatefiled(): bool
 	{
 		if (sizeof($this->items) == 0) {
-			throw new \Exception("No items found or or items list is empty", 110);
+			throw new \Exception("No items found or or items list is empty", ERROR_ROOT + 110);
 		}
 		return true;
 	}
@@ -242,11 +260,37 @@ abstract class Invoice
 			$this->information->costCenter = $costCenter;
 		} else {
 			if ($costCenter <= 0) {
-				throw new \Exception("Invalid cost center", 120);
+				throw new \Exception("Invalid cost center", ERROR_ROOT + 120);
 			}
 		}
 		$this->information->costCenter = new CostCenterProfile($costCenter);
 	}
+
+
+	public function paymentTerm(PaymentTerm|int $paymentTerm): void
+	{
+		if ($paymentTerm instanceof PaymentTerm) {
+			$this->information->paymentTerm = $paymentTerm;
+		} else {
+			if ($paymentTerm <= 0) {
+				throw new \Exception("Invalid payment term", ERROR_ROOT + 180);
+			}
+			$this->information->paymentTerm = PaymentTerm::tryFrom($paymentTerm);
+		}
+	}
+
+	public function shippingTerm(ShippingTerm|int $shippingTerm): void
+	{
+		if ($shippingTerm instanceof ShippingTerm) {
+			$this->information->shippingTerm = $shippingTerm;
+		} else {
+			if ($shippingTerm <= 0) {
+				throw new \Exception("Invalid shipping term", ERROR_ROOT + 190);
+			}
+			$this->information->shippingTerm = ShippingTerm::tryFrom($shippingTerm);
+		}
+	}
+
 
 	public function curreny(Currency|int|null $currency): void
 	{
@@ -256,7 +300,7 @@ abstract class Invoice
 			$this->information->currency = $currency;
 		} else {
 			if ($currency <= 0) {
-				throw new \Exception("Invalid currency", 130);
+				throw new \Exception("Invalid currency", ERROR_ROOT + 130);
 			}
 			$this->information->currency = new Currency($currency);
 		}
@@ -265,6 +309,19 @@ abstract class Invoice
 	public function title(string $title): void
 	{
 		$this->information->title = trim($title);
+	}
+
+	public function departement(AccountProfile|int $account): void
+	{
+		if ($account instanceof AccountProfile) {
+			$this->information->departement = $account;
+		} else {
+			if ($account <= 0) {
+				throw new \Exception("Invalid account number", ERROR_ROOT + 150);
+			}
+			$this->information->departement     = new AccountProfile();
+			$this->information->departement->id = $account;
+		}
 	}
 
 	public function comments(string $comments): void
@@ -278,7 +335,7 @@ abstract class Invoice
 			$this->information->client = $client;
 		} else {
 			if ($client <= 0) {
-				throw new \Exception("Invalid client information", 140);
+				throw new \Exception("Invalid client information", ERROR_ROOT + 140);
 			}
 			$this->information->client     = new CompanyProfile();
 			$this->information->client->id = $client;
@@ -318,6 +375,7 @@ abstract class Invoice
 
 				po_additional_amount,
 				po_discount,
+				po_payment_term,
 				po_shipping_term,
 				po_voided,
 				
@@ -338,7 +396,8 @@ abstract class Invoice
 				client_company.cntry_code AS _client_company_country_code,
 				
 				usrccc_usr_id,
-				ccc_name,ccc_id, ccc_vat
+				ccc_name,ccc_id, ccc_vat,
+				prt_id, prt_name
 
 			FROM
 				inv_main
@@ -347,6 +406,7 @@ abstract class Invoice
 					JOIN (SELECT comp_id,comp_name,comp_address,comp_country,comp_city,comp_tellist,cntry_name,cntry_code FROM companies LEFT JOIN countries ON comp_country = cntry_id  ) AS client_company ON client_company.comp_id = po_client_id
 					JOIN users AS issuer ON issuer.usr_id = po_issuedby_id
 					JOIN inv_costcenter ON ccc_id = po_costcenter
+					LEFT JOIN acc_accounts ON prt_id = po_departement_id
 			WHERE
 				po_id = ?
 			",
@@ -359,25 +419,39 @@ abstract class Invoice
 
 			if ($row = $result->fetch_assoc()) {
 				if (is_null($row['usrccc_usr_id'])) {
-					throw new \Exception("Permissions denied");
+					throw new \Exception("Permissions denied", ERROR_ROOT + 300);
 				}
+
+
 				$output->id           = (int) $row['po_id'];
 				$output->serialNumber = (int) $row['po_serial'];
 				$output->costCenter   = new CostCenterProfile((int) $row['po_costcenter'], $row['ccc_name'], (float) $row['ccc_vat']);
 
-				$output->currency            = is_null($row['po_cur_id']) ? null : new Currency((int) $row['cur_id'], $row['cur_name'], $row['cur_symbol'], $row['cur_shortname']);
-				$output->relatedDocumentId   = (int) $row['po_rel'];
-				$output->totalValue          = (float) $row['po_total'];
-				$output->vatRate             = (float) $row['po_vat_rate'];
-				$output->taxRate             = (float) $row['po_tax_rate'];
-				$output->addtionalAmmout     = (float) $row['po_additional_amount'];
-				$output->discountAmmout      = (float) $row['po_discount'];
-				$output->shippingTerms       = $row['po_shipping_term'];
+				$output->currency          = is_null($row['po_cur_id']) ? null : new Currency((int) $row['cur_id'], $row['cur_name'], $row['cur_symbol'], $row['cur_shortname']);
+				$output->relatedDocumentId = (int) $row['po_rel'];
+				$output->totalValue        = (float) $row['po_total'];
+				$output->vatRate           = (float) $row['po_vat_rate'];
+				$output->taxRate           = (float) $row['po_tax_rate'];
+				$output->addtionalAmmout   = (float) $row['po_additional_amount'];
+				$output->discountRate      = (float) $row['po_discount'];
+				$output->shippingTerm      = is_null($row['po_shipping_term']) ? null : ShippingTerm::tryFrom((int) $row['po_shipping_term']);
+				$output->paymentTerm       = is_null($row['po_payment_term']) ? null : PaymentTerm::tryFrom((int) $row['po_payment_term']);
+
 				$output->voided              = (int) $row['po_voided'] == 1;
 				$output->issuedBy            = new IndividualProfile();
 				$output->issuedBy->id        = (int) $row['_issuer_id'];
 				$output->issuedBy->firstname = $row['_issuer_firstname'];
 				$output->issuedBy->lastname  = $row['_issuer_lastname'];
+
+
+				if (!is_null($row['prt_id'])) {
+					$output->departement       = new AccountProfile();
+					$output->departement->id   = (int) $row['prt_id'];
+					$output->departement->name = $row['prt_name'];
+				} else {
+					$output->departement = null;
+				}
+
 
 				if (!is_null($row['_client_company_id'])) {
 					$output->client          = new CompanyProfile();
@@ -403,7 +477,7 @@ abstract class Invoice
 		return false;
 	}
 
-	public function children(int $invoiceId): \Generator
+	public function items(int $invoiceId): \Generator
 	{
 		$item   = null;
 		$result = $this->app->db->execute_query(

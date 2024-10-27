@@ -29,7 +29,7 @@ export class PaNa {
 		this.runtime.informative = document.getElementById("pana-Informative").querySelector("div");
 
 		this.latencyTimer = null;
-		this.latency = 0;
+		this.latency = 200;
 		this.runtime.scrollArea.addEventListener("scroll", () => {
 			if (this.checkAvailability() &&
 				this.runtime.scrollArea.scrollHeight - this.runtime.scrollArea.scrollTop <= this.runtime.scrollArea.clientHeight * 1.2

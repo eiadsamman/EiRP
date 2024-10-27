@@ -1,19 +1,17 @@
 <?php
 use System\Finance\Invoice\enums\Purchase;
 use System\Views\PanelView;
+$docType = Purchase::Request->value;
 
 
 if ($app->xhttp) {
 	$payload = json_decode(file_get_contents('php://input'), true);
 	if (!empty($payload['method']) && $payload['method'] == "fetch") {
-		$rm_type = Purchase::Request->value;
-
-
 		$current = (int) ($payload['page']);
 		$current = $current < 0 ? 1 : $current;
 
 		$count = 0;
-		$q     = "SELECT COUNT(po_id) FROM inv_main WHERE po_type = $rm_type AND po_comp_id = {$app->user->company->id}";
+		$q     = "SELECT COUNT(po_id) FROM inv_main WHERE po_type = $docType AND po_comp_id = {$app->user->company->id}";
 
 		$r = $app->db->query($q);
 		if ($r && $row = $r->fetch_array()) {
@@ -29,7 +27,7 @@ if ($app->xhttp) {
 
 		$q = "SELECT 
 				_main.po_id,
-				CONCAT(prx_value,LPAD(po_serial,prx_placeholder,'0')) AS doc_id,
+				CONCAT(prx_value,ccc_id,LPAD(po_serial,prx_placeholder,'0')) AS doc_id,
 				_main.po_voided,
 				_main.po_title,
 				DATE_FORMAT(_main.po_date,'%Y-%m-%d') AS po_date,
@@ -40,12 +38,12 @@ if ($app->xhttp) {
 			FROM
 				inv_main AS _main
 					JOIN users ON usr_id = _main.po_issuedby_id
-					JOIN system_prefix ON prx_id = $rm_type
+					JOIN system_prefix ON prx_id = $docType
 					LEFT JOIN inv_records ON pols_po_id = _main.po_id
 					JOIN inv_costcenter ON ccc_id = po_costcenter
 					JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
 			WHERE
-				_main.po_type = $rm_type AND _main.po_comp_id = {$app->user->company->id}
+				_main.po_type = $docType AND _main.po_comp_id = {$app->user->company->id}
 			GROUP BY
 				_main.po_id
 			ORDER BY _main.po_date DESC
