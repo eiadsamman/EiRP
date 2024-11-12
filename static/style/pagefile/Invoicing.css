@@ -11,6 +11,15 @@
 	padding: 0;
 }
 
+.invoicing .price-padge {
+	display: inline-block;
+	margin: 3px 0px;
+	color: white;
+	background-color: var(--button-border);
+	padding: 3px 7px;
+	border-radius: 5px;
+}
+
 .invoicing div > cite {
 	font-style: normal;
 	color: var(--root-font-lightcolor);
@@ -41,10 +50,11 @@ input.numberField {
 	color: var(--root-font-color);
 	font-size: 1em;
 
-	&:disabled{
+	&:disabled {
 		background-color: var(--button_disabled-bgcolor);
 
 	}
+
 	&:hover {
 		border-color: var(--input-hover_border-color);
 		z-index: 12;

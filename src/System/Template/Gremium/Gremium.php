@@ -213,7 +213,7 @@ class Header extends Blocks
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top});\" " : "");
 			echo ">\n";
 
-			echo $this->prev == null ? "" : "\t<a $this->prev class=\"previous\" draggable=\"false\" data-role=\"previous\"></a>\n";
+			echo $this->prev == null ? "" : "\t<a $this->prev class=\"previous\" draggable=\"false\" data-role=\"previous\">&nbsp;</a>\n";
 			echo $this->status == null ? "" : "\t<span class=\"$this->status\"></span>\n";
 			$this->opened = true;
 		}
@@ -224,7 +224,7 @@ class Header extends Blocks
 class Menu extends Blocks
 {
 	protected string $id = "menu";
-	public int $height = 50;
+	public int $height = 40;
 
 	public function open(): self
 	{
@@ -476,8 +476,11 @@ class Gremium
 	 *	<cite>Cite</cite>
 	 */
 
-	public function terminate()
+	public function terminate(bool $bottomPadding = false)
 	{
+		if ($bottomPadding) {
+			echo "<div style=\"height: calc(100vh - var(--gremium-header-height) - var(--root--menubar-height));\"></div>";
+		}
 		echo "</div>";
 		echo "</div>";
 	}

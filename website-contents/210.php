@@ -154,7 +154,7 @@ if ($app->xhttp) {
 			<thead class="table-head" style="top: calc(163px - var(--gremium-header-toggle));background-color: #fff;z-index: 1;">
 			<tr>
 				<td>ID</td>
-				<td>Requested materials</td>
+				<td>Material Requests</td>
 				<td class="blank" style="width: 100%"></td>
 				<td></td>
 				</tr>

@@ -24,6 +24,7 @@ enum ShippingTerm: int
 	public function toString(): string
 	{
 		return match ($this) {
+			self::NA => "-",
 			self::EXW => "Ex Works",
 			self::FCA => "Free Carrier",
 			self::FAS => "Free Alongside Ship",
@@ -34,7 +35,7 @@ enum ShippingTerm: int
 			self::CIP => "Carrier and Insurance Paid to..",
 			self::DAT => "Delivery at Terminal",
 			self::DAP => "Delivery at Place",
-			self::DDP => "Delivery Duty Paid"
+			self::DDP => "Delivery Duty Paid",
 		};
 	}
 }

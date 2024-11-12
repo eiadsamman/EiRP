@@ -34,7 +34,7 @@ enum Module: int
 			self::Inventory => 'Inventory',
 
 			self::InvoicingMaterialRequest => "Material request",
-			self::InvoicingPurchaseQuotation => "Material request quotation",
+			self::InvoicingPurchaseQuotation => "Purchase quotation",
 			self::InvoicingOrder => "Purchase order",
 
 		};

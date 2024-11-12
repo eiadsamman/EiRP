@@ -102,7 +102,8 @@ class TimelineQuery
 					<div>
 						<span>" . $entry->timestamp->format("dS M, Y") . "<i>" . $entry->timestamp->format("H:i") . "</i></span>
 						" . ($entry->action->toString() != "" ? "<h1>{$entry->action->toString()}</h1>" : "") . "
-						<div>{$entry->describe()}" . nl2br($entry->message) . "</div>";
+						" . ($entry->moduel->toString() != "" ? "<h1>{$entry->moduel->toString()}</h1>" : "") . "
+						<div>{$entry->describe()}<br />" . nl2br($entry->message) . "</div>";
 
 				if (sizeof($entry->attachments) > 0) {
 					$output .= "<div class=\"attachments-view\" id=\"attachementsList\">";

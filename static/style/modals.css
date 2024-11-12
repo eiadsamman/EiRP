@@ -235,39 +235,74 @@ dialog.appHtmlDialog {
 }
 
 .table {
-
 	display: grid;
 	grid-template-columns: auto auto;
-
 	position: relative;
 
+	&.mini {
 
-	> div,
-	> main > div,
-	> footer > div,
-	> header > div {
-		padding: 15px 8px;
-		line-height: 1.5em;
-		white-space: nowrap;
-		vertical-align: middle;
-		color: var(--root-font-color);
-		border-top: solid 1px var(--bomtable-border-color);
-		background-color: var(--bomtable-background-color);
-		transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+		> main,
+		> a,
+		> footer,
+		> header {
+
+			> div,
+			> span {
+				padding: 8px 10px;
+			}
+		}
 	}
 
+
 	> main,
+	> a,
 	> footer,
 	> header {
 		display: contents;
+
+		> div,
+		> span {
+			padding: 14px 10px;
+			line-height: 1.5em;
+			white-space: nowrap;
+			vertical-align: middle;
+			color: var(--root-font-color);
+			border-top: solid 1px var(--bomtable-border-color);
+			background-color: var(--bomtable-background-color);
+			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+		}
+
+		> span {
+			background-color: var(--slo-menu-itemhover-background-color);
+		}
+
 	}
 
-	> main:hover > div {
-		background-color: var(--bomtable-hover-color) !important;
+	> main:last-child,
+	> a:last-child,
+	> footer:last-child,
+	> header:last-child {
+
+		> div,
+		> span {
+			border-bottom: solid 1px var(--bomtable-border-color);
+		}
 	}
+
+	> main:hover,
+	> a:hover {
+
+		> div,
+		> span {
+			background-color: var(--bomtable-hover-color) !important;
+		}
+	}
+
+
 
 	> div.ellipsis,
 	> footer > div.ellipsis,
+	> a > div.ellipsis,
 	> main > div.ellipsis {
 		overflow: hidden;
 		white-space: nowrap;

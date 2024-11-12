@@ -11,8 +11,8 @@ class Describer
 		return match ($entry->action) {
 			Action::FinanceReceipt => self::FinanceReceipt($entry),
 			Action::FinancePayment => self::FinancePayment($entry),
-			Action::Create => "إنشاء قيد جديد ضمن النظام",
-			Action::Delete => "تم تعديل أو حذف القيد من النظام",
+			Action::Create => "",
+			Action::Delete => "",
 			Action::PhoneCall => "",
 			default => ""
 		};

@@ -19,29 +19,40 @@
 			max-width: var(--gremium-width);
 		}
 
+		> * {
+			outline: solid 1px rgba(255, 0, 0, 0.3);
+			outline: none;
+		}
+
 		> header {
-			padding: 20px 10px 0px 10px;
+			height: 60px;
+			padding: 15px 10px 5px 10px;
+			align-items: center;
+			justify-content: center;
+
 			color: var(--root-font-color);
 			z-index: 41;
 			display: flex;
 			justify-content: space-between;
 			cursor: default;
 			white-space: nowrap;
-
-			/* backdrop-filter: blur(6px);
-					-webkit-backdrop-filter: blur(6px);
-					-moz-backdrop-filter: blur(6px); */
-			background-color: var(--root-background-color_backdrop);
 			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
-			display: flex;
 			justify-content: flex-start;
-			height: 60px;
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
+
+			background-color: var(--root-background-color);
+			
+			/* background-color: var(--root-ribbon-background-color);
+			border-bottom: solid 1px var(--root-ribbon-border-color); */
+
+			/* backdrop-filter: blur(6px);
+			-webkit-backdrop-filter: blur(6px);
+			-moz-backdrop-filter: blur(6px); */
 
 			&.glue {
 				position: sticky;
@@ -106,7 +117,6 @@
 				position: relative;
 				display: inline-block;
 				width: 40px;
-				height: 1px;
 				margin-right: 10px;
 				outline: none;
 				cursor: default;
@@ -120,8 +130,8 @@
 
 			> a.previous {
 				width: 50px;
-				height: 1px;
 				margin-right: 0px;
+				text-decoration: none;
 
 				&::before {
 					position: absolute;
@@ -191,16 +201,18 @@
 		}
 
 		> menu {
-			padding: 5px 10px;
+			padding: 3px 10px 0px 10px;
 			margin: 0;
+			height: 40px;
+			z-index: 40;
 			color: var(--root-font-color);
-			background-color: var(--root-background-color_backdrop);
+			background-color: var(--root-background-color);
 			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+
 			/* backdrop-filter: blur(6px);
 			-webkit-backdrop-filter: blur(6px);
 			-moz-backdrop-filter: blur(6px); */
-			z-index: 40;
-			height: 50px;
+
 
 			&.btn-set {
 				justify-content: flex-start;
@@ -217,7 +229,7 @@
 
 		> legend {
 			padding: 0px 10px 10px 10px;
-			background-color: var(--root-background-color_backdrop);
+			background-color: var(--root-background-color);
 			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 			z-index: 20;
 			width: 100%;
@@ -230,18 +242,19 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
+
 			/* backdrop-filter: blur(6px);
-		-webkit-backdrop-filter: blur(6px);
-		-moz-backdrop-filter: blur(6px); */
+			-webkit-backdrop-filter: blur(6px);
+			-moz-backdrop-filter: blur(6px); */
 		}
 
 		> h2 {
-			padding: 10px 15px 15px 10px;
-			margin: 0;
-			font-size: 1.4em;
 			color: var(--root-font-lightcolor);
-			z-index: 20;
+			padding: 15px 25px;
+			font-size: 1.4em;
 			width: 100%;
+			z-index: 20;
+			margin: 0;
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
@@ -250,13 +263,16 @@
 			user-select: none;
 
 			font-weight: normal;
-			background-color: var(--root-background-color_backdrop);
+			background-color: var(--root-background-color);
 			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+
+			/* backdrop-filter: blur(6px);
+			-webkit-backdrop-filter: blur(6px);
+			-moz-backdrop-filter: blur(6px); */
+
 
 			> * {
 				font-weight: normal;
-				background-color: var(--root-background-color_backdrop);
-				transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 			}
 		}
 
@@ -265,9 +281,9 @@
 			color: var(--root-font-color);
 			padding: 20px;
 			border-radius: 7px;
-			margin: 10px;
+			margin: 5px 10px 25px 10px;
 			border: none;
-			box-shadow: 1px 2px 6px 0px rgba(0, 0, 0, 0.1);
+			box-shadow: 1px 2px 6px 0px rgba(50, 50, 50, 0.1);
 			background-color: var(--root-ribbon-menu-background-color);
 			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 			border-radius: 10px;
@@ -290,9 +306,7 @@
 				-ms-user-select: none;
 				user-select: none;
 				transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
-				/* backdrop-filter: blur(6px);
-			-webkit-backdrop-filter: blur(6px);
-			-moz-backdrop-filter: blur(6px); */
+
 			}
 
 			&.nobg {
@@ -465,9 +479,7 @@
 					-ms-user-select: none;
 					user-select: none;
 					transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
-					/* backdrop-filter: blur(6px);
-				-webkit-backdrop-filter: blur(6px);
-				-moz-backdrop-filter: blur(6px); */
+
 				}
 
 			}
@@ -485,7 +497,7 @@
 	.gremium {
 		> div.content {
 			> header {
-				height: 60px;
+				height: 61px;
 			}
 
 			/* 

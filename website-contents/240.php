@@ -1,4 +1,6 @@
 <?php
+use System\Finance\Invoice\InvoiceItems;
+use System\Finance\Invoice\InvoiceSequence;
 use System\Template\Gremium;
 use System\Timeline\Action;
 use System\Timeline\Module;
@@ -6,25 +8,28 @@ use System\Timeline\Timeline;
 
 $perpage_val = 20;
 $id          = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
-$invoice     = new System\Finance\Invoice\MaterialRequest($app);
+$invoice     = new System\Finance\Invoice\PurchaseRequest($app);
+$entry       = new System\Finance\Invoice\InvoiceRecord($app);
+
 try {
 
-	$read = $invoice->read($id);
+	$read = $entry->get($id);
 	if (!$read) {
 		throw new Exception("Request document not found");
 	}
 
 	$tl    = new Timeline($app);
 	$query = $tl->query($read->id);
-	$query->modules(Module::InvoicingMaterialRequest);
+	$query->modules(Module::InvoicingMaterialRequest, Module::InvoicingPurchaseQuotation);
 	$query->actions(Action::Create);
 
 	$grem = new Gremium\Gremium(false, false);
 
 	$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[100][0]}" . $read->costCenter->id . str_pad($read->serialNumber, $app->prefixList[100][1], "0", STR_PAD_LEFT) . "</cite>");
 	$grem->menu()->sticky(false)->open();
+	echo "<a href=\"{$fs(233)->dir}/?id={$read->id}\" data-href=\"{$fs(233)->dir}/?id={$read->id}\" class=\"edge-left edge-right plus\">&nbsp;New Quotation</a>";
 	echo "<span class=\"flex\"></span>";
-	echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs()->dir}\" id=\"appPrint\" class=\"edge-right edge-left\" tabindex=\"-1\">Print</button>";
+	echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs()->dir}\" id=\"appPrint\" class=\"edge-left edge-right\" tabindex=\"-1\">Print</button>";
 	$grem->getLast()->close();
 
 	if ($query->execute()) {
@@ -33,8 +38,8 @@ try {
 			<div>
 				<h1>History and Feedbacks</h1>
 				<div class="links">
-					<a href="{$fs(230)->dir}" data-href="{$fs(230)->dir}">New material request</a>
-					<a href="{$fs(233)->dir}/?id={$read->id}?" data-href="{$fs(233)->dir}/?id={$read->id}?">Submit request quotation</a>
+					<a href="{$fs(230)->dir}" data-href="{$fs(230)->dir}">New Material Request</a>
+					<a href="{$fs(233)->dir}/?id={$read->id}" data-href="{$fs(233)->dir}/?id={$read->id}?">New Quotation</a>
 					<a href="">Terminate material request</a>
 				</div>	
 				{$query->plot()}
@@ -43,7 +48,10 @@ try {
 		$grem->getLast()->close();
 	}
 
-	$grem->title()->serve("<span class=\"flex\">Material request information</span>");
+
+
+
+	$grem->title()->serve("<span class=\"flex\">Request Information</span>");
 
 
 	$grem->article()->open(); ?>
@@ -52,48 +60,44 @@ try {
 	<div class="form">
 		<label>
 			<h1>ID</h1>
-			<div>
-				<?= $app->prefixList[100][0], $read->costCenter->id . str_pad($read->serialNumber, $app->prefixList[100][1], "0", STR_PAD_LEFT) ?>
+			<div class="btn-set">
+				<span><?= $app->prefixList[100][0], $read->costCenter->id . str_pad($read->serialNumber, $app->prefixList[100][1], "0", STR_PAD_LEFT) ?></span>
 			</div>
 		</label>
 		<label>
 			<h1>Cost Center</h1>
-			<div>
-				<?= $read->costCenter->name . " (" . number_format($read->costCenter->vatRate, 2) . "%)" ?>
+			<div class="btn-set">
+				<span><?= $read->costCenter->name . " (" . number_format($read->costCenter->vatRate, 2) . "%)" ?></span>
 			</div>
 		</label>
 	</div>
 	<div class="form">
 		<label>
 			<h1>Order Title</h1>
-			<div>
-				<?= $read->title ?>
+			<div class="btn-set">
+				<span><?= $read->title ?></span>
 			</div>
 		</label>
-
-
 	</div>
-
 	<div class="form">
 		<label>
 			<h1>Requested by</h1>
-			<div>
-				<?= $read->issuedBy->fullName() . " / " . ($read->departement ? $read->departement->name : "<span style=\"color: red\">NA</span>") ?>
+			<div class="btn-set">
+				<span><?= $read->issuedBy->fullName() . " / " . ($read->departement ? $read->departement->name : "<span style=\"color: red\">NA</span>") ?></span>
 			</div>
 		</label>
 		<label>
 			<h1>Requested on</h1>
-			<div>
-				<?= $read->issuingDate->format("Y-m-d H:s") ?>
+			<div class="btn-set">
+				<span><?= $read->issuingDate->format("Y-m-d H:s") ?></span>
 			</div>
 		</label>
 	</div>
 
-
 	<?php
 	$grem->getLast()->close();
 
-	$grem->title()->serve("<span class=\"flex\">Requested materials</span>");
+	$grem->title()->serve("<span class=\"flex\">Requested Materials</span>");
 	$grem->article()->open();
 	?>
 
@@ -106,23 +110,22 @@ try {
 			<div>Unit</div>
 		</header>
 		<?php
-		$children      = $invoice->items($read->id);
-		$rowNumber     = 0;
+		$items         = new InvoiceItems($app);
+		$children      = $items->get($read->id);
+		$rowNumber     = 1;
 		$showRowNumber = true;
 
-		foreach ($children as $item) {
+		function parseItem($item, $rowNumber)
+		{
 			$cssDefinition = "";
-
 			if ($item->isGroupingItem) {
 				$showRowNumber = false;
 				$cssDefinition = "";
 			} elseif (!is_null($item->relatedItem)) {
 				$showRowNumber = true;
-				$rowNumber++;
 				$cssDefinition = "partsElement";
 			} else {
 				$showRowNumber = true;
-				$rowNumber++;
 			}
 			$showRowNumber = $showRowNumber ? $rowNumber : "";
 			$quantity      = number_format($item->quantity, 2);
@@ -135,21 +138,50 @@ try {
 					<div>{$item->material->unit->name}</div>
 				</main>
 			HTML;
-
-
+			return $item->isGroupingItem ? $rowNumber : $rowNumber + 1;
+		}
+		foreach ($children as $item) {
+			$rowNumber = parseItem($item, $rowNumber);
+			foreach ($item->subItems as $subItem) {
+				$rowNumber = parseItem($subItem, $rowNumber);
+			}
 		}
 		?>
 	</div>
 	<?php
 	$grem->getLast()->close();
-	$grem->title()->serve("Request posted quotations");
+	$grem->title()->serve("Placed Quotations");
 	$grem->article()->open();
-	
-	?>
-	No quoations placed yet for this material request
-	<?php
+
+	echo <<<HTML
+		<div class="table local02">
+		<header>
+			<div>#</div>
+			<div>Value</div>
+			<div>Terms</div>
+			<div>Posted By</div>
+		</header>
+	HTML;
+
+
+	$sequence = new InvoiceSequence($app);
+	foreach ($sequence->children($read->id) as $node) {
+		echo "	<a href=\"{$fs(234)->dir}/?id={$node->id}\" data-href=\"{$fs(234)->dir}/?id={$node->id}\">
+				<div>" . $app->prefixList[110][0] . $read->costCenter->id . str_pad($node->serialNumber, $app->prefixList[110][1], "0", STR_PAD_LEFT) . "</div>
+				<div>" . $node->currency->shortname . " " . number_format($node->totalValue, 2) . "
+				<br />" . number_format($node->discountRate, 2) . "%</div>
+				<div>" . (empty($node->paymentTerm) ? "-" : $node->paymentTerm->toString()) . "
+				<br />" . (empty($node->shippingTerm) ? "-" : $node->shippingTerm->toString()) . "</div>
+				<div>{$node->issuedBy->fullName()}<br/>{$node->issuingDate->format("Y-m-d")}<br />{$node->issuingDate->format("H:i")}</div>
+			</a>
+		";
+	}
+	echo <<<HTML
+		</div>
+	HTML;
+
 	$grem->getLast()->close();
-	$grem->terminate();
+	$grem->terminate(true);
 	?>
 	<style>
 		.links {
@@ -174,6 +206,10 @@ try {
 				grid-template-columns: 40px minmax(130px, 1fr) minmax(10px, 3fr) 1fr 60px;
 			}
 
+			&.local02 {
+				grid-template-columns: 120px 1fr 1fr 1fr;
+			}
+
 			>main {
 				display: contents;
 
@@ -193,8 +229,7 @@ try {
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>{$e->getMessage()}</h1><cite>$id</cite>");
 	$grem->title()->serve("<span class=\"small-media-hide\">Couldn't open requested document, verify the following keys and try again</span>");
-	$grem->article()->serve(
-		<<<HTML
+	$grem->article()->serve(<<<HTML
 			<ul>
 				<li>Permissions denied</li>
 				<li>Document is locked or out of scope</li>
@@ -207,8 +242,7 @@ try {
 	$grem = new Gremium\Gremium(true);
 	$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>Invalid input</h1><cite>$id</cite>");
 	$grem->title()->serve("<span class=\"small-media-hide\">Couldn't open requested document, verify the following keys and try again</span>");
-	$grem->article()->serve(
-		<<<HTML
+	$grem->article()->serve(<<<HTML
 			<ul>
 				<li>Permissions denied</li>
 				<li>Document is locked or out of scope</li>

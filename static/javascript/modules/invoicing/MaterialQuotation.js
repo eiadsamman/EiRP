@@ -123,7 +123,6 @@ export class Post extends View {
 		document.getElementById("appGrand").value = Application.numberFormat(total, 2, ".", ",");
 	}
 
-
 	post() {
 
 		const formData = new FormData(this.formMaterialList);
@@ -133,11 +132,8 @@ export class Post extends View {
 		formData.append("paymentTerm", this.paymentTerm.get()[0].id);
 		formData.append("shippingTerm", this.ShippingTerm.get()[0].id);
 		formData.append("comments", document.getElementsByName("comments")[0].value);
-
 		formData.append("docId", document.getElementById("docId").value);
 		formData.append("docHash", document.getElementById("docHash").value);
-
-
 
 		fetch(this.formMaterialList.action, {
 			method: 'POST',
@@ -152,24 +148,26 @@ export class Post extends View {
 			},
 			body: formData,
 		}).then(response => {
-			if (response.ok) return response.text();
+			if (response.ok) return response.json();
 			return Promise.reject(response);
 		}).then(res => {
-			console.log(res); return
 			if (res.result) {
-				messagesys.success("Material request posted successfully");
-
+				messagesys.success("Quotation posted successfully");
+				console.log(res.forward)
 				this.pana.register(res.forward, { "id": res.insert_id });
+				this.pana.navigator.pushState();
 				this.pana.run();
 			} else {
-				if (res.errno == 901120) {
-					this.formCostcenter.focus()
-				} else if (res.errno == 230110) {
-					this.formDepartement.focus()
-				} else if (res.errno == 901110) {
-					this.materialSelection.focus();
+				if (res.errno == 233003) {
+					this.vendorSelection.focus()
+				} else if (res.errno == 233004) {
+					this.currencySelection.focus()
+				} else if (res.errno == 233006) {
+					this.paymentTerm.focus();
+				} else if (res.errno == 233007) {
+					this.ShippingTerm.focus();
 				}
-				messagesys.failure(res.error);
+				messagesys.failure(res.error + " " + res.errno);
 			}
 		}).catch(response => {
 			console.log(response);

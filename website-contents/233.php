@@ -1,8 +1,7 @@
 <?php
-use System\Finance\CostCenter;
-use System\Finance\Invoice\Item;
-use System\Finance\Invoice\MaterialRequest;
-use System\Profiles\MaterialProfile;
+use System\Finance\Invoice\InvoiceItems;
+use System\Finance\Invoice\InvoiceRecord;
+use System\Finance\Invoice\PurchaseQuotation;
 use System\Template\Gremium;
 use System\Timeline\Action;
 use System\Timeline\Module;
@@ -16,14 +15,15 @@ if ($app->xhttp) {
 	if (isset($_POST['method']) && $_POST['method'] == "post") {
 		header("Content-Type: application/json; charset=utf-8");
 		$result  = [];
-		$invoice = new MaterialRequest($app);
-		//echo json_encode($_POST);exit;
+		$invoice = new PurchaseQuotation($app);
+		$entry   = new InvoiceRecord($app);
+
 		try {
 
 			if (hash('SHA512', SALT . ($_POST['docId'] ?? 0) . SALT) != $_POST['docHash']) {
 				throw new Exception("Invalid document reference!", ($fs()->id * 1000) + 1);
 			}
-			$read = $invoice->read((int) $_POST['docId']);
+			$read = $entry->get((int) $_POST['docId']);
 			if (!$read) {
 				throw new Exception("Invalid document reference!", ($fs()->id * 1000) + 2);
 			}
@@ -34,20 +34,24 @@ if ($app->xhttp) {
 			if (empty($_POST['currency']) || (int) $_POST['currency'] <= 0)
 				throw new Exception("Invalid quotation currency", ($fs()->id * 1000) + 4);
 
-			$requestItems = [];
-			foreach ($invoice->items($read->id) as $item) {
-				if (!empty($_POST['inv_material'][$item->id]) && (float) $_POST['inv_material'][$item->id] > 0) {
-					$requestItems[$item->id]        = $item;
-					$requestItems[$item->id]->value = (float) $_POST['inv_material'][$item->id];
-				} else {
-					$requestItems[$item->id] = null;
-				}
-			}
 
-			foreach ($requestItems as $item) {
-				if (is_null($item)) {
-					throw new Exception("One or more material cost is invalid", ($fs()->id * 1000) + 5);
+			$items      = new InvoiceItems($app);
+			$totalValue = 0;
+			foreach ($items->get($read->id) as $item) {
+				if ($item->isGroupingItem) {
+					foreach ($item->subItems as &$subItem) {
+						if (!empty($_POST['inv_material'][$subItem->id]) && (float) $_POST['inv_material'][$subItem->id] > 0) {
+							$subItem->value = (float) $_POST['inv_material'][$subItem->id];
+							$totalValue += ($subItem->value * (!empty($subItem->discount) ? 1 - ($subItem->discount / 100) : 1)) * $subItem->quantity;
+						}
+					}
+				} else {
+					if (!empty($_POST['inv_material'][$item->id]) && (float) $_POST['inv_material'][$item->id] > 0) {
+						$item->value = (float) $_POST['inv_material'][$item->id];
+						$totalValue += ($item->value * (!empty($item->discount) ? 1 - ($item->discount / 100) : 1)) * $item->quantity;
+					}
 				}
+				$invoice->appendItem($item);
 			}
 
 			if (empty($_POST['paymentTerm']) || (int) $_POST['paymentTerm'] <= 0)
@@ -55,11 +59,9 @@ if ($app->xhttp) {
 			if (empty($_POST['shippingTerm']) || (int) $_POST['shippingTerm'] <= 0)
 				throw new Exception("Invalid shipping term", ($fs()->id * 1000) + 7);
 
-
-
 			$invoice->discountRate((float) $_POST['discount']);
 			$invoice->addtionalAmmout((float) $_POST['additionalAmount']);
-
+			$invoice->parent($read->id);
 			$invoice->client((int) $_POST['vendor']);
 			$invoice->curreny((int) $_POST['currency']);
 			$invoice->title($read->title);
@@ -68,9 +70,20 @@ if ($app->xhttp) {
 			$invoice->departement($read->departement);
 			$invoice->shippingTerm((int) $_POST['shippingTerm']);
 			$invoice->paymentTerm((int) $_POST['paymentTerm']);
+			$invoice->totalValue($totalValue);
+			$invoice->vatRate($read->costCenter->vatRate);
 
-			$result["item"] = $requestItems;
-			//$insert_id = $invoice->post();
+			$insert_id = $invoice->post();
+
+			$tl = new Timeline($app);
+			$tl->register(module: Module::InvoicingPurchaseQuotation, action: Action::Create, owner: $insert_id);
+			$tl->register(module: Module::InvoicingPurchaseQuotation, action: Action::Create, owner: $read->id);
+
+			$result = array(
+				"result" => true,
+				"insert_id" => $insert_id,
+				"forward" => $fs(234)->dir,
+			);
 
 		} catch (Exception $e) {
 			$result = array(
@@ -85,30 +98,32 @@ if ($app->xhttp) {
 	}
 
 
-	$id      = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
-	$invoice = new System\Finance\Invoice\MaterialRequest($app);
+	$id = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
+
+	$entry = new System\Finance\Invoice\InvoiceRecord($app);
 	try {
-		$read = $invoice->read($id);
+		$read = $entry->get($id);
+
 		if (!$read) {
 			throw new Exception("Request document not found");
 		}
 
 		$tl    = new Timeline($app);
 		$query = $tl->query($read->id);
-		$query->modules(Module::InvoicingMaterialRequest);
+		$query->modules(Module::InvoicingMaterialRequest, Module::InvoicingPurchaseQuotation);
 		$query->actions(Action::Create);
 
 		$grem = new Gremium\Gremium(false, false);
 
 		$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>{$fs()->title}</h1>
-			<cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"appApplicationPost\" tabindex=\"9\">&nbsp;Submit Request</button></div>");
+			<cite></cite><div class=\"btn-set\"><button class=\"plus\" id=\"appApplicationPost\" tabindex=\"9\">&nbsp;Submit Quotation</button></div>");
 		if ($query->execute()) {
 			$grem->column()->open();
 			echo <<<HTML
 			<div>
 				<h1>History and Feedbacks</h1>
 				<div class="links">
-					<a href="">Terminate material request</a>
+					
 				</div>	
 				{$query->plot()}
 			</div>
@@ -118,7 +133,6 @@ if ($app->xhttp) {
 
 		$grem->title()->serve("<span class=\"flex\">Material request information</span>");
 
-
 		$grem->article()->open(); ?>
 		<form action="<?= $fs()->dir; ?>">
 			<fieldset>
@@ -126,7 +140,6 @@ if ($app->xhttp) {
 					<label>
 						<h1>Purchase Request</h1>
 						<div class="btn-set">
-
 							<?php
 							echo "<a class=\"standard\" href=\"{$fs(240)->dir}/?id={$read->id}\" data-href=\"{$fs(240)->dir}/?id={$read->id}\">{$app->prefixList[100][0]}" . $read->costCenter->id . str_pad($read->serialNumber, $app->prefixList[100][1], "0", STR_PAD_LEFT) . "</a>";
 							?>
@@ -232,34 +245,30 @@ if ($app->xhttp) {
 						<div>Cost</div>
 					</header>
 					<?php
-					$children      = $invoice->items($read->id);
-					$rowNumber     = 0;
+
+					$items         = new InvoiceItems($app);
+					$children      = $items->get($read->id);
+					$rowNumber     = 1;
 					$showRowNumber = true;
+
+					function parseItem($item, $rowNumber)
+					{
+						$inputField = !$item->isGroupingItem ? "<input class=\"numberField itemValue\" name=\"inv_material[{$item->id}]\" data-quantity=\"{$item->quantity}\" type=\"text\" value=\"0.00\" inputmode=\"decimal\" min=\"0\" />" : "";
+						echo "
+							<main class=\"" . ($item->relatedItem ? "partsElement" : "") . "\">
+								<div>" . ($item->isGroupingItem ? "" : $rowNumber) . "</div>
+								<div class=\"ellipsis\">{$item->material->longId}<br />{$item->material->name}</div>
+								<div class=\"n\">" . number_format($item->quantity, 2) . "<br />{$item->material->unit->name}</div>
+								<div>{$inputField}</div>
+							</main>
+						";
+						return $item->isGroupingItem ? $rowNumber : $rowNumber + 1;
+					}
 					foreach ($children as $item) {
-						$cssDefinition = "";
-						$inputField    = "";
-						if ($item->isGroupingItem) {
-							$showRowNumber = false;
-							$cssDefinition = "";
-						} elseif (!is_null($item->relatedItem)) {
-							$showRowNumber = true;
-							$rowNumber++;
-							$cssDefinition = "partsElement";
-						} else {
-							$showRowNumber = true;
-							$rowNumber++;
+						$rowNumber = parseItem($item, $rowNumber);
+						foreach ($item->subItems as $subItem) {
+							$rowNumber = parseItem($subItem, $rowNumber);
 						}
-						$showRowNumber = $showRowNumber ? $rowNumber : "";
-						$quantity      = number_format($item->quantity, 2);
-						$inputField    = $showRowNumber ? "<input class=\"numberField itemValue\" name=\"inv_material[{$item->id}]\" data-quantity=\"{$item->quantity}\" type=\"text\" value=\"0.00\" inputmode=\"decimal\" min=\"0\" />" : "";
-						echo <<<HTML
-						<main class="{$cssDefinition}">
-							<div>{$showRowNumber}</div>
-							<div class="ellipsis">{$item->material->longId}<br />{$item->material->name}</div>
-							<div class="n">{$quantity}<br />{$item->material->unit->name}</div>
-							<div>{$inputField}</div>
-						</main>
-					HTML;
 					}
 					?>
 					<footer>
@@ -331,11 +340,9 @@ if ($app->xhttp) {
 			</label>
 		</div>
 
-		<div style="height: 1vh;"></div>
-
 		<?php
 		$grem->getLast()->close();
-		$grem->terminate();
+		$grem->terminate(true);
 		?>
 
 		<style>
@@ -457,8 +464,7 @@ if ($app->xhttp) {
 		$grem = new Gremium\Gremium(true);
 		$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>{$e->getMessage()}</h1><cite>$id</cite>");
 		$grem->title()->serve("<span class=\"small-media-hide\">Couldn't open requested document, verify the following keys and try again</span>");
-		$grem->article()->serve(
-			<<<HTML
+		$grem->article()->serve(<<<HTML
 			<ul>
 				<li>Permissions denied</li>
 				<li>Document is locked or out of scope</li>
@@ -471,8 +477,7 @@ if ($app->xhttp) {
 		$grem = new Gremium\Gremium(true);
 		$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>Invalid input</h1><cite>$id</cite>");
 		$grem->title()->serve("<span class=\"small-media-hide\">Couldn't open requested document, verify the following keys and try again</span>");
-		$grem->article()->serve(
-			<<<HTML
+		$grem->article()->serve(<<<HTML
 			<ul>
 				<li>Permissions denied</li>
 				<li>Document is locked or out of scope</li>

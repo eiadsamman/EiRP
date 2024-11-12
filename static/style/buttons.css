@@ -21,7 +21,7 @@
 	background-color: transparent;
 	border: none;
 	border-bottom: solid 2px var(--static-border);
-	height: 38px;
+	height: 28px;
 	position: relative;
 	margin-left: -.5px;
 	margin-right: -.5px;
@@ -680,4 +680,11 @@ input[type="number"]::-webkit-outer-spin-button {
 	-ms-user-select: none;
 	user-select: none;
 	cursor: default;
+}
+
+
+@media only screen and (max-width: 768px) {
+	.btn-set > * {
+		height: 35px;
+	}
 }

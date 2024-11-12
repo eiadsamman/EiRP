@@ -5,19 +5,12 @@ namespace System\Finance\Invoice;
 use System\Finance\Currency;
 use System\Finance\Invoice\enums\PaymentTerm;
 use System\Finance\Invoice\enums\ShippingTerm;
-use System\Models\Country;
+use System\Finance\Invoice\structs\InvoiceDetails;
+use System\Finance\Invoice\structs\InvoiceItem;
 use System\Models\Material;
 use System\Profiles\AccountProfile;
 use System\Profiles\CompanyProfile;
 use System\Profiles\CostCenterProfile;
-use System\Profiles\IndividualProfile;
-use System\Profiles\MaterialGategoryProfile;
-use System\Profiles\MaterialGroupProfile;
-use System\Profiles\MaterialProfile;
-use System\Profiles\UnitProfile;
-use System\Timeline\Action;
-use System\Timeline\Module;
-use System\Timeline\Timeline;
 
 
 const ERROR_ROOT = 901000;
@@ -25,11 +18,22 @@ const ERROR_ROOT = 901000;
 
 abstract class Invoice
 {
-
-	protected Information $information;
+	protected InvoiceDetails $information;
 	protected array $items;
 
-	public function appendItem(Item $item): void
+
+	public function __construct(protected \System\App &$app)
+	{
+		$this->information              = new InvoiceDetails();
+		$this->items                    = [];
+		$this->information->issuedBy    = $this->app->user->info;
+		$this->information->companyId   = $this->app->user->company->id;
+		$this->information->issuingDate = new \DateTime("now");
+		$this->information->voided      = false;
+		$this->information->parentId    = 0;
+	}
+
+	public function appendItem(InvoiceItem $item): void
 	{
 		if ($item->quantity <= 0) {
 			throw new \Exception("Invalid material quantity", ERROR_ROOT + 210);
@@ -43,17 +47,7 @@ abstract class Invoice
 		$this->items[] = $item;
 	}
 
-	public function __construct(protected \System\App &$app)
-	{
-		$this->information              = new Information();
-		$this->items                    = [];
-		$this->information->issuedBy    = $this->app->user->info;
-		$this->information->companyId   = $this->app->user->company->id;
-		$this->information->issuingDate = new \DateTime("now");
-		$this->information->voided      = false;
-	}
-
-	public function registerSerialNumber(): bool
+	private function registerSerialNumber(): bool
 	{
 		$this->app->db->execute_query(
 			"UPDATE inv_main
@@ -74,7 +68,10 @@ abstract class Invoice
 		return $this->app->db->affected_rows > 0;
 	}
 
-
+	public function totalValue(float $value): void
+	{
+		$this->information->totalValue = $value;
+	}
 	public function discountRate(float $discountRate): void
 	{
 		$this->information->discountRate = $discountRate;
@@ -119,11 +116,12 @@ abstract class Invoice
 
 				po_additional_amount,
 				po_discount,
+				po_payment_term,
 				po_shipping_term,
 				po_voided
 			) 
 			VALUES 
-			(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?);",
+			(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?);",
 			[
 				$this->information->companyId,
 				$this->information->costCenter->id,
@@ -144,14 +142,15 @@ abstract class Invoice
 				0,
 
 				$this->information->comments,
-				0,
-				0,
-				0,
+				$this->information->parentId ?? 0,
+				$this->information->totalValue,
+				$this->information->vatRate,
 				0,
 
-				0,
-				0,
-				"",
+				$this->information->addtionalAmmout,
+				$this->information->discountRate,
+				$this->information->paymentTerm ? $this->information->paymentTerm->value : null,
+				$this->information->shippingTerm ? $this->information->shippingTerm->value : null,
 				$this->information->voided
 			]
 		);
@@ -165,85 +164,42 @@ abstract class Invoice
 		}
 
 		foreach ($this->items as $item) {
-			$itemInsert = $this->app->db->execute_query(
-				"INSERT INTO inv_records (
-					pols_po_id,
-					pols_item_id,
-					pols_issued_qty,
-					pols_delivered_qty,
-					pols_grouping_item,
-					
-					pols_rel_id,
-					pols_prt_id,
-					pols_price,
-					pols_discount
-				) VALUES (
-					?, ?, ?, ?, ?, ?, ?, ?, ?
-				)"
-				,
-				[
-					$this->information->id,
-					$item->material->id,
-					$item->quantity,
-					$item->quantityDelivered,
-					$item->isGroupingItem ? "1" : "0",
-
-					$item->relatedItem,
-					$item->accountId,
-					$item->value,
-					$item->discount
-				]
-			);
-			if (!$itemInsert) {
-				$this->app->db->rollback();
-				throw new \Exception("Item insertion failed", ERROR_ROOT + 100);
+			$item->id = $this->insertInvoiceItem($item, null);
+			foreach ($item->subItems as $subItem) {
+				$subItem->id = $this->insertInvoiceItem($subItem, $item->id);
 			}
-			$item->id = $this->app->db->insert_id;
-			if ($item->isGroupingItem) {
-				foreach ($material->children($item->material->id) as $mat) {
-					$itemInsert = $this->app->db->execute_query(
-						"INSERT INTO inv_records (
-							pols_po_id,
-							pols_item_id,
-							pols_issued_qty,
-							pols_delivered_qty,
-							pols_grouping_item,
-							
-							pols_rel_id,
-							pols_prt_id,
-							pols_price,
-							pols_discount
-						) VALUES (
-							?, ?, ?, ?, ?, ?, ?, ?, ?
-						)"
-						,
-						[
-							$this->information->id,
-							$mat->id,
-							$item->quantity * $mat->bomPortion,
-							$item->quantityDelivered * $mat->bomPortion,
-							"0",
 
-							$item->id,
-							$item->accountId,
-							$item->value,
-							$item->discount
-						]
-					);
-					if (!$itemInsert) {
-						$this->app->db->rollback();
-						throw new \Exception("Item insertion failed", ERROR_ROOT + 100);
-					}
-				}
-			}
 		}
 		$this->app->db->commit();
 		$this->app->db->autocommit(true);
-
-		$tl = new Timeline($this->app);
-		$tl->register(module: Module::InvoicingMaterialRequest, action: Action::Create, owner: $this->information->id);
-
 		return $this->information->id;
+	}
+
+	private function insertInvoiceItem(InvoiceItem $invoiceItem, ?int $owner = null): int
+	{
+		$itemInsert = $this->app->db->execute_query(
+			"INSERT INTO inv_records (pols_po_id,pols_item_id,pols_issued_qty,pols_delivered_qty,pols_grouping_item,pols_rel_id,pols_prt_id,pols_price,pols_discount) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+			,
+			[
+				$this->information->id,
+				$invoiceItem->material->id,
+				$invoiceItem->quantity,
+				$invoiceItem->quantityDelivered,
+				$invoiceItem->isGroupingItem,
+
+				$owner,
+				$invoiceItem->accountId,
+				$invoiceItem->value,
+				$invoiceItem->discount
+			]
+		);
+		if (!$itemInsert) {
+			$this->app->db->rollback();
+			throw new \Exception("Item insertion failed", ERROR_ROOT + 100);
+		}
+
+		return $this->app->db->insert_id;
 	}
 
 	private function validatefiled(): bool
@@ -266,7 +222,10 @@ abstract class Invoice
 		$this->information->costCenter = new CostCenterProfile($costCenter);
 	}
 
-
+	public function vatRate(float $rate): void
+	{
+		$this->information->vatRate = $rate;
+	}
 	public function paymentTerm(PaymentTerm|int $paymentTerm): void
 	{
 		if ($paymentTerm instanceof PaymentTerm) {
@@ -290,7 +249,6 @@ abstract class Invoice
 			$this->information->shippingTerm = ShippingTerm::tryFrom($shippingTerm);
 		}
 	}
-
 
 	public function curreny(Currency|int|null $currency): void
 	{
@@ -342,220 +300,9 @@ abstract class Invoice
 		}
 	}
 
-	public function read(int $id): Information|bool
+	public function parent(int $id): void
 	{
-		$output = new Information();
-
-		$result = $this->app->db->execute_query(
-			"SELECT
-				po_id,
-				po_comp_id,
-				po_costcenter,
-				po_cur_id,
-				po_type,
-				po_issuedby_id,
-
-				po_departement_id,
-				po_serial,
-				po_title,
-				po_date,
-				po_due_date,
-
-				po_close_date,
-				po_client_id,
-				po_shipto_id,
-				po_billto_id,
-				po_attention_id,
-
-				po_remarks,
-				po_rel,
-				po_total,
-				po_vat_rate,
-				po_tax_rate,
-
-				po_additional_amount,
-				po_discount,
-				po_payment_term,
-				po_shipping_term,
-				po_voided,
-				
-				/* OUTER JOINS */
-				cur_id, cur_name, cur_shortname, cur_symbol,
-
-				issuer.usr_id AS _issuer_id,
-				issuer.usr_firstname AS _issuer_firstname,
-				issuer.usr_lastname AS _issuer_lastname,
-
-				client_company.comp_id AS _client_company_id,
-				client_company.comp_name AS _client_company_name,
-				client_company.comp_address AS _client_company_address,
-				client_company.comp_country AS _client_company_country,
-				client_company.comp_city AS _client_company_city,
-				client_company.comp_tellist AS _client_company_tellist,
-				client_company.cntry_name AS _client_company_country_name,
-				client_company.cntry_code AS _client_company_country_code,
-				
-				usrccc_usr_id,
-				ccc_name,ccc_id, ccc_vat,
-				prt_id, prt_name
-
-			FROM
-				inv_main
-					LEFT JOIN currencies ON po_cur_id = cur_id
-					LEFT JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$this->app->user->info->id}
-					JOIN (SELECT comp_id,comp_name,comp_address,comp_country,comp_city,comp_tellist,cntry_name,cntry_code FROM companies LEFT JOIN countries ON comp_country = cntry_id  ) AS client_company ON client_company.comp_id = po_client_id
-					JOIN users AS issuer ON issuer.usr_id = po_issuedby_id
-					JOIN inv_costcenter ON ccc_id = po_costcenter
-					LEFT JOIN acc_accounts ON prt_id = po_departement_id
-			WHERE
-				po_id = ?
-			",
-			[
-				$id
-			]
-		);
-
-		if ($result) {
-
-			if ($row = $result->fetch_assoc()) {
-				if (is_null($row['usrccc_usr_id'])) {
-					throw new \Exception("Permissions denied", ERROR_ROOT + 300);
-				}
-
-
-				$output->id           = (int) $row['po_id'];
-				$output->serialNumber = (int) $row['po_serial'];
-				$output->costCenter   = new CostCenterProfile((int) $row['po_costcenter'], $row['ccc_name'], (float) $row['ccc_vat']);
-
-				$output->currency          = is_null($row['po_cur_id']) ? null : new Currency((int) $row['cur_id'], $row['cur_name'], $row['cur_symbol'], $row['cur_shortname']);
-				$output->relatedDocumentId = (int) $row['po_rel'];
-				$output->totalValue        = (float) $row['po_total'];
-				$output->vatRate           = (float) $row['po_vat_rate'];
-				$output->taxRate           = (float) $row['po_tax_rate'];
-				$output->addtionalAmmout   = (float) $row['po_additional_amount'];
-				$output->discountRate      = (float) $row['po_discount'];
-				$output->shippingTerm      = is_null($row['po_shipping_term']) ? null : ShippingTerm::tryFrom((int) $row['po_shipping_term']);
-				$output->paymentTerm       = is_null($row['po_payment_term']) ? null : PaymentTerm::tryFrom((int) $row['po_payment_term']);
-
-				$output->voided              = (int) $row['po_voided'] == 1;
-				$output->issuedBy            = new IndividualProfile();
-				$output->issuedBy->id        = (int) $row['_issuer_id'];
-				$output->issuedBy->firstname = $row['_issuer_firstname'];
-				$output->issuedBy->lastname  = $row['_issuer_lastname'];
-
-
-				if (!is_null($row['prt_id'])) {
-					$output->departement       = new AccountProfile();
-					$output->departement->id   = (int) $row['prt_id'];
-					$output->departement->name = $row['prt_name'];
-				} else {
-					$output->departement = null;
-				}
-
-
-				if (!is_null($row['_client_company_id'])) {
-					$output->client          = new CompanyProfile();
-					$output->client->id      = (int) $row['_client_company_id'];
-					$output->client->name    = $row['_client_company_name'];
-					$output->client->address = $row['_client_company_address'];
-					if (!is_null($row['_client_company_country_name'])) {
-						$output->client->country       = new Country($row['_client_company_id']);
-						$output->client->country->name = $row['_client_company_country_name'] ?? "";
-						$output->client->country->code = (string) $row['_client_company_country_code'];
-					}
-					$output->client->city           = $row['_client_company_city'];
-					$output->client->contactNumbers = $row['_client_company_tellist'];
-				}
-				$output->title       = $row['po_title'];
-				$output->comments    = $row['po_remarks'];
-				$output->issuingDate = new \DateTime($row['po_date']);
-				$output->dueDate     = is_null($row['po_due_date']) ? null : new \DateTime($row['po_due_date']);
-				$output->closeDate   = is_null($row['po_close_date']) ? null : new \DateTime($row['po_close_date']);
-				return $output;
-			}
-		}
-		return false;
+		$this->information->parentId = $id;
 	}
-
-	public function items(int $invoiceId): \Generator
-	{
-		$item   = null;
-		$result = $this->app->db->execute_query(
-			"SELECT
-				pols_id,
-				pols_po_id,
-				pols_item_id,
-				pols_issued_qty,
-				pols_delivered_qty,
-				pols_grouping_item,
-				
-				pols_rel_id,
-				pols_prt_id,
-				pols_price,
-				pols_discount,
-
-				/* Material  */
-				mat_id,mat_name, mat_long_id,mat_longname,
-				unt_id, unt_name, unt_category,unt_decim,
-				matcatgrp_name, matcatgrp_id, matcat_name, matcat_id,
-				brand_id, brand_name
-			FROM 
-				inv_records 
-				JOIN (
-					SELECT 
-						mat_id,mat_name, mat_long_id,mat_longname,
-						unt_id, unt_name, unt_category,unt_decim,
-						matcatgrp_name, matcatgrp_id, matcat_name, matcat_id,
-						brand_id, brand_name
-					FROM 
-						mat_materials 
-							JOIN mat_unit ON mat_unt_id = unt_id
-							JOIN mat_materialtype ON mat_mattyp_id = mattyp_id
-							LEFT JOIN brands ON brand_id = mat_brand_id
-							JOIN 
-								(SELECT matcatgrp_name, matcatgrp_id, matcat_name, matcat_id FROM mat_category JOIN mat_categorygroup ON matcat_matcatgrp_id = matcatgrp_id) 
-								AS _category ON mat_matcat_id=_category.matcat_id
-					) AS materialProfile ON materialProfile.mat_id = pols_item_id 
-			WHERE
-				pols_po_id = ?
-			ORDER BY
-				pols_id",
-			[
-				$invoiceId
-			]
-		);
-
-		if ($result) {
-			while ($itemRow = $result->fetch_assoc()) {
-				$item                 = new Item();
-				$item->id             = $itemRow['pols_id'];
-				$item->isGroupingItem = (int) $itemRow['pols_grouping_item'] == 1;
-
-				$item->material           = new MaterialProfile();
-				$item->material->id       = (int) $itemRow['pols_item_id'];
-				$item->material->longId   = (int) $itemRow['mat_long_id'];
-				$item->material->name     = $itemRow['mat_name'];
-				$item->material->category = new MaterialGategoryProfile(
-					(int) $itemRow['matcat_id'],
-					$itemRow['matcat_name'],
-					new MaterialGroupProfile(
-						(int) $itemRow['matcatgrp_id'],
-						$itemRow['matcatgrp_name']
-					)
-				);
-				$item->material->longName = $itemRow['mat_longname'];
-				$item->material->unit     = new UnitProfile((int) $itemRow['unt_id'], $itemRow['unt_name'], $itemRow['unt_category'], (int) $itemRow['unt_decim']);
-
-				$item->relatedItem       = is_null($itemRow['pols_rel_id']) ? null : (int) $itemRow['pols_rel_id'];
-				$item->quantity          = (float) $itemRow['pols_issued_qty'];
-				$item->quantityDelivered = is_null($itemRow['pols_delivered_qty']) ? null : (float) $itemRow['pols_delivered_qty'];
-				$item->value             = (float) ($itemRow['pols_price']);
-				$item->discount          = is_null($itemRow['pols_discount']) ? null : (float) $itemRow['pols_discount'];
-				yield $item;
-
-			}
-		}
-	}
-
 
 }

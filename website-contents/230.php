@@ -1,10 +1,13 @@
 <?php
 use System\Finance\CostCenter;
-use System\Finance\Invoice\Item;
-use System\Finance\Invoice\MaterialRequest;
+use System\Finance\Invoice\InvoiceItem;
+use System\Finance\Invoice\PurchaseRequest;
 use System\Models\Material;
 use System\Profiles\MaterialProfile;
 use System\Template\Gremium\Gremium;
+use System\Timeline\Action;
+use System\Timeline\Module;
+use System\Timeline\Timeline;
 
 const ERROR_ROOT = 230000;
 if ($app->xhttp) {
@@ -12,14 +15,13 @@ if ($app->xhttp) {
 	if (isset($_POST['method']) && $_POST['method'] == "post") {
 		header("Content-Type: application/json; charset=utf-8");
 
-		$invoice = new MaterialRequest($app);
+		$invoice = new PurchaseRequest($app);
 		try {
 			$invoice->comments($_POST['comments']);
 			$invoice->title($_POST['title']);
 
 
 			if ((int) $_POST['departement'] > 0) {
-				$app->errorHandler->customError("1" . $_POST['departement']);
 				$invoice->departement((int) $_POST['departement']);
 			} else {
 				throw new Exception("Select requesting departement", ERROR_ROOT + 110);
@@ -37,20 +39,47 @@ if ($app->xhttp) {
 			}
 
 			$invoice->curreny(null);
-			foreach ($_POST['inv_material'] as $ident => $material) {
-				$item                 = new Item();
-				$item->isGroupingItem = !strpos($ident, "@") ? false : true;
-				foreach ($material as $materialId => $qty) {
+
+			$materialServicies = [];
+
+
+			//$app->errorHandler->customError(print_r($_POST,true));
+
+			foreach ($_POST['inv_material'] as $key => $material) {
+				$item                 = new \System\Finance\Invoice\structs\InvoiceItem();
+				$item->isGroupingItem = !strpos($key, "@") ? false : true;
+
+				if (is_array($material)) {
+					$qty                     = reset($material);
 					$item->material          = new MaterialProfile();
-					$item->material->id      = (int) $materialId;
+					$item->material->id      = (int) key($material);
 					$item->quantity          = (float) $qty;
 					$item->quantityDelivered = null;
+				}
+				//Load material BOM and assign parent quantities for each part
+				if ($item->isGroupingItem) {
+					$subMaterials = new Material($app);
+					foreach ($subMaterials->children($item->material->id) as $material) {
+						$subItem                    = new \System\Finance\Invoice\structs\InvoiceItem();
+						$subItem->material          = $material;
+						$subItem->quantity          = $item->quantity * $material->bomPortion;
+						$subItem->quantityDelivered = $item->quantity * $material->bomPortion;
+						$item->subItems[]           = $subItem;
+					}
 				}
 				$invoice->appendItem($item);
 			}
 
+
+
+
 			$insert_id = $invoice->post();
-			$result    = array(
+
+			$tl = new Timeline($app);
+			$tl->register(module: Module::InvoicingMaterialRequest, action: Action::Create, owner: $insert_id);
+
+
+			$result = array(
 				"result" => true,
 				"insert_id" => $insert_id,
 				"forward" => $fs(240)->dir,

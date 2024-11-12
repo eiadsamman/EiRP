@@ -33,17 +33,17 @@ enum Action: int
 	public function toString(): string
 	{
 		return match ($this) {
-			self::Create => 'إضافة قيد جديد',
-			self::Modify => 'تعديل قيد',
-			self::Delete => 'حذف قيد',
-			self::ApprovalPending => 'بانتظار الموافقة',
-			self::ApprovalApproved => 'تمت الموافقة',
+			self::Create => 'New entry',
+			self::Modify => 'Entry modified',
+			self::Delete => 'Entry deleted',
+			self::ApprovalPending => 'Pending approval',
+			self::ApprovalApproved => 'Approved',
 			self::Mention => 'Mentiond',
-			self::Feedback => 'تعليقات وملاحظات',
-			self::FinanceReceipt => 'استلام نقدي',
-			self::FinancePayment => 'دفع نقدي',
-			self::PhoneCall => 'اتصال هاتفي',
-			self::Email => 'مراسلة بريد الكتروني',
+			self::Feedback => 'Comments',
+			self::FinanceReceipt => 'Cash receipt',
+			self::FinancePayment => 'Cash payment',
+			self::PhoneCall => 'Phone call',
+			self::Email => 'E-mail message',
 			self::Empty => '',
 		};
 	}

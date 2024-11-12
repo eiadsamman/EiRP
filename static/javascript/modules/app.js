@@ -150,8 +150,10 @@ export class Navigator {
 	constructor(state, url) {
 		this.state = state;
 		this.url = url;
+		this.scroll = 0;
 		return this;
 	}
+
 
 	onPopState(callable) {
 		let self = this;
@@ -170,15 +172,15 @@ export class Navigator {
 	}
 
 	pushState() {
-		window.history.pushState({ ...this.state, ":url": this.url }, "", this.url + this.uriBuild());
+		window.history.pushState({ ...this.state, ":url": this.url, ":scroll": this.scroll }, "", this.url + this.uriBuild());
 	}
 
 	replaceState() {
-		window.history.replaceState({ ...this.state, ":url": this.url }, "", this.url + this.uriBuild());
+		window.history.replaceState({ ...this.state, ":url": this.url, ":scroll": this.scroll }, "", this.url + this.uriBuild());
 	}
 
 	stampState() {
-		window.history.replaceState({ ...this.state, ":url": this.url }, "");
+		window.history.replaceState({ ...this.state, ":url": this.url, ":scroll": this.scroll }, "");
 	}
 
 	uriBuild() {

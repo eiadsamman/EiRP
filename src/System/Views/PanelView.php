@@ -157,9 +157,6 @@ class PanelView implements Views
 
 
 
-
-
-
 	}
 
 	public function htmlAssets(string $version = ""): void
@@ -240,7 +237,7 @@ class PanelView implements Views
 			/* JS Payload */
 			echo <<<HTML
 			{$tab}<script type="module">
-				{$tab}import { PaNa } from './static/javascript/modules/PanelNavigator.js';
+				{$tab}import { PaNa } from './static/javascript/modules/PanelView.js';
 				{$tab}let pn = new PaNa();
 				{$tab}pn.itemPerRequest = {$perpage};
 				{$tab}pn.init("{$fs()->dir}", {$_getJSON});

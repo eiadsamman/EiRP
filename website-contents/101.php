@@ -59,7 +59,7 @@ if ($app->xhttp) {
 					(float) $_POST['exchange-value']
 				);
 			}
-
+			
 			if (isset($_POST['attachments']) && is_array($_POST['attachments'])) {
 				$transaction->attachments($_POST['attachments']);
 			}

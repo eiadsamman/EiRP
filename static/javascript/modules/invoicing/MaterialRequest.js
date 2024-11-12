@@ -150,7 +150,6 @@ export class Post extends View {
 	}
 
 	post() {
-
 		const formData = new FormData(this.formMaterialList);
 		formData.append("method", "post");
 		formData.append("departement", this.formDepartement.get()[0].id);
@@ -177,8 +176,8 @@ export class Post extends View {
 		}).then(res => {
 			if (res.result) {
 				messagesys.success("Material request posted successfully");
-
 				this.pana.register(res.forward, { "id": res.insert_id });
+				this.pana.navigator.pushState();
 				this.pana.run();
 			} else {
 				if (res.errno == 901120) {

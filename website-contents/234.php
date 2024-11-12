@@ -1,230 +1,289 @@
 <?php
+use System\Finance\Invoice\InvoiceItems;
+use System\Template\Gremium;
+use System\Timeline\Action;
+use System\Timeline\Module;
+use System\Timeline\Timeline;
 
-use System\Finance\Accounting;
-use System\Finance\DocumentException;
-use System\Finance\DocumentMaterialListException;
-use System\Finance\Invoice;
-use System\Template\Body;
-//purchase/rfq/view
+$perpage_val = 20;
+$id          = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
+$invoice     = new System\Finance\Invoice\PurchaseRequest($app);
+$entry       = new System\Finance\Invoice\InvoiceRecord($app);
+try {
 
-$_TEMPLATE 	= new Body();
-$invoice 	= new Invoice($app);
-$accounting = new Accounting($app);
-$doc_id		= $invoice->DocumentURI();
+	$read = $entry->get($id);
+	if (!$read) {
+		throw new Exception("Request document not found");
+	}
 
-if ($doc_id) {
-	try {
-		$chain = $invoice->Chain($doc_id);
+	$tl    = new Timeline($app);
+	$query = $tl->query($read->id);
+	$query->modules(Module::InvoicingPurchaseQuotation);
+	$query->actions(Action::Create);
+	$totalPreVat = $read->totalValue * (1 - ($read->discountRate ?? 0) / 100) + ($read->addtionalAmmout ?? 0);
+	$grem        = new Gremium\Gremium(false, false);
 
-		if (sizeof($chain) < 2 || $chain[1] != $doc_id) {
-			throw new DocumentException("Requested document not found", 31001);
-		}
+	$grem->header()->prev("href=\"{$fs(209)->dir}\" data-href=\"{$fs(209)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[110][0]}" . $read->costCenter->id . str_pad($read->serialNumber, $app->prefixList[110][1], "0", STR_PAD_LEFT) . "</cite>");
+	$grem->menu()->sticky(true)->open();
+	echo "<span class=\"flex\"></span>";
+	echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs()->dir}\" id=\"appPrint\" class=\"edge-right edge-left\" tabindex=\"-1\">Print</button>";
+	$grem->getLast()->close();
 
-		$doc_rm = $invoice->GetMaterialRequestDoc($chain[0]);
-		$doc_rfq = $invoice->GetPurchaseQuotationDoc($chain[1]);
-		$excrate = 1;
-		$_syscur = $accounting->system_default_currency();
-		if ($_syscur != false && $doc_rfq['po_cur_id'] != $_syscur['id']) {
-			$excrate = $accounting->currency_exchange($doc_rfq['po_cur_id'], $_syscur['id']);
-		}
-
-		$_TEMPLATE->Title("Request for Quotation Record", null, $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']));
-
-
-		echo $_TEMPLATE->CommandBarStart();
-		echo "<div class=\"btn-set\">";
-		echo "<a style=\"color:#333;\" href=\"" . $fs(234)->dir . "/\" class=\"bnt-back\"></a>";
-		echo "<a style=\"color:#333;\" href=\"" . $fs(240)->dir . "/?docid={$chain[0]}&token=" . md5("sysdoc_" . $chain[0] . session_id()) . "\">" . $app->translatePrefix(Invoice::map['MAT_REQ'], $doc_rm['po_serial']) . "</a>";
-		echo "<span>" . $app->translatePrefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . "</span>";
-		echo "<span class=\"gap\"></span>";
-		if (is_null($doc_rm['po_close_date'])) {
-			echo "<button>Cancel Quotation</button>";
-			echo "<a class=\"clr-green\" href=\"" . $fs(244)->dir . "/?docid={$doc_rfq['po_id']}&token=" . md5("sysdoc_" . $doc_id . session_id()) . "
-				\">Rlease Pruchse Order</a>";
-		} else {
-			echo "<span>Request Closed</span>";
-		}
-
-		echo "</div>";
-		echo $_TEMPLATE->CommandBarEnd();
-
-
-
-
-		$doc_value = $doc_rfq['po_total'] - ($doc_rfq['po_total'] * $doc_rfq['po_discount'] / 100) + $doc_rfq['po_additional_amount'];
-		$doc_value += $doc_value * $doc_rfq['po_vat_rate'] / 100;
-
-		$title = "<span class=\"flex\">Quotation Information</span>";
-
-
-		$_TEMPLATE->NewFrameTitle($title, false, true);
-		echo $_TEMPLATE->NewFrameBodyStart();
-		echo '<div class="template-gridLayout">
-				<div><span>Cost Center</span><div>' . $doc_rfq['ccc_name'] . '</div></div>
-				<div><span>Number</span><div>' . $app->translatePrefix(Invoice::map['PUR_QUT'], $doc_rfq['po_serial']) . '</div></div>
-				<div><span>Title</span><div>' . $doc_rfq['po_title'] . '</div></div>
-				
+	if ($query->execute()) {
+		$grem->column()->open();
+		echo <<<HTML
+			<div>
+				<h1>History and Feedbacks</h1>
+				<div class="links">
+					
+				</div>	
+				{$query->plot()}
 			</div>
-			<div class="template-gridLayout">
-				<div><span>Creation Date</span><div>' . $doc_rfq['po_date'] . '</div></div>
-				<div>
-					<span>Vendor</span>
-					<div>' . $doc_rfq['comp_id'] . ' - ' . $doc_rfq['comp_name'] . '</div>'
-			. ($doc_rfq['po_att_id'] != 0 ? '<div>' . $doc_rfq['att_id'] . ' - ' . $doc_rfq['po_att_name'] . '</div>' : "") .
-			'
-				</div>
-				<div></div>
+		HTML;
+		$grem->getLast()->close();
+	}
+
+	$grem->title()->serve("<span class=\"flex\">Material request information</span>");
+	$grem->article()->open(); ?>
+	<iframe id="plot-iframe" name="plot-iframe" style="display:block;width:0;height:0px;visibility: hidden"></iframe>
+	<div class="form">
+		<label>
+			<h1>ID</h1>
+			<div class="btn-set">
+				<span><?= $app->prefixList[110][0] . $read->costCenter->id . str_pad($read->serialNumber, $app->prefixList[110][1], "0", STR_PAD_LEFT) ?></span>
 			</div>
-			<div class="template-gridLayout">
-				<div><span>Placed By</span><div>' . $app->translatePrefix(11, $doc_rfq['doc_usr_id']) . ' - ' . $doc_rfq['po_usr_name'] . '</div></div>
-				<div></div>
+
+		</label>
+		<label>
+			<h1>Cost Center</h1>
+			<div class="btn-set">
+				<span><?= $read->costCenter->name . " (" . number_format($read->costCenter->vatRate, 2) . "%)" ?></span>
 			</div>
-			<div class="template-gridLayout">
-				<div><span>Remarks</span><div>' . nl2br($doc_rfq['po_remarks']) . '</div></div>
-			</div>';
-		if ($invoice->Per(248)->read) {
-			echo '<div class="template-gridLayout inline-title">Financial Information</div>';
-			echo '
-				<div class="template-gridLayout">
-					<div><span>Total</span><div>' . number_format($doc_rfq['po_total'], 2, ".", ",") . " " . $doc_rfq['cur_shortname'] . '</div></div>
-					<div><span>Discount</span><div>' . number_format($doc_rfq['po_discount'], 2, ".", ",") . '%</div></div>
-					<div><span>Addtional amount</span><div>' . number_format($doc_rfq['po_additional_amount'], 2, ".", ",") . " " . $doc_rfq['cur_shortname'] . '</div></div>
-				</div>
-				<div class="template-gridLayout">
-					<div><span>VAT Rate</span><div>' . number_format($doc_rfq['po_vat_rate'], 2, ".", ",") . '%</div></div>
-					<div><span>Grand total</span><div>' . number_format($doc_value, 2, ".", ",") . " " . $doc_rfq['cur_shortname'] . '</div></div>
-					<div><span>Local currency grand total</span><div>' . number_format($doc_value * $excrate, 2, ".", ",") . " " . $_syscur['shortname'] . '</div></div>
-				</div>
-				
-				';
+		</label>
+	</div>
+
+	<div class="form">
+		<label>
+			<h1>Purchase Request</h1>
+			<div class="btn-set">
+				<span><a data-href="<?= "{$fs(240)->dir}/?id={$read->parentId}"; ?>"
+					   href="<?= "{$fs(240)->dir}/?id={$read->parentId}"; ?>"><?= $app->prefixList[100][0], $read->costCenter->id . str_pad($read->parentSerialNumber, $app->prefixList[100][1], "0", STR_PAD_LEFT) ?></a></span>
+			</div>
+			<div class="btn-set">
+				<span style="color: var(--root-font-lightcolor);">Title:</span><span><?= $read->title ?></span>
+			</div>
+		</label>
+	</div>
+
+
+
+	<div class="form">
+		<label>
+			<h1>Payment Term</h1>
+			<div class="btn-set">
+				<span><?= $read->paymentTerm ? $read->paymentTerm->toString() : "-" ?></span>
+			</div>
+		</label>
+		<label>
+			<h1>Shipping Term</h1>
+			<div class="btn-set">
+				<span><?= $read->shippingTerm ? $read->shippingTerm->toString() : "-" ?></span>
+			</div>
+		</label>
+	</div>
+
+
+	<div class="form">
+		<label>
+			<h1>Posted by</h1>
+			<div class="btn-set">
+				<span><?= $read->issuedBy->fullName() ?></span>
+			</div>
+			<div class="btn-set">
+				<span><?= ($read->departement ? "<br />" . $read->departement->name : "") ?></span>
+			</div>
+		</label>
+		<label>
+			<h1>Posted on</h1>
+			<div class="btn-set">
+				<span><?= $read->issuingDate->format("Y-m-d H:s") ?></span>
+			</div>
+		</label>
+	</div>
+
+	<div class="form">
+		<label>
+			<h1>Quotation Summary</h1>
+			<div class="table local03" style="padding:10px 0px">
+				<main>
+					<span>Currency</span>
+					<div><?= " [{$read->currency->shortname}] {$read->currency->name}"; ?></div>
+				</main>
+				<main>
+					<span>Sub Total</span>
+					<div><?= number_format($read->totalValue, 2); ?></div>
+				</main>
+				<main>
+					<span>Discount Rate</span>
+					<div>
+						<?= number_format($read->totalValue * ($read->discountRate / 100), 2) . " (" . number_format($read->discountRate, 2) . "%)"; ?>
+					</div>
+				</main>
+				<main>
+					<span>Additional Amount</span>
+					<div><?= number_format($read->addtionalAmmout, 2); ?></div>
+				</main>
+				<main>
+					<span>Total</span>
+					<div><?= number_format($totalPreVat, 2); ?></div>
+				</main>
+				<main>
+					<span>VAT Amount</span>
+					<div>
+						<?= number_format($totalPreVat * ($read->costCenter->vatRate / 100), 2) . " (" . number_format($read->costCenter->vatRate, 2) . "%)"; ?>
+					</div>
+				</main>
+				<main>
+					<span>Grand Total</span>
+					<div>
+						<?= number_format($totalPreVat * (1 + $read->costCenter->vatRate / 100), 2); ?>
+					</div>
+				</main>
+
+
+			</div>
+
+		</label>
+
+	</div>
+
+
+
+	<?php
+	$grem->getLast()->close();
+
+	$grem->title()->serve("<span class=\"flex\">Requested materials</span>");
+	$grem->article()->open();
+	?>
+
+	<div class="table local01">
+		<header>
+			<div>#</div>
+			<div>Part Number</div>
+			<div>Item</div>
+			<div class="n">Quantity</div>
+			<div>Unit</div>
+			<div class="n">Cost</div>
+			<div class="n">Inline</div>
+
+		</header>
+		<?php
+		$items         = new InvoiceItems($app);
+		$children      = $items->get($read->id);
+		$rowNumber     = 1;
+		$showRowNumber = true;
+
+		function parseItem($item, $rowNumber)
+		{
+			echo "
+				<main class=\"" . ($item->relatedItem ? "partsElement" : "") . "\">
+					<div>" . ($item->isGroupingItem ? "" : $rowNumber) . "</div>
+					<div>{$item->material->longId}</div>
+					<div class=\"ellipsis\">{$item->material->name}</div>
+					<div class=\"n\">" . number_format($item->quantity, 2) . "</div>
+					<div>{$item->material->unit->name}</div>
+					<div class=\"n\">" . ($item->isGroupingItem ? "" : rtrim(rtrim(number_format($item->value, 5), "0"), ".")) . "</div>
+					<div class=\"n\">" . ($item->isGroupingItem ? "" : number_format($item->value * $item->quantity, 2)) . "</div>
+				</main>
+			";
+			return $item->isGroupingItem ? $rowNumber : $rowNumber + 1;
 		}
-		echo $_TEMPLATE->NewFrameBodyEnd();
-
-
-
-
-
-
-
-		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Quotation Details</span>");
-		echo $_TEMPLATE->NewFrameBodyStart();
-		echo '<table>
-			<thead><tr><td width="100%">Material</td><td align="right" colspan="2">Quantity</td><td align="right">Unit Price</td><td align="right">Inline</td></tr></thead>
-			<tbody id="jQmaterialList" style="border:solid 1px #E6E6EB;">';
-		$r = $invoice->DocGetMaterialList($doc_id);
-		if ($r) {
-			$bomlegend = null;
-			while ($row = $r->fetch_assoc()) {
-				if ($bomlegend != $row['pols_bom_part']) {
-					$bomlegend = $row['pols_bom_part'];
-					echo "<tr>";
-					echo "<td colspan=\"3\" style=\"color:var(--color-link);border-left:solid 2px var(--color-link)\">{$row['_mat_bom']}</td>";
-					echo "</tr>";
-				}
-				echo "<tr>";
-				echo "
-						<td title=\"{$row['cat_alias']} {$row['mat_name']}\" style=\"padding-left:20px;\">
-							<div class=\"template-cascadeOverflow\"><div>{$row['mat_long_id']}</div></div>
-							<div class=\"template-cascadeOverflow\"><div>{$row['cat_alias']}, {$row['mat_name']}</div></td>";
-				echo "<td align=\"right\">" . number_format($row['pols_issued_qty'], $row['unt_decim'], ".", ",") . "</td>";
-				echo "<td>{$row['unt_name']}</td>";
-				echo "<td align=\"right\">" . number_format($row['pols_price'], Invoice::DecimalsNumber($row['pols_price']), ".", ",") . "</td>";
-				echo "<td align=\"right\">" . number_format($row['pols_price'] * $row['pols_issued_qty'], 3, ".", ",") . "</td>";
-				echo "</tr>";
+		foreach ($children as $item) {
+			$rowNumber = parseItem($item, $rowNumber);
+			foreach ($item->subItems as $subItem) {
+				$rowNumber = parseItem($subItem, $rowNumber);
 			}
 		}
-		echo '</tbody></table>';
-		echo $_TEMPLATE->NewFrameBodyEnd();
+		?>
+	</div>
+	<?php
+	$grem->getLast()->close();
 
-		echo "<script type=\"text/javascript\">
-			Template.HistoryEntry(\"{$fs()->dir}/?docid={$doc_id}&token=" . md5("sysdoc_" . $doc_id . session_id()) . "\", \"{$fs()->title}\");
-			$(document).ready(function(){
-				$(\"#jQsloVendorAccount\").slo().setparam({\"company\":\"{$resp['po_comp_id']}\"});
-			});
-		</script>";
-	} catch (DocumentException $e) {
-		$_TEMPLATE->Title("Not Found!", null, "", "mark-error");
-		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Loading material request order failed, one or more of the following might be the cause:</span>");
-		$_TEMPLATE->NewFrameBody('<ul>
-			<li>Material Request document number is invalid</li>
-			<li>Session has expired</li>
-			<li>Database query failed, contact system administrator</li>
-			<li>Permission denied or not enough privileges to proceed with this document</li>
-			<ul>');
-	} catch (DocumentMaterialListException $e) {
-		$_TEMPLATE->Title("Materials list error!", null, "", "mark-error");
-		$_TEMPLATE->NewFrameBody('<ul>
-			<li>Plotting materials list failed</li>
-			<ul>');
-	} finally {
-	}
-} else {
-	$_TEMPLATE->Title("Request for Quotation", null, null);
+	$grem->terminate(true);
+	?>
+	<style>
+		.links {
+			padding-bottom: 20px;
 
-	echo $_TEMPLATE->CommandBarStart();
-	echo "<div class=\"btn-set\">";
-	echo "<a href=\"" . $fs(230)->dir . "\" style=\"color:#333\">New material request</a>";
-	echo "<span class=\"gap\"></span>";
-	echo "</div>";
-	echo $_TEMPLATE->CommandBarEnd();
+			>a {
+				display: block;
+				padding: 12px 10px;
+				font-size: 1em;
+				position: relative;
 
-
-
-	echo $_TEMPLATE->NewFrameBodyStart();
-	echo "<table class=\"strip\">";
-	echo "<thead style=\"position:sticky;top:146px;background-color:#fff;outline:solid 1px #ccc\">";
-	echo "<tr><td>Cost Center</td><td>Document ID</td><td>Material Request</td><td>Title</td><td>Date</td><td>Items</td><td>Quotations</td><td width=\"100%\">Status</td></tr>";
-	echo "</thead>";
-
-	$rowsploted = 0;
-	$pq_type = Invoice::map['PUR_QUT'];
-	$rm_type = Invoice::map['MAT_REQ'];
-	$r = $app->db->query("
-		SELECT 
-			po_id,po_rel,po_serial,po_rel
-			po_voided,
-			po_title,
-			DATE_FORMAT(po_date,'%Y-%m-%d') AS po_date,
-			DATE_FORMAT(po_date,'%H:%i') AS po_time,
-			CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) AS doc_usr_name,
-			COUNT(pols_id) AS matcount,
-			po_close_date,ccc_name
-		FROM
-			inv_main 
-				JOIN users ON usr_id = po_usr_id
-				LEFT JOIN inv_records ON pols_po_id = po_id
-				JOIN inv_costcenter ON ccc_id = po_costcenter
-				JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id={$app->user->info->id}
-		WHERE
-			po_type = $pq_type AND po_comp_id = {$app->user->company->id}
-		GROUP BY
-			po_id
-		ORDER BY po_date DESC
-		");
-	if ($r) {
-		while ($row = $r->fetch_assoc()) {
-			$rowsploted++;
-			echo "<tr>";
-			echo "<td>{$row['ccc_name']}</td>";
-			echo "<td><a href=\"" . $fs(234)->dir . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">" . $app->translatePrefix(Invoice::map['PUR_QUT'], $row['po_serial']) . "</a></td>";
-			echo "<td></td>";
-			echo "<td>{$row['po_title']}</td>";
-			echo "<td>{$row['po_date']}</td>";
-			// echo "<td>{$row['doc_usr_name']}</td>";
-			echo "<td>{$row['matcount']}</td>";
-			echo "<td>" . $row['qutcount'] . "</td>";
-			echo "<td>" . (is_null($row['po_close_date']) ? "Open" : "Closed") . "</td>";
-			echo "</tr>";
+				&::before {
+					content: "-";
+					position: absolute;
+					left: 0px;
+				}
+			}
 		}
-	}
-	for ($irow = $invoice->listview_rows - $rowsploted; $irow > 0; $irow--) {
-		echo "<tr><td colspan=\"7\">&nbsp;</td></tr>";
-	}
 
-	echo "</table>";
-	echo $_TEMPLATE->NewFrameBodyEnd();
+		.table {
+			&.local01 {
+				grid-template-columns: 40px minmax(130px, 1fr) minmax(10px, 3fr) 1fr 60px 1fr 1fr;
+			}
 
-	echo "<script type=\"text/javascript\">
-				Template.HistoryEntry(\"" . $fs(234)->dir . "\", \"" . $fs(234)->title . "\");
-			</script>";
+			&.local03 {
+				grid-template-columns: 150px 1fr;
+			}
+
+			>header {
+				>.n {
+					text-align: right;
+				}
+			}
+
+			>main {
+				display: contents;
+
+				>.n {
+					text-align: right;
+				}
+
+				&.partsElement>div {
+					background-color: var(--slo-menu-itemhover-background-color);
+				}
+			}
+		}
+	</style>
+
+	<?php
+} catch (Exception $e) {
+	$grem = new Gremium\Gremium(true);
+	$grem->header()->prev("href=\"{$fs(209)->dir}\" data-href=\"{$fs(209)->dir}\"")->serve("<h1>{$e->getMessage()}</h1><cite>$id</cite>");
+	$grem->title()->serve("<span class=\"small-media-hide\">Couldn't open requested document, verify the following keys and try again</span>");
+	$grem->article()->serve(<<<HTML
+			<ul>
+				<li>Permissions denied</li>
+				<li>Document is locked or out of scope</li>
+				<li>Contact system administrator if this problem persists</li>
+			</ul>
+			HTML
+	);
+	$grem->terminate();
+} catch (TypeError $e) {
+	$grem = new Gremium\Gremium(true);
+	$grem->header()->prev("href=\"{$fs(209)->dir}\" data-href=\"{$fs(209)->dir}\"")->serve("<h1>Invalid input</h1><cite>$id</cite>");
+	$grem->title()->serve("<span class=\"small-media-hide\">Couldn't open requested document, verify the following keys and try again</span>");
+	$grem->article()->serve(<<<HTML
+			<ul>
+				<li>Permissions denied</li>
+				<li>Document is locked or out of scope</li>
+				<li>Contact system administrator if this problem persists</li>
+			</ul>
+			HTML
+	);
+	$grem->terminate();
 }
+?>

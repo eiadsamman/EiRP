@@ -293,8 +293,8 @@ abstract class Transaction extends Instructions
 			return false;
 
 		$stmt = $this->app->db->prepare("UPDATE uploads SET up_rel = NULL WHERE up_rel = ?;");
-
 		$stmt->bind_param("i", $statementID);
+		
 		return $stmt->execute();
 	}
 	private function processEdit(int $statementID): bool
@@ -386,15 +386,7 @@ abstract class Transaction extends Instructions
 			return true;
 		}
 		if (sizeof($this->attachments) > 0) {
-
-			$stmt = $this->app->db->prepare(
-				"UPDATE 
-					uploads 
-				SET 
-					up_rel = $ownerID , up_active = 1 
-				WHERE
-					up_id = ? AND up_user = {$this->app->user->info->id}"
-			);
+			$stmt = $this->app->db->prepare("UPDATE uploads SET up_rel = $ownerID , up_active = 1 WHERE up_id = ?;");
 			foreach ($this->attachments as &$attach) {
 				$stmt->bind_param('i', $attach);
 				if (!$stmt->execute()) {
