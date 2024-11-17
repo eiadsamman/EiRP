@@ -64,6 +64,7 @@ enum PaymentTerm: int
 
 		if (in_array($this->value, [self::EndOfMonth->value])) {
 			/* End of Month */
+			$dateTime->setTime(23,59,59,999999);
 			return $dateTime->modify("last day of this month");
 		}
 		return false;

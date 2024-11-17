@@ -192,25 +192,27 @@ ALTER TABLE `acc_accounts` ADD `prt_term` MEDIUMINT UNSIGNED NULL DEFAULT NULL A
 
 
 
-/* view_financial_accounts VIEW */
-SELECT
-	`remote`.`acc_accounts`.`prt_id` AS `prt_id`,
-	`remote`.`acc_accounts`.`prt_name` AS `prt_name`,
-	`remote`.`acc_accounts`.`prt_term` AS `prt_term`,
-	`remote`.`companies`.`comp_name` AS `comp_name`,
-	`remote`.`companies`.`comp_id` AS `comp_id`,
-	`remote`.`currencies`.`cur_id` AS `cur_id`,
-	`remote`.`currencies`.`cur_name` AS `cur_name`,
-	`remote`.`currencies`.`cur_shortname` AS `cur_shortname`,
-	`remote`.`currencies`.`cur_symbol` AS `cur_symbol`
-FROM
-	`remote`.`acc_accounts`
-	JOIN `remote`.`currencies` ON (
-		`remote`.`currencies`.`cur_id`=`remote`.`acc_accounts`.`prt_currency`
-	)
-	JOIN `remote`.`companies` ON (
-		`remote`.`acc_accounts`.`prt_company_id`=`remote`.`companies`.`comp_id`
-	);
+CREATE
+OR REPLACE ALGORITHM=UNDEFINED VIEW view_financial_accounts AS (
+	SELECT
+		`acc_accounts`.`prt_id` AS `prt_id`,
+		`acc_accounts`.`prt_name` AS `prt_name`,
+		`acc_accounts`.`prt_term` AS `prt_term`,
+		`companies`.`comp_name` AS `comp_name`,
+		`companies`.`comp_id` AS `comp_id`,
+		`currencies`.`cur_id` AS `cur_id`,
+		`currencies`.`cur_name` AS `cur_name`,
+		`currencies`.`cur_shortname` AS `cur_shortname`,
+		`currencies`.`cur_symbol` AS `cur_symbol`
+	FROM
+		`acc_accounts`
+		JOIN `currencies` ON (
+			`currencies`.`cur_id`=`acc_accounts`.`prt_currency`
+		)
+		JOIN `companies` ON (
+			`acc_accounts`.`prt_company_id`=`companies`.`comp_id`
+		)
+);
 
 
 
@@ -238,7 +240,7 @@ ALTER TABLE `inv_main` ADD `po_departement_id` MEDIUMINT NOT NULL AFTER `po_issu
 
 
 
-ALTER TABLE `inv_records` CHANGE `pols_bom_part` `pols_grouping_item` BIT (1) NOT NULL DEFAULT b '0';
+ALTER TABLE `inv_records` CHANGE `pols_bom_part` `pols_grouping_item` BIT (1) NOT NULL DEFAULT b'0';
 
 
 
@@ -246,7 +248,7 @@ ALTER TABLE `inv_records` CHANGE `pols_po_id` `pols_po_id` MEDIUMINT (8) UNSIGNE
 CHANGE `pols_item_id` `pols_item_id` MEDIUMINT (8) UNSIGNED NOT NULL AFTER `pols_po_id`,
 CHANGE `pols_issued_qty` `pols_issued_qty` DECIMAL(14, 4) NOT NULL AFTER `pols_item_id`,
 CHANGE `pols_delivered_qty` `pols_delivered_qty` DECIMAL(14, 4) NULL DEFAULT NULL AFTER `pols_issued_qty`,
-CHANGE `pols_grouping_item` `pols_grouping_item` BIT (1) NOT NULL DEFAULT b '0' AFTER `pols_delivered_qty`;
+CHANGE `pols_grouping_item` `pols_grouping_item` BIT (1) NOT NULL DEFAULT b'0' AFTER `pols_delivered_qty`;
 
 
 
@@ -264,7 +266,7 @@ ALTER TABLE `inv_records` CHANGE `pols_grouping_item` `pols_grouping_item` BOOLE
 
 
 
-ALTER TABLE `inv_main` CHANGE `po_canceled` `po_voided` BIT (1) NOT NULL DEFAULT b '0';
+ALTER TABLE `inv_main` CHANGE `po_canceled` `po_voided` BIT (1) NOT NULL DEFAULT b'0';
 
 
 
@@ -273,3 +275,15 @@ ALTER TABLE `inv_main` ADD `po_payment_term` SMALLINT UNSIGNED NULL DEFAULT NULL
 
 
 ALTER TABLE `inv_main` CHANGE `po_shipping_term` `po_shipping_term` SMALLINT UNSIGNED NULL DEFAULT NULL;
+
+
+
+ALTER TABLE `acc_bankaccount` CHANGE `bnkacc_created_at` `bnkacc_created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+
+
+ALTER TABLE `companies_legal` CHANGE `commercial_creationDate` `commercial_creationDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CHANGE `commercial_issuingDate` `commercial_issuingDate` DATETIME NULL DEFAULT NULL,
+CHANGE `commercial_expirationDate` `commercial_expirationDate` DATETIME NULL DEFAULT NULL,
+CHANGE `commercial_taxExpirationDate` `commercial_taxExpirationDate` DATETIME NULL DEFAULT NULL,
+CHANGE `commercial_vatExpirationDate` `commercial_vatExpirationDate` DATETIME NULL DEFAULT NULL;

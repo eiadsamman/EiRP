@@ -11,9 +11,9 @@ $ulib = new System\IO\AttachLib($app);
 if ($r) {
 	while ($row_release = $r->fetch_assoc()) {
 		try {
-			$dr  = @unlink($app->root . "uploads/" . $row_release['up_id']);
-			$dr_v = @unlink($app->root . "uploads/" . $row_release['up_id'] . "_v");
-			$dr_t = @unlink($app->root . "uploads/" . $row_release['up_id'] . "_t");
+			$dr  = @unlink($app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $row_release['up_id']);
+			$dr_v = @unlink($app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $row_release['up_id'] . "_v");
+			$dr_t = @unlink($app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $row_release['up_id'] . "_t");
 		} catch (Exception $e) {
 			//Ignore
 		}
@@ -22,10 +22,19 @@ if ($r) {
 } */
 
 
+if (empty($app->settings->site['cdnpath']) || !is_dir($app->settings->site['cdnpath'])) {
+	$app->responseStatus->InternalServerError->response();
+}
+$app->settings->site['cdnpath'] = rtrim($app->settings->site['cdnpath'], "\\/");
+
+
 $accepted_mimes = array(
-	"image/jpeg", "image/gif", "image/bmp", "image/png",
+	"image/jpeg",
+	"image/gif",
+	"image/bmp",
+	"image/png",
 );
-$resize_mimes = array(
+$resize_mimes   = array(
 	"image/jpeg"
 );
 if (isset($_GET['up']) && !isset($_POST['upload_file'])) {
@@ -61,12 +70,12 @@ if (isset($_POST, $_POST['upload_file']) && $_POST['upload_file'] == "true" && !
 	} else {
 		$app->db->autocommit(false);
 
-		$up_size = (float)$_FILES['file']['size'];
-		$up_name = stripcslashes($_FILES['file']['name']);
-		$up_pagefile = (int)$_POST['pagefile'];
+		$up_size     = (float) $_FILES['file']['size'];
+		$up_name     = stripcslashes($_FILES['file']['name']);
+		$up_pagefile = (int) $_POST['pagefile'];
 
 
-		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$finfo        = finfo_open(FILEINFO_MIME_TYPE);
 		$up_mime_type = finfo_file($finfo, $_FILES['file']['tmp_name']);
 		if (!$finfo || !$up_mime_type) {
 			$outjson = array(
@@ -79,8 +88,8 @@ if (isset($_POST, $_POST['upload_file']) && $_POST['upload_file'] == "true" && !
 		$r = $app->db->query("INSERT INTO uploads (up_pagefile,up_rel,up_user,up_date,up_size,up_name,up_downloads,up_active,up_deleted,up_mime,up_sessid) 
 									VALUES ($up_pagefile,0,{$app->user->info->id},FROM_UNIXTIME(" . time() . "),$up_size,'$up_name',0,0,0,'$up_mime_type','" . session_id() . "');");
 		if (true === $r) {
-			$up_id = $app->db->insert_id;
-			$up_res = move_uploaded_file($_FILES['file']['tmp_name'], $app->root . "uploads/" . $up_id);
+			$up_id  = $app->db->insert_id;
+			$up_res = move_uploaded_file($_FILES['file']['tmp_name'], $app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id);
 			if ($up_res) {
 
 				$app->db->commit();
@@ -98,20 +107,20 @@ if (isset($_POST, $_POST['upload_file']) && $_POST['upload_file'] == "true" && !
 						if (in_array($up_mime_type, $resize_mimes)) {
 							$image = new System\IO\SimpleImage();
 
-							if ($image->load($app->root . "uploads/" . $up_id) !== false) {
+							if ($image->load($app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id) !== false) {
 								$image->FixOrientation();
 
 								/* IT CONSUMING THE SPACE, MAKE IT SMALLER*/
 
 								$height = $image->getHeight();
-								$width = $image->getWidth();
+								$width  = $image->getWidth();
 
 								if ($width >= $height && $width > 2000) {
 									$image->resizeToWidth(2000);
 								} else {
 									$image->resizeToHeight(2000);
 								}
-								$image->save($app->root . "uploads/" . $up_id);
+								$image->save($app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id);
 
 
 								if ($width >= $height && $width > 800) {
@@ -119,7 +128,7 @@ if (isset($_POST, $_POST['upload_file']) && $_POST['upload_file'] == "true" && !
 								} elseif ($width < $height && $height > 800) {
 									$image->resizeToHeight(800);
 								}
-								$image->save($app->root . "uploads/" . $up_id . "_v");
+								$image->save($app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id . "_v");
 
 								if ($width > $height) {
 									$image->resizeToHeight(200);
@@ -127,15 +136,15 @@ if (isset($_POST, $_POST['upload_file']) && $_POST['upload_file'] == "true" && !
 									$image->resizeToWidth(200);
 								}
 								$image->crop(200, 200, 0.5, 0.5, array(255, 255, 255));
-								$image->save($app->root . "uploads/" . $up_id . "_t");
+								$image->save($app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id . "_t");
 
 								$image->destroy();
 								if (file_exists($_FILES['file']['tmp_name']))
 									@unlink($_FILES['file']['tmp_name']);
 							}
 						} else {
-							copy($app->root . "uploads/" . $up_id, $app->root . "uploads/" . $up_id . "_v");
-							copy($app->root . "uploads/" . $up_id, $app->root . "uploads/" . $up_id . "_t");
+							copy($app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id, $app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id . "_v");
+							copy($app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id, $app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id . "_t");
 						}
 					}
 				} catch (Exception $e) {

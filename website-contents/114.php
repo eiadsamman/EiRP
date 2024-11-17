@@ -2,7 +2,7 @@
 /* 
 var_dump ( zend_version() );
 var_dump ( extension_loaded("Zend OPcache") ); 
-print_r ( opcache_get_status() ); */
+print_r ( opcache_get_status() );
 
 
 
@@ -12,4 +12,7 @@ $d = new \DateTime("now");
 
 echo "<pre>";
 var_dump($d);
-var_dump($term->getDueDate($d));
+var_dump($term->getDueDate($d)); */
+
+
+?>
