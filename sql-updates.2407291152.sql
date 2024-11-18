@@ -101,7 +101,7 @@ CREATE TABLE `acc_bankaccount` (
 	`bnkacc_currency_id` SMALLINT UNSIGNED NOT NULL,
 	`bnkacc_iban` VARCHAR(34) NULL DEFAULT NULL,
 	`bnkacc_swift` VARCHAR(16) NULL DEFAULT NULL,
-	`bnkacc_created_at` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`bnkacc_created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`bnkacc_owner_id` MEDIUMINT UNSIGNED NOT NULL,
 	PRIMARY KEY (`bnkacc_id`)
 ) ENGINE=InnoDB;
@@ -117,13 +117,13 @@ CREATE TABLE `companies_legal` (
 	`commercial_companyId` MEDIUMINT UNSIGNED NOT NULL,
 	`commercial_legalName` VARCHAR(128) NOT NULL,
 	`commercial_registrationNumber` VARCHAR(64) NOT NULL,
-	`commercial_creationDate` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`commercial_issuingDate` DATE NULL,
-	`commercial_expirationDate` DATE NULL,
+	`commercial_creationDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`commercial_issuingDate` DATETIME NULL,
+	`commercial_expirationDate` DATETIME NULL,
 	`commercial_taxNumber` VARCHAR(64) NOT NULL,
-	`commercial_taxExpirationDate` DATE NULL,
+	`commercial_taxExpirationDate` DATETIME NULL,
 	`commercial_vatNumber` VARCHAR(64) NOT NULL,
-	`commercial_vatExpirationDate` DATE NULL,
+	`commercial_vatExpirationDate` DATETIME NULL,
 	`commercial_default` BOOLEAN NULL,
 	PRIMARY KEY (`commercial_id`)
 ) ENGINE=InnoDB;
@@ -191,28 +191,6 @@ DROP TABLE `acc_transtypes`;
 ALTER TABLE `acc_accounts` ADD `prt_term` MEDIUMINT UNSIGNED NULL DEFAULT NULL AFTER `prt_name`;
 
 
-
-CREATE
-OR REPLACE ALGORITHM=UNDEFINED VIEW view_financial_accounts AS (
-	SELECT
-		`acc_accounts`.`prt_id` AS `prt_id`,
-		`acc_accounts`.`prt_name` AS `prt_name`,
-		`acc_accounts`.`prt_term` AS `prt_term`,
-		`companies`.`comp_name` AS `comp_name`,
-		`companies`.`comp_id` AS `comp_id`,
-		`currencies`.`cur_id` AS `cur_id`,
-		`currencies`.`cur_name` AS `cur_name`,
-		`currencies`.`cur_shortname` AS `cur_shortname`,
-		`currencies`.`cur_symbol` AS `cur_symbol`
-	FROM
-		`acc_accounts`
-		JOIN `currencies` ON (
-			`currencies`.`cur_id`=`acc_accounts`.`prt_currency`
-		)
-		JOIN `companies` ON (
-			`acc_accounts`.`prt_company_id`=`companies`.`comp_id`
-		)
-);
 
 
 
@@ -287,3 +265,34 @@ CHANGE `commercial_issuingDate` `commercial_issuingDate` DATETIME NULL DEFAULT N
 CHANGE `commercial_expirationDate` `commercial_expirationDate` DATETIME NULL DEFAULT NULL,
 CHANGE `commercial_taxExpirationDate` `commercial_taxExpirationDate` DATETIME NULL DEFAULT NULL,
 CHANGE `commercial_vatExpirationDate` `commercial_vatExpirationDate` DATETIME NULL DEFAULT NULL;
+
+
+
+
+
+
+
+
+
+
+CREATE
+OR REPLACE ALGORITHM=UNDEFINED VIEW view_financial_accounts AS (
+	SELECT
+		`acc_accounts`.`prt_id` AS `prt_id`,
+		`acc_accounts`.`prt_name` AS `prt_name`,
+		`acc_accounts`.`prt_term` AS `prt_term`,
+		`companies`.`comp_name` AS `comp_name`,
+		`companies`.`comp_id` AS `comp_id`,
+		`currencies`.`cur_id` AS `cur_id`,
+		`currencies`.`cur_name` AS `cur_name`,
+		`currencies`.`cur_shortname` AS `cur_shortname`,
+		`currencies`.`cur_symbol` AS `cur_symbol`
+	FROM
+		`acc_accounts`
+		JOIN `currencies` ON (
+			`currencies`.`cur_id`=`acc_accounts`.`prt_currency`
+		)
+		JOIN `companies` ON (
+			`acc_accounts`.`prt_company_id`=`companies`.`comp_id`
+		)
+);

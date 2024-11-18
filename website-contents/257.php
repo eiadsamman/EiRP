@@ -1,12 +1,12 @@
 <?php
+
+use System\Template\Gremium\Gremium;
 if ($h__requested_with_ajax && isset($_POST['posubmit'])) {
 }
 
 
 
-$_TEMPLATE = new \System\Template\Body("Candas - SN Calculator");
-$_TEMPLATE->SetLayout(/*Sticky Title*/false,/*Command Bar*/ false,/*Sticky Frame*/ false);
-$_TEMPLATE->FrameTitlesStack(false);
+
 
 ?>
 <style type="text/css">
@@ -16,13 +16,6 @@ $_TEMPLATE->FrameTitlesStack(false);
 		top: 3px
 	}
 
-	table.main>tbody>tr>td>div.btn-set {
-		min-width: 200px;
-	}
-
-	table.main>tbody>tr>td>div.btn-set>span {
-		width: 50px
-	}
 
 	.input-error {
 		color: #f03;
@@ -47,180 +40,171 @@ $_TEMPLATE->FrameTitlesStack(false);
 	}
 </style>
 
-
-<script>
-	MathJax = {
-		options: {
-			enableMenu: false,
-		}
-	}
-</script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-</script>
+<script>MathJax = { options: { enableMenu: false, } }</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
 
-<table style="border-collapse: collapse;margin: 0;width:100%;">
+<?php
+$grem = new Gremium();
+
+//echo "<a href=\"" . $fs(258)->dir . "\" style=\"color:#000\" target=\"_blank\">Materials manager</a>";
+//<button id=\"jQpostSubmit\" type=\"button\">Print Report</button>
+
+
+$grem->header()->serve("<h1>Nominal ring stifness</h1>");
+$grem->menu()->sticky(false)->serve("<span class=\"gap\"></span><button id=\"jQpostSubmit\" class=\"edge-left\" type=\"button\">Update</button>");
+
+
+$grem->title()->serve("Solid-wall pipes");
+$grem->article()->open();
+?>
+<table class="main">
 	<tbody>
 		<tr>
-			<td style="min-width: 300px;width:100%" valign="top" class="tcell">
-				<?php
-				$_TEMPLATE->Title($fs()->title, null, null);
+			<td width="100%">Material type</td>
+			<td></td>
+			<td class="btn-set">
+				<select id="js-input-material" style="width:100%">
+					<?php
+					$rmat = $app->db->query("SELECT cndmat_id,cndmat_name,cndmat_young,cndmat_creep FROM candas_materials ");
+					if ($rmat) {
+						while ($rowmat = $rmat->fetch_assoc()) {
+							echo "<option data-value=\"{$rowmat['cndmat_young']}\" data-creepmodulus=\"{$rowmat['cndmat_creep']}\">{$rowmat['cndmat_name']}</option>";
+						}
+					}
 
-				echo $_TEMPLATE->CommandBarStart();
-				echo "<div class=\"btn-set\" style=\"flex-wrap:nowrap\">";
-
-				echo "<button id=\"jQpostSubmit\" type=\"button\">Print Report</button>";
-				if ($tables->Permissions(258, $app->user->info->permissions)->read) {
-					echo "<a href=\"" . $fs(258)->dir . "\" style=\"color:#000\" target=\"_blank\">Materials manager</a>";
-				}
-
-				echo "<span class=\"gap\"></span>";
-				echo "<button id=\"jQpostSubmit\" type=\"button\">Update</button>";
-				echo "</div>";
-				echo $_TEMPLATE->CommandBarEnd();
-
-				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Solid-wall pipes</span>");
-				echo $_TEMPLATE->NewFrameBodyStart();
-				?>
-				<table class="main">
-					<tbody>
-						<tr>
-							<td width="100%">Material type</td>
-							<td></td>
-							<td class="btn-set">
-								<select id="js-input-material" style="width:100%">
-									<?php
-									$rmat = $app->db->query("SELECT cndmat_id,cndmat_name,cndmat_young,cndmat_creep FROM candas_materials ");
-									if ($rmat) {
-										while ($rowmat = $rmat->fetch_assoc()) {
-											echo "<option data-value=\"{$rowmat['cndmat_young']}\" data-creepmodulus=\"{$rowmat['cndmat_creep']}\">{$rowmat['cndmat_name']}</option>";
-										}
-									}
-
-									?>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>Young’s modulus</td>
-							<td>E</td>
-							<td>
-								<div class="btn-set"><input class="flex" id="js-outout-youngmodulus" readonly type="text"><span>MPa</span></div>
-							</td>
-						</tr>
-						<tr>
-							<td>Standard Dimensions Ratio</td>
-							<td>SDR</td>
-							<td>
-								<div class="btn-set"><input data-error="err61" class="flex" id="js-input-sdr" type="text" value="11"><span>D/s</span></div>
-								<span class="input-error" id="err61">Invalid SDR value, accepted range (1~100)</span>
-							</td>
-						</tr>
-						<tr>
-							<td>Creep modulus</td>
-							<td>c</td>
-							<td>
-								<div class="btn-set"><input class="flex" id="js-outout-creepmod" readonly type="text"></div>
-							</td>
-						</tr>
-						<tr>
-							<td>Nominal ring stiffness</td>
-							<td>SN</td>
-							<td>
-								<div class="btn-set"><input class="flex" id="js-output-nomringstiff" readonly type="text"><span>KPa</span></div>
-							</td>
-						</tr>
-						<tr>
-							<td>Long term young modulus</td>
-							<td>E0</td>
-							<td>
-								<div class="btn-set"><input class="flex" id="js-outout-longtermyoungmod" readonly type="text"><span>MPa</span></div>
-							</td>
-						</tr>
-						<tr>
-							<td>Long term stiffness</td>
-							<td>SN<span class="l">0</span></td>
-							<td>
-								<div class="btn-set"><input class="flex" id="js-outout-longtermstiff" readonly type="text"><span>KPa</span></div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<?php
-				echo $_TEMPLATE->NewFrameBodyEnd();
-				$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Structured-wall pipes <b>ISO 9969</b></span>");
-				echo $_TEMPLATE->NewFrameBodyStart();
-				?>
-				<table class="main">
-					<tbody>
-						<tr>
-							<td width="100%">Load @ 3% (ISO 9969)</td>
-							<td>F<span class="l">3%</span></td>
-							<td>
-								<div class="btn-set"><input class="flex" data-error="err95" id="js-input-load" type="text" value="1200"><span>N</span></div>
-								<span class="input-error" id="err95">Invalid Load value, accepted range (1~10000)N</span>
-							</td>
-						</tr>
-
-
-						<tr>
-							<td>Sample length</td>
-							<td>L</td>
-							<td>
-								<div class="btn-set"><input class="flex" data-error="err103" id="js-input-samplelength" type="text" value="300"><span>mm</span></div>
-								<span class="input-error" id="err103">Invalid Sample length, accepted range (1~10000)N</span>
-							</td>
-						</tr>
-
-						<tr>
-							<td>Pipe internal diameter</td>
-							<td>Di</td>
-							<td>
-								<div class="btn-set"><input class="flex" data-error="err110" id="js-input-internaldim" type="text" value="135"><span>mm</span></div>
-								<span class="input-error" id="err110">Invalid diameter, accepted range (1~10000)N</span>
-							</td>
-						</tr>
-
-						<tr>
-							<td>Nominal ring stiffness</td>
-							<td>SN</td>
-							<td>
-								<div class="btn-set"><input class="flex" id="js-output-sSN" readonly type="text"><span>KPa</span></div>
-							</td>
-						</tr>
-
-					</tbody>
-				</table>
-				<?php
-				echo $_TEMPLATE->NewFrameBodyEnd();
-				?>
+					?>
+				</select>
 			</td>
-			<td style="min-width: 500px;" valign="top" class="tcell">
-				<div style="padding:40px 20px 30px 20px">
-					<div style="font-size: 2em;padding-bottom: 15px;">Nominal Ring Stiffness</div>
-					<p style="font-size:1.1em;line-height: 2em;padding-left: 10px;">
-						<span style="margin: 15px;float:right;background-size: 150px;width: 150px;height: 150px;background-repeat: no-repeat; border-radius: 200px;background-image:url('candas-pipe_sn.jpg');background-position:50% 50%;display: inline-block;"></span>
-						The ring stiffness of a pipe describes the force-deformation ratio under a radially acting external mechanical load. Ring stiffness corresponds to an upward slope in the force-deformation diagram.
-						This characteristic is typically measured to <b>ISO 9969</b> or <b>ASTM D2412</b> for thermoplastic pipes, and to <b>EN 1228</b> for glass fiber-reinforced pipes.
-						<br /><br />This tool calculate the SN using two alternative methods:
-					<ul style="font-size:1.1em;line-height: 1.2em;">
-						<li>
-							Nominal ring stiffness<br /><i>(Solid-wall pipes made of PE or PVC-U)</i>
-							<p>\[SN \approx {E \over {12 (SDR - 1)^3 } }\]</p>
-						</li>
-						<li>
-							Nominal ring stiffness<br /><i>(Structured-wall pipes tested according to ISO 9969)</i>
-							<p>\[SN \approx {+ {0.01935 * F_{3\%}} \over ( 0.03 * LD_i ) }\]</p>
-						</li>
-					</ul>
-					</p>
+		</tr>
+		<tr>
+			<td>Young’s modulus</td>
+			<td>E</td>
+			<td>
+				<div class="btn-set"><input class="flex" id="js-outout-youngmodulus" readonly type="text"><span>MPa</span></div>
+			</td>
+		</tr>
+		<tr>
+			<td>Standard Dimensions Ratio</td>
+			<td>SDR</td>
+			<td>
+				<div class="btn-set"><input data-error="err61" class="flex" id="js-input-sdr" type="text" value="11"><span>D/s</span>
 				</div>
+				<span class="input-error" id="err61">Invalid SDR value, accepted range (1~100)</span>
+			</td>
+		</tr>
+		<tr>
+			<td>Creep modulus</td>
+			<td>c</td>
+			<td>
+				<div class="btn-set"><input class="flex" id="js-outout-creepmod" readonly type="text"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>Nominal ring stiffness</td>
+			<td>SN</td>
+			<td>
+				<div class="btn-set"><input class="flex" id="js-output-nomringstiff" readonly type="text"><span>KPa</span></div>
+			</td>
+		</tr>
+		<tr>
+			<td>Long term young modulus</td>
+			<td>E0</td>
+			<td>
+				<div class="btn-set"><input class="flex" id="js-outout-longtermyoungmod" readonly type="text"><span>MPa</span></div>
+			</td>
+		</tr>
+		<tr>
+			<td>Long term stiffness</td>
+			<td>SN<span class="l">0</span></td>
+			<td>
+				<div class="btn-set"><input class="flex" id="js-outout-longtermstiff" readonly type="text"><span>KPa</span></div>
 			</td>
 		</tr>
 	</tbody>
 </table>
+<?php
+$grem->getLast()->close();
+
+$grem->title()->serve("Structured-wall pipes <b>ISO 9969</b>");
+$grem->article()->open();
+
+?>
+<table class="main">
+	<tbody>
+		<tr>
+			<td width="100%">Load @ 3% (ISO 9969)</td>
+			<td>F<span class="l">3%</span></td>
+			<td>
+				<div class="btn-set"><input class="flex" data-error="err95" id="js-input-load" type="text" value="1200"><span>N</span>
+				</div>
+				<span class="input-error" id="err95">Invalid Load value, accepted range (1~10000)N</span>
+			</td>
+		</tr>
+
+
+		<tr>
+			<td>Sample length</td>
+			<td>L</td>
+			<td>
+				<div class="btn-set"><input class="flex" data-error="err103" id="js-input-samplelength" type="text" value="300"><span>mm</span></div>
+				<span class="input-error" id="err103">Invalid Sample length, accepted range (1~10000)N</span>
+			</td>
+		</tr>
+
+		<tr>
+			<td>Pipe internal diameter</td>
+			<td>Di</td>
+			<td>
+				<div class="btn-set"><input class="flex" data-error="err110" id="js-input-internaldim" type="text" value="135"><span>mm</span></div>
+				<span class="input-error" id="err110">Invalid diameter, accepted range (1~10000)N</span>
+			</td>
+		</tr>
+
+		<tr>
+			<td>Nominal ring stiffness</td>
+			<td>SN</td>
+			<td>
+				<div class="btn-set"><input class="flex" id="js-output-sSN" readonly type="text"><span>KPa</span></div>
+			</td>
+		</tr>
+
+	</tbody>
+</table>
+<?php
+$grem->getLast()->close();
+
+
+$grem->article()->open();
+
+?>
+<h1>Nominal Ring Stiffness</h1>
+<div>
+	<p style="font-size:1.1em;line-height: 2em;padding-left: 10px;">
+		<span
+			  style="margin: 15px;float:right;background-size: 150px;width: 150px;height: 150px;background-repeat: no-repeat; border-radius: 200px;background-image:url('candas-pipe_sn.jpg');background-position:50% 50%;display: inline-block;"></span>
+		The ring stiffness of a pipe describes the force-deformation ratio under a radially acting external mechanical load. Ring
+		stiffness corresponds to an upward slope in the force-deformation diagram.
+		This characteristic is typically measured to <b>ISO 9969</b> or <b>ASTM D2412</b> for thermoplastic pipes, and to <b>EN
+			1228</b> for glass fiber-reinforced pipes.
+		<br /><br />This tool calculate the SN using two alternative methods:
+	<ul style="font-size:1.1em;line-height: 1.2em;">
+		<li>
+			Nominal ring stiffness<br /><i>(Solid-wall pipes made of PE or PVC-U)</i>
+			<p>\[SN \approx {E \over {12 (SDR - 1)^3 } }\]</p>
+		</li>
+		<li>
+			Nominal ring stiffness<br /><i>(Structured-wall pipes tested according to ISO 9969)</i>
+			<p>\[SN \approx {+ {0.01935 * F_{3\%}} \over ( 0.03 * LD_i ) }\]</p>
+		</li>
+	</ul>
+	</p>
+</div>
+
+<?php
+$grem->terminate();
+?>
 
 
 <script type="text/javascript">
@@ -299,11 +283,11 @@ $_TEMPLATE->FrameTitlesStack(false);
 	for (let i in DOMFields.input) {
 		let jsEntity = DOMFields.input[i];
 		for (let e = 0; e < events.length; e++) {
-			jsEntity.obj.addEventListener(events[e], function(event) {
+			jsEntity.obj.addEventListener(events[e], function (event) {
 				this.style.background = "#fffad6";
 			});
 		}
-		jsEntity.obj.addEventListener("keypress", function(event) {
+		jsEntity.obj.addEventListener("keypress", function (event) {
 			if (event.key === "Enter") {
 				event.preventDefault();
 				calc();
@@ -358,28 +342,28 @@ $_TEMPLATE->FrameTitlesStack(false);
 		}
 	}
 	calc();
-	$(function() {
+	$(function () {
 
-		let Update = function() {
+		let Update = function () {
 			overlay.show();
 			$.ajax({
 				url: "<?php echo $fs()->dir; ?>",
 				type: "POST",
 				data: $("#jQpostFormDetails").serialize() + "&" + $("#jQpostFormMaterials").serialize(),
-			}).done(function(o, textStatus, request) {
+			}).done(function (o, textStatus, request) {
 				let response = request.getResponseHeader('HTTP_X_RESPONSE');
 				if (response == "INERR") {
 					messagesys.failure(o);
 				} else if (response == "SUCCESS") {
-					messagesys.success("Material Request posted successfully");
+					messagesys.success("Posted successfully");
 					Template.PageRedirect("<?php echo $fs(240)->dir; ?>" + o, "<?php echo "{$c__settings['site']['title']} - " . $fs(240)->title; ?>", true);
 					Template.ReloadSidePanel();
 				} else if (response == "DBERR") {
 					messagesys.failure(o);
 				}
-			}).fail(function(m) {
+			}).fail(function (m) {
 				messagesys.failure(m);
-			}).always(function() {
+			}).always(function () {
 				overlay.hide();
 			});
 		}

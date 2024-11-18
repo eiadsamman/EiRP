@@ -9,8 +9,8 @@ if ($_GET['id'] == 0) {
 if (empty($app->settings->site['cdnpath']) || !is_dir($app->settings->site['cdnpath'])) {
 	$app->responseStatus->InternalServerError->response();
 }
-$app->settings->site['cdnpath'] = rtrim($app->settings->site['cdnpath'], "\\/");
 
+$cdnpath = rtrim($app->settings->site['cdnpath'], "\\/");
 
 
 $accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
@@ -36,11 +36,11 @@ if (
 if (in_array($file[3], $accepted_mimes)) {
 	/* Only parse [v,t] flags for images */
 	$_GET['pr'] = (isset($_GET['pr']) && in_array($_GET['pr'], array("v", "t")) ? "_" . $_GET['pr'] : false);
-	$file_dir   = $app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $file[0] . $_GET['pr'];
+	$file_dir   = $cdnpath . DIRECTORY_SEPARATOR . $file[0] . $_GET['pr'];
 
 } else {
 	/* Serve document files */
-	$file_dir = $app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $file[0];
+	$file_dir = $cdnpath . DIRECTORY_SEPARATOR . $file[0];
 }
 
 if (!is_file($file_dir)) {

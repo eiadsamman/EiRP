@@ -1,27 +1,23 @@
 <?php
 
-use System\Template\Body;
+use System\Template\Gremium\Gremium;
 
 $expirydate = false;
-$rexp = $app->db->query("SELECT UNIX_TIMESTAMP(lbr_resigndate) AS rdate FROM labour WHERE lbr_id = {$app->user->info->id};");
+$rexp       = $app->db->query("SELECT UNIX_TIMESTAMP(lbr_resigndate) AS rdate FROM labour WHERE lbr_id = {$app->user->info->id};");
 if ($rexp && $rrow = $rexp->fetch_assoc()) {
 	$expirydate = $rrow['rdate'];
 }
 
 
 if ($expirydate != false && $expirydate <= time()) {
-	$_TEMPLATE = new Body("Candas");
-	$_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ false,/*Sticky Frame*/ false);
-	$_TEMPLATE->FrameTitlesStack(true);
-	$_TEMPLATE->SetWidth("100%");
 
-	$_TEMPLATE->Title("&nbsp;Free trial has expired", null, "", "mark-error");
-	$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Solid/profiled pipes analys free trial has expired</span>");
-	$_TEMPLATE->NewFrameBody('<ul>
-		<li>Registered application in invalid</li>
-		<li>Expiry date has reached</li>
-		<li>Contact us at `info@candas.cn` for more information</li>
-		<ul>');
+	/* $_TEMPLATE->Title("&nbsp;Free trial has expired", null, "", "mark-error");
+																																																							   $_TEMPLATE->NewFrameTitle("<span class=\"flex\">Solid/profiled pipes analys free trial has expired</span>");
+																																																							   $_TEMPLATE->NewFrameBody('<ul>
+																																																								   <li>Registered application in invalid</li>
+																																																								   <li>Expiry date has reached</li>
+																																																								   <li>Contact us at `info@candas.cn` for more information</li>
+																																																								   <ul>'); */
 	exit;
 }
 if (isset($_POST['method']) && $_POST['method'] == "saveimage") {
@@ -42,14 +38,9 @@ if (isset($_POST['method']) && $_POST['method'] == "saveimage") {
 
 
 
-$_TEMPLATE = new Body("");
-$_TEMPLATE->SetLayout(/*Sticky Title*/true,/*Command Bar*/ false,/*Sticky Frame*/ false);
-$_TEMPLATE->FrameTitlesStack(true);
-$_TEMPLATE->SetWidth("100%");
-$_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span style="color:#f03;font-size:0.7em;padding:8px;">
-	Free trial expires on ' . date("Y-m-d", $expirydate) . '
-	<span style="font-family:icomoon4;display:inline-block;padding-left:5px">&#xea08</span>
-	</span>' : ""));
+//$expirydate != false
+
+
 ?>
 
 <style type="text/css">
@@ -92,20 +83,6 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 		max-width: 340px;
 	}
 
-	.cmdbar {
-		align-items: center;
-		justify-content: flex-end;
-		max-width: 500px;
-		white-space: nowrap;
-	}
-
-	.frame-title {
-		padding: 20px 0px 7px 0px;
-		font-weight: bold;
-		color: #555;
-		margin-bottom: 2px;
-		font-style: italic;
-	}
 
 	.main-view {
 		width: 100%;
@@ -123,6 +100,30 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 		white-space: normal;
 		line-height: 1.4em;
 		display: none;
+	}
+
+	#grid-2col {
+		display: grid;
+		grid-template-columns: 488px 3fr;
+		position: relative;
+	}
+
+	#grid-2col>div#side>div {
+		position: sticky;
+		top: var(--root--menubar-height);
+		overflow-y: auto;
+	}
+
+	#grid-2col>div#side>div::-webkit-scrollbar {
+		width: 5px;
+	}
+
+	#grid-2col>div#side>div:hover::-webkit-scrollbar-thumb {
+		background-color: var(--input-hover_border-color);
+	}
+
+	#grid-2col>div#side>div::-webkit-scrollbar-thumb {
+		background-color: var(--input_border-color);
 	}
 
 	@media only screen and (max-width: 900px) {
@@ -144,40 +145,51 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 			max-width: 100%;
 		}
 
-		.cmdbar {
-			max-width: 100%;
-			;
+
+		#grid-2col {
+			grid-template-columns: 1fr;
 		}
+
+		#grid-2col>div#side>div {
+			position: relative;
+			overflow-y: auto;
+		}
+
 	}
 </style>
 
-<table class="main-view">
-	<tbody>
-		<tr>
-			<td valign="top" style="min-width: 430px;">
-				<div style="position: sticky;top: 111px;">
-					<?php $_TEMPLATE->NewFrameTitle("<span class=\"flex\">Profile sketch</span>"); ?>
-					<br />
-					<table>
-	</tbody>
-	<tr>
-		<th style="min-width:100px;">Profile drawing</th>
-		<td width="100%">
-			<input type="file" id="js-inputfile" style="display: none;">
-			<div class="btn-set">
-				<input type="button" value="Browse..." onclick="document.getElementById('js-inputfile').click();" />
-			</div>
+<div id="grid-2col">
+	<div id="side">
+		<div>
+			<?php
+			$grem       = new Gremium();
+			$grem->base = 0;
+			$grem->header()->serve("<h1>SN Calculator</h1>");
+			$grem->article()->open();
+			?>
+			<div style="position: sticky;top: 111px;">
+				<table>
+					<tbody>
+						<tr>
+							<th style="min-width:100px;">Profile drawing</th>
+							<td width="100%">
+								<input type="file" id="js-inputfile" style="display: none;">
+								<div class="btn-set">
+									<input type="button" value="Browse..." onclick="document.getElementById('js-inputfile').click();" />
+								</div>
 
-		</td>
-	</tr>
-	<tr>
-		<th>Options</th>
-		<td>
-			<div><input id="js-invertcolors" name="js-invertcolors" type="checkbox"><label for="js-invertcolors">Invert Colors</label></div>
-			<div style="max-width:300px;"><input type="range" min="1" class="slider" max="252" value="180" id="js-thresholdslider"></div>
-		</td>
-	</tr>
-	<!--
+							</td>
+						</tr>
+						<tr>
+							<th>Options</th>
+							<td>
+								<div><input id="js-invertcolors" name="js-invertcolors" type="checkbox"><label for="js-invertcolors">Invert
+										Colors</label></div>
+								<div style="max-width:300px;"><input type="range" min="1" class="slider" max="252" value="180"
+										   id="js-thresholdslider"></div>
+							</td>
+						</tr>
+						<!--
 							<tr>
 								<th>Input dimensions</th>
 								<td class="btn-set"><input type="text" id="js-output-imgsrc_dim" readonly></td>
@@ -191,218 +203,261 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 								<td class="btn-set"><input type="text" id="js-output-area" readonly></td>
 							</tr>
 							-->
-	<tr style="display:none">
-		<td colspan="2">
-			<div class="btn-set"><button id="js-saveimage">Save image</button><button id="js-clearall">Clear</button></div>
-		</td>
-	</tr>
+						<tr style="display:none">
+							<td colspan="2">
+								<div class="btn-set"><button id="js-saveimage">Save image</button><button id="js-clearall">Clear</button></div>
+							</td>
+						</tr>
 
-	</tbody>
-</table>
+					</tbody>
+				</table>
 
-<div style="border:solid 1px #E6E6EB;text-align: center;margin-top: -1px;">
-	<canvas id="js-canvas" style="text-align:center"></canvas>
-</div>
-</div>
-</td>
-<td style="min-width:15px"></td>
-<td valign="top" width="100%">
-
-	<?php $_TEMPLATE->NewFrameTitle("<span class=\"flex\">Profile data for radial calculation</span>"); ?>
-	<br />
-	<div>
-		<table>
-			<tbody>
-				<tr>
-					<th>A type<br /> predeformation</th>
-					<td width="100%">
-						<div class="btn-set"><input class="flex" style="text-align:right;" type="text" value="1"><span style="width:50px;text-align: right;">%</span></div>
-					</td>
-				</tr>
-
-				<tr>
-					<th>Local<br />predeformation</th>
-					<td width="100%">
-						<div class="btn-set"><input class="flex" style="text-align:right;" type="text" value="0"><span style="width:50px;text-align: right;">%</span></div>
-					</td>
-				</tr>
-				<tr>
-					<th>Inner diameter</th>
-					<td width="100%">
-						<div class="btn-set"><span style="width:40px;">d<sub>i</sub></span><input class="flex" style="text-align:right;" type="text" id="js-input-pipediameter_inner" value="2500"><span style="width:50px;text-align: right;">mm</span></div>
-						<div class="input-error" id="js-input-pipediameter_inner_">Invalid `Pipe inner diameter`, accepted range (1~10,000)mm</div>
-					</td>
-				</tr>
-
-				<tr>
-					<th>Profile width</th>
-					<td width="100%">
-						<div class="btn-set"><input class="flex" style="text-align:right;" type="text" id="js-output-actualwidth" value="120"><span style="width:50px;text-align: right;">mm</span></div>
-						<div class="input-error" id="js-output-actualwidth_">Invalid profile width, accepted range (1~2000)mm</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<div class="frame-title">General values</div>
-		<table>
-			<tbody>
-				<tr>
-					<th>Material density</th>
-					<td width="100%">
-						<div class="btn-set"><input class="flex" style="text-align:right;" type="text" id="js-input-mat_density" value="0.949"><span style="width:70px;text-align: right;">g/cm³</span></div>
-						<div class="input-error" id="js-input-mat_density_">Invalid material density, accepted range (0~100)g/mm³</div>
-					</td>
-				</tr>
-				<tr>
-					<th>Specific weight</th>
-					<td width="100%">
-						<div class="btn-set"><input class="flex" style="text-align:right;" type="text" value="9.4"><span style="width:70px;text-align: right;">kN/m³</span></div>
-					</td>
-				</tr>
-				<tr>
-					<th>Poission's ratio</th>
-					<td width="100%">
-						<div class="btn-set"><input class="flex" style="text-align:right;" type="text" value="0.38"><span style="width:50px;text-align: right;">[-]</span></div>
-					</td>
-				</tr>
-
-			</tbody>
-		</table>
-
-
-
-		<div class="frame-title">Radial values</div>
-		<table>
-			<tbody>
-				<tr>
-					<th>Young's modulus</th>
-					<td width="100%">
-						<div class="btn-set"><span>short term</span><input class="flex" style="text-align:right;" type="text" id="js-input-youngmod-short" value="800"><span style="width:70px;text-align: right;">N/mm²</span></div>
-						<div class="input-error" id="js-input-youngmod-short_">Invalid input</div>
-
-					</td>
-				</tr>
-
-				<tr>
-					<th>Ultimate flexural<br />tensile stress</th>
-					<td width="100%">
-						<div class="btn-set"><span>short term</span><input class="flex" style="text-align:right;" type="text" value="21"><span style="width:70px;text-align: right;">N/mm²</span></div>
-					</td>
-				</tr>
-				<tr>
-					<th>Ultimate flexural<br />compressive stress</th>
-					<td width="100%">
-						<div class="btn-set"><span>short term</span><input class="flex" style="text-align:right;" type="text" value="35"><span style="width:70px;text-align: right;">N/mm²</span></div>
-					</td>
-				</tr>
-				<tr>
-					<th>Hoop tensile<br />strength</th>
-					<td width="100%">
-						<div class="btn-set"><span>short term</span><input class="flex" style="text-align:right;" type="text" value="17"><span style="width:70px;text-align: right;">N/mm²</span></div>
-					</td>
-				</tr>
-				<!--
-								long terms N/mm2
-								160
-								14
-								23
-								8.4
-							-->
-
-			</tbody>
-		</table>
-
-		<div class="frame-title">
-			<div class="btn-set cmdbar">
-				<button id="js-update-stud" style="max-width: 200px;" class="flex">Update pipe parameters</button>
+				<div style="border:solid 1px #E6E6EB;text-align: center;margin-top: -1px;">
+					<canvas id="js-canvas" style="text-align:center"></canvas>
+				</div>
 			</div>
+			<?php
+			$grem->getLast()->close();
+			$grem->terminate();
+			?>
+
+		</div>
+	</div>
+	<div id="main">
+
+		<?php
+		$grem = new Gremium(true);
+		$grem->header()->sticky(true)->serve("<h1>Profile calculation</h1><cite></cite><div class=\"btn-set\"><button id=\"js-update-stud\" style=\"max-width: 200px;\" class=\"flex\">Update parameters</button></div>");
+		$grem->article()->open();
+		?>
+
+
+
+		<div class="form">
+			<label>
+				<h1>A type predeformation</h1>
+				<div class="btn-set">
+					<input class="flex" style="text-align:right;" type="text" value="1"><span style="width:50px;text-align: right;">%</span>
+				</div>
+			</label>
+			<label>
+				<h1>Local predeformation</h1>
+				<div class="btn-set">
+					<input class="flex" style="text-align:right;" type="text" value="0"><span style="width:50px;text-align: right;">%</span>
+				</div>
+			</label>
+		</div>
+		<div class="form">
+			<label>
+				<h1>Inner diameter</h1>
+				<div class="btn-set">
+					<span style="width:40px;">d<sub>i</sub></span><input class="flex" style="text-align:right;" type="text"
+						   id="js-input-pipediameter_inner" value="2500"><span style="width:50px;text-align: right;">mm</span>
+				</div>
+				<div class="input-error" id="js-input-pipediameter_inner_">Invalid `Pipe inner diameter`, accepted range
+					(1~10,000)mm</div>
+			</label>
+			<label>
+				<h1>Profile width</h1>
+				<div class="btn-set">
+					<input class="flex" style="text-align:right;" type="text" id="js-output-actualwidth" value="120"><span
+						  style="width:50px;text-align: right;">mm</span>
+				</div>
+				<div class="input-error" id="js-output-actualwidth_">Invalid profile width, accepted range (1~2000)mm</div>
+			</label>
 		</div>
 
+
+		<h1>General values</h1>
+		<div class="form">
+			<label>
+				<h1>Material density</h1>
+				<div class="btn-set">
+					<input class="flex" style="text-align:right;" type="text" id="js-input-mat_density" value="0.949"><span
+						  style="width:70px;text-align: right;">g/cm³</span>
+				</div>
+				<div class="input-error" id="js-input-mat_density_">Invalid material density, accepted range (0~100)g/mm³</div>
+			</label>
+			<label>
+				<h1>Specific weight</h1>
+				<div class="btn-set">
+					<input class="flex" style="text-align:right;" type="text" value="9.4"><span style="width:70px;text-align: right;">kN/m³</span>
+				</div>
+			</label>
+		</div>
+		<div class="form">
+			<label>
+				<h1>Poission's ratio</h1>
+				<div class="btn-set">
+					<input class="flex" style="text-align:right;" type="text" value="0.38"><span style="width:50px;text-align: right;">[-]</span>
+				</div>
+			</label>
+			<label>
+				<h1></h1>
+				<div class="btn-set">
+
+				</div>
+			</label>
+		</div>
+
+
+		<h1>Radial values</h1>
+		<div class="form">
+			<label>
+				<h1>Young's modulus</h1>
+				<div class="btn-set"><span>short term</span><input class="flex" style="text-align:right;" type="text" id="js-input-youngmod-short"
+						   value="800"><span style="width:70px;text-align: right;">N/mm²</span></div>
+				<div class="input-error" id="js-input-youngmod-short_">Invalid input</div>
+
+			</label>
+			<label>
+				<h1>Ultimate flexural tensile stress</h1>
+				<div class="btn-set">
+					<span>short term</span>
+					<input class="flex" style="text-align:right;" type="text" value="21"><span style="width:70px;text-align: right;">N/mm²</span>
+				</div>
+			</label>
+		</div>
+		<div class="form">
+			<label>
+				<h1>Ultimate flexural compressive stress</h1>
+				<div class="btn-set">
+					<span>short term</span>
+					<input class="flex" style="text-align:right;" type="text" value="35"><span style="width:70px;text-align: right;">N/mm²</span>
+				</div>
+				</td>
+			</label>
+			<label>
+				<h1>Hoop tensile strength</h1>
+				<div class="btn-set">
+					<span>short term</span>
+					<input class="flex" style="text-align:right;" type="text" value="17"><span style="width:70px;text-align: right;">N/mm²</span>
+				</div>
+			</label>
+		</div>
+
+
+
+		<?php
+		$grem->getLast()->close();
+		$grem->title()->serve("Profile properties");
+		$grem->article()->open();
+		?>
+
+		<div class="form">
+			<label>
+				<h1>Profile height</h1>
+				<div class="btn-set">
+					<span style="width:40px;">h</span>
+					<input class="flex" type="text" style="text-align:right;" id="js-output-body_height" readonly>
+					<span style="width:50px;text-align: right;">mm</span>
+				</div>
+			</label>
+			<label>
+				<h1>Profile centroid</h1>
+				<div class="btn-set">
+					<input class="flex" type="text" style="text-align:right;" id="js-output-body_centroid" readonly>
+					<span style="width:50px;text-align: right;">mm</span>
+				</div>
+			</label>
+		</div>
+
+
+		<div class="form">
+			<label>
+				<h1>Profile surface area</h1>
+				<div class="btn-set">
+					<input class="flex" type="text" style="text-align:right;" id="js-output-body_area" readonly>
+					<span style="width:50px;text-align: right;">mm</span>
+				</div>
+			</label>
+			<label>
+				<h1>Profile moment of Inertia</h1>
+				<div class="btn-set">
+					<span style="width:50px">Lxx</span>
+					<input class="flex" style="text-align:right;" type="text" id="js-output-moi_lxx" readonly>
+					<span style="width:70px;text-align: right;">g/mm²</span>
+				</div>
+				<div class="btn-set">
+					<span style="width:50px">Lyy</span>
+					<input class="flex" style="text-align:right;" type="text" id="js-output-moi_lyy" readonly>
+					<span style="width:70px;text-align: right;">g/mm²</span>
+				</div>
+			</label>
+		</div>
+
+
+		<div class="form">
+			<label>
+				<h1>Pipe inner diameter</h1>
+				<div class="btn-set">
+					<input class="flex" type="text" style="text-align:right;" id="js-output-inner_diameter" readonly>
+					<span style="width:50px;text-align: right;">mm</span>
+				</div>
+			</label>
+			<label>
+				<h1>Pipe outer diameter</h1>
+				<div class="btn-set">
+					<input class="flex" type="text" style="text-align:right;" id="js-output-outer_diameter" readonly>
+					<span style="width:50px;text-align: right;">mm</span>
+				</div>
+			</label>
+		</div>
+		<div class="form">
+			<label>
+				<h1>Pipe mean radius</h1>
+				<div class="btn-set">
+					<input class="flex" type="text" style="text-align:right;" id="js-output-mean_radius" readonly>
+					<span style="width:50px;text-align: right;">mm</span>
+				</div>
+			</label>
+			<label>
+				<h1>Profiled pipe mass</h1>
+				<div class="btn-set">
+					<span style="width:70px">1 meter</span>
+					<input class="flex" type="text" style="text-align:right;" id="js-output-pipemass" readonly>
+					<span style="width:50px;text-align: right;">Kg</span>
+				</div>
+			</label>
+		</div>
+
+		<div class="form">
+			<label>
+				<h1>SR</h1>
+				<div class="btn-set">
+					<input class="flex" type="text" style="text-align:right;" id="js-output-sr" readonly>
+					<span style="width:70px;text-align: right;">N/mm²</span>
+				</div>
+			</label>
+			<label>
+				<h1>SN</h1>
+				<div class="btn-set">
+					<input class="flex" type="text" style="text-align:right;" id="js-output-sn" readonly>
+					<span style="width:70px;text-align: right;">N/mm²</span>
+				</div>
+			</label>
+		</div>
+
+
+		<?php
+		$grem->getLast()->close();
+		$grem->terminate();
+		?>
 	</div>
 
-	<?php $_TEMPLATE->NewFrameTitle("<span class=\"flex\">Profile properties</span>"); ?>
-	<br />
-	<table>
-		<tbody>
-			<tr>
-				<th>Profile height</th>
-				<td>
-					<div class="btn-set"><span style="width:40px;">h</span><input class="flex" type="text" style="text-align:right;" id="js-output-body_height" readonly><span style="width:50px;text-align: right;">mm</span></div>
-				</td>
-			</tr>
-			<tr>
-				<th>Profile centroid</th>
-				<td>
-					<div class="btn-set"><input class="flex" type="text" style="text-align:right;" id="js-output-body_centroid" readonly><span style="width:50px;text-align: right;">mm</span></div>
-				</td>
-			</tr>
-			<tr>
-				<th>Profile surface area</th>
-				<td width="100%">
-					<div class="btn-set"><input class="flex" type="text" style="text-align:right;" id="js-output-body_area" readonly><span style="width:50px;text-align: right;">mm</span></div>
-				</td>
-			</tr>
-			<tr>
-				<th>Profile moment of<br /> Inertia</th>
-				<td width="100%">
-					<div class="btn-set"><span style="width:50px">Lxx</span><input class="flex" style="text-align:right;" type="text" id="js-output-moi_lxx" readonly><span style="width:70px;text-align: right;">g/mm²</span></div>
-					<br />
-					<div class="btn-set"><span style="width:50px">Lyy</span><input class="flex" style="text-align:right;" type="text" id="js-output-moi_lyy" readonly><span style="width:70px;text-align: right;">g/mm²</span></div>
-				</td>
-			</tr>
-
-			<tr>
-				<th>Pipe inner diameter</th>
-				<td>
-					<div class="btn-set"><input class="flex" type="text" style="text-align:right;" id="js-output-inner_diameter" readonly><span style="width:50px;text-align: right;">mm</span></div>
-				</td>
-			</tr>
-			<tr>
-				<th>Pipe outer diameter</th>
-				<td>
-					<div class="btn-set"><input class="flex" type="text" style="text-align:right;" id="js-output-outer_diameter" readonly><span style="width:50px;text-align: right;">mm</span></div>
-				</td>
-			</tr>
-			<tr>
-				<th>Pipe mean radius</th>
-				<td>
-					<div class="btn-set"><input class="flex" type="text" style="text-align:right;" id="js-output-mean_radius" readonly><span style="width:50px;text-align: right;">mm</span></div>
-				</td>
-			</tr>
-
-			<tr>
-				<th>Profiled pipe mass</th>
-				<td width="100%">
-					<div class="btn-set"><span style="width:70px">1 meter</span><input class="flex" type="text" style="text-align:right;" id="js-output-pipemass" readonly><span style="width:50px;text-align: right;">Kg</span></div>
-				</td>
-			</tr>
+</div>
 
 
-			<tr>
-				<th>SR</th>
-				<td width="100%">
-					<div class="btn-set"><input class="flex" type="text" style="text-align:right;" id="js-output-sr" readonly><span style="width:70px;text-align: right;">N/mm²</span></div>
-				</td>
-			</tr>
-			<tr>
-				<th>SN</th>
-				<td width="100%">
-					<div class="btn-set"><input class="flex" type="text" style="text-align:right;" id="js-output-sn" readonly><span style="width:70px;text-align: right;">N/mm²</span></div>
-				</td>
-			</tr>
-
-		</tbody>
-	</table>
 
 
-</td>
-</tr>
-</tbody>
-</table>
+
+
+
+
+
 
 <script type="text/javascript">
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 
 		let DOMFields = {
 			outputProfileCentroid: document.getElementById("js-output-body_centroid"),
@@ -436,7 +491,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 			[DOMFields.inputDataMaterialDensity, null, (v) => p.param.MaterialDensity = v]
 		]
 
-		let Update = function() {
+		let Update = function () {
 			let confirminput = true;
 			for (let i = 0; i < DOMInvoke.length; i++) {
 				try {
@@ -458,7 +513,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 
 
 		p = candas.Pyhsics({
-			onupdate: function(result) {
+			onupdate: function (result) {
 				DOMFields.outputProfileCentroid.value = Math.round(result.extracted.centroid.X) + "x" + Math.round(result.extracted.centroid.Y);
 				DOMFields.outputProfileArea.value = result.extracted.area.numberFormat(2);
 				DOMFields.outputProfileLxx.value = result.extracted.moi.lxx.numberFormat(2);
@@ -473,7 +528,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 				DOMFields.outputPipeMeanRadius.value = result.pipe.mean_radius.numberFormat(2);
 
 			},
-			onload: function(result) {
+			onload: function (result) {
 				/*document.getElementById("js-output-imgsrc_dim").value = result.inputsize.X + "x" + result.inputsize.Y;*/
 			},
 			centroid_axis_color: "#55BB88",
@@ -483,7 +538,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 		p.PlotCanvas(document.getElementById("js-canvas"));
 
 
-		DOMFields.cmdClear.onclick = function() {
+		DOMFields.cmdClear.onclick = function () {
 			DOMFields.inputFile.value = null;
 			//document.getElementById("js-output-imgsrc_dim").value 	= "";
 			//document.getElementById("js-output-centroid").value 	= "";
@@ -503,7 +558,7 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 			p.Clear();
 		}
 
-		DOMFields.inputFile.onchange = function() {
+		DOMFields.inputFile.onchange = function () {
 			if (DOMFields.inputFile.files && DOMFields.inputFile.files[0]) {
 				p.ReceiveFile(DOMFields.inputFile.files[0]);
 			}
@@ -512,10 +567,10 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 		for (let i = 0; i < DOMInvoke.length; i++) {
 			DOMInvoke[i][1] = document.getElementById(DOMInvoke[i][0].id + "_");
 
-			DOMInvoke[i][0].addEventListener("keydown", function(event) {
+			DOMInvoke[i][0].addEventListener("keydown", function (event) {
 				this.style.background = "#fffad6";
 			});
-			DOMInvoke[i][0].addEventListener("keypress", function(event) {
+			DOMInvoke[i][0].addEventListener("keypress", function (event) {
 				if (event.key === "Enter") {
 					event.preventDefault();
 					Update();
@@ -524,24 +579,24 @@ $_TEMPLATE->Title("Solid/profiled pipes ", null, ($expirydate != false ? '<span 
 			});
 		}
 
-		DOMFields.cmdCalculate.onclick = function() {
+		DOMFields.cmdCalculate.onclick = function () {
 			Update();
 		}
 
 		let domThresholdSlider = document.getElementById("js-thresholdslider");
-		domThresholdSlider.oninput = function() {
+		domThresholdSlider.oninput = function () {
 			p.ColorThreshold(this.value);
 			p.Process();
 		}
 
 		let domInvertColors = document.getElementById("js-invertcolors");
-		domInvertColors.onchange = function() {
+		domInvertColors.onchange = function () {
 			p.ColorInvert(this.checked);
 			p.Process();
 		}
 
 		let domButtonSave = document.getElementById("js-saveimage");
-		domButtonSave.onclick = function() {
+		domButtonSave.onclick = function () {
 			//p.SaveImage();
 		}
 

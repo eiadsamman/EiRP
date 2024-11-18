@@ -16,17 +16,19 @@ class AttachLib
 		if (empty($this->app->settings->site['cdnpath']) || !is_dir($this->app->settings->site['cdnpath'])) {
 			return false;
 		}
+		$cdnpath = rtrim($this->app->settings->site['cdnpath'], "\\/");
 
 		$up_id = (int) $attach_id;
 		$r     = $this->app->db->query("DELETE FROM uploads WHERE up_id=$up_id;");
 		if ($r) {
 			try {
-				if (file_exists($this->app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id))
-					unlink($this->app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id);
-				if (file_exists($this->app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id . "_v"))
-					unlink($this->app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id . "_v");
-				if (file_exists($this->app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id . "_t"))
-					unlink($this->app->settings->site['cdnpath'] . DIRECTORY_SEPARATOR . $up_id . "_t");
+
+				if (file_exists($cdnpath . DIRECTORY_SEPARATOR . $up_id))
+					unlink($cdnpath . DIRECTORY_SEPARATOR . $up_id);
+				if (file_exists($cdnpath . DIRECTORY_SEPARATOR . $up_id . "_v"))
+					unlink($cdnpath . DIRECTORY_SEPARATOR . $up_id . "_v");
+				if (file_exists($cdnpath . DIRECTORY_SEPARATOR . $up_id . "_t"))
+					unlink($cdnpath . DIRECTORY_SEPARATOR . $up_id . "_t");
 			} catch (\Exception $e) {
 			}
 			return true;

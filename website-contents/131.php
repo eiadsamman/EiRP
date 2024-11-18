@@ -8,14 +8,14 @@ use System\Template\Gremium;
 
 $settings = array();
 
-$settings['matrix'] = array();
-$settings['matrix']['column'] = array();
+$settings['matrix']                    = array();
+$settings['matrix']['column']          = array();
 $settings['matrix']['column']['width'] = 101;
 $settings['matrix']['column']['align'] = "center";
 $settings['matrix']['column']['count'] = 0;
 
-$settings['color'] = array();
-$settings['color']['timegradient'] = array();
+$settings['color']                    = array();
+$settings['color']['timegradient']    = array();
 $settings['color']['timegradient'][0] = "#f03";
 $settings['color']['timegradient'][1] = "#3c77c3";
 $settings['color']['timegradient'][2] = "#396";
@@ -23,10 +23,10 @@ $settings['color']['timegradient'][2] = "#396";
 if (isset($_POST['posubmit'])) {
 
 	$dateFrom = false;
-	$dateTo = false;
-	$maxtime = 1;
+	$dateTo   = false;
+	$maxtime  = 1;
 
-	$onlyselection = isset($_POST['onlyselection']) ? 1 : 0;
+	$onlyselection    = isset($_POST['onlyselection']) ? 1 : 0;
 	$displaysuspended = isset($_POST['displaysuspended']) ? 1 : 0;
 
 	if (isset($_POST['dateFrom'][1]) && preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $_POST['dateFrom'][1], $match)) {
@@ -50,7 +50,7 @@ if (isset($_POST['posubmit'])) {
 
 	$dateFromCompare = new DateTime(date("Y-m-d", $dateFrom));
 	$date__ToCompare = new DateTime(date("Y-m-d", $dateTo));
-	$dateInterval = $dateFromCompare->diff($date__ToCompare);
+	$dateInterval    = $dateFromCompare->diff($date__ToCompare);
 	if ($dateInterval->days > 31) {
 		header("HTTP_X_RESPONSE: INERR");
 		echo "Date range is too big, maximum date range is 31 days";
@@ -80,36 +80,30 @@ if (isset($_POST['posubmit'])) {
 		"limit_date" => date("Y-m-d")
 	);
 
-
-
 	$attendance = new Registration($app);
-	$r = $attendance->ReportSummary(date("Y-m-d H:i:s", $dateFrom), date("Y-m-d H:i:s", $dateTo), null, $parameters);
-
+	$r          = $attendance->ReportSummary(date("Y-m-d H:i:s", $dateFrom), date("Y-m-d H:i:s", $dateTo), null, $parameters);
 
 	$arrDisplay = array();
 	if ($r) {
 		$cnt = 1;
-
 		while ($row = $r->fetch_assoc()) {
 			if (!isset($arrDisplay[$row['personID']])) {
-				$arrDisplay[$row['personID']] = array();
-				$arrDisplay[$row['personID']]['info'] = array();
-				$arrDisplay[$row['personID']]['info']['id'] = $row['personID'];
-				$arrDisplay[$row['personID']]['info']['name'] = $row['usr_firstname'] . " " . $row['usr_lastname'];
+				$arrDisplay[$row['personID']]                              = array();
+				$arrDisplay[$row['personID']]['info']                      = array();
+				$arrDisplay[$row['personID']]['info']['id']                = $row['personID'];
+				$arrDisplay[$row['personID']]['info']['name']              = $row['usr_firstname'] . " " . $row['usr_lastname'];
 				$arrDisplay[$row['personID']]['info']['totalAttendedTime'] = 0;
-				$arrDisplay[$row['personID']]['info']['timeGroup'] = $row['lbr_mth_name'];
-				$arrDisplay[$row['personID']]['days'] = array();
+				$arrDisplay[$row['personID']]['info']['timeGroup']         = $row['lbr_mth_name'];
+				$arrDisplay[$row['personID']]['days']                      = array();
 			}
-			$arrDisplay[$row['personID']]['days'][$row['att_date']] = $row['timeAttended'];
+			$arrDisplay[$row['personID']]['days'][$row['att_date']]    = $row['timeAttended'];
 			$arrDisplay[$row['personID']]['info']['totalAttendedTime'] += $row['timeAttended'];
 
 			if ($arrDisplay[$row['personID']]['info']['totalAttendedTime'] > $maxtime) {
 				$maxtime = $arrDisplay[$row['personID']]['info']['totalAttendedTime'];
 			}
-
 			$cnt++;
 		}
-
 
 		$daysList = array();
 		echo "
@@ -123,7 +117,7 @@ if (isset($_POST['posubmit'])) {
 							</thead>
 							<tbody>";
 		foreach ($arrDisplay as $id => $data) {
-			$percentage_l = ceil($data['info']['totalAttendedTime'] / $maxtime * 100);
+			$percentage_l  = ceil($data['info']['totalAttendedTime'] / $maxtime * 100);
 			$colorgradient = "#fff";
 			if ($percentage_l <= 33) {
 				$colorgradient = $settings['color']['timegradient'][0];
@@ -154,7 +148,7 @@ if (isset($_POST['posubmit'])) {
 		while ($dayPlot < $dateTo) {
 			echo "<td>" . date("Y-m-d", $dayPlot) . "</td>";
 			$daysList[] = date("Y-m-d", $dayPlot);
-			$dayPlot = strtotime(date("Y-m-d", $dayPlot) . ' + 1 days');
+			$dayPlot    = strtotime(date("Y-m-d", $dayPlot) . ' + 1 days');
 			$settings['matrix']['column']['count']++;
 		}
 		echo "
