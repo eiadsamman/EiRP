@@ -2,6 +2,7 @@
 
 use System\Template\Gremium\Gremium;
 
+
 $expirydate = false;
 $rexp       = $app->db->query("SELECT UNIX_TIMESTAMP(lbr_resigndate) AS rdate FROM labour WHERE lbr_id = {$app->user->info->id};");
 if ($rexp && $rrow = $rexp->fetch_assoc()) {
@@ -10,14 +11,11 @@ if ($rexp && $rrow = $rexp->fetch_assoc()) {
 
 
 if ($expirydate != false && $expirydate <= time()) {
-
-	/* $_TEMPLATE->Title("&nbsp;Free trial has expired", null, "", "mark-error");
-																																																							   $_TEMPLATE->NewFrameTitle("<span class=\"flex\">Solid/profiled pipes analys free trial has expired</span>");
-																																																							   $_TEMPLATE->NewFrameBody('<ul>
-																																																								   <li>Registered application in invalid</li>
-																																																								   <li>Expiry date has reached</li>
-																																																								   <li>Contact us at `info@candas.cn` for more information</li>
-																																																								   <ul>'); */
+	echo '<ul>
+		<li>Registered application in invalid</li>
+		<li>Expiry date has reached</li>
+		<li>Contact us at `info@candas.cn` for more information</li>
+		<ul>';
 	exit;
 }
 if (isset($_POST['method']) && $_POST['method'] == "saveimage") {
