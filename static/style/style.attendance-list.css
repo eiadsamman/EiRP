@@ -1,30 +1,33 @@
-table.attendance>tbody>tr>td.css_attendanceBlocks {
+table.attendance > tbody > tr > td.css_attendanceBlocks {
 	white-space: nowrap;
+	vertical-align: middle;
 	width: 100%;
-	height: 27px;
-	vertical-align: bottom;
+	height: 30px;
 }
 
-table.attendance>tbody>tr>td.css_attendanceBlocks>div {
+table.attendance > tbody > tr > td.css_attendanceBlocks > div {
 	display: inline-block;
 	position: relative;
-	height: 27px;
+	border: none;
+	height: 100%;
+	margin: 0 !important;
+	padding: 0 !important;
 	opacity: 0.8;
 }
 
-table.attendance>tbody>tr>td.css_attendanceBlocks>div.empty {
+table.attendance > tbody > tr > td.css_attendanceBlocks > div.empty {
 	background-color: transparent;
-	border-color: transparent;
+
 	cursor: default;
 }
 
-table.attendance>tbody>tr>td {
-	padding: 0px;
+table.attendance > tbody > tr > td {
+	padding: 0px !important;
 }
 
-table.attendance>tbody>tr>th {
+table.attendance > tbody > tr > th {
 	padding: 0px 10px;
-	color:var(--root-font-color)
+	color: var(--root-font-color)
 }
 
 div.attendance-monthfooter {
@@ -35,35 +38,26 @@ div.attendance-monthfooter {
 
 
 
-table.attendance>tbody>tr>th:nth-child(1n+3) {
+table.attendance > tbody > tr > th:nth-child(1n+3) {
 	min-width: 15px;
 }
 
 
-table.attendance>tbody>tr.weekend>th {
-	/* background: repeating-linear-gradient(45deg,
-			rgba(100, 100, 150, 0.23),
-			rgba(100, 100, 150, 0.23) 20px,
-			rgba(255, 255, 255,0.05) 20px,
-			rgba(255, 255, 255,0.05) 40px); */
-	background-color: var(--root-ribbon-background-color);
-	
+table.attendance > tbody > tr.weekend > th {
+	background-color: var(--root-background-color);
 }
 
-table.attendance>tbody>tr.weekend>td {
-	
-	background-color: var(--root-ribbon-background-color);
-
+table.attendance > tbody > tr.weekend > td {
+	background-color: var(--root-background-color);
 }
 
-table.attendance>tbody>tr.outofrange>td,
-table.attendance>tbody>tr.outofrange>th {
+table.attendance > tbody > tr.outofrange > td,
+table.attendance > tbody > tr.outofrange > th {
 	background: repeating-linear-gradient(45deg,
 			rgba(255, 0, 0, 0.03),
 			rgba(255, 0, 0, 0.03) 20px,
-			rgba(255, 255, 255,0.05) 20px,
-			rgba(255, 255, 255,0.05) 40px);
-
+			rgba(255, 255, 255, 0.05) 20px,
+			rgba(255, 255, 255, 0.05) 40px);
 
 	color: #999;
 }
@@ -74,23 +68,23 @@ table.attendance>tbody>tr.outofrange>th {
 	position: relative;
 }
 
-.calendar-point>div {
+.calendar-point > div {
 	font-family: icomoon4;
 }
 
-.ccode001>div {
+.ccode001 > div {
 	color: #0c6;
 }
 
-.ccode002>div {
+.ccode002 > div {
 	color: #f03;
 }
 
-.ccode003>div {
+.ccode003 > div {
 	color: #06c;
 }
 
-.calendar-point>span {
+.calendar-point > span {
 	left: 0px;
 	position: absolute;
 	pointer-events: none;
@@ -105,42 +99,40 @@ table.attendance>tbody>tr.outofrange>th {
 	min-width: 240px;
 }
 
-.calendar-point:hover>span {
+.calendar-point:hover > span {
 	display: block;
 }
 
-table.attendance>tbody>tr:hover>th,
-table.attendance>tbody>tr:hover>td {
-	/*background-color: #f5f5f5;*/
+table.attendance > tbody > tr:hover > th,
+table.attendance > tbody > tr:hover > td {
+	background-color: var(--bomtable-hover-color);
 }
 
-.calendar-absent-table>div {
+.calendar-absent-table > div {
 	line-height: 1.8em;
 }
 
-.calendar-absent-table>div>span {
+.calendar-absent-table > div > span {
 	min-width: 100px;
 	display: inline-block;
 	color: #555;
 }
 
-.calendar-absent-table>div>span:nth-child(2) {
-}
 
 
 
-table.attendance>tbody>tr>th.details {
+table.attendance > tbody > tr > th.details {
 	text-align: right;
 	min-width: 40px;
 }
 
-table.attendance>tbody>tr>td>div>div.inprog {
+table.attendance > tbody > tr > td > div > div.inprog {
 	position: absolute;
 	height: 100%;
 	left: 100%;
 }
 
-table.attendance>tbody>tr>td>div>div.inprog:after {
+table.attendance > tbody > tr > td > div > div.inprog:after {
 	font-family: icomoon;
 	content: "\e61b";
 	font-size: 1.3em;
@@ -159,7 +151,7 @@ table.attendance>tbody>tr>td>div>div.inprog:after {
 	z-index: 99;
 }
 
-#jQpopupAttDetails>div {
+#jQpopupAttDetails > div {
 	display: block;
 	background-color: var(--root-ribbon-menu-background-color);
 	min-width: 250px;
@@ -167,12 +159,12 @@ table.attendance>tbody>tr>td>div>div.inprog:after {
 	border: solid 1px var(--root-ribbon-border-color);
 }
 
-#jQpopupAttDetails>div>div {
+#jQpopupAttDetails > div > div {
 	line-height: 1.8em;
 	white-space: nowrap;
 }
 
-#jQpopupAttDetails>div>div>span {
+#jQpopupAttDetails > div > div > span {
 	display: inline-block;
 	color: var(--root-link-color);
 	min-width: 50px;

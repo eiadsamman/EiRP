@@ -7,7 +7,7 @@ use System\Template\Gremium\Gremium;
 function getAttendanceReport(&$app, $dateFrom, $dateTo, $employeeID)
 {
 	$attendance = new VisualReport($app);
-	$attendance->getAttendaceList($employeeID, $dateFrom, $dateTo, true, false);
+	$attendance->getAttendaceList($employeeID, $dateFrom, $dateTo, true);
 	$attendance->PrintTable();
 }
 

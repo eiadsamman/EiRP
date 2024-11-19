@@ -127,7 +127,7 @@ if ($app->xhttp) {
 	}
 	echo <<<HTML
 		<table class="dynamic hover strip">
-			<thead class="table-head" style="top: calc(163px - var(--gremium-header-toggle));background-color: #fff;z-index: 1;">
+			<thead class="table-head" style="top: calc(149px - var(--gremium-header-toggle));background-color: #fff;z-index: 1;">
 			<tr>
 				<td>ID</td>
 				<td>Description</td>
