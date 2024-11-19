@@ -10,14 +10,14 @@ namespace System\Individual\Attendance;
 
 class AttendaceUnit
 {
-	public ?\Datetime $startTime = null;
-	public ?\Datetime $endTime = null;
+	public ?\DateTimeImmutable $startTime = null;
+	public ?\DateTimeImmutable $endTime = null;
 	public int $openRecordId = 0;
 	public int $closeRecordId = 0;
 	public int $sector = 0;
 	public int $status = 0;
-	public ?\Datetime $earlyStart = null;
-	public ?\Datetime $lateFinish = null;
+	public ?\DateTimeImmutable $earlyStart = null;
+	public ?\DateTimeImmutable $lateFinish = null;
 	public ?string $comments = null;
 	public ?int $ownerRecordId = null;
 }
@@ -103,26 +103,29 @@ class VisualReport
 			$au                = new AttendaceUnit();
 			$au->startTime     = $from;
 			$au->endTime       = null;
-			$au->openRecordId  = $ltrid;
-			$au->closeRecordId = $closerid;
-			$au->sector        = $prt;
+			$au->openRecordId  = (int) $ltrid;
+			$au->closeRecordId = (int) $closerid;
+			$au->sector        = (int) $prt;
 			$au->status        = $status;
 			$au->earlyStart    = $earlystart;
 			$au->lateFinish    = $latefinish;
-			$au->ownerRecordId = $maincheckinOwner;
+			$au->ownerRecordId = (int) $maincheckinOwner;
 
 			$this->_arratt[$smonth][$sdate][$time] = $au;
 
 
 
 			if (isset($CutDownStart) && $CutDownStart != false) {
-				$this->_arratt[$smonth][$sdate][$time][10] = $CutDownStart;
+				$this->_arratt[$smonth][$sdate][$time]->ownerRecordId = $CutDownStart;
 			}
 
 			if ($sdate != $fdate) {
-				$this->_arratt[$smonth][$sdate][$time][1] = mktime(23, 59, 59, (int) date("m", $from), (int) date("d", $from), (int) date("Y", $from));
+				$endOfDay = new \DateTimeImmutable();
+				$endOfDay = $from->setTime(23, 59, 59, 999999);
+
+				$this->_arratt[$smonth][$sdate][$time]->endTime = $endOfDay;
 			} else {
-				$this->_arratt[$smonth][$sdate][$time][1] = $to;
+				$this->_arratt[$smonth][$sdate][$time]->endTime = $to;
 			}
 
 			$carry = new \DateTimeImmutable();
@@ -138,7 +141,7 @@ class VisualReport
 
 	private function filldays()
 	{
-		$currentTime = new \DateTime();
+		$currentTime = new \DateTimeImmutable();
 		$currentTime = $this->_dateFrom[2];
 
 		while ($currentTime <= $this->_dateTo[2]) {
@@ -178,41 +181,35 @@ class VisualReport
 			foreach ($monthv as $datek => $datev) {
 				$temp = null;
 				foreach ($datev as $k => $v) {
-					if ($temp == null && $v[0]->format("His") != "000000") {
+					if ($temp == null && $v->startTime->format("His") != "000000") {
 
-						$au                = new AttendaceUnit();
-						$au->startTime     = $v[0]->setTime(0,0,0);
-						$au->endTime       = $v[0];
+						$au                                       = new AttendaceUnit();
+						$au->startTime                            = $v->startTime->setTime(0, 0, 0);
+						$au->endTime                              = $v->startTime;
 						$this->_arratt[$monthk][$datek]['000000'] = $au;
 
-						$temp = array($v[0], $v[1]);
+						$temp = array($v->startTime, $v->endTime);
 					} elseif ($temp == null) {
-						$temp = array($v[0], $v[1]);
+						$temp = array($v->startTime, $v->endTime);
 					} elseif ($temp != null) {
-						if ($temp[1] < $v[0]) {
-							$this->_arratt[$monthk][$datek][$temp[1]->format("His")]    = array($temp[1], $v[0], 0, 0, 0, 0, 0, 0, null, null);
-							$this->_arratt[$monthk][$datek][$temp[1]->format("His")][8] = "Middle Earth!";
+						if ($temp->endTime < $v->startTime) {
+							$this->_arratt[$monthk][$datek][$temp->endTime->format("His")]    = array($temp->endTime, $v->startTime, 0, 0, 0, 0, 0, 0, null, null);
+							$this->_arratt[$monthk][$datek][$temp->endTime->format("His")][8] = "Middle Earth!";
 						}
-						$temp = array($v[0], $v[1]);
+						$temp = array($v->startTime, $v->endTime);
 					}
 				}
 				if ($temp[1]->format("His") != "235959") {
 					$carry = new \DateTimeImmutable();
 					$carry = $temp[1]->setTime(23, 59, 59, 999999);
 
-					$this->_arratt[$monthk][$datek][$temp[1]->format("His")]    = array(
-						$temp[1],
-						$carry,
-						0,
-						0,
-						0,
-						0,
-						0,
-						0,
-						null,
-						null
-					);
-					$this->_arratt[$monthk][$datek][$temp[1]->format("His")][8] = "Closer!";
+					$au            = new AttendaceUnit();
+					$au->startTime = $temp[1];
+					$au->endTime   = $carry;
+					$au->comments  = "Closer";
+
+					$this->_arratt[$monthk][$datek][$temp[1]->format("His")] = $au;
+
 				}
 			}
 		}
@@ -358,7 +355,7 @@ class VisualReport
 	 **/
 	public function getAttendaceList($userid, $dateFrom, $dateTo, $filldays = false, $consider_last_checking = false)
 	{
-		$currentTimeStamp = new \DateTime();
+		$currentTimeStamp = new \DateTimeImmutable();
 		$currentTimeStamp = date("Y-m-d H:i:s", time());
 
 		$this->_arratt        = array();
@@ -369,8 +366,9 @@ class VisualReport
 
 
 
-		$dateFrom = new \DateTime(date("Y-m-d", $dateFrom));
-		$dateTo   = new \DateTime(date("Y-m-d", $dateTo));
+
+		$dateFrom = new \DateTimeImmutable(date("Y-m-d", $dateFrom));
+		$dateTo   = new \DateTimeImmutable(date("Y-m-d", $dateTo));
 
 
 		$this->_dateFrom[2] = $dateFrom;
@@ -417,8 +415,8 @@ class VisualReport
 			$ra = $this->app->db->query($q)
 		) {
 			while ($rowa = $ra->fetch_assoc()) {
-				$endTime = new \DateTime($rowa['_tend']);
-				$strTime = new \DateTime($rowa['_tstart']);
+				$endTime = new \DateTimeImmutable($rowa['_tend']);
+				$strTime = new \DateTimeImmutable($rowa['_tstart']);
 
 
 				if ($endTime < $strTime) {
@@ -444,18 +442,21 @@ class VisualReport
 					$this->_arratt[$month][$date] = array();
 				}
 
-				$this->_arratt[$month][$date][$strTime->format("His")] = array(
-					/*0:StartTime*/ $strTime,
-					/*1:FinishTime*/ $endTime,
-					/*2:OpenRecordID*/ $rowa['ltr_id'],
-					/*3:CloseRecordID*/ $rowa['ltr_id'],
-					/*4:Sector*/ $rowa['prt_id'],
-					/*5:status*/ 1,
-					/*6:EarylStart*/ $strTime,
-					/*7:LateFinish*/ $endTime,
-					/*8:Comments*/ "",
-					/*9:Owner record*/ $rowa['ltr_id']
-				);
+
+				$au                = new AttendaceUnit();
+				$au->startTime     = $strTime;
+				$au->endTime       = $endTime;
+				$au->openRecordId  = (int) $rowa['ltr_id'];
+				$au->closeRecordId = (int) $rowa['ltr_id'];
+				$au->sector        = (int) $rowa['prt_id'];
+				$au->status        = 1;
+				$au->earlyStart    = $strTime;
+				$au->lateFinish    = $endTime;
+				$au->comments      = "";
+				$au->ownerRecordId = (int) $rowa['ltr_id'];
+
+				$this->_arratt[$month][$date][$strTime->format("His")] = $au;
+
 
 				$this->FillGaps(
 					/*FromTime*/ $strTime,
@@ -608,22 +609,22 @@ class VisualReport
 				$totalactualminutes = 0;
 
 				foreach ($datev as $k => $v) {
-					$diff    = ($v[1]->getTimestamp() - $v[0]->getTimestamp());
-					$actdiff = ($v[1]->getTimestamp() - $v[0]->getTimestamp()) * $this->_partitionlist[$v[4]][2];
+					$diff    = ($v->endTime->getTimestamp() - $v->startTime->getTimestamp());
+					$actdiff = ($v->endTime->getTimestamp() - $v->startTime->getTimestamp()) * $this->_partitionlist[$v->sector][2];
 
 					$per = round($diff / 1440 * 100 / 60, 3);
-					if ($v[2] != 0) {
+					if ($v->openRecordId != 0) {
 						$totalminutes += $diff;
 						$totalmonth += $diff;
 						$totalactualminutes += $actdiff;
 						$totalactualmonth += $actdiff;
 					}
 					$majortot = $this->formatTime(
-						$v[7] -
-						(isset($v[10]) ? 0 : $v[6])
+						$v->lateFinish -
+						(isset($v->ownerRecordId) ? 0 : $v->earlyStart)
 					);
 					$diff     = $this->formatTime($diff);
-					$actual   = $this->formatTime(($v[7] - (isset($v[10]) ? $v[10] : $v[6])) * $this->_partitionlist[$v[4]][2]);
+					$actual   = $this->formatTime(($v->lateFinish - (isset($v->ownerRecordId) ? $v->ownerRecordId : $v[6])) * $this->_partitionlist[$v[4]][2]);
 
 					echo "<div 
 							style=\"width:{$per}%;" . ($v[4] != 0 ? "background-color:rgba(" . $this->_partitionlist[$v[4]][1] . ",1);" : "") . "\"
