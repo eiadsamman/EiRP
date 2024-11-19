@@ -1,6 +1,5 @@
 <?php
 
-use System\FileSystem\Page;
 
 exit;
 if ($fs()->permission->delete && isset($_POST['delete-absenece-request'])) {
@@ -313,8 +312,10 @@ if (isset($_POST['submit-new-absence-request'])) {
 		}
 	}
 
-	if ($r = $app->db->query("INSERT INTO labour_absence_request (lbr_abs_lbr_id,lbr_abs_usr_id,lbr_abs_start_date,lbr_abs_days,lbr_abs_comments,lbr_abs_type) VALUES (
-		{$_POST['lbr']},{$app->user->info->id},'{$_POST['date']}'," . ($_POST['period'] + 1) . ",'{$_POST['comments']}',{$_POST['type']});")) {
+	$stampDate = new \DateTime("now");
+
+	if ($r = $app->db->query("INSERT INTO labour_absence_request (lbr_abs_lbr_id,lbr_abs_usr_id,lbr_abs_start_date,lbr_abs_days,lbr_abs_comments,lbr_abs_type,lbr_abs_issue_date) VALUES (
+		{$_POST['lbr']},{$app->user->info->id},'{$_POST['date']}'," . ($_POST['period'] + 1) . ",'{$_POST['comments']}',{$_POST['type']}, '".  $stampDate->format("Y-m-d H:i:s") ."');")) {
 		$json->output(true, "Request added successfully", null, array("request_id" => $app->db->insert_id));
 	} else {
 		$json->output(false, "Failed to submit absence request, try again");

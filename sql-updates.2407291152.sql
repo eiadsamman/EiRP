@@ -192,8 +192,6 @@ ALTER TABLE `acc_accounts` ADD `prt_term` MEDIUMINT UNSIGNED NULL DEFAULT NULL A
 
 
 
-
-
 ALTER TABLE `inv_main` CHANGE `po_benf_comp_id` `po_client_id` MEDIUMINT UNSIGNED NOT NULL,
 CHANGE `po_shipto_acc_id` `po_shipto_id` MEDIUMINT UNSIGNED NULL DEFAULT NULL,
 CHANGE `po_billto_acc_id` `po_billto_id` MEDIUMINT UNSIGNED NOT NULL,
@@ -268,10 +266,11 @@ CHANGE `commercial_vatExpirationDate` `commercial_vatExpirationDate` DATETIME NU
 
 
 
+ALTER TABLE `inv_main` CHANGE `po_date` `po_date` DATETIME NOT NULL;
 
 
 
-
+ALTER TABLE `timeline` CHANGE `tl_timestamp` `tl_timestamp` DATETIME NOT NULL;
 
 
 

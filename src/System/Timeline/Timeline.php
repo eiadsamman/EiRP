@@ -31,17 +31,21 @@ class Timeline
 	public function register(Module $module, Action $action, int $owner, ?array $json = null, ?string $message = null, \Datetime $scheduleDate = null): bool|int
 	{
 		$json_encoded = !is_null($json) ? json_encode($json) : null;
-		$result       = $this->app->db->execute_query("INSERT INTO `timeline`
-			(tl_module, tl_action, tl_owner, tl_issuer, tl_json, tl_message, tl_remind_date) VALUES (?,?,?,?,?,?,?);
-			", [
-			$module->value,
-			$action->value,
-			$owner,
-			$this->app->user->info->id,
-			$json_encoded,
-			$message,
-			$scheduleDate != null ? $scheduleDate->format("Y-m-d") : null
-		]);
+		$result       = $this->app->db->execute_query(
+			"INSERT INTO `timeline`
+			(tl_module, tl_action, tl_owner, tl_issuer, tl_json, tl_message, tl_remind_date, tl_timestamp ) VALUES (?,?,?,?,?,?,?,?);
+			",
+			[
+				$module->value,
+				$action->value,
+				$owner,
+				$this->app->user->info->id,
+				$json_encoded,
+				$message,
+				$scheduleDate != null ? $scheduleDate->format("Y-m-d") : null,
+				(new \DateTime())->format("Y-m-d H:i:s")
+			]
+		);
 		if (!$result) {
 			return false;
 		} else {

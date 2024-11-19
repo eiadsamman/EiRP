@@ -3,8 +3,8 @@
 $abs = false;
 if (isset($_GET['id'])) {
 	$_GET['id'] = (int)$_GET['id'];
-	$r = $app->db->query("
-	SELECT
+	$r = $app->db->query(
+	"SELECT
 		lbr_abs_id,lbr_abs_lbr_id,lbr_abs_usr_id,UNIX_TIMESTAMP(lbr_abs_issue_date) AS lbr_abs_issue_date,lbr_abs_days,lbr_abs_comments,lbr_abs_type,
 		(SELECT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) FROM users WHERE usr_id=lbr_abs_usr_id) AS signername,
 		CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,''))  AS empname,

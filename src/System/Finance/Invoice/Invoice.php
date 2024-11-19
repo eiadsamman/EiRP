@@ -85,7 +85,6 @@ abstract class Invoice
 	{
 		$this->app->db->autocommit(false);
 		$this->validatefiled();
-		$material = new Material($this->app);
 
 		$result = $this->app->db->execute_query(
 			"INSERT INTO inv_main 
