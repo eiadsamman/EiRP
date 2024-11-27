@@ -49,19 +49,34 @@ abstract class Invoice
 
 	private function registerSerialNumber(): bool
 	{
-		$this->app->db->execute_query(
-			"UPDATE inv_main
-			SET 
-				po_serial = (
-					SELECT IFNULL(MAX(po_serial) , 1000) + 1 AS doc_serial
-					FROM inv_main
-					WHERE po_type = ? AND po_comp_id = ? AND po_costcenter = ?
-				)
-			WHERE po_id = ?;",
+		$query          = $this->app->db->execute_query(
+			"SELECT 
+				(IFNULL(MAX(po_serial) , 1000) + 1)
+			FROM 
+				inv_main
+			WHERE 
+				po_type = ? 
+				AND po_comp_id = ? 
+				AND po_costcenter = ?"
+			,
 			[
 				$this->information->type->value,
 				$this->app->user->company->id,
 				$this->information->costCenter->id,
+			]
+		);
+		$reservedSerial = 0;
+		if ($query && $row = $query->fetch_row()) {
+			$reservedSerial = $row[0];
+		}
+		
+		if ($reservedSerial == 0)
+			return false;
+
+		$this->app->db->execute_query(
+			"UPDATE inv_main SET po_serial = ? WHERE po_id = ?;",
+			[
+				$reservedSerial,
 				$this->information->id
 			]
 		);
