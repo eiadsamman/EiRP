@@ -69,7 +69,7 @@ abstract class Invoice
 		if ($query && $row = $query->fetch_row()) {
 			$reservedSerial = $row[0];
 		}
-		
+
 		if ($reservedSerial == 0)
 			return false;
 
@@ -200,7 +200,7 @@ abstract class Invoice
 				$invoiceItem->material->id,
 				$invoiceItem->quantity,
 				$invoiceItem->quantityDelivered,
-				$invoiceItem->isGroupingItem,
+				$invoiceItem->isGroupingItem ? 1 : 0,
 
 				$owner,
 				$invoiceItem->accountId,
