@@ -214,22 +214,19 @@ class VisualReport
 		$q =
 			"SELECT
 			absdays,lbr_abs_comments as comments,lbr_abs_days as period,abs_typ_name as type,lbr_abs_start_date as starts,
-			CONCAT_WS(' ',COALESCE(usr_issuer.usr_firstname,''),IF(NULLIF(usr_issuer.usr_lastname, '') IS NULL, NULL, usr_issuer.usr_lastname))  as issuer,
-			CONCAT_WS(' ',COALESCE(usr_approval.usr_firstname,''),IF(NULLIF(usr_approval.usr_lastname, '') IS NULL, NULL, usr_approval.usr_lastname))  as approval_name,
+			CONCAT_WS(' ',COALESCE(usr_issuer.usr_firstname,''),IF(NULLIF(usr_issuer.usr_lastname, '') IS NULL, NULL, usr_issuer.usr_lastname)) as issuer,
+			CONCAT_WS(' ',COALESCE(usr_approval.usr_firstname,''),IF(NULLIF(usr_approval.usr_lastname, '') IS NULL, NULL, usr_approval.usr_lastname)) as approval_name,
 			usr_approval.usr_id  as approval_id
-
 		FROM
 			labour_absence_request main
 			JOIN(
 				SELECT
-					adddate(lbr_abs_start_date, t1*10 + t0) AS absdays ,lbr_abs_id
+					adddate(lbr_abs_start_date, seq) AS absdays ,lbr_abs_id
 				FROM
-					(select 0 t0 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
-					(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
-					
+					seq_1_to_100, 
 					labour_absence_request
 				WHERE
-					t1*10 + t0 < lbr_abs_days
+					seq < lbr_abs_days
 				) a ON a.lbr_abs_id=main.lbr_abs_id
 			LEFT JOIN
 				absence_types ON abs_typ_id=lbr_abs_type
@@ -268,6 +265,7 @@ class VisualReport
 				JOIN(
 					SELECT 
 						/*Move calendar record to current year if cal_yearly=1*/
+						seq,
 						IF(
 							cal_yearly=1,
 							adddate(
@@ -276,19 +274,17 @@ class VisualReport
 										'" . $this->_dateFrom->format("Y") . "','-',MONTH(cal_date),'-',DAY(cal_date)
 									),
 									'%Y-%m-%d'
-								),t1*10 + t0
+								),seq
 							),
 							/*Otherwise use date as it is*/
-							adddate(cal_date,t1*10 + t0) 
+							adddate(cal_date,seq) 
 						) AS holicow,
 						cal_id
 					FROM 
-						(select 0 t0 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
-						(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
-						
+						seq_1_to_100,
 						calendar
 					WHERE 
-						t1*10 + t0 < cal_period AND cal_op=1 AND cal_owner=0
+						seq < cal_period AND cal_op=1 AND cal_owner=0
 					) a ON a.cal_id=main.cal_id
 			WHERE
 				holicow >= '" . $this->_dateFrom->format("Y-m-d 00:00:00") . "' AND holicow < '" . $this->_dateTo->format("Y-m-d 23:59:59") . "'";

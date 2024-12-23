@@ -158,48 +158,67 @@ class Registration extends \System\Individual\Employee
 
 	private function AttendanceQuery($dateFrom, $dateTo, $parameters): mysqli_result|bool
 	{
+		/*  WITH RECURSIVE nrows(date) AS (
+		 *	SELECT DATE("2024-11-23") UNION ALL 
+		 *	SELECT DATE_ADD(date, INTERVAL 1 day) FROM nrows WHERE date < CURRENT_DATE
+		 * )
+		 * SELECT date FROM nrows 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * WITH ranked_messages AS (
+		 *  SELECT m.*, ROW_NUMBER() OVER (PARTITION BY name ORDER BY id DESC) AS rn
+		 *  FROM messages AS m
+		 * )
+		 * SELECT * FROM ranked_messages WHERE rn = 1;
+		 * 
+		 * 
+		 */
+
+		$dateFromShift = $dateFrom->modify('+2 month');
+		$dateToShift   = $dateTo->modify('-2 month');
+		var_dump($parameters['company']);
 		$r = (
 			"SELECT
 				{$parameters['::select']}
 			FROM 
-				(SELECT 
-					ltr_usr_id,
-					ltr_prt_id,
-					ltr_ctime, 
-					ltr_otime, 
-					DATE(ltr_ctime + INTERVAL integers.i DAY) AS att_date,
-					CASE
-						WHEN DATE(ltr_ctime + INTERVAL i DAY)  = DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL i DAY)  = DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(ltr_otime, ltr_ctime))
-						WHEN DATE(ltr_ctime + INTERVAL i DAY)  = DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL i DAY) != DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(STR_TO_DATE(CONCAT(DATE(ltr_ctime + INTERVAL i DAY), ' ', '23:59:59'), '%Y-%m-%d %H:%i:%s') , ltr_ctime))
-						WHEN DATE(ltr_ctime + INTERVAL i DAY) != DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL i DAY)  = DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(ltr_otime, STR_TO_DATE(CONCAT(DATE(ltr_ctime + INTERVAL i DAY), ' ', '00:00:00'), '%Y-%m-%d %H:%i:%s') ))
-						ELSE 86400
-					END * atttable.prt_lbr_perc AS att_time
-					
-				FROM
-					(
-						SELECT 
-							ltr_id, ltr_usr_id, ltr_prt_id,prt_lbr_perc,ltr_ctime,COALESCE(ltr_otime,'{$dateTo}') AS ltr_otime
-						FROM
-							labour_track
-								JOIN `acc_accounts` ON prt_id = ltr_prt_id
-								JOIN labour ON lbr_id = ltr_usr_id	
-					) AS atttable
+				(
+					SELECT 
+						ltr_usr_id,
+						ltr_prt_id,
+						ltr_ctime, 
+						ltr_otime, 
+						DATE(ltr_ctime + INTERVAL integers.seq DAY) AS att_date,
+						CASE
+							WHEN DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(ltr_otime, ltr_ctime))
+							WHEN DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL seq DAY) != DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(STR_TO_DATE(CONCAT(DATE(ltr_ctime + INTERVAL seq DAY), ' ', '23:59:59'), '%Y-%m-%d %H:%i:%s') , ltr_ctime))
+							WHEN DATE(ltr_ctime + INTERVAL seq DAY) != DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(ltr_otime, STR_TO_DATE(CONCAT(DATE(ltr_ctime + INTERVAL seq DAY), ' ', '00:00:00'), '%Y-%m-%d %H:%i:%s') ))
+							ELSE 86400
+						END * atttable.prt_lbr_perc AS att_time
+						
+					FROM
+						(
+							SELECT 
+								ltr_id, ltr_usr_id, ltr_prt_id,prt_lbr_perc,ltr_ctime,COALESCE(ltr_otime,'{$dateTo->format("Y-m-d H:i:s")}') AS ltr_otime
+							FROM
+								labour_track
+									JOIN acc_accounts ON prt_id = ltr_prt_id AND prt_company_id = {$parameters['company']}
+							WHERE
+								ltr_ctime < '{$dateFromShift->format("Y-m-d H:i:s")}' AND ltr_ctime > '{$dateToShift->format("Y-m-d H:i:s")}'
 
-					INNER JOIN (
-						SELECT
-							 t1 + t2 * 10 AS i
-						FROM
-							(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
-							(select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2
-					) AS integers ON integers.i <= DATEDIFF(atttable.ltr_otime, atttable.ltr_ctime)
-					
-				WHERE
-					DATE(ltr_ctime + INTERVAL i DAY)  >= '{$dateFrom}'
-					AND
-					DATE(ltr_ctime + INTERVAL i DAY)  <= '{$dateTo}'
+						) AS atttable
+
+						INNER JOIN (
+							SELECT seq FROM seq_1_to_60
+						) AS integers ON integers.seq <= DATEDIFF(atttable.ltr_otime, atttable.ltr_ctime)
+						
+					WHERE
+						DATE(ltr_ctime + INTERVAL seq DAY)  >= '{$dateFrom->format("Y-m-d H:i:s")}'
+						AND
+						DATE(ltr_ctime + INTERVAL seq DAY)  <= '{$dateTo->format("Y-m-d H:i:s")}'
 					
 				) AS joiner
-				
 				
 				JOIN (
 					SELECT 
@@ -207,13 +226,15 @@ class Registration extends \System\Individual\Employee
 					FROM
 						labour_track AS latestRecordTable
 						JOIN(
-							SELECT
-								MAX(ltr_id) AS ltr_id
-							FROM
-								labour_track
+							SELECT MAX(ltr_id) AS ltr_id
+							FROM labour_track JOIN acc_accounts ON prt_id = ltr_prt_id AND prt_company_id = {$parameters['company']}
+							WHERE ltr_ctime < '{$dateFromShift->format("Y-m-d H:i:s")}' AND ltr_ctime > '{$dateToShift->format("Y-m-d H:i:s")}'
 							GROUP BY ltr_usr_id
+							
 						) AS latestRecordEach ON latestRecordEach.ltr_id = latestRecordTable.ltr_id
-					
+					WHERE
+						ltr_ctime < '{$dateFromShift->format("Y-m-d H:i:s")}' AND ltr_ctime > '{$dateToShift->format("Y-m-d H:i:s")}'
+
 				) AS latestRecord ON latestRecord.latestRecordUser = joiner.ltr_usr_id
 				JOIN 
 					(
@@ -222,40 +243,32 @@ class Registration extends \System\Individual\Employee
 						FROM 
 							labour 
 							JOIN users ON lbr_id = usr_id
-							LEFT JOIN
-								(
-									SELECT
-										lty_name,lsc_name,lty_id,lty_time,lty_salarybasic,lty_section
-									FROM
-										labour_section JOIN labour_type ON lsc_id=lty_section
-								) AS _mol ON _mol.lty_id = usr_jobtitle
-							
+							LEFT JOIN (SELECT lty_name,lsc_name,lty_id,lty_time,lty_salarybasic,lty_section FROM labour_section JOIN labour_type ON lsc_id=lty_section) AS _mol ON _mol.lty_id = usr_jobtitle
 							LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 							LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
 							LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted=0
-							
 					) AS personDetails ON personDetails.lbr_id = joiner.ltr_usr_id
 							
-			
+
 			WHERE
-				usr_entity = {$parameters['company']}
+				1
 				" . (isset($parameters['paymethod']) && (int) $parameters['paymethod'] != 0 ? " AND lbr_payment_method=" . ($parameters['paymethod']) : "") . " 
 				" . (isset($parameters['section']) && !is_null($parameters['section']) && (int) $parameters['section'] != 0 ? " AND lty_section=" . ((int) $parameters['section']) : "") . "
 				" . (isset($parameters['job']) && !is_null($parameters['job']) && (int) $parameters['job'] != 0 ? " AND usr_jobtitle = " . ((int) $parameters['job']) : "") . "
 				
 			GROUP BY
 				{$parameters['::group']}
-			
+
 			{$parameters['::order']}
 		");
-
 
 		return $this->app->db->query($r);
 	}
 
 	public function ReportOngoingBySector(array $parameters = array()): mysqli_result|bool
 	{
-		$r = (
+		$var1 = \System\Attachment\Type::HrPerson->value;
+		$r    = (
 			"SELECT
 				lbr_id, usr_firstname,usr_lastname, up_id
 			FROM 
@@ -268,7 +281,7 @@ class Registration extends \System\Individual\Employee
 					FROM
 						labour_track
 					WHERE
-						ltr_otime is null AND ltr_prt_id = {$parameters['sector']}
+						ltr_otime IS NULL AND ltr_prt_id = {$parameters['sector']}
 					GROUP BY
 						ltr_usr_id
 				) AS lastJoin ON lastJoin._ltr_ctime = ltr_ctime AND lastJoin._ltr_usr_id = ltr_usr_id 
@@ -280,11 +293,9 @@ class Registration extends \System\Individual\Employee
 					FROM 
 						labour 
 							JOIN users ON lbr_id = usr_id
-							LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted=0
-					WHERE
-						usr_entity = {$parameters['company']}
-
+							LEFT JOIN uploads ON (up_pagefile = $var1) AND up_rel=lbr_id AND up_deleted=0
 				) AS personDetails ON personDetails.lbr_id = ltr_usr_id
+				
 			WHERE
 				ltr_prt_id = {$parameters['sector']}
 			ORDER BY 
@@ -325,8 +336,7 @@ class Registration extends \System\Individual\Employee
 				lsc_name,
 				TIME_TO_SEC(TIMEDIFF('{$dateTo}', _lci_time)) AS diff,
 				DATE_FORMAT(_lci_time, '%Y-%m-%d') AS ltr_ctime_date,
-				DATE_FORMAT(_lci_time, '%H:%i') AS ltr_ctime_time,
-				prt_name
+				DATE_FORMAT(_lci_time, '%H:%i') AS ltr_ctime_time
 				
 			FROM 
 				labour_track 
@@ -335,11 +345,10 @@ class Registration extends \System\Individual\Employee
 				(
 					SELECT 
 						MAX(ltr_ctime) AS _ltr_ctime, 
-						ltr_usr_id AS _ltr_usr_id ,
-						prt_name
+						ltr_usr_id AS _ltr_usr_id 
 					FROM 
 						labour_track 
-							JOIN `acc_accounts` ON prt_id = ltr_prt_id
+							JOIN acc_accounts ON prt_id = ltr_prt_id AND prt_company_id = {$parameters['company']}
 					WHERE
 						ltr_otime IS null
 					GROUP BY 
@@ -355,9 +364,9 @@ class Registration extends \System\Individual\Employee
 						MAX(ltr_ctime) AS _lci_time, 
 						ltr_usr_id AS _ltr_usr_id 
 					FROM 
-						`acc_accounts`
-							JOIN partitionlabour ON prtlbr_prt_id = prt_id AND prtlbr_op = 1
-							JOIN labour_track ON ltr_prt_id = prt_id
+						labour_track
+							JOIN partitionlabour ON prtlbr_prt_id = ltr_prt_id AND prtlbr_op = 1
+							JOIN acc_accounts ON prt_id = ltr_prt_id AND prt_company_id = {$parameters['company']}
 					GROUP BY 
 						_ltr_usr_id 
 				) AS lastCheckin
@@ -365,7 +374,6 @@ class Registration extends \System\Individual\Employee
 						lastCheckin._ltr_usr_id = ltr_usr_id
 				
 				JOIN 
-				
 					(
 						SELECT
 							lbr_id ,usr_firstname,usr_lastname,lbr_mth_name,usr_entity,lbr_payment_method,lty_section,usr_jobtitle,up_id,lty_name,lsc_name
@@ -402,31 +410,39 @@ class Registration extends \System\Individual\Employee
 
 	public function ReportToday(array $parameters = array()): mysqli_result|bool
 	{
-		$dateFrom = date("Y-m-d 00:00:00", time());
-		$dateTo   = date("Y-m-d H:i:s", time());
+
+		$dateFrom = new \DateTimeImmutable("now");
+		$dateFrom = $dateFrom->setTime(0, 0, 0);
+		$dateTo   = new \DateTimeImmutable("now");
+
+
 
 		$parameters['::group']  = " ltr_usr_id ";
 		$parameters['::order']  = " ORDER BY lty_section, lbr_id ";
 		$parameters['::select'] = "
-				ltr_usr_id AS personID,
-				SUM(att_time) AS timeAttended,
-				att_date,
-				ltr_ctime,
-				usr_firstname,
-				usr_lastname,
-				latestRecordIn,
-				latestRecordOut,
-				lbr_mth_name,
-				ltr_prt_id,
-				lty_section,
-				up_id,
-				usr_jobtitle";
+			ltr_usr_id AS personID,
+			SUM(att_time) AS timeAttended,
+			att_date,
+			ltr_ctime,
+			usr_firstname,
+			usr_lastname,
+			latestRecordIn,
+			latestRecordOut,
+			lbr_mth_name,
+			ltr_prt_id,
+			lty_section,
+			up_id,
+			usr_jobtitle";
+
 		return $this->AttendanceQuery($dateFrom, $dateTo, $parameters);
 	}
 
 
 	public function ReportSummary($dateFrom, $dateTo, $id = null, $parameters = array()): mysqli_result|bool
 	{
+		$dateFrom = new \DateTimeImmutable($dateFrom);
+		$dateTo   = new \DateTimeImmutable($dateTo);
+
 		$parameters['::group']  = " ltr_usr_id, att_date ";
 		$parameters['::order']  = " ORDER BY lbr_id ";
 		$parameters['::select'] = "

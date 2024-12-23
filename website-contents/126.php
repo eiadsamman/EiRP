@@ -63,16 +63,13 @@ if (isset($_POST['list-absenece-report']) && isset($_POST['lbr'])) {
 			labour_absence_request main
 			JOIN(
 				SELECT
-					adddate(lbr_abs_start_date,t2*100 + t1*10 + t0) AS abs_dates,
+					adddate(lbr_abs_start_date,seq) AS abs_dates,
 					lbr_abs_id
 				FROM
-					(select 0 t0 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
-					(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
-					(select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
-					
+					seq_1_to_365,
 					labour_absence_request
 				WHERE
-					t2*100 + t1*10 + t0 <= lbr_abs_days AND lbr_abs_lbr_id={$_POST['lbr']}
+					seq <= lbr_abs_days AND lbr_abs_lbr_id={$_POST['lbr']}
 				) a ON a.lbr_abs_id=main.lbr_abs_id
 			
 		WHERE
@@ -231,16 +228,13 @@ if (isset($_POST['submit-new-absence-request'])) {
 			labour_absence_request main
 			JOIN(
 				SELECT
-					adddate(lbr_abs_start_date,t2*100 + t1*10 + t0) AS abs_dates,
+					adddate(lbr_abs_start_date,seq) AS abs_dates,
 					lbr_abs_id
 				FROM
-					(select 0 t0 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
-					(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
-					(select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
-					
+					seq_1_to_100,
 					labour_absence_request
 				WHERE
-					t2*100 + t1*10 + t0 <= lbr_abs_days AND lbr_abs_lbr_id={$_POST['lbr']}
+					seq <= lbr_abs_days AND lbr_abs_lbr_id={$_POST['lbr']}
 				) a ON a.lbr_abs_id=main.lbr_abs_id
 			
 		WHERE

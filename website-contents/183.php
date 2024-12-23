@@ -12,7 +12,9 @@ echo "<thead>";
 echo "<tr><td></td><td></td><td>ID</td><td>Name</td><td>Check-in time</td><td align=\"right\">Time</td><td width=\"100%\"></td></tr>";
 echo "</thead>";
 echo "<tbody>";
+
 $r = $attendance->ReportToday(["company" => $app->user->company->id]);
+
 if ($r && $r->num_rows > 0) {
 	$cnt = 0;
 	while ($row = $r->fetch_assoc()) {

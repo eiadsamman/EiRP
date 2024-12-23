@@ -28,11 +28,9 @@ if (!$app->xhttp && $app->user->company->id) {
 		FROM
 			(
 				SELECT
-					DATE('{$date_start->format("Y-m-d")}' + INTERVAL (t1 + t2 * 10) DAY) AS pr_day
+					DATE('{$date_start->format("Y-m-d")}' + INTERVAL (seq) DAY) AS pr_day
 				FROM
-					(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
-					(select 0 t2 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2
-
+					seq_1_to_100
 				HAVING pr_day <= '{$date_end->format("Y-m-d")}'
 			) AS integers 
 			JOIN

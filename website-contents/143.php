@@ -19,19 +19,18 @@ if ($_SHIFT) {
 									'" . date("Y", $_SHIFT['start']) . "','-',MONTH(cal_date),'-',DAY(cal_date)
 								),
 								'%Y-%m-%d'
-							),t1*10 + t0
+							),seq
 						),
 						/*Otherwise use date as it is*/
-						adddate(cal_date,t1*10 + t0) 
+						adddate(cal_date,seq) 
 					) AS holicow,
 					cal_id
 				FROM 
-					(select 0 t0 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
-					(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+					seq_1_to_100,
 					
 					calendar
 				WHERE 
-					t1*10 + t0 < cal_period AND cal_op=1 AND cal_owner=0
+					seq < cal_period AND cal_op=1 AND cal_owner=0
 				) a ON a.cal_id=main.cal_id
 		WHERE
 			holicow = '" . date("Y-m-d", $_SHIFT['start']) . "'"
@@ -114,14 +113,13 @@ if ($_SHIFT) {
 				labour_absence_request main
 				JOIN(
 					SELECT
-						adddate(lbr_abs_start_date, t1*10 + t0) AS absdays ,lbr_abs_id
+						adddate(lbr_abs_start_date, seq) AS absdays ,lbr_abs_id
 					FROM
-						(select 0 t0 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
-						(select 0 t1 union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+						seq_1_to_100,
 						
 						labour_absence_request
 					WHERE
-						t1*10 + t0 < lbr_abs_days
+						seq < lbr_abs_days
 					) a ON a.lbr_abs_id=main.lbr_abs_id
 			WHERE
 				absdays = '" . date("Y-m-d", $_SHIFT['start']) . "'
