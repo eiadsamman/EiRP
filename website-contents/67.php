@@ -73,7 +73,7 @@ if (isset($_POST['fetch'])) {
 
 			echo "<td class=\"employee-photo\"><div style=\"background-image:url('" . (is_null($row['up_id']) ? "user.jpg" : $fs(187)->dir . "?id={$row['up_id']}&pr=t") . "');\"></div></td>";
 			echo "<td>{$row['lbr_id']} </td>";
-			echo "<td class=\"emplyee-name\">{$row['usr_firstname']} {$row['usr_lastname']}</td>";
+			echo "<td class=\"emplyee-name\" style=\"width:100%\">{$row['usr_firstname']} {$row['usr_lastname']}</td>";
 			echo "<td>{$row['ltr_ctime_date']} {$row['ltr_ctime_time']}</td>";
 			echo "<td class=\"elapsed\"><span>Elapsed: </span>" . $app->formatTime($row['diff'], false) . "</td>";
 

@@ -16,9 +16,17 @@ $settings['matrix']['column']['count'] = 0;
 
 $settings['color']                    = array();
 $settings['color']['timegradient']    = array();
-$settings['color']['timegradient'][0] = "#f03";
-$settings['color']['timegradient'][1] = "#3c77c3";
-$settings['color']['timegradient'][2] = "#396";
+$settings['color']['timegradient'][0] = "#faa";
+$settings['color']['timegradient'][1] = "#afa";
+$settings['color']['timegradient'][2] = "#acf";
+
+$settings['color']['invert']    = array();
+$settings['color']['invert'][1] = "#000";
+$settings['color']['invert'][0] = "#000";
+$settings['color']['invert'][2] = "#000";
+
+
+
 
 if (isset($_POST['posubmit'])) {
 
@@ -110,7 +118,7 @@ if (isset($_POST['posubmit'])) {
 		<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse: collapse;\">
 			<tbody>
 				<tr>
-					<td>
+					<td style=\"vertical-align: top;padding:0px;\">
 						<table>
 							<thead>
 								<tr><td>ID</td><td>Name</td><td>Total</td></tr>
@@ -118,18 +126,30 @@ if (isset($_POST['posubmit'])) {
 							<tbody>";
 		foreach ($arrDisplay as $id => $data) {
 			$percentage_l  = ceil($data['info']['totalAttendedTime'] / $maxtime * 100);
-			$colorgradient = "#fff";
+			$colorgradient = "";
+			$colorinvert = "";
+
 			if ($percentage_l <= 33) {
 				$colorgradient = $settings['color']['timegradient'][0];
+				$colorinvert = $settings['color']['invert'][0];
 			} elseif ($percentage_l <= 66) {
 				$colorgradient = $settings['color']['timegradient'][1];
+				$colorinvert = $settings['color']['invert'][1];
 			} else {
 				$colorgradient = $settings['color']['timegradient'][2];
+				$colorinvert = $settings['color']['invert'][2];
 			}
+
+
+
+			//
 			echo "<tr>";
 			echo "<td>{$data['info']['id']}</td>";
 			echo "<td>{$data['info']['name']}</td>";
-			echo "<td align=\"right\" style=\"background-image:linear-gradient(0deg,rgba(0,0,0,0) 15%, var(--root-background-color) 15%), linear-gradient(90deg, $colorgradient {$percentage_l}%, transparent {$percentage_l}%);\">" . $app->formatTime($data['info']['totalAttendedTime']) . "</td>";
+			echo "<td align=\"right\" style=\"background-image:
+							linear-gradient(0deg, transparent 8%, var(--root-ribbon-menu-background-color) 8%),
+							linear-gradient(90deg, $colorgradient {$percentage_l}%, white {$percentage_l}%); 
+							\"><span style=\"display:inline-block;width:90px;\">" . $app->formatTime($data['info']['totalAttendedTime'], false) . "</span></td>";//
 			echo "</tr>";
 		}
 		echo "
@@ -142,11 +162,10 @@ if (isset($_POST['posubmit'])) {
 							<table style=\"width:auto;\">
 								<thead>
 									<tr>
-										<td>Group</td>
 										";
 		$dayPlot = $dateFrom;
 		while ($dayPlot < $dateTo) {
-			echo "<td>" . date("Y-m-d", $dayPlot) . "</td>";
+			echo "<td>" . date("y-m-d", $dayPlot) . "</td>";
 			$daysList[] = date("Y-m-d", $dayPlot);
 			$dayPlot    = strtotime(date("Y-m-d", $dayPlot) . ' + 1 days');
 			$settings['matrix']['column']['count']++;
@@ -158,10 +177,9 @@ if (isset($_POST['posubmit'])) {
 
 		foreach ($arrDisplay as $id => $data) {
 			echo "<tr>";
-			echo "<th align=\"center\">{$data['info']['timeGroup']}</th>";
 			foreach ($daysList as $dayId => $day) {
 				if (isset($data['days'][$day])) {
-					echo "<td align=\"center\">" . $app->formatTime($data['days'][$day]) . "</td>";
+					echo "<td align=\"center\">" . $app->formatTime($data['days'][$day],false) . "</td>";
 				} else {
 					echo "<td align=\"center\">-</td>";
 				}
@@ -288,11 +306,11 @@ if ($app->xhttp) {
 		display: inline-block;
 		position: absolute;
 		top: 0px;
-		left: -1px;
+		left: 0px;
 		right: 0px;
 		bottom: 0px;
 		overflow-x: hidden;
-		overflow-y: hidden;
+		overflow-y: visible;
 	}
 
 	#jsTimeMatrix>table>thead>tr>td {
