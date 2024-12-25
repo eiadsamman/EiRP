@@ -13,7 +13,7 @@ echo "<tr><td></td><td></td><td>ID</td><td>Name</td><td>Check-in time</td><td al
 echo "</thead>";
 echo "<tbody>";
 
-$r = $attendance->ReportToday(["company" => $app->user->company->id]);
+$r = $attendance->ReportToday(["company_sectors" => $app->user->company->id]);
 
 if ($r && $r->num_rows > 0) {
 	$cnt = 0;

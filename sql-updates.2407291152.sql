@@ -273,6 +273,9 @@ ALTER TABLE `inv_main` CHANGE `po_date` `po_date` DATETIME NOT NULL;
 ALTER TABLE `timeline` CHANGE `tl_timestamp` `tl_timestamp` DATETIME NOT NULL;
 
 
+ALTER TABLE `labour_track` DROP INDEX `ltr_ctime`, ADD INDEX `ltr_ctime` (`ltr_ctime`, `ltr_usr_id`, `ltr_otime`) USING BTREE;
+
+
 
 CREATE
 OR REPLACE ALGORITHM=UNDEFINED VIEW view_financial_accounts AS (

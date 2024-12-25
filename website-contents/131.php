@@ -66,7 +66,7 @@ if (isset($_POST['posubmit'])) {
 	header("HTTP_X_RESPONSE: SUCCESS");
 
 	$parameters = array(
-		"company" => $app->user->company->id,
+		"company_users" => $app->user->company->id,
 		"paymethod" => isset($_POST['paymethod'][1]) && (int) $_POST['paymethod'][1] != 0 ? (int) $_POST['paymethod'][1] : null,
 		"section" => isset($_POST['section'][1]) && (int) $_POST['section'][1] != 0 ? (int) $_POST['section'][1] : null,
 		"job" => isset($_POST['section'][1]) && (int) $_POST['job'][1] != 0 ? (int) $_POST['job'][1] : null,

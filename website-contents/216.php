@@ -10,6 +10,8 @@ if ($app->user->account && !$app->xhttp) {
 	$prev_close_date = $d->modify("-1 day");
 	$prev_close_val = 0;
 	if ($app->user->account) {
+
+		
 		$r = "SELECT 
 				SUM(atm_value) 
 			FROM 
@@ -22,6 +24,7 @@ if ($app->user->account && !$app->xhttp) {
 				acm_rejected = 0 
 				AND atm_account_id = {$app->user->account->id}
 				AND acm_ctime <= \"" . $prev_close_date->format("Y-m-d") . "\" ;";
+		
 		$r = $app->db->query($r);
 		if ($r) {
 			if ($row = $r->fetch_array()) {

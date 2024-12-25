@@ -14,19 +14,18 @@ class Reports
 	public function OngoingAttendance(?int $company_id = null): int|array
 	{
 
-		$r = $this->app->db->query(
-			"SELECT COUNT(1) AS company_count, usr_entity
-			FROM 
-				users
-				JOIN labour_track ON usr_id = ltr_usr_id 
-				JOIN user_company ON usr_entity = urc_usr_comp_id AND urc_usr_id = {$this->app->user->info->id}
-			WHERE 
-				ltr_otime IS NULL
-				" . (is_null($company_id) ? "" : " AND usr_entity = {$company_id} ") . " AND 1
-			GROUP BY 
-				usr_entity
-			"
-		);
+		$date_start_shift   = new \DateTime();
+		$date_start_shift->modify("-2 month");
+		$r="SELECT
+    			COUNT(labour_track.ltr_usr_id) AS company_count
+			FROM
+				labour_track  JOIN acc_accounts ON ltr_prt_id = prt_id AND prt_company_id = '{$company_id}'
+			WHERE
+				ltr_otime IS NULL AND ltr_ctime > '{$date_start_shift->format("Y-m-d")}' 
+			";
+
+		
+		$r = $this->app->db->query($r);
 
 		if ($r) {
 			if (is_null($company_id)) {

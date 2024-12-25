@@ -158,110 +158,102 @@ class Registration extends \System\Individual\Employee
 
 	private function AttendanceQuery($dateFrom, $dateTo, $parameters): mysqli_result|bool
 	{
-		/*  WITH RECURSIVE nrows(date) AS (
-		 *	SELECT DATE("2024-11-23") UNION ALL 
-		 *	SELECT DATE_ADD(date, INTERVAL 1 day) FROM nrows WHERE date < CURRENT_DATE
-		 * )
-		 * SELECT date FROM nrows 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * WITH ranked_messages AS (
-		 *  SELECT m.*, ROW_NUMBER() OVER (PARTITION BY name ORDER BY id DESC) AS rn
-		 *  FROM messages AS m
-		 * )
-		 * SELECT * FROM ranked_messages WHERE rn = 1;
-		 * 
-		 * 
-		 */
+		
+		$company_sectors = "";
+		$company_users = "";
+		if (!empty($parameters['company_sectors'])) {
+			$company_sectors = " AND prt_company_id = {$parameters['company_sectors']} ";
+		}
+		if (!empty($parameters['company_users'])) {
+			$company_users = " AND usr_entity = {$parameters['company_users']} ";
+		}
 
 		$dateFromShift = $dateFrom->modify('+2 month');
 		$dateToShift   = $dateTo->modify('-2 month');
-		var_dump($parameters['company']);
-		$r = (
+		$r             = (
 			"SELECT
-				{$parameters['::select']}
+	{$parameters['::select']}
+FROM 
+	(
+		SELECT 
+			ltr_usr_id,
+			ltr_prt_id,
+			ltr_ctime, 
+			ltr_otime, 
+			DATE(ltr_ctime + INTERVAL integers.seq DAY) AS att_date,
+			CASE
+				WHEN DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(ltr_otime, ltr_ctime))
+				WHEN DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL seq DAY) != DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(STR_TO_DATE(CONCAT(DATE(ltr_ctime + INTERVAL seq DAY), ' ', '23:59:59'), '%Y-%m-%d %H:%i:%s') , ltr_ctime))
+				WHEN DATE(ltr_ctime + INTERVAL seq DAY) != DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(ltr_otime, STR_TO_DATE(CONCAT(DATE(ltr_ctime + INTERVAL seq DAY), ' ', '00:00:00'), '%Y-%m-%d %H:%i:%s') ))
+				ELSE 86400
+			END * atttable.prt_lbr_perc AS att_time
+			
+		FROM
+			(
+				SELECT 
+					ltr_id, ltr_usr_id, ltr_prt_id,prt_lbr_perc,ltr_ctime,COALESCE(ltr_otime,'{$dateTo->format("Y-m-d H:i:s")}') AS ltr_otime
+				FROM
+					labour_track
+						JOIN acc_accounts ON prt_id = ltr_prt_id $company_sectors
+				WHERE
+					ltr_ctime < '{$dateFromShift->format("Y-m-d H:i:s")}' AND ltr_ctime > '{$dateToShift->format("Y-m-d H:i:s")}'
+
+			) AS atttable
+
+			INNER JOIN (
+				SELECT seq FROM seq_1_to_60
+			) AS integers ON integers.seq <= DATEDIFF(atttable.ltr_otime, atttable.ltr_ctime)
+			
+		WHERE
+			DATE(ltr_ctime + INTERVAL seq DAY)  >= '{$dateFrom->format("Y-m-d H:i:s")}'
+			AND
+			DATE(ltr_ctime + INTERVAL seq DAY)  <= '{$dateTo->format("Y-m-d H:i:s")}'
+		
+	) AS joiner
+	
+	JOIN (
+		SELECT 
+			ltr_ctime AS latestRecordIn, ltr_otime AS latestRecordOut, ltr_usr_id AS latestRecordUser
+		FROM
+			labour_track AS latestRecordTable
+			JOIN(
+				SELECT MAX(ltr_id) AS ltr_id
+				FROM labour_track JOIN acc_accounts ON prt_id = ltr_prt_id $company_sectors
+				WHERE ltr_ctime < '{$dateFromShift->format("Y-m-d H:i:s")}' AND ltr_ctime > '{$dateToShift->format("Y-m-d H:i:s")}'
+				GROUP BY ltr_usr_id
+				
+			) AS latestRecordEach ON latestRecordEach.ltr_id = latestRecordTable.ltr_id
+		WHERE
+			ltr_ctime < '{$dateFromShift->format("Y-m-d H:i:s")}' AND ltr_ctime > '{$dateToShift->format("Y-m-d H:i:s")}'
+
+	) AS latestRecord ON latestRecord.latestRecordUser = joiner.ltr_usr_id
+	JOIN 
+		(
+			SELECT
+				lbr_id ,usr_firstname,usr_lastname,lbr_mth_name,usr_entity,lbr_payment_method,lty_section,usr_jobtitle,up_id
 			FROM 
-				(
-					SELECT 
-						ltr_usr_id,
-						ltr_prt_id,
-						ltr_ctime, 
-						ltr_otime, 
-						DATE(ltr_ctime + INTERVAL integers.seq DAY) AS att_date,
-						CASE
-							WHEN DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(ltr_otime, ltr_ctime))
-							WHEN DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL seq DAY) != DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(STR_TO_DATE(CONCAT(DATE(ltr_ctime + INTERVAL seq DAY), ' ', '23:59:59'), '%Y-%m-%d %H:%i:%s') , ltr_ctime))
-							WHEN DATE(ltr_ctime + INTERVAL seq DAY) != DATE(ltr_ctime) AND DATE(ltr_ctime + INTERVAL seq DAY)  = DATE(ltr_otime) THEN TIME_TO_SEC(TIMEDIFF(ltr_otime, STR_TO_DATE(CONCAT(DATE(ltr_ctime + INTERVAL seq DAY), ' ', '00:00:00'), '%Y-%m-%d %H:%i:%s') ))
-							ELSE 86400
-						END * atttable.prt_lbr_perc AS att_time
-						
-					FROM
-						(
-							SELECT 
-								ltr_id, ltr_usr_id, ltr_prt_id,prt_lbr_perc,ltr_ctime,COALESCE(ltr_otime,'{$dateTo->format("Y-m-d H:i:s")}') AS ltr_otime
-							FROM
-								labour_track
-									JOIN acc_accounts ON prt_id = ltr_prt_id AND prt_company_id = {$parameters['company']}
-							WHERE
-								ltr_ctime < '{$dateFromShift->format("Y-m-d H:i:s")}' AND ltr_ctime > '{$dateToShift->format("Y-m-d H:i:s")}'
-
-						) AS atttable
-
-						INNER JOIN (
-							SELECT seq FROM seq_1_to_60
-						) AS integers ON integers.seq <= DATEDIFF(atttable.ltr_otime, atttable.ltr_ctime)
-						
-					WHERE
-						DATE(ltr_ctime + INTERVAL seq DAY)  >= '{$dateFrom->format("Y-m-d H:i:s")}'
-						AND
-						DATE(ltr_ctime + INTERVAL seq DAY)  <= '{$dateTo->format("Y-m-d H:i:s")}'
-					
-				) AS joiner
+				labour 
+				JOIN users ON lbr_id = usr_id
+				LEFT JOIN (SELECT lty_name,lsc_name,lty_id,lty_time,lty_salarybasic,lty_section FROM labour_section JOIN labour_type ON lsc_id=lty_section) AS _mol ON _mol.lty_id = usr_jobtitle
+				LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
+				LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
+				LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted = 0 
+			
+		) AS personDetails ON personDetails.lbr_id = joiner.ltr_usr_id
 				
-				JOIN (
-					SELECT 
-						ltr_ctime AS latestRecordIn, ltr_otime AS latestRecordOut, ltr_usr_id AS latestRecordUser
-					FROM
-						labour_track AS latestRecordTable
-						JOIN(
-							SELECT MAX(ltr_id) AS ltr_id
-							FROM labour_track JOIN acc_accounts ON prt_id = ltr_prt_id AND prt_company_id = {$parameters['company']}
-							WHERE ltr_ctime < '{$dateFromShift->format("Y-m-d H:i:s")}' AND ltr_ctime > '{$dateToShift->format("Y-m-d H:i:s")}'
-							GROUP BY ltr_usr_id
-							
-						) AS latestRecordEach ON latestRecordEach.ltr_id = latestRecordTable.ltr_id
-					WHERE
-						ltr_ctime < '{$dateFromShift->format("Y-m-d H:i:s")}' AND ltr_ctime > '{$dateToShift->format("Y-m-d H:i:s")}'
 
-				) AS latestRecord ON latestRecord.latestRecordUser = joiner.ltr_usr_id
-				JOIN 
-					(
-						SELECT
-							lbr_id ,usr_firstname,usr_lastname,lbr_mth_name,usr_entity,lbr_payment_method,lty_section,usr_jobtitle,up_id
-						FROM 
-							labour 
-							JOIN users ON lbr_id = usr_id
-							LEFT JOIN (SELECT lty_name,lsc_name,lty_id,lty_time,lty_salarybasic,lty_section FROM labour_section JOIN labour_type ON lsc_id=lty_section) AS _mol ON _mol.lty_id = usr_jobtitle
-							LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
-							LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
-							LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . ") AND up_rel=lbr_id AND up_deleted=0
-					) AS personDetails ON personDetails.lbr_id = joiner.ltr_usr_id
-							
+WHERE
+	1
+	" . (isset($parameters['paymethod']) && (int) $parameters['paymethod'] != 0 ? " AND lbr_payment_method=" . ($parameters['paymethod']) : "") . " 
+	" . (isset($parameters['section']) && !is_null($parameters['section']) && (int) $parameters['section'] != 0 ? " AND lty_section=" . ((int) $parameters['section']) : "") . "
+	" . (isset($parameters['job']) && !is_null($parameters['job']) && (int) $parameters['job'] != 0 ? " AND usr_jobtitle = " . ((int) $parameters['job']) : "") . "
+	
+GROUP BY
+	{$parameters['::group']}
 
-			WHERE
-				1
-				" . (isset($parameters['paymethod']) && (int) $parameters['paymethod'] != 0 ? " AND lbr_payment_method=" . ($parameters['paymethod']) : "") . " 
-				" . (isset($parameters['section']) && !is_null($parameters['section']) && (int) $parameters['section'] != 0 ? " AND lty_section=" . ((int) $parameters['section']) : "") . "
-				" . (isset($parameters['job']) && !is_null($parameters['job']) && (int) $parameters['job'] != 0 ? " AND usr_jobtitle = " . ((int) $parameters['job']) : "") . "
-				
-			GROUP BY
-				{$parameters['::group']}
-
-			{$parameters['::order']}
+{$parameters['::order']}
 		");
-
+		echo "<pre>".$r."</pre>";
 		return $this->app->db->query($r);
 	}
 

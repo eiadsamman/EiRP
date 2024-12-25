@@ -6,10 +6,15 @@ if (!$app->xhttp && $app->user->company->id) {
 	echo "<div class=\"full-chart\"><div class=\"chart\" data-uri=\"{$fs(75)->dir}\">";
 	echo "</div></div>";
 } elseif ($app->user->company->id) {
+
+	$m = microtime(true);
 	$curve        = new CurveRelativePositive(20, 100, -.6);
 	$date_current = new \DateTimeImmutable();
 	$date_start   = new \DateTimeImmutable("first day of this month 00:00:00");
-	$date_end     = $date_start->modify("last day of this month 23:59:59");
+	$date_end     = new \DateTimeImmutable("last day of this month 23:59:59");
+
+	$date_start_shift = $date_start->modify("-2 month");
+	$date_end_shift   = $date_end->modify("+2 month");
 
 	try {
 		$att_reports = new System\Individual\Attendance\Reports($app);
@@ -24,36 +29,42 @@ if (!$app->xhttp && $app->user->company->id) {
 	/* Count attendance of current month */
 	$r = (
 		"SELECT 
-			COUNT(DISTINCT sub_location.ltr_usr_id), integers.pr_day
+			SUM(observer.report_count) AS day_attend, 
+			 sequence_days.seq_day
 		FROM
 			(
-				SELECT
-					DATE('{$date_start->format("Y-m-d")}' + INTERVAL (seq) DAY) AS pr_day
-				FROM
-					seq_1_to_100
-				HAVING pr_day <= '{$date_end->format("Y-m-d")}'
-			) AS integers 
-			JOIN
-				(SELECT comp_id FROM companies 
-				JOIN user_company ON urc_usr_id = {$app->user->info->id} AND urc_usr_comp_id = comp_id AND comp_id = {$app->user->company->id}) AS sub_companies
-				
+				SELECT DATE('{$date_start->format("Y-m-d")}' + INTERVAL (seq) DAY) AS seq_day
+				FROM seq_0_to_31
+				WHERE seq <= '{$date_end->format("d")}'
+			) AS sequence_days 
+			
 			LEFT JOIN 
 					(
 						SELECT 
-							ltr_ctime, ltr_otime, ltr_id, prt_company_id, ltr_usr_id
+							COUNT(DISTINCT ltr_usr_id) AS report_count,
+   							DATE(ltr_ctime) AS report_day, ltr_otime,ltr_ctime
 						FROM 
 							labour_track 
-								JOIN acc_accounts ON ltr_prt_id = prt_id
-					) AS sub_location ON 
-						DATE(sub_location.ltr_ctime) <= integers.pr_day AND 
-						(DATE(sub_location.ltr_otime) >= '{$date_start->format("Y-m-d")}' OR sub_location.ltr_otime IS NULL) AND
-						(pr_day <= DATE(sub_location.ltr_otime) OR sub_location.ltr_otime IS NULL) AND
-						sub_location.prt_company_id = comp_id
+								JOIN acc_accounts ON ltr_prt_id = prt_id AND prt_company_id = {$app->user->company->id}
+						WHERE
+							ltr_otime IS NULL OR 
+							(YEAR(ltr_ctime) = '{$date_end->format("Y")}' AND MONTH(ltr_ctime) = '{$date_end->format("m")}') OR
+							(YEAR(ltr_otime) = '{$date_end->format("Y")}' AND MONTH(ltr_otime) = '{$date_end->format("m")}')
+
+						GROUP BY
+							report_day
+
+					) AS observer ON 
+						(DATE(observer.ltr_ctime) <= sequence_days.seq_day) AND 
+						(sequence_days.seq_day <= DATE(observer.ltr_otime) OR observer.ltr_otime IS NULL) 
 		GROUP BY
-			comp_id, pr_day
+			sequence_days.seq_day
 		ORDER BY
-			comp_id, integers.pr_day ;"
+			sequence_days.seq_day ;"
 	);
+
+	//echo "<div style=\"position:fixed; inset: 0 0 0 0;z-index: 9999;\"><textarea style=\"width:400px;height:200px;\">$r</textarea></div>";
+
 	$r = $app->db->query($r);
 
 	/* Store count result */
@@ -101,4 +112,6 @@ if (!$app->xhttp && $app->user->company->id) {
 		}
 		echo "</svg></div>";
 	}
+
+	//echo number_format(microtime(true) - $m, 2);
 }

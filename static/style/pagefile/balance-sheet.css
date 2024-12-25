@@ -14,7 +14,7 @@
 			border-bottom: double 3px var(--static-border);
 			color: var(--root-link-color);
 			position: sticky;
-			top: calc(var(--gremium-header-height) + var(--root--menubar-height) + 43px);
+			top: calc(var(--gremium-header-height) + var(--root--menubar-height) + 32px);
 			background-color: var(--root-ribbon-menu-background-color);
 			z-index: 15;
 		}
