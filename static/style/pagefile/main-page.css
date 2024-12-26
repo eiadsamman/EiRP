@@ -7,7 +7,7 @@
 	flex-wrap: wrap;
 }
 
-.dashboard>div {
+.dashboard > div {
 	flex: 1;
 	margin: 6px;
 	cursor: default;
@@ -21,7 +21,7 @@
 	flex-wrap: wrap;
 }
 
-.dashboard>div>div {
+.dashboard > div > div {
 	min-width: 350px;
 	flex-wrap: wrap;
 	position: relative;
@@ -31,12 +31,12 @@
 
 
 /* #region Accounts Overview */
-.dashboard>div.accounts-overview>div.tickets {
+.dashboard > div.accounts-overview > div.tickets {
 	display: flex;
 	padding: 10px 10px;
 }
 
-.dashboard>div.accounts-overview>div.tickets>span {
+.dashboard > div.accounts-overview > div.tickets > span {
 	flex: 1 1 0;
 	text-align: center;
 	padding: 10px 0px;
@@ -44,7 +44,7 @@
 	min-width: 90px;
 }
 
-.dashboard>div.accounts-overview>div.tickets>span:hover {
+.dashboard > div.accounts-overview > div.tickets > span:hover {
 	font-size: 1em;
 	/* 
 	outline: solid 2px var(--outline-border-color);
@@ -53,7 +53,7 @@
  */
 }
 
-.dashboard>div.accounts-overview>div.tickets>span>h1 {
+.dashboard > div.accounts-overview > div.tickets > span > h1 {
 	display: flex;
 	align-items: flex-end;
 	justify-content: center;
@@ -66,7 +66,7 @@
 	height: 24px;
 }
 
-.dashboard>div.accounts-overview>div.tickets>span>h2 {
+.dashboard > div.accounts-overview > div.tickets > span > h2 {
 	font-weight: normal;
 	padding: 0;
 	line-height: 1em;
@@ -76,7 +76,7 @@
 
 }
 
-.dashboard>div.accounts-overview>div.tickets>span>span {
+.dashboard > div.accounts-overview > div.tickets > span > span {
 	display: block;
 	font-weight: bold;
 	font-size: 1.1em;
@@ -89,7 +89,7 @@
 	transition: color var(--transition-speed) ease;
 }
 
-.dashboard>div.accounts-overview>div.tickets>span>cite {
+.dashboard > div.accounts-overview > div.tickets > span > cite {
 	display: block;
 	font-weight: normal;
 	font-style: normal;
@@ -100,13 +100,13 @@
 }
 
 
-.dashboard>div.accounts-overview>div.tickets>span>div.plot {
+.dashboard > div.accounts-overview > div.tickets > span > div.plot {
 	margin-top: 10px;
 	display: inline-block;
 	padding: 0px;
 }
 
-.dashboard>div.accounts-overview>div.tickets>span>div.plot {
+.dashboard > div.accounts-overview > div.tickets > span > div.plot {
 	max-width: 70px;
 }
 
@@ -114,13 +114,13 @@
 
 
 /* #region Full Chart */
-.dashboard>div.full-chart {
+.dashboard > div.full-chart {
 	background: rgb(18, 123, 124);
 	background: linear-gradient(150deg, rgb(18, 123, 124) 0%, rgb(96, 65, 0) 100%);
 	height: 180px;
 }
 
-.dashboard>div.full-chart>div.chart {
+.dashboard > div.full-chart > div.chart {
 	display: flex;
 	padding: 10px 10px;
 	align-items: flex-end;
@@ -128,7 +128,7 @@
 	color: white;
 }
 
-.dashboard>div.full-chart>div.chart>div.chart-icon {
+.dashboard > div.full-chart > div.chart > div.chart-icon {
 	background-color: white;
 	width: 60px;
 	height: 60px;
@@ -143,7 +143,7 @@
 	padding-top: 3px;
 }
 
-.dashboard>div.full-chart>div.chart>div.chart-title {
+.dashboard > div.full-chart > div.chart > div.chart-title {
 	flex: 1;
 	padding-left: 15px;
 	display: flex;
@@ -152,7 +152,7 @@
 	justify-content: space-between
 }
 
-.dashboard>div.full-chart>div.chart>div.chart-title>h1 {
+.dashboard > div.full-chart > div.chart > div.chart-title > h1 {
 	margin: 0;
 	padding: 0px;
 	padding-bottom: 10px;
@@ -163,7 +163,7 @@
 	text-transform: uppercase;
 }
 
-.dashboard>div.full-chart>div.chart>div.chart-title>h2 {
+.dashboard > div.full-chart > div.chart > div.chart-title > h2 {
 	margin: 0;
 	font-size: 2.8em;
 	font-weight: normal;
@@ -172,25 +172,25 @@
 	padding-top: 30px;
 }
 
-.dashboard>div.full-chart>div.chart>div.chart-title>h2>span {
+.dashboard > div.full-chart > div.chart > div.chart-title > h2 > span {
 	font-size: 0.5em;
 	opacity: 0.5;
 	font-weight: normal;
 	font-family: monospace;
 }
 
-.dashboard>div.full-chart>div.chart>div.chart-title>h2>span::before {
+.dashboard > div.full-chart > div.chart > div.chart-title > h2 > span::before {
 	content: "/";
 }
 
-.dashboard>div.full-chart>div.chart>div.chart-title>h3 {
+.dashboard > div.full-chart > div.chart > div.chart-title > h3 {
 	margin: 0;
 	opacity: 0.5;
 	font-size: 0.8em;
 	padding-bottom: 5px;
 }
 
-.dashboard>div.full-chart>div.chart>div.plot {
+.dashboard > div.full-chart > div.chart > div.plot {
 	display: flex;
 	padding-right: 15px;
 	font-size: 1em;
@@ -198,37 +198,37 @@
 	flex: 2;
 }
 
-.dashboard>div.full-chart>div.chart>div.plot .svg-plot_point {
+.dashboard > div.full-chart > div.chart > div.plot .svg-plot_point {
 	display: none;
 	fill: rgba(255, 255, 255, 0.5);
 }
 
-.dashboard>div.full-chart>div.chart>div.plot:hover .svg-plot_point {
+.dashboard > div.full-chart > div.chart > div.plot:hover .svg-plot_point {
 	display: block;
 }
 
-.dashboard>div.full-chart>div.chart>div.plot .svg-plot_point>text,
-.dashboard>div.full-chart>div.chart>div.plot .svg-plot_point>rect {
+.dashboard > div.full-chart > div.chart > div.plot .svg-plot_point > text,
+.dashboard > div.full-chart > div.chart > div.plot .svg-plot_point > rect {
 	display: none;
 	font-size: 20px;
 	padding: 5px;
 }
 
-.dashboard>div.full-chart>div.chart>div.plot .svg-plot_point>rect {
+.dashboard > div.full-chart > div.chart > div.plot .svg-plot_point > rect {
 	fill: rgba(255, 255, 255, .7)
 }
 
-.dashboard>div.full-chart>div.chart>div.plot .svg-plot_point>text {
+.dashboard > div.full-chart > div.chart > div.plot .svg-plot_point > text {
 	fill: black;
 }
 
-.dashboard>div.full-chart>div.chart>div.plot .svg-plot_point:hover>text,
-.dashboard>div.full-chart>div.chart>div.plot .svg-plot_point:hover>rect {
+.dashboard > div.full-chart > div.chart > div.plot .svg-plot_point:hover > text,
+.dashboard > div.full-chart > div.chart > div.plot .svg-plot_point:hover > rect {
 	display: block;
 }
 
 
-.dashboard>div.full-chart>div.chart>div.plot .svg-plot_point:hover {
+.dashboard > div.full-chart > div.chart > div.plot .svg-plot_point:hover {
 	fill: white;
 	r: 10;
 	z-index: 2;
@@ -237,7 +237,7 @@
 /* #endregion */
 
 /* #region Account Ticket */
-.dashboard>div.account-ticket {
+.dashboard > div.account-ticket {
 	height: 180px;
 	background: rgb(0, 0, 0);
 	background: linear-gradient(150deg, rgb(34, 18, 104) 0%, rgb(0, 96, 96) 100%);
@@ -245,12 +245,12 @@
 	background: linear-gradient(149deg, rgba(1, 20, 28, 1) 0%, rgba(41, 10, 34, 1) 90%); */
 }
 
-.dashboard>div.account-ticket>div {
+.dashboard > div.account-ticket > div {
 	position: relative;
 
 }
 
-.dashboard>div.account-ticket>div>div.ticket-title {
+.dashboard > div.account-ticket > div > div.ticket-title {
 	padding: 25px 25px 15px 25px;
 	font-size: 1.3em;
 	line-height: 0.9em;
@@ -259,19 +259,19 @@
 	text-transform: uppercase;
 }
 
-.dashboard>div.account-ticket>div>div.ticket-title>span {
+.dashboard > div.account-ticket > div > div.ticket-title > span {
 	font-size: 0.8em;
 	color: rgba(255, 255, 255, 0.7);
 }
 
-.dashboard>div.account-ticket>div>div.ticket-value {
+.dashboard > div.account-ticket > div > div.ticket-value {
 	color: white;
 	font-size: 2.3em;
 	padding: 0px 25px 15px 25px;
 	line-height: 1em;
 }
 
-.dashboard>div.account-ticket>div>div.ticket-value>span {
+.dashboard > div.account-ticket > div > div.ticket-value > span {
 	display: block;
 	font-size: 0.6em;
 	line-height: 0.7em;
@@ -282,7 +282,7 @@
 }
 
 
-.dashboard>div.account-ticket>div>div.plot {
+.dashboard > div.account-ticket > div > div.plot {
 	display: flex;
 	padding-left: 20px;
 	font-size: 1em;
@@ -290,25 +290,25 @@
 
 }
 
-.dashboard>div.account-ticket>div>div.plot>span {
+.dashboard > div.account-ticket > div > div.plot > span {
 	font-size: 1em;
 	/* background-color: rgba(255,255,255,.051); */
 }
 
-.dashboard>div.account-ticket>div>div.plot>div>span.state {
+.dashboard > div.account-ticket > div > div.plot > div > span.state {
 	font-size: 1em;
 	padding: 3px 10px 0px 10px;
 	display: block;
 }
 
-.dashboard>div.account-ticket>div>div.plot>div>span.state>i {
+.dashboard > div.account-ticket > div > div.plot > div > span.state > i {
 	font-family: icomoon4;
 	font-style: normal;
 	padding-right: 5px;
 	font-size: 0.9em;
 }
 
-.dashboard>div.account-ticket>div>div.plot>div>h2 {
+.dashboard > div.account-ticket > div > div.plot > div > h2 {
 	display: inline-block;
 	margin: 0;
 	padding: 0;
@@ -318,7 +318,7 @@
 
 }
 
-.dashboard>div.account-ticket>div>div.ticket-icon {
+.dashboard > div.account-ticket > div > div.ticket-icon {
 	background-color: white;
 	width: 60px;
 	height: 60px;
@@ -336,24 +336,24 @@
 /* #endregion */
 
 /* #region tablewidget */
-.dashboard>div.tablewidget {
-	
+.dashboard > div.tablewidget {
+
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
 	min-height: 180px;
 	max-height: 180px;
-	flex:2;
+	flex: 2;
 }
 
-.dashboard>div.tablewidget>div {
+.dashboard > div.tablewidget > div {
 	position: relative;
 	overflow: auto;
 	padding: 4px;
 	height: 100%;
 }
 
-.dashboard>div.tablewidget>div::after {
+.dashboard > div.tablewidget > div::after {
 	top: 60px;
 	right: 10px;
 	font-size: 10em;
@@ -366,71 +366,132 @@
 	display: block;
 }
 
-.dashboard>div.tablewidget>div>table {
+.dashboard > div.tablewidget > div > table {
 	background: none;
 }
 
-.dashboard>div.tablewidget>div>table>tbody>tr>td {
+.dashboard > div.tablewidget > div > table > tbody > tr > td {
 	padding-top: 10px;
 	padding-bottom: 10px;
 	background: none;
 }
 
-.dashboard>div.tablewidget>div::-webkit-scrollbar {
+.dashboard > div.tablewidget > div::-webkit-scrollbar {
 	width: 5px;
 }
 
-.dashboard>div.tablewidget>div:hover::-webkit-scrollbar-thumb {
+.dashboard > div.tablewidget > div:hover::-webkit-scrollbar-thumb {
 	background-color: var(--input-hover_border-color);
 }
 
-.dashboard>div.tablewidget>div::-webkit-scrollbar-thumb {
+.dashboard > div.tablewidget > div::-webkit-scrollbar-thumb {
 	background-color: var(--input_border-color);
 }
 
-.dashboard>div.tablewidget td.padge {
-	position: relative;
-	width: 45px;
-	min-width: 45px;
-	height: 43px;
+
+.dashboard > div.tablewidget > div,
+.dashboard > div.tablewidget {
+	padding: 0px !important
 }
 
-.dashboard>div.tablewidget td.padge>span {
-	position: absolute;
-	inset: 5px 0 0 10px;
-	display: block;
-	margin-top: 2px;
-	height: 30px;
-	width: 30px;
-	background-repeat: no-repeat;
-	background-size: 100% auto;
-	background-position: 50% 50%;
-	border-radius: 100%;
+.dashboard > div.tablewidget > div > div.table {
+	& {
+		grid-template-columns: 40px 1fr 1fr 2fr;
+	}
+
+	> a {
+		&:first-child > div {
+			border-top: none;
+
+			&:first-child {
+				border-top-left-radius: 4px;
+			}
+
+			&:last-child {
+				border-top-right-radius: 4px;
+			}
+		}
+
+		&:last-child > div {
+			border-bottom: none;
+			padding-bottom: 34px;
+
+			&:first-child {
+				border-bottom-left-radius: 4px;
+			}
+
+			&:last-child {
+				border-bottom-right-radius: 4px;
+			}
+		}
+
+		> div {
+			padding: 11px 10px 32px 10px;
+			height: 44px;
+		}
+
+		> .sup {
+			line-height: 0.9em;
+
+			> div {
+				font-size: 0.8em;
+				color: var(--root-font-lightcolor)
+			}
+
+			> sub {
+				font-size: 0.8em;
+				position: relative;
+				top:-3px
+			}
+		}
+
+		> .padge {
+			position: relative;
+
+			> span {
+				position: absolute;
+				inset: 5px 0 0 10px;
+				display: block;
+				margin-top: 2px;
+				height: 30px;
+				width: 30px;
+				background-repeat: no-repeat;
+				background-size: 100% auto;
+				background-position: 50% 50%;
+				border-radius: 100%;
+			}
+
+			&.initials {
+				> b {
+					position: absolute;
+					inset: 7px 0 0 10px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					text-wrap: nowrap;
+					height: 30px;
+					width: 30px;
+					text-align: center;
+					font-size: 0.8em;
+					font-style: normal;
+					border-radius: 100%;
+					background-color: #000;
+					color: white;
+					font-family: Arial, Helvetica, sans-serif;
+				}
+			}
+		}
+	}
+
 }
 
-.dashboard>div.tablewidget td.padge.initials>b {
-	position: absolute;
-	inset: 5px 0 0 10px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	text-wrap: nowrap;
-	height: 30px;
-	width: 30px;
-	text-align: center;
-	font-size: 0.8em;
-	font-style: normal;
-	border-radius: 100%;
-	background-color: #000;
-	color: white;
-	font-family: Arial, Helvetica, sans-serif;
-}
+
 
 
 /* #endregion rowclicks */
 
 /* #region rowclicks */
-.dashboard>div.rowclicks {
+.dashboard > div.rowclicks {
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
@@ -438,7 +499,7 @@
 	max-height: 180px;
 }
 
-.dashboard>div.rowclicks>div {
+.dashboard > div.rowclicks > div {
 	overflow: auto;
 	display: flex;
 	justify-content: space-around;
@@ -447,25 +508,25 @@
 	padding: 5px;
 }
 
-.dashboard>div.rowclicks>div::-webkit-scrollbar {
+.dashboard > div.rowclicks > div::-webkit-scrollbar {
 	width: 5px;
 }
 
-.dashboard>div.rowclicks>div:hover::-webkit-scrollbar-thumb {
+.dashboard > div.rowclicks > div:hover::-webkit-scrollbar-thumb {
 	background-color: var(--input-hover_border-color);
 }
 
-.dashboard>div.rowclicks>div::-webkit-scrollbar-thumb {
+.dashboard > div.rowclicks > div::-webkit-scrollbar-thumb {
 	background-color: var(--input_border-color);
 }
 
-.dashboard>div.rowclicks>div>a>div {
+.dashboard > div.rowclicks > div > a > div {
 	color: var(--root-font-color);
 	transition: color var(--transition-speed) ease;
 }
 
-.dashboard>div.rowclicks>a,
-.dashboard>div.rowclicks>span {
+.dashboard > div.rowclicks > a,
+.dashboard > div.rowclicks > span {
 	text-align: center;
 	display: block;
 	padding: 10px;
@@ -474,7 +535,7 @@
 /* #endregion rowclicks */
 
 /* #region Links */
-.dashboard>div.links>div>a {
+.dashboard > div.links > div > a {
 	flex: 1;
 	min-height: 50%;
 	height: 125px;
@@ -486,14 +547,14 @@
 	margin: 5px;
 }
 
-.dashboard>div.links>div>a:hover,
-.dashboard>div.links>div>a:focus {
+.dashboard > div.links > div > a:hover,
+.dashboard > div.links > div > a:focus {
 	outline: solid 2px var(--root-link-color);
 	border-radius: 4px;
 	text-decoration: none;
 }
 
-.dashboard>div.links>div>a>span {
+.dashboard > div.links > div > a > span {
 	display: inline-block;
 	font-family: icomoon4;
 	font-size: 1.7em;
@@ -507,7 +568,7 @@
 	transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }
 
-.dashboard>div.links>div>a>div {
+.dashboard > div.links > div > a > div {
 	color: var(--root-font-color);
 	transition: color var(--transition-speed) ease;
 }
@@ -515,7 +576,7 @@
 /* #endregion */
 
 /* #region quickstatement */
-.dashboard>div.quickstatement>div>a {
+.dashboard > div.quickstatement > div > a {
 	display: flex;
 	align-content: center;
 	align-items: center;
@@ -530,18 +591,18 @@
 	line-height: 1.5em;
 }
 
-.dashboard>div.quickstatement>div>a>span {
+.dashboard > div.quickstatement > div > a > span {
 	flex: 1;
 	text-align: center;
 }
 
-.dashboard>div.quickstatement>div>a:hover,
-.dashboard>div.quickstatement>div>a:focus {
+.dashboard > div.quickstatement > div > a:hover,
+.dashboard > div.quickstatement > div > a:focus {
 	outline: solid 2px var(--root-link-color);
 	text-decoration: none;
 }
 
-.dashboard>div.quickstatement>span {
+.dashboard > div.quickstatement > span {
 	display: block;
 	padding: 10px;
 	padding-bottom: 5px;

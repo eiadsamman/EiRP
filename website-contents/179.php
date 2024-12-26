@@ -46,8 +46,8 @@ if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_rep
 	header("VENDOR_FN_SUM: " . ($sum < 0 ? "(" : "") . number_format(abs($sum), 2) . ($sum < 0 ? ")" : ""));
 	header("VENDOR_FN_CURRENT: " . $controller->criteria->getCurrentPage());
 
-	echo "<table class=\"statment-view hover strip\">";
-	echo "<thead class=\"table-head\" style=\"top: calc(158px - var(--gremium-header-toggle));background-color:#fff;z-index:1\">";
+	echo "<table class=\"statment-view hover strip\" >";
+	echo "<thead class=\"table-head\" style=\"top: calc(146px - var(--gremium-header-toggle));z-index:1;\">";
 	echo "<tr>";
 	echo "<td>ID</td>";
 	echo "<td>Description</td>";
@@ -152,7 +152,7 @@ $initial_values = array(
 
 $grem = new Gremium\Gremium(true);
 $grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
-	"<ul class=\"small-media-hide\"><li>{$app->user->account->type->keyTerm->toString()}: {$app->user->account->name}</li></ul>" .
+	"<ul class=\"small-media-hide\"><li>{$app->user->account->term->termType()}: {$app->user->account->term->name}: {$app->user->account->name}</li></ul>" .
 	"<cite><span id=\"navTotal\">0.00</span>{$app->user->account->currency->shortname}</cite>");
 
 $menu         = $grem->menu()->sticky(false)->open();
@@ -178,8 +178,8 @@ echo <<<HTML
 HTML;
 $legend->close();
 
-$article = $grem->article()->open();
-echo "<div id=\"navOutput\" style=\"padding-bottom:50px\"></div>";
+$article = $grem->article()->options(['nopadding'])->open();
+echo "<div id=\"navOutput\" style=\"padding: 20px;padding-top: 0px\"></div>";
 $article->close();
 
 $grem->terminate();
@@ -187,6 +187,11 @@ $grem->terminate();
 <style>
 	.table-head {
 		position: sticky;
+	}
+
+	.table-head>tr>td {
+		padding-top: 20px;
+		background-color: #fff;
 	}
 
 	table.statment-view>tbody>tr>td:nth-child(1)>div {
@@ -237,6 +242,7 @@ $grem->terminate();
 		top: 0px;
 		text-overflow: ellipsis;
 		overflow-y: hidden;
+		overflow-x: hidden;
 	}
 
 	.statment-view>tbody>tr>td.value-number.final {
@@ -373,6 +379,7 @@ $grem->terminate();
 	}
 
 	@media only screen and (max-width: 480px) {
+
 		.header-title,
 		.small-media-hide,
 		.menu-date_title {
@@ -393,7 +400,7 @@ $grem->terminate();
 
 
 <script type="module">
-	import AccountStatmenet from './static/javascript/modules/finance/accountstatement.js?v=<?= $app->id ?>' ;
+	import AccountStatmenet from './static/javascript/modules/finance/accountstatement.js?v=<?= $app->id ?>';
 	const accountStatement = new AccountStatmenet('<?= $fs()->dir; ?>');
 	accountStatement.export_uri = "<?= $fs(13)->dir ?>";
 	accountStatement.register({

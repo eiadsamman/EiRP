@@ -10,7 +10,7 @@ $settings = array();
 
 $settings['matrix']                    = array();
 $settings['matrix']['column']          = array();
-$settings['matrix']['column']['width'] = 101;
+$settings['matrix']['column']['width'] = 90;
 $settings['matrix']['column']['align'] = "center";
 $settings['matrix']['column']['count'] = 0;
 
@@ -127,17 +127,17 @@ if (isset($_POST['posubmit'])) {
 		foreach ($arrDisplay as $id => $data) {
 			$percentage_l  = ceil($data['info']['totalAttendedTime'] / $maxtime * 100);
 			$colorgradient = "";
-			$colorinvert = "";
+			$colorinvert   = "";
 
 			if ($percentage_l <= 33) {
 				$colorgradient = $settings['color']['timegradient'][0];
-				$colorinvert = $settings['color']['invert'][0];
+				$colorinvert   = $settings['color']['invert'][0];
 			} elseif ($percentage_l <= 66) {
 				$colorgradient = $settings['color']['timegradient'][1];
-				$colorinvert = $settings['color']['invert'][1];
+				$colorinvert   = $settings['color']['invert'][1];
 			} else {
 				$colorgradient = $settings['color']['timegradient'][2];
-				$colorinvert = $settings['color']['invert'][2];
+				$colorinvert   = $settings['color']['invert'][2];
 			}
 
 
@@ -179,7 +179,7 @@ if (isset($_POST['posubmit'])) {
 			echo "<tr>";
 			foreach ($daysList as $dayId => $day) {
 				if (isset($data['days'][$day])) {
-					echo "<td align=\"center\">" . $app->formatTime($data['days'][$day],false) . "</td>";
+					echo "<td align=\"center\">" . $app->formatTime($data['days'][$day], false) . "</td>";
 				} else {
 					echo "<td align=\"center\">-</td>";
 				}
@@ -194,14 +194,7 @@ if (isset($_POST['posubmit'])) {
 				</tr>
 			</tbody>
 		</table>
-		<script>
-			const scrollHandler = document.getElementById(\"jsTimeMatrix\");
-			let scrollPosition = 0;
-			scrollHandler.addEventListener(\"wheel\", (evt) => {
-				evt.preventDefault();
-				scrollHandler.scrollLeft += (evt.deltaY > 0? 1:-1) * {$settings['matrix']['column']['width']} ;		
-			});
-		</script>
+		
 		";
 	}
 
@@ -314,15 +307,10 @@ if ($app->xhttp) {
 	}
 
 	#jsTimeMatrix>table>thead>tr>td {
-		min-width:
-			<?php echo $settings['matrix']['column']['width']; ?>
-			px;
-		max-width:
-			<?php echo $settings['matrix']['column']['width']; ?>
-			px;
-		text-align:
-			<?php echo $settings['matrix']['column']['align']; ?>
-		;
+		<?= "min-width:{$settings['matrix']['column']['width']}px;"; ?>
+		<?= "max-width:{$settings['matrix']['column']['width']}px;"; ?>
+		<?= "width:{$settings['matrix']['column']['width']}px;"; ?>
+		<?= "text-align:{$settings['matrix']['column']['align']};"; ?>
 	}
 </style>
 <?php
@@ -420,6 +408,19 @@ $grem->terminate();
 				if (response == "SUCCESS") {
 					$("#jQexport").prop("disabled", false);
 					$("#jQoutput").html(o);
+
+					const scrollHandler = document.getElementById("jsTimeMatrix");
+
+					scrollHandler.addEventListener("wheel", (evt) => {
+						scrollHandler.scrollLeft += (evt.deltaY > 0 ? 1 : -1) * <?= $settings['matrix']['column']['width']; ?>;
+						const posperc = scrollHandler.scrollLeft / (scrollHandler.scrollWidth - scrollHandler.clientWidth);
+
+						if (posperc > 0 && posperc < 1) {
+							evt.preventDefault();
+						}
+					});
+
+
 				} else if (response == "INERR") {
 					$("#jQexport").prop("disabled", true);
 					messagesys.failure(o);

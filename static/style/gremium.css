@@ -319,10 +319,12 @@
 
 			&.nopadding {
 				padding: 0px;
-				border-radius: 0px;
 			}
 
-
+			&.no-border-radious {
+				border-radius: 0px;
+			}
+			
 			div.form {
 				display: flex;
 				flex-wrap: wrap;

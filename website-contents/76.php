@@ -10,8 +10,8 @@ if ($mysqli_result) {
 		echo <<<HTML
 			<div class="tablewidget">
 				<div style="padding-bottom:3px;padding-top:3px;">
-					<table>
-						<tbody>
+					<div class="table">
+						
 			HTML;
 
 
@@ -31,22 +31,21 @@ if ($mysqli_result) {
 				$row['atm_value'] = number_format(abs($row['atm_value']), 2) . "&nbsp;";
 				$row['atm_value'] .= "<span style=\"font-family: glyphs;color: green;padding: 3px;position: relative; top: 1px\">&#xe91b;</span>";
 			}
-
+			$time = new DateTime($row['acm_ctime']);
 			echo <<<HTML
-			<tr>
-				<td class="padge {$padge_type}">{$badge_uri}</td>
-				<td style="text-align: right;">{$row['atm_value']}</td>
-				<td>{$row['acm_ctime']}</td>
-				<td>{$row['acm_beneficial']}</td>
+			<a href="{$app->file->find(104)->dir}/?id={$row['acm_id']}">
+				<div class="padge {$padge_type}">{$badge_uri}</div>
+				<div style="text-align: right;" class="sup"><div style="text-align:left">{$row['acm_id']}</div>{$row['atm_value']}</div>
+				<div class="sup"><div>{$time->format("Y")}</div>{$time->format("d<\s\u\b>S</\s\u\b> M")}</div>
+				<div class="ellipsis sup"><div>{$row['accgrp_name']}: {$row['acccat_name']}</div>{$row['acm_beneficial']}</div>
 				<!-- <td>{$row['acccat_name']}</td> -->
-			</tr>
+			</a>
 		HTML;
 		}
 
 
 		echo <<<HTML
-					</table>
-				</table>
+				</div>
 			</div>
 		</div>
 		HTML;
