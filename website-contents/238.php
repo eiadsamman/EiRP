@@ -25,7 +25,7 @@ if ($app->xhttp) {
 
 		$pos = ($current - 1) * PanelView::$itemsPerRequest;
 
-		$q = "SELECT 
+		$q         = "SELECT 
 				a1.po_id,
 				a1.po_serial,
 				a2.quotationsCount,
@@ -41,7 +41,7 @@ if ($app->xhttp) {
 			FROM
 				inv_main AS a1
 					JOIN users ON usr_id = a1.po_issuedby_id
-					JOIN system_prefix ON prx_id = {$docType}
+					LEFT JOIN system_prefix ON prx_id = {$docType}
 					JOIN inv_costcenter ON ccc_id = a1.po_costcenter
 					JOIN user_costcenter ON a1.po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
 					LEFT JOIN inv_records ON pols_po_id = a1.po_id
@@ -54,13 +54,14 @@ if ($app->xhttp) {
 				a1.po_id
 			ORDER BY a1.po_date DESC
 			";
+		$prefix100 = array_key_exists(100, $app->prefixList) ? array_key_exists(100, $app->prefixList) : ["", 0];
 
 		$mysqli_result = $app->db->query($q);
 		if ($mysqli_result->num_rows > 0) {
 			while ($row = $mysqli_result->fetch_assoc()) {
 				$costcenter             = $row['ccc_name'];
 				$row['po_title']        = is_null($row['po_title']) || trim($row['po_title']) == "" ? "<i>(Untitled)</i>" : $row['po_title'];
-				$row['po_serial']       = $app->prefixList[100][0] . $row['po_costcenter'] . str_pad($row['po_serial'], $app->prefixList[100][1], "0", STR_PAD_LEFT);
+				$row['po_serial']       = $prefix100[0] . $row['po_costcenter'] . str_pad($row['po_serial'], $prefix100[1], "0", STR_PAD_LEFT);
 				$closed                 = (is_null($row['po_close_date']) ? "Open" : "Closed");
 				$row['quotationsCount'] = $row['quotationsCount'] > 0 ? "<span class=\"price-padge\">Quotations {$row['quotationsCount']}</span>" : "<i>(No quotations)</i>";
 				echo <<<HTML

@@ -260,7 +260,7 @@ class App
 		return (string) $number;
 	}
 
-	public function formatTime(int $time, ?bool $include_seconds = true): string
+	public function formatTime(float $time, ?bool $include_seconds = true): string
 	{
 		$neg    = $time < 0;
 		$time   = abs($time);

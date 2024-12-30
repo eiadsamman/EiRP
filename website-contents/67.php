@@ -3,14 +3,14 @@ use System\Individual\Attendance\Registration;
 use System\Template\Gremium;
 
 
-$ui_grouplist = array(
+$ui_grouplist           = array(
 	"position" => array(array("lsc_name"), array("lsc_name"), "Job Position", "lsc_name, ltr_ctime DESC", 1),
 	"title" => array(array("lsc_name", "lty_name"), array("lsc_name", "lty_name"), "Job Title", "lsc_name, lty_name, ltr_ctime DESC", 1),
 	"location" => array(array("prt_name"), array("prt_name"), "Location", "ltr_ctime DESC", 2),
 );
 $ui_grouplist_selection = isset($_GET['group']) && key_exists($_GET['group'], $ui_grouplist) ? $_GET['group'] : "title";
 
-$ui_view = array(
+$ui_view           = array(
 	"0" => "Card view",
 	"1" => "List view"
 );
@@ -18,12 +18,12 @@ $ui_view_selection = isset($_GET['view']) && key_exists($_GET['view'], $ui_view)
 
 if (isset($_POST['fetch'])) {
 	$attendance = new Registration($app);
-	$r = $attendance->ReportOngoing(["company" => $app->user->company->id, "::order" => $ui_grouplist[$ui_grouplist_selection][3]]);
+	$r          = $attendance->ReportOngoing(["company" => $app->user->company->id, "::order" => $ui_grouplist[$ui_grouplist_selection][3]]);
 
-	$total = 0;
-	$counter = 0;
+	$total    = 0;
+	$counter  = 0;
 	$posgroup = array();
-	$pb = $ui_grouplist[$ui_grouplist_selection][4];
+	$pb       = $ui_grouplist[$ui_grouplist_selection][4];
 	if ($r) {
 		while ($row = $r->fetch_assoc()) {
 			if ($ui_grouplist_selection == null || !array_key_exists($ui_grouplist_selection, $ui_grouplist)) {
@@ -36,15 +36,15 @@ if (isset($_POST['fetch'])) {
 				}
 			}
 			if (!array_key_exists($grp, $posgroup)) {
-				$posgroup[$grp] = array();
-				$posgroup[$grp]['count'] = 0;
-				$posgroup[$grp]['title'] = "";
+				$posgroup[$grp]            = array();
+				$posgroup[$grp]['count']   = 0;
+				$posgroup[$grp]['title']   = "";
 				$posgroup[$grp]['dataset'] = array();
 				if (array_key_exists($ui_grouplist_selection, $ui_grouplist)) {
 					$delm = "";
 					foreach ($ui_grouplist[$ui_grouplist_selection][1] as $v) {
 						$posgroup[$grp]['title'] .= $delm . $row[$v];
-						$delm = ": ";
+						$delm                    = ": ";
 					}
 				}
 			}
@@ -77,7 +77,7 @@ if (isset($_POST['fetch'])) {
 			echo "<td>{$row['ltr_ctime_date']} {$row['ltr_ctime_time']}</td>";
 			echo "<td class=\"elapsed\"><span>Elapsed: </span>" . $app->formatTime($row['diff'], false) . "</td>";
 
-			echo $pb == 2 ? "" : "<td class=\"mediabond-ignore\">{$row['prt_name']}</td>";
+			echo $pb == 2 ? "" : "<td class=\"mediabond-ignore\">" . ($row['prt_name'] ?? "") . "</td>";
 
 			echo "<td style=\"width:100%\"></td>";
 			echo "</tr>";

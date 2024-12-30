@@ -72,14 +72,16 @@ if ($app->xhttp) {
 			";
 
 		$mysqli_result = $app->db->query($q);
+		$prefix100 = array_key_exists(100, $app->prefixList) ? array_key_exists(100, $app->prefixList) : ["", 0];
+		$prefix110 = array_key_exists(110, $app->prefixList) ? array_key_exists(110, $app->prefixList) : ["", 0];
 
 		if ($mysqli_result->num_rows > 0) {
 			while ($row = $mysqli_result->fetch_assoc()) {
 				$costcenter = $row['ccc_name'];
 
 				$closed          = (is_null($row['po_close_date']) ? "Open" : "Closed");
-				$serial          = $app->prefixList[110][0] . $row['po_costcenter'] . str_pad($row['po_serial'], $app->prefixList[110][1], "0", STR_PAD_LEFT);
-				$paretnSerial    = $app->prefixList[100][0] . $row['parent_costcenter'] . str_pad($row['parent_po_serial'], $app->prefixList[100][1], "0", STR_PAD_LEFT);
+				$serial          = $prefix110[0] . $row['po_costcenter'] . str_pad($row['po_serial'], $prefix110[1], "0", STR_PAD_LEFT);
+				$paretnSerial    = $prefix100[0] . $row['parent_costcenter'] . str_pad($row['parent_po_serial'], $prefix100[1], "0", STR_PAD_LEFT);
 				$row['po_title'] = empty($row['po_title']) || $row['po_title'] == "" ? "<i>(Untitled)</i>" : $row['po_title'];
 				$grandTotal      = number_format(
 					(($row['po_total'] * (1 - $row['po_discount'] / 100)) + $row['po_additional_amount'])

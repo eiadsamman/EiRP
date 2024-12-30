@@ -25,7 +25,9 @@ try {
 
 	$grem = new Gremium\Gremium(false, false);
 
-	$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[100][0]}" . $read->costCenter->id . str_pad($read->serialNumber, $app->prefixList[100][1], "0", STR_PAD_LEFT) . "</cite>");
+	$prefix100 = array_key_exists(100, $app->prefixList) ? array_key_exists(100, $app->prefixList) : ["", 0];
+
+	$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$prefix100[0]}" . $read->costCenter->id . str_pad($read->serialNumber, $prefix100[1], "0", STR_PAD_LEFT) . "</cite>");
 	$grem->menu()->sticky(false)->open();
 	echo "<a href=\"{$fs(233)->dir}/?id={$read->id}\" data-href=\"{$fs(233)->dir}/?id={$read->id}\" class=\"edge-left edge-right plus\">&nbsp;New Quotation</a>";
 	echo "<span class=\"flex\"></span>";
@@ -61,7 +63,7 @@ try {
 		<label>
 			<h1>ID</h1>
 			<div class="btn-set">
-				<span><?= $app->prefixList[100][0], $read->costCenter->id . str_pad($read->serialNumber, $app->prefixList[100][1], "0", STR_PAD_LEFT) ?></span>
+				<span><?= $prefix100[0], $read->costCenter->id . str_pad($read->serialNumber, $prefix100[1], "0", STR_PAD_LEFT) ?></span>
 			</div>
 		</label>
 		<label>
@@ -164,10 +166,12 @@ try {
 	HTML;
 
 
+	$prefix110 = array_key_exists(110, $app->prefixList) ? array_key_exists(110, $app->prefixList) : ["", 0];
+
 	$sequence = new InvoiceSequence($app);
 	foreach ($sequence->children($read->id) as $node) {
 		echo "	<a href=\"{$fs(234)->dir}/?id={$node->id}\" data-href=\"{$fs(234)->dir}/?id={$node->id}\">
-				<div>" . $app->prefixList[110][0] . $read->costCenter->id . str_pad($node->serialNumber, $app->prefixList[110][1], "0", STR_PAD_LEFT) . "</div>
+				<div>" . $prefix110[0] . $read->costCenter->id . str_pad($node->serialNumber, $prefix110[1], "0", STR_PAD_LEFT) . "</div>
 				<div>" . $node->currency->shortname . " " . number_format($node->totalValue, 2) . "
 				<br />" . number_format($node->discountRate, 2) . "%</div>
 				<div>" . (empty($node->paymentTerm) ? "-" : $node->paymentTerm->toString()) . "

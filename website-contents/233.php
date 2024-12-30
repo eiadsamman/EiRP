@@ -131,8 +131,9 @@ if ($app->xhttp) {
 			$grem->getLast()->close();
 		}
 
-		$grem->title()->serve("<span class=\"flex\">Material request information</span>");
+		$prefix100 = array_key_exists(100, $app->prefixList) ? array_key_exists(100, $app->prefixList) : ["", 0];
 
+		$grem->title()->serve("<span class=\"flex\">Material request information</span>");
 		$grem->article()->open(); ?>
 		<form action="<?= $fs()->dir; ?>">
 			<fieldset>
@@ -141,7 +142,7 @@ if ($app->xhttp) {
 						<h1>Purchase Request</h1>
 						<div class="btn-set">
 							<?php
-							echo "<a class=\"standard\" href=\"{$fs(240)->dir}/?id={$read->id}\" data-href=\"{$fs(240)->dir}/?id={$read->id}\">{$app->prefixList[100][0]}" . $read->costCenter->id . str_pad($read->serialNumber, $app->prefixList[100][1], "0", STR_PAD_LEFT) . "</a>";
+							echo "<a class=\"standard\" href=\"{$fs(240)->dir}/?id={$read->id}\" data-href=\"{$fs(240)->dir}/?id={$read->id}\">{$prefix100[0]}" . $read->costCenter->id . str_pad($read->serialNumber, $prefix100[1], "0", STR_PAD_LEFT) . "</a>";
 							?>
 						</div>
 					</label>
