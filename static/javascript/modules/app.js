@@ -210,7 +210,7 @@ export class View {
 		return `
 		<div class="gremium"><div class="content">
 			<header style="position:sticky;">
-				<a style="pointer-events: none;" class="previous" data-role="previous"></a>
+				<a style="pointer-events: none;" class="previous" data-role="previous">&nbsp;</a>
 				<h1>${title}</h1><cite></cite>
 			</header>
 			<menu class="btn-set">

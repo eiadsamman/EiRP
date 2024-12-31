@@ -82,7 +82,7 @@ if ($app->xhttp) {
 				FROM
 					inv_main AS _main
 						JOIN users ON usr_id = _main.po_issuedby_id
-						JOIN system_prefix ON prx_id = $docType
+						LEFT JOIN system_prefix ON prx_id = $docType
 						JOIN inv_costcenter ON ccc_id = po_costcenter
 						JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
 						LEFT JOIN inv_records ON pols_po_id = _main.po_id

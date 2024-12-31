@@ -12,7 +12,6 @@ $invoice     = new System\Finance\Invoice\PurchaseRequest($app);
 $entry       = new System\Finance\Invoice\InvoiceRecord($app);
 
 try {
-
 	$read = $entry->get($id);
 	if (!$read) {
 		throw new Exception("Request document not found");

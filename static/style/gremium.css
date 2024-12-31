@@ -46,7 +46,7 @@
 			user-select: none;
 
 			background-color: var(--root-background-color);
-			
+
 			/* background-color: var(--root-ribbon-background-color);
 			border-bottom: solid 1px var(--root-ribbon-border-color); */
 
@@ -324,8 +324,8 @@
 			&.no-border-radious {
 				border-radius: 0px;
 			}
-			
-			div.form {
+
+			& div.form {
 				display: flex;
 				flex-wrap: wrap;
 				justify-content: flex-start;
@@ -352,7 +352,11 @@
 						color: var(--root-font-lightcolor);
 						transition: color 0.2s ease-out;
 						text-rendering: geometricPrecision;
+
+						-moz-text-transform: uppercase;
+						-webkit-text-transform: uppercase;
 						text-transform: uppercase;
+
 						font-size: .9em;
 						position: relative;
 					}
@@ -405,7 +409,7 @@
 			}
 
 
-			div.insection-splitview {
+			& div.insection-splitview {
 				display: flex;
 				gap: 20px;
 				flex-wrap: wrap;

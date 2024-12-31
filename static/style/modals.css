@@ -425,12 +425,12 @@ table {
 		outline: solid .5px gainsboro;
 	}
 
-	tr > td.op-edit,
-	tr > td.op-remove,
-	tr > td.op-add,
-	tr > td.op-print,
-	tr > td.op-donwload,
-	tr > td.op-display {
+	> tr > td.op-edit,
+	> tr > td.op-remove,
+	> tr > td.op-add,
+	> tr > td.op-print,
+	> tr > td.op-donwload,
+	> tr > td.op-display {
 		padding: 0;
 		cursor: pointer;
 		-webkit-touch-callout: none;
@@ -441,12 +441,12 @@ table {
 		user-select: none;
 	}
 
-	tr > td.op-edit > *,
-	tr > td.op-remove > *,
-	tr > td.op-add > *,
-	tr > td.op-print > *,
-	tr > td.op-donwload > *,
-	tr > td.op-display > * {
+	> tr > td.op-edit > *,
+	> tr > td.op-remove > *,
+	> tr > td.op-add > *,
+	> tr > td.op-print > *,
+	> tr > td.op-donwload > *,
+	> tr > td.op-display > * {
 		display: block;
 		padding: 0px 8px;
 		color: var(--root-font-lightcolor);
@@ -479,7 +479,7 @@ table {
 		width: 100%;
 	}
 
-	tr > td.op-edit > *:before {
+	> tr > td.op-edit > *:before {
 		display: inline-block;
 		content: "\e906";
 		font-family: "icomoon4";
@@ -487,11 +487,11 @@ table {
 		text-align: center;
 	}
 
-	tr > td.op-edit:hover > * {
+	> tr > td.op-edit:hover > * {
 		color: #06c
 	}
 
-	tr > td.op-remove > *:before {
+	> tr > td.op-remove > *:before {
 		display: inline-block;
 		content: "\e62b";
 		font-family: "icomoon";
@@ -499,11 +499,11 @@ table {
 		text-align: center;
 	}
 
-	tr > td.op-remove:hover > * {
+	> tr > td.op-remove:hover > * {
 		color: #f03;
 	}
 
-	tr > td.op-add > *:before {
+	> tr > td.op-add > *:before {
 		display: inline-block;
 		content: "\e630";
 		font-family: "icomoon";
@@ -511,11 +511,11 @@ table {
 		text-align: center;
 	}
 
-	tr > td.op-add:hover > * {
+	> tr > td.op-add:hover > * {
 		color: #0066cc;
 	}
 
-	tr > td.op-print > *:before {
+	> tr > td.op-print > *:before {
 		display: inline-block;
 		content: "\e63b";
 		font-family: "icomoon";
@@ -523,11 +523,11 @@ table {
 		text-align: center;
 	}
 
-	tr > td.op-print:hover > * {
+	> tr > td.op-print:hover > * {
 		color: #ff3c00;
 	}
 
-	tr > td.op-display > *:before {
+	> tr > td.op-display > *:before {
 		display: inline-block;
 		content: "\e9ce";
 		font-family: "icomoon4";
@@ -535,11 +535,11 @@ table {
 		text-align: center;
 	}
 
-	tr > td.op-display:hover > * {
+	> tr > td.op-display:hover > * {
 		color: #00cc33;
 	}
 
-	tr > td.op-donwload > *:before {
+	> tr > td.op-donwload > *:before {
 		display: inline-block;
 		content: "\e60c";
 		font-family: "icomoon";
@@ -547,7 +547,7 @@ table {
 		text-align: center;
 	}
 
-	tr > td.op-donwload:hover > * {
+	> tr > td.op-donwload:hover > * {
 		color: var(--root-link-color);
 	}
 
@@ -654,53 +654,53 @@ table {
 
 table.dynamic > tbody > tr {
 
-	td {
+	> td {
 		cursor: default;
 		vertical-align: top;
 	}
 
-	td.col-1 > div {
+	> td.col-1 > div {
 		padding: 2px 5px;
 		line-height: 1.3em;
 	}
 
-	td > div.in-value {
+	> td > div.in-value {
 		display: none;
 	}
 
-	td.col-2 {
+	> td.col-2 {
 		width: 100%;
 		line-height: 1.3em;
 	}
 
-	td.col-2 > span {
+	> td.col-2 > span {
 		display: block;
 		margin: 2px 0px 4px 0px;
 	}
 
-	td.col-2 > span > b {
+	> td.col-2 > span > b {
 		font-weight: normal;
 		display: inline-block;
 		padding-right: 8px;
 	}
 
-	td.col-2 > span > span {
+	> td.col-2 > span > span {
 		display: inline-block;
 	}
 
-	td.col-2 > div {
+	> td.col-2 > div {
 		position: relative;
 		margin: 2px 0px 10px 0px;
 
 	}
 
-	td.col-2 > div > span {
+	> td.col-2 > div > span {
 		display: block;
 		width: 0px;
 		padding-bottom: 10px;
 	}
 
-	td.col-2 > div > div {
+	> td.col-2 > div > div {
 		position: absolute;
 		padding-bottom: 2px;
 		right: 0px;
@@ -710,49 +710,49 @@ table.dynamic > tbody > tr {
 		overflow-y: hidden;
 	}
 
-	td.value-number.final {
+	> td.value-number.final {
 		font-weight: normal;
 	}
 
 
 
-	.value-number {
+	> .value-number {
 		text-align: right;
 		min-width: 100px;
 		width: 150px;
 	}
 
-	.value-number.positive {
+	> .value-number.positive {
 		visibility: visible;
 	}
 
-	.value-number.negative {
+	> .value-number.negative {
 		color: tomato;
 	}
 
-	.value-number.negative::after,
-	.value-number.negative::before {
+	> .value-number.negative::after,
+	> .value-number.negative::before {
 		display: inline-block;
 	}
 
-	.value-number.negative::after {
+	> .value-number.negative::after {
 		content: ")";
 	}
 
-	.value-number.negative::before {
+	> .value-number.negative::before {
 		content: "(";
 	}
 
-	.hlight {
+	> .hlight {
 		color: crimson;
 	}
 
-	.light {
+	> .light {
 		color: var(--root-font-lightcolor);
 	}
 
 
-	.badge {
+	> .badge {
 		margin-left: auto;
 		display: flex;
 		align-items: center;
@@ -766,7 +766,7 @@ table.dynamic > tbody > tr {
 		margin-top: 10px;
 	}
 
-	.smallbadge {
+	> .smallbadge {
 		display: none;
 		align-items: center;
 		text-align: center;

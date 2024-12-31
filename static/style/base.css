@@ -214,6 +214,9 @@ body > article > div {
 	padding: 0px 15px;
 	filter: blur(0px);
 	transition: filter 0.2s ease-out;
+
+	margin-bottom: 20px;
+
 }
 
 body > article > div.blur {
@@ -401,7 +404,7 @@ span.header-menu > div {
 }
 
 span.header-menu > div > div {
-	min-width: 400px;
+	min-width: 350px;
 	height: auto;
 	max-height: 500px;
 	top: 10px;
@@ -411,6 +414,7 @@ span.header-menu > div > div {
 	border: solid 1px var(--root-ribbon-border-color);
 	background: var(--root-ribbon-menu-background-color);
 	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
 	border-radius: 8px;
 	padding-bottom: 10px;
 }
@@ -530,8 +534,8 @@ span.header-menu.righthand > div > div > div.menu-items > span {
 }
 
 span.header-menu.righthand > div > div > div.menu-items a > span {
-	overflow-x: hidden;
-	min-height: 14px;
+	display: inline-block;
+	min-height: 15px;
 	text-overflow: ellipsis;
 	flex: 1;
 	padding: 1px 0px;
@@ -759,7 +763,7 @@ span.header-menu.righthand > div > div > div.menu-items a:hover > b {
 #screenSector {
 	display: inline-block;
 	max-width: 800px;
-	min-width: 400px;
+	min-width: 350px;
 }
 
 #screenSectorCol > tbody > tr > td > div > div > a {
@@ -1263,13 +1267,14 @@ div.timeline {
 	span.header-menu > div > div {
 		padding: 0;
 		margin: 0;
-		max-height: 100%;
-		height: 100%;
 		position: fixed;
+		max-height: none;
+		height: auto;
 		border: none;
-		inset: var(--root--menubar-height) 0px 0px 0px;
+		border-radius: 0;
+		inset: var(--root--menubar-height) 0px 0px 0px !important;
 	}
-	
+
 }
 
 /* #endregion */
