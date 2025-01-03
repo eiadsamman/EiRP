@@ -254,8 +254,12 @@ export class PaNa {
 		}
 	}
 
-	prependItem = function (content) {
+	prependItem = function (id, href, datahref, content) {
 		let item = document.createElement("a");
+		item.href = href;
+		item.dataset.listitem_id = id;
+		item.dataset.href = datahref;
+
 		item.classList.add("panel-item");
 		item.classList.add("flash");
 		if (this.classList instanceof Array) {

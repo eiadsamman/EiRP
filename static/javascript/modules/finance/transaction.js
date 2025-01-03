@@ -551,6 +551,7 @@ export class Post extends View {
 
 	panelItemBuild(content) {
 
+
 		let type = content.positive ? "inc" : "pay";
 		let attc = content.attachements > 0 ? '<span class="atch"></span>' : '';
 		let padge = "";
@@ -618,7 +619,8 @@ export class Post extends View {
 						this.clearFields();
 						this.uploadController.clean();
 						this.slo_objects.getElementById("beneficiary").slo.focus();
-						this.pana.prependItem(this.panelItemBuild({
+
+						this.pana.prependItem(payload.insert_id, "acc/trs/view/?id=" + payload.insert_id, "acc/trs/view", this.panelItemBuild({
 							"attachements": formData.getAll("attachments[]").length,
 							"beneficial": formData.get("beneficiary[0]"),
 							"party": isNaN(parseInt(formData.get("party[1]"))) ? `` : `<span style="color:var(--root-link-color)">${formData.get("party[0]")}</span>: `,
@@ -651,6 +653,7 @@ export class Post extends View {
 			}
 		} catch (error) {
 			this.busy = false;
+			console.log(error)
 			messagesys.failure(error);
 		}
 	}
