@@ -1,22 +1,22 @@
 tr.employee-photo,
 td.employee-photo,
-td.elapsed>span {
+td.elapsed > span {
 	display: none;
 }
 
 
 
-table.local-force>thead {
+table.local-force > thead {
 	display: none;
 }
 
-table.local-force>tbody,
+table.local-force > tbody,
 table.local-force {
 	display: block;
 	border: none;
 }
 
-td.employee-photo>div {
+td.employee-photo > div {
 	display: inline-block;
 	background-position: 50% 50%;
 	background-size: auto 120px;
@@ -24,27 +24,27 @@ td.employee-photo>div {
 	height: 120px;
 	width: 120px;
 	border-radius: 50%;
-	border: solid 1px rgba(125,125,125,0.2);
+	border: solid 1px rgba(125, 125, 125, 0.2);
 }
 
-table.local-force>tbody>tr>td.elapsed {
+table.local-force > tbody > tr > td.elapsed {
 	color: #06c;
 }
 
-table.local-force>tbody>tr>td.elapsed>span {
+table.local-force > tbody > tr > td.elapsed > span {
 	display: inline-block;
 	color: #888;
 	padding-right: 24px;
 }
 
-table.local-force>tbody>tr {
+table.local-force > tbody > tr {
 	display: inline-block;
 	min-width: 90px;
 	margin: 8px;
 	padding: 20px;
 }
 
-table.local-force>tbody>tr>td {
+table.local-force > tbody > tr > td {
 	display: block;
 	border: none;
 	padding: 2px;
@@ -52,20 +52,20 @@ table.local-force>tbody>tr>td {
 	text-align: center;
 }
 
-table.local-force>tbody>tr>td:nth-child(4) {
+table.local-force > tbody > tr > td:nth-child(4) {
 	padding-bottom: 16px;
 }
 
-table.local-force>tbody>tr>td:nth-child(1),
-table.local-force>tbody>tr>td:last-child {
+table.local-force > tbody > tr > td:nth-child(1),
+table.local-force > tbody > tr > td:last-child {
 	display: none;
 }
 
-table.local-force>tbody>tr>td.mediabond-ignore {
+table.local-force > tbody > tr > td.mediabond-ignore {
 	display: none;
 }
 
-table.local-force>tbody>tr>td.emplyee-name {
+table.local-force > tbody > tr > td.emplyee-name {
 	max-width: 120px;
 	width: 120px;
 	text-overflow: ellipsis;
@@ -79,17 +79,23 @@ table.local-force>tbody>tr>td.emplyee-name {
 		display: none;
 	}
 
-	table.local-mediabond-table>thead {
+	table.local-mediabond-table > thead {
 		display: none;
 	}
 
-	table.local-mediabond-table>tbody,
+	table.local-mediabond-table > tbody,
 	table.local-mediabond-table {
 		display: block;
 		border: none;
 	}
 
-	td.employee-photo>div {
+	table.local-mediabond-table > tbody {
+		display: flex;
+		flex-wrap: wrap;
+		
+	}
+
+	td.employee-photo > div {
 		display: inline-block;
 		background-position: 50% 50%;
 		background-size: 120px auto;
@@ -100,25 +106,25 @@ table.local-force>tbody>tr>td.emplyee-name {
 		border: none;
 	}
 
-	table.local-mediabond-table>tbody>tr>td.elapsed {
+	table.local-mediabond-table > tbody > tr > td.elapsed {
 		color: #06c;
 	}
 
-	table.local-mediabond-table>tbody>tr>td.elapsed>span {
+	table.local-mediabond-table > tbody > tr > td.elapsed > span {
 		display: inline-block;
 		color: #888;
 		padding-right: 24px;
 	}
 
-	table.local-mediabond-table>tbody>tr {
+	table.local-mediabond-table > tbody > tr {
+		flex: 1 0 25%;
 		display: inline-block;
-		min-width: 100px;
+		max-width: calc(50% - 40px);
 		margin: 5px;
 		padding: 14px;
-		
 	}
 
-	table.local-mediabond-table>tbody>tr>td {
+	table.local-mediabond-table > tbody > tr > td {
 		display: block;
 		border: none;
 		padding: 2px;
@@ -126,22 +132,22 @@ table.local-force>tbody>tr>td.emplyee-name {
 		text-align: center;
 	}
 
-	table.local-mediabond-table>tbody>tr>td:nth-child(4) {
+	table.local-mediabond-table > tbody > tr > td:nth-child(4) {
 		padding-bottom: 16px;
 	}
 
-	table.local-mediabond-table>tbody>tr>td:nth-child(1),
-	table.local-mediabond-table>tbody>tr>td:last-child {
+	table.local-mediabond-table > tbody > tr > td:nth-child(1),
+	table.local-mediabond-table > tbody > tr > td:last-child {
 		display: none;
 	}
 
-	table.local-mediabond-table>tbody>tr>td.mediabond-ignore {
+	table.local-mediabond-table > tbody > tr > td.mediabond-ignore {
 		display: none;
 	}
 
-	table.local-mediabond-table>tbody>tr>td.emplyee-name {
-		max-width: 110px;
-		width: 120px;
+	table.local-mediabond-table > tbody > tr > td.emplyee-name {
+		max-width: none;
+		width: 100%;
 		text-overflow: ellipsis;
 		overflow-x: hidden;
 	}

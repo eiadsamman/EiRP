@@ -309,6 +309,7 @@ export class Post extends View {
 			}
 		}
 
+		this.pana.classList = ["statment-panel"];
 		/* Main application form */
 		this.formMain = document.getElementById("js-ref_form-main");
 
@@ -548,6 +549,31 @@ export class Post extends View {
 		}
 	}
 
+	panelItemBuild(content) {
+
+		let type = content.positive ? "inc" : "pay";
+		let attc = content.attachements > 0 ? '<span class="atch"></span>' : '';
+		let padge = "";
+		if (App.User.photo == 0) {
+			padge = `<i class="padge initials"><b style="background-color: ${App.Instance.userColorCode(App.User.id)}">${App.User.initials}</b></i>`;
+		} else {
+			padge = `<i class="padge image"><span style="background-image:url('download/?id=${App.User.photo}&amp;pr=t');"></span></i>`;
+		}
+
+		return `
+			<div>
+				<span style="flex: 1">
+					<div><h1>${content.party}${content.beneficial}</h1><cite>${attc}</cite><cite>${content.id}</cite></div>
+					<div><cite><span class="stm ${type} active"></span></cite><h1>${content.value}</h1><cite>${content.date}</cite></div>
+					<div><h1>${content.category}</h1></div>
+				</span>
+				${padge}
+			</div>
+			<div><h1 class="description">${content.details}</h1></div>
+		`;
+	}
+
+
 	async post() {
 		if (this.busy)
 			return;
@@ -561,6 +587,7 @@ export class Post extends View {
 
 		try {
 			const formData = new FormData(this.formMain);
+
 			this.disableForm(true)
 			overlay.show();
 			let response = await fetch(this.formMain.action, {
@@ -582,19 +609,19 @@ export class Post extends View {
 				const payload = await response.json();
 				this.busy = false;
 				if (payload.result == true) {
+
 					$("#issuer-account-balance").html(payload.balance);
 					$("#jqroot_bal").html(payload.balance + " " + payload.currency);
 
 					if (payload.type == "receipt" || payload.type == "payment") {
 						messagesys.success("Transaction `" + payload.insert_id + "` posted successfully");
-
 						this.clearFields();
 						this.uploadController.clean();
 						this.slo_objects.getElementById("beneficiary").slo.focus();
-
-						this.pana.prependItem({
+						this.pana.prependItem(this.panelItemBuild({
 							"attachements": formData.getAll("attachments[]").length,
 							"beneficial": formData.get("beneficiary[0]"),
+							"party": isNaN(parseInt(formData.get("party[1]"))) ? `` : `<span style="color:var(--root-link-color)">${formData.get("party[0]")}</span>: `,
 							"category": formData.get("category[0]"),
 							"date": formData.get("date[0]"),
 							"details": formData.get("description"),
@@ -604,7 +631,8 @@ export class Post extends View {
 							"padge_id": App.User.photo,
 							"padge_initials": App.User.initials,
 							"padge_color": App.Instance.userColorCode(App.User.id),
-						});
+						}));
+
 					} else if (payload.type == "update") {
 						messagesys.success("Transaction `" + payload.insert_id + "` modified successfully");
 					}

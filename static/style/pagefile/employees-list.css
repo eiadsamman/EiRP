@@ -3,7 +3,7 @@
 	text-align: center;
 	color: var(--root-font-color);
 	font-size: 1.1em;
-	width: 188px;
+	width: 150px;
 	vertical-align: top;
 	line-height: 1.3em;
 	padding: 10px;
@@ -12,28 +12,28 @@
 	border: solid 1px transparent;
 }
 
-.empCard>div {
+.empCard > div {
 	display: block;
-	width: 166px;
-	height: 166px;
+	width: 130px;
+	height: 130px;
 	background-position: 50% 50%;
-	background-size: auto 170px;
+	background-size: auto 130px;
 	background-repeat: no-repeat;
-	border-radius: 10px;
+	border-radius: 100px;
+	margin: 0;
 	margin-bottom: 5px;
 }
 
 .empCard:hover {
 	text-decoration: none;
-	z-index: 9;
-	background-color: rgba(175,175,178,.3);
+	background-color: var(--slo-menu-itemhover-background-color);
 
 }
 
 .empCard[data-checked=true] {
-	background-color: rgb(204, 232, 255);
+	background-color: var(--slo-menu-itemactive-background-color);
 	border: solid 1px #99d1ff;
-	color:var(--input_color)
+	color: var(--input_color)
 }
 
 .empCard[data-checked=true]:hover {
@@ -53,7 +53,7 @@
 	border-radius: 4px;
 }
 
-.menu>span:before {
+.menu > span:before {
 	content: "\e619";
 	font-family: "icomoon";
 	position: relative;
@@ -61,7 +61,7 @@
 	top: 1px;
 }
 
-.menu>div {
+.menu > div {
 	display: inline-block;
 }
 
@@ -73,12 +73,12 @@
 	margin: 0px;
 }
 
-.menu_screen>div {
+.menu_screen > div {
 	display: none;
 	border: solid 1px #ccc;
 	font-weight: normal;
 	position: absolute;
-	z-index: 11;
+
 	white-space: normal;
 	top: 29px;
 	min-width: 200px;
@@ -88,7 +88,7 @@
 	left: -1px;
 }
 
-.menu_screen>div>div {
+.menu_screen > div > div {
 	padding: 6px 10px;
 	white-space: nowrap;
 	position: relative;
@@ -97,7 +97,7 @@
 	line-height: 1.7em;
 }
 
-.menu_screen>div>div>span {
+.menu_screen > div > div > span {
 	font-family: icomoon4;
 	display: inline-block;
 	padding-right: 10px;
@@ -105,13 +105,13 @@
 
 }
 
-.menu_screen>div>div:hover {
+.menu_screen > div > div:hover {
 	text-shadow: 1px 1px 0 #fff;
 	background-color: rgba(82, 168, 236, .1);
 	border-color: rgba(82, 168, 236, .75);
 	text-decoration: none;
 }
 
-.menu_screen>div>hr {
+.menu_screen > div > hr {
 	margin: 0;
 }

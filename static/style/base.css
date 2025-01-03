@@ -206,7 +206,7 @@ body > article {
 	margin: 0 auto;
 }
 
-body > article > div {
+body > article > div {outline: solid 1px rgb(255, 0, 0);
 	flex: 1;
 	/* max-width: var(--dim-max-width); */
 	margin-top: var(--root--menubar-height);
@@ -215,7 +215,7 @@ body > article > div {
 	filter: blur(0px);
 	transition: filter 0.2s ease-out;
 
-	margin-bottom: 20px;
+	margin-bottom: 0px;
 
 }
 

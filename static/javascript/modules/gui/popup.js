@@ -50,7 +50,7 @@ class Modals extends EventTarget {
 		this.controlContent.innerHTML = `
 			<div class="gremium"><div class="content">
 				<header style="position:sticky; top: calc(0px);">
-					<a href="#" class="previous" data-role="previous"></a>
+					<a href="#" class="previous" data-role="previous">&nbsp;</a>
 					<h1>${header.title}</h1>${header.submitButton}
 				</header>
 				<article style="width:auto;">

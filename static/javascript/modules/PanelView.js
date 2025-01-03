@@ -258,7 +258,14 @@ export class PaNa {
 		let item = document.createElement("a");
 		item.classList.add("panel-item");
 		item.classList.add("flash");
-		item.classList.add(this.classList);
+		if (this.classList instanceof Array) {
+			this.classList.forEach(e => {
+				item.classList.add(e);
+			});
+		} else if (this.classList instanceof String) {
+			item.classList.add(this.classList);
+		}
+		item.innerHTML = content;
 		this.runtime.container.prepend(item);
 		this.assigneEvents();
 	}

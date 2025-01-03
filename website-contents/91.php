@@ -65,7 +65,7 @@ if ($app->xhttp) {
 				$tl = new Timeline($app);
 				$tl->register(Module::FinanceCash, Action::FinanceReceipt, $transaction->insert_id);
 				if (!empty($_POST['party'])) {
-					$tl->register(Module::CRMCustomer, Action::FinanceReceipt, $_POST['party'][1], ["id" => $transaction->insert_id, "value" => number_format((float) $_POST['value'], 2, ".", ",") . " " . $app->user->account->currency->shortname]);
+					$tl->register(Module::CRMCustomer, Action::FinanceReceipt, (int)$_POST['party'][1], ["id" => $transaction->insert_id, "value" => number_format((float) $_POST['value'], 2, ".", ",") . " " . $app->user->account->currency->shortname]);
 				}
 			} else {
 				$result['errno'] = 300;

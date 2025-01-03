@@ -17,3 +17,4 @@ const Route = {$view->groupBuildJSON()};
 export default Route;
 
 JS;
+exit;

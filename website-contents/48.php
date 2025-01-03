@@ -15,7 +15,7 @@ function GetEmployeesList(&$app, $fs, $simulate_template, &$grem)
 {
 	if ($simulate_template) {
 		$grem->header();
-		$grem->menu();
+		$grem->legend();
 	}
 	$list       = array();
 	$group_list = array(
@@ -64,8 +64,8 @@ function GetEmployeesList(&$app, $fs, $simulate_template, &$grem)
 			$list[$group_name ? $row[$group_name] : ""][] = $row;
 		}
 		foreach ($list as $k => $type) {
-			$grem->legend()->serve("<span class=\"flex\">" . (is_null($k) || $k == "" ? "[No group]" : $k) . "</span><span style=\"min-width:130px;text-align:right\">" . sizeof($type) . "</span>");
-			$grem->article()->options(array("nobg"))->open();
+			$grem->legend()->serve("<span class=\"flex\">" . (is_null($k) || $k == "" ? "[No group]" : $k) . "</span><span>" . sizeof($type) . "</span>");
+			$grem->article()->open();
 
 			foreach ($type as $row) {
 				$personalPhoto = "";
@@ -144,11 +144,11 @@ if (isset($_POST['method']) && $_POST['method'] == 'call_all_employees_count') {
 
 $grem->header()->serve("<h1>{$fs()->title}</h1><cite>" . GetTotalEmployees($app) . "</cite>");
 
-$grem->menu()->open();
+$grem->menu()->sticky(false)->open();
 ?>
 <button id="jQrefresh" type="button">Refresh</button>
 <input type="text" id="js-input-list_group" data-slo=":SELECT" placeholder="Group options..." readonly style="width:170px;"
-	data-list="js-data-list_group" />
+	   data-list="js-data-list_group" />
 <?php $grem->getLast()->close(); ?>
 
 <div class="emp_list gremium" id="emp_list">

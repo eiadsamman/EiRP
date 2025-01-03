@@ -60,7 +60,7 @@ if (isset($_POST['fetch'])) {
 	foreach ($posgroup as $groupk => $groupv) {
 		$grem->title()->serve("{$groupv['title']} : {$groupv['count']}");
 
-		$grem->article()->options(array(/* "nobg" */))->open();
+		$grem->article()->open();
 		echo "
 			<table class=\"local-mediabond-table " . (isset($_GET['view']) && $_GET['view'] == "1" ? "local-force" : "") . "\">
 				<tbody>";

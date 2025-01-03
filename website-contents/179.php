@@ -150,9 +150,13 @@ $initial_values = array(
 );
 
 
+if ($app->user->account->term) {
+	$termstring = $app->user->account->term->termType() . ": " . $app->user->account->term->name . ": ";
+}
+
 $grem = new Gremium\Gremium(true);
 $grem->header()->serve("<h1 class=\"header-title\">{$fs()->title}</h1>" .
-	"<ul class=\"small-media-hide\"><li>{$app->user->account->term->termType()}: {$app->user->account->term->name}: {$app->user->account->name}</li></ul>" .
+	"<ul class=\"small-media-hide\"><li>{$termstring}{$app->user->account->name}</li></ul>" .
 	"<cite><span id=\"navTotal\">0.00</span>{$app->user->account->currency->shortname}</cite>");
 
 $menu         = $grem->menu()->sticky(false)->open();
