@@ -322,7 +322,7 @@ echo "<button id=\"jQreport\" type=\"button\">Update Report</button>";
 echo "<input type=\"button\" id=\"jQexport\" disabled=\"disabled\" class=\"edge-right\" value=\"Export\" />";
 $grem->getLast()->close();
 $grem->title()->serve("<span class=\"flex\">Filter query</span>");
-$grem->article()->width("660px")->open();
+$grem->article()->maxwidth("660px")->open();
 
 $slo = new SmartListObject($app);
 ?>
@@ -330,16 +330,16 @@ $slo = new SmartListObject($app);
 	<input type="hidden" name="posubmit">
 	<input type="hidden" id="export_param" name="export" value="">
 
-	<div class="form" style="max-width:315px">
+	<div class="form" style="max-width:320px">
 		<label>
 			<h1>Payment Group</h1>
 			<div class="btn-set">
 				<input name="paymethod" id="input-payment-method" class="flex" type="text" data-slo=":SELECT" data-list="js-data-list_paygroup" />
 			</div>
 		</label>
-	</div>
 
-	<div class="form" style="max-width:650px">
+	</div>
+	<div class="form">
 		<label>
 			<h1>Job Group</h1>
 			<div class="btn-set">
@@ -354,7 +354,7 @@ $slo = new SmartListObject($app);
 		</label>
 	</div>
 
-	<div class="form" style="max-width:650px">
+	<div class="form">
 		<label>
 			<h1>From</h1>
 			<div class="btn-set">

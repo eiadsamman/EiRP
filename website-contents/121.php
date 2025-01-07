@@ -1,4 +1,5 @@
 <?php
+use System\Individual\Individual;
 use System\Views\PanelView;
 
 if ($app->xhttp) {
@@ -49,11 +50,11 @@ if ($app->xhttp) {
 					$pos = $row['atm_value'] >= 0 ? '<span class="stm inc active"></span>' : '<span class="stm pay active"></span>';
 					$att = !is_null($row['up_count']) && (int) $row['up_count'] > 0 ? '<span class="atch"></span>' : "";
 					$ben = (!is_null($row['_party_comp_id']) ? "<span style=\"color:var(--root-link-color)\">{$row['_party_comp_name']}</span>: " : "") . $row['acm_beneficial'];
-					$val = ($row['atm_value'] <= 0 ? "(" . number_format(abs($row['atm_value']), 2) . ")" : "" . number_format(abs($row['atm_value']), 2));
-					
+					$val = ($row['atm_value'] < 0 ? "(" . number_format(abs($row['atm_value']), 2) . ")" : "" . number_format(abs($row['atm_value']), 2));
+
 
 					$ini = mb_substr($row['usr_firstname'] ?? "", 0, 1) . " " . mb_substr($row['usr_lastname'] ?? "", 0, 1);
-					$car = "hsl(" . ((int) ($row['acm_editor_id']) * 10 % 360) . ", 75%, 50%)";
+					$car = Individual::colorId((int) ($row['acm_editor_id']));
 					$bad = is_null($row['issuer_badge']) ? "initials" : "image";
 					$bar = is_null($row['issuer_badge']) ? "<b style=\"background-color:{$car}\">{$ini}</b>" : "<span style=\"background-image:url('{$downloadurl}/?id={$row['issuer_badge']}&pr=t');\"></span>";
 

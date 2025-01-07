@@ -67,17 +67,21 @@ if ($app->xhttp) {
 		$mysqli_result = $controller->chunk(false);
 		if ($mysqli_result->num_rows > 0) {
 			while ($row = $mysqli_result->fetch_assoc()) {
-				
-				$outof = (!empty($row['comp_id']) && $row['comp_id'] != $app->user->company->id ? "<div class=\"hlight\">" . $row['comp_name'] . "</div> " : "");
+				$att      = null !== ($row['up_count']) && (int) $row['up_count'] > 0 ? '<span class="atch"></span>' : '';
+				$pos      = $row['atm_value'] >= 0 ? "stm inc" : "stm pay";
+				$sign     = $row['atm_value'] <= 0 ? "negative" : "positive";
+				$absValue = number_format(abs($row['atm_value']), 2);
+
+				$outof = (!empty($row['comp_id']) && $row['comp_id'] != $app->user->company->id ? "<span class=\"light\">" . $row['comp_name'] . ": </span> " : "");
 
 				echo "<tr data-href=\"{$fs(104)->dir}/?id={$row['acm_id']}\">";
 
 				echo "<td class=\"col-1\">
-					<div>{$row['acm_id']}</div>
+					<div>{$row['acm_id']}{$att}</div>
 					<div>{$row['acm_ctime']}</div>
-					<div class=\"in-value value-number " . ($row['atm_value'] <= 0 ? "negative" : "positive") . "\">" . number_format(abs($row['atm_value']), 2) . "</div>
-					{$outof}
-					<div class=\"light\">{$row['usr_firstname']} {$row['usr_lastname']}</div>
+					<div class=\"in-value $pos\"><span class=\"value-number $sign\">$absValue</span></div>
+					
+					<div>{$outof}{$row['usr_firstname']} {$row['usr_lastname']}</div>
 					";
 
 				echo "</td>";
@@ -93,7 +97,7 @@ if ($app->xhttp) {
 				</td>";
 
 				echo "<td class=\"blank\"></td>";
-				echo "<td class=\"media-hide value-number " . ($row['atm_value'] <= 0 ? "negative" : "positive") . "\">" . number_format(abs($row['atm_value']), 2) . "</td>";
+				echo "<td class=\"media-hide $pos\" style=\"text-align:right;\"><span class=\"value-number $sign\">$absValue</span></td>";
 				echo "</tr>";
 			}
 		}

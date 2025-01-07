@@ -1,5 +1,7 @@
 <?php
 
+use System\Individual\Individual;
+
 $controller = new System\Finance\StatementOfAccount\Snapview($app);
 $controller->criteria->setCurrentPage(1);
 $controller->criteria->setRecordsPerPage(4);
@@ -18,7 +20,7 @@ if ($mysqli_result) {
 		while ($row = $mysqli_result->fetch_assoc()) {
 			$padge_type     = empty($row['issuer_badge']) ? "initials" : "image";
 			$padge_initials = "" . mb_substr($row['usr_firstname'] ?? "", 0, 1) . " " . mb_substr($row['usr_lastname'] ?? "", 0, 1) . " ";
-			$padge_color    = "hsl(" . ((int) ($row['acm_editor_id']) * 10 % 360) . ", 75%, 50%)";
+			$padge_color    = Individual::colorId((int) $row['acm_editor_id']);
 			$badge_uri      = !empty($row['issuer_badge']) ?
 				"<span style=\"background-image:url('{$fs(187)->dir}/?id={$row['issuer_badge']}&pr=t');\"></span>" :
 				"<b style=\"background-color:{$padge_color}\">{$padge_initials}</b>";

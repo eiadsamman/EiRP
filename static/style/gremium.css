@@ -24,7 +24,7 @@
 			outline: none;
 		}
 
-		& header {
+		& > header {
 			height: 60px;
 			padding: 15px 10px 5px 10px;
 			align-items: center;
@@ -200,7 +200,7 @@
 
 		}
 
-		& menu {
+		& > menu {
 			padding: 3px 10px 0px 10px;
 			margin: 0;
 			height: 40px;
@@ -227,7 +227,7 @@
 			}
 		}
 
-		& legend {
+		& > legend {
 			padding: 0px 10px 10px 10px;
 			background-color: var(--root-background-color);
 			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
@@ -248,7 +248,7 @@
 			-moz-backdrop-filter: blur(6px); */
 		}
 
-		& h2 {
+		& > h2 {
 			color: var(--root-font-lightcolor);
 			padding: 15px 25px;
 			font-size: 1.4em;
@@ -276,7 +276,7 @@
 			}
 		}
 
-		& article {
+		& > article {
 			position: relative;
 			color: var(--root-font-color);
 			padding: 20px;
@@ -437,7 +437,7 @@
 			}
 		}
 
-		& aside {
+		& > aside {
 			grid-column: 2;
 			grid-row: 1 / 100;
 			position: relative;

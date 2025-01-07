@@ -237,8 +237,8 @@ export class PaNa {
 				this.sidePanelLoader();
 			}
 		}).catch(response => {
-			console.log(response);
-			messagesys.failure("Application failed to load properly");
+			//console.log(response);
+			//messagesys.failure("Application failed to load properly");
 		});
 	}
 

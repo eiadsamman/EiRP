@@ -13,3 +13,41 @@
 }
 
 
+
+
+#navOutput span.atch {
+	display: inline-block;
+}
+
+#navOutput span.atch::after {
+	font-family: icomoon;
+	display: inline-block;
+	margin: 0px 4px;
+}
+
+#navOutput span.atch::after {
+	content: "\e60e";
+	color: tomato;
+}
+
+
+
+#navOutput .stm.inc::before,
+#navOutput .stm.pay::before {
+	font-family: Glyphs;
+	position: relative;
+	top: 3px;
+	padding: 0px 5px;
+}
+
+#navOutput .stm.inc::before {
+	content: "\e91b";
+	font-size: 1.2em;
+	color: limegreen;
+}
+
+#navOutput .stm.pay::before {
+	content: "\e91c";
+	font-size: 1.2em;
+	color: tomato;
+}

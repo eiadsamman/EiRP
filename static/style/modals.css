@@ -300,10 +300,10 @@ dialog.appHtmlDialog {
 
 
 
-	> div.ellipsis,
-	> footer > div.ellipsis,
-	> a > div.ellipsis,
-	> main > div.ellipsis {
+	div.ellipsis,
+	footer > div.ellipsis,
+	a > div.ellipsis,
+	main > div.ellipsis {
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -718,36 +718,43 @@ table.dynamic > tbody > tr {
 
 	> .value-number {
 		text-align: right;
-		min-width: 100px;
+		min-width: 80px;
 		width: 150px;
 	}
 
-	> .value-number.positive {
+	.value-number.positive {
 		visibility: visible;
 	}
 
-	> .value-number.negative {
-		color: tomato;
+	.value-number.negative {
+		color: inherit;
 	}
 
-	> .value-number.negative::after,
-	> .value-number.negative::before {
+	.value-number.negative::after,
+	.value-number.negative::before {
 		display: inline-block;
 	}
 
-	> .value-number.negative::after {
+	.value-number.positive::after ,.value-number.positive::before {
 		content: ")";
+		color:transparent;
 	}
 
-	> .value-number.negative::before {
+	.value-number.negative::after {
+		content: ")";
+		color: var(--root-font-lightcolor);
+	}
+
+	.value-number.negative::before {
 		content: "(";
+		color: var(--root-font-lightcolor);
 	}
 
-	> .hlight {
-		color: crimson;
+	.hlight {
+		color: tomato;
 	}
 
-	> .light {
+	.light {
 		color: var(--root-font-lightcolor);
 	}
 
@@ -824,6 +831,7 @@ table.dynamic > tbody > tr {
 	table.dynamic > tbody > tr > td.col-1 > div.in-value {
 		text-align: right;
 		display: inline-block;
+		padding: 0;
 	}
 
 	table.dynamic > tbody > tr > td.col-1 > div:nth-child(4) {

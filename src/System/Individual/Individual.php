@@ -22,6 +22,10 @@ class Individual
 	}
 
 
+	public static function colorId(int $userId): string
+	{
+		return "hsl(" . ($userId * 10 % 360) . ", 75%, 50%)";
+	}
 	public function load(int $person_id): bool
 	{
 		$query = $this->app->db->query(
