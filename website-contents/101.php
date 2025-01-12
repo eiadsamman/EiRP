@@ -59,7 +59,7 @@ if ($app->xhttp) {
 					(float) $_POST['exchange-value']
 				);
 			}
-			
+
 			if (isset($_POST['attachments']) && is_array($_POST['attachments'])) {
 				$transaction->attachments($_POST['attachments']);
 			}
@@ -149,7 +149,7 @@ if ($app->xhttp) {
 	$SmartListObject = new SmartListObject($app);
 	$grem            = new Gremium\Gremium(true);
 	$preva           = " data-href=\"{$fs(104)->dir}/?id={$read->id}\" href=\"{$fs(104)->dir}/?id={$read->id}\"";
-	$grem->header()->prev($preva)->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad(($read ? $read->id : ""), $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
+	$grem->header()->prev($preva)->serve("<h1>{$fs()->title}</h1><cite>{$app->branding->formatId($read->type, $read->id)}</cite>");
 
 	$grem->menu()->serve(
 		"<span class=\"flex\"></span>" .
@@ -171,22 +171,22 @@ if ($app->xhttp) {
 
 		<input type="hidden" name="exchange-override" id="exchange-override" value="true" />
 		<input type="hidden" name="exchange-dir-from" id="exchange-dir-from"
-			value="<?= ($read->creditor && $read->debitor ? $a < $b ? $read->creditor->currency->id : $read->debitor->currency->id : ""); ?>" />
+			   value="<?= ($read->creditor && $read->debitor ? $a < $b ? $read->creditor->currency->id : $read->debitor->currency->id : ""); ?>" />
 		<input type="hidden" name="exchange-dir-to" id="exchange-dir-to"
-			value="<?= ($read->creditor && $read->debitor ? $a >= $b ? $read->creditor->currency->id : $read->debitor->currency->id : ""); ?>" />
+			   value="<?= ($read->creditor && $read->debitor ? $a >= $b ? $read->creditor->currency->id : $read->debitor->currency->id : ""); ?>" />
 
 		<div class="form predefined">
 			<label style="min-width:200px;flex:2">
 				<h1>Statement ID</h1>
 				<div class="btn-set">
-					<?= $app->prefixList[13][0] . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT); ?>
+					<span><?= $app->branding->formatId($read->type, $read->id); ?></span>
 				</div>
 			</label>
 			<label style="min-width:200px;flex:1">
 				<h1>Type</h1>
 				<div class="btn-set">
 					<input tabindex="1" placeholder="Type" data-required title="Transaction type" data-touch="200" type="text" data-slo=":LIST"
-						data-list="js-ref_nature-list" class="flex" name="statement-nature" id="statement-nature" value="<?= $read->type->name; ?>" />
+						   data-list="js-ref_nature-list" class="flex" name="statement-nature" id="statement-nature" value="<?= $read->type->name; ?>" />
 				</div>
 			</label>
 			<label style="min-width:200px;flex:1" for="">
@@ -203,14 +203,14 @@ if ($app->xhttp) {
 				<h1>Creditor</h1>
 				<div class="btn-set">
 					<input tabindex="1" placeholder="Creditor account" data-required title="Creditor account" data-touch="200" type="text"
-						data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="source-account" id="source-account" />
+						   data-slo=":LIST" data-list="js-ref_creditor-list" class="flex" name="source-account" id="source-account" />
 				</div>
 			</label>
 			<label>
 				<h1>Debitor</h1>
 				<div class="btn-set">
 					<input tabindex="2" placeholder="Debitor account" data-required title="Debitor account" data-touch="200" type="text" data-slo=":LIST"
-						data-list="js-ref_debitor-list" class="flex" name="target-account" id="target-account" />
+						   data-list="js-ref_debitor-list" class="flex" name="target-account" id="target-account" />
 				</div>
 			</label>
 		</div>
@@ -220,18 +220,18 @@ if ($app->xhttp) {
 				<h1>Date</h1>
 				<div class="btn-set">
 					<input type="text" placeholder="Post date" class="flex" data-slo=":DATE" data-touch="107" title="Transaction date"
-						value="<?= $read->dateTime->format("Y-m-d") ?>" data-rangeend="<?= $current_date ?>" tabindex="3" name="date" data-required />
+						   value="<?= $read->dateTime->format("Y-m-d") ?>" data-rangeend="<?= $current_date ?>" tabindex="3" name="date" data-required />
 					<input type="text" placeholder="Due date" class="flex" data-slo=":DATE" data-touch="108" title="Transaction date" value=""
-						data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
+						   data-rangeend="<?= $current_date ?>" tabindex="-1" name="duedate" />
 				</div>
 			</label>
 			<label style="min-width:300px">
 				<h1>Category</h1>
 				<div class="btn-set">
 					<input type="text" placeholder="Statement category" data-required data-slo=":LIST" data-touch="105" title="Category"
-						data-source="_/FinanceCategoryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinancialCategories.a" tabindex="4"
-						class="flex" name="category" id="category" value="<?= $read->category->group . ": " . $read->category->name; ?>"
-						data-slodefaultid="<?= $read->category->id; ?>" />
+						   data-source="_/FinanceCategoryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinancialCategories.a" tabindex="4"
+						   class="flex" name="category" id="category" value="<?= $read->category->group . ": " . $read->category->name; ?>"
+						   data-slodefaultid="<?= $read->category->id; ?>" />
 				</div>
 			</label>
 		</div>
@@ -241,7 +241,7 @@ if ($app->xhttp) {
 				<h1>Beneficiary</h1>
 				<div class="btn-set">
 					<input name="party" id="party" type="text" placeholder="Select company..." class="flex" title="Company name" data-slo=":LIST"
-						data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" <?= $read->party ? " data-slodefaultid=\"{$read->party->id}\" " : null; ?> 	<?= $read->party ? " value=\"{$read->party->name}\" " : null; ?> />
+						   data-source="_/CompaniesList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_CompaniesList.a" <?= $read->party ? " data-slodefaultid=\"{$read->party->id}\" " : null; ?> 	<?= $read->party ? " value=\"{$read->party->name}\" " : null; ?> />
 				</div>
 			</label>
 			<label></label>
@@ -252,13 +252,13 @@ if ($app->xhttp) {
 				<h1>Attention</h1>
 				<div class="btn-set">
 					<input type="text" placeholder="Beneficiary name" data-mandatory class="flex" title="Beneficiary name" data-touch="102" tabindex="5"
-						data-slo=":LIST"
-						data-source="_/FinanceBeneficiaryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinananceBeneficiaries.a"
-						name="beneficiary" id="beneficiary" value="<?= $read->beneficiary ?>" data-slodefaultid="<?= $read->beneficiary ?>" />
+						   data-slo=":LIST"
+						   data-source="_/FinanceBeneficiaryList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_FinananceBeneficiaries.a"
+						   name="beneficiary" id="beneficiary" value="<?= $read->beneficiary ?>" data-slodefaultid="<?= $read->beneficiary ?>" />
 					<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user"
-						data-slo=":LIST" data-source="_/UserList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_userList.a"
-						value="<?= $read->individual ? $read->individual->fullName() : ""; ?>"
-						data-slodefaultid="<?= $read->individual ? $read->individual->id : ""; ?>" />
+						   data-slo=":LIST" data-source="_/UserList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_userList.a"
+						   value="<?= $read->individual ? $read->individual->fullName() : ""; ?>"
+						   data-slodefaultid="<?= $read->individual ? $read->individual->id : ""; ?>" />
 				</div>
 			</label>
 		</div>
@@ -268,12 +268,12 @@ if ($app->xhttp) {
 				<h1>Amount</h1>
 				<div class="btn-set">
 					<input type="text" inputmode="decimal" placeholder="Payment value" data-required tabindex="5" class="flex" data-touch="101"
-						title="Transaction value" min="0" name="value" id="value" value="<?= $read->value; ?>" />
+						   title="Transaction value" min="0" name="value" id="value" value="<?= $read->value; ?>" />
 					<span id="currency-hint"><?= $read->currency->shortname ?></span>
 				</div>
 
 				<div class="btn-set" id="exchange-form"
-					style="margin-top:15px;display: <?= ($read->debitor && $read->creditor && ($read->creditor->currency->id != $read->debitor->currency->id) ? "flex" : "none"); ?>;">
+					 style="margin-top:15px;display: <?= ($read->debitor && $read->creditor && ($read->creditor->currency->id != $read->debitor->currency->id) ? "flex" : "none"); ?>;">
 					<span>
 						<a id="exchange-action" href="<?= $fs(87)->dir; ?>">
 							<?php if ($read->debitor && $read->creditor) { ?>
@@ -283,8 +283,8 @@ if ($app->xhttp) {
 						</a>
 					</span>
 					<input type="text" inputmode="decimal" data-required style="display:none" placeholder="Exchange rate" id="exchange-value"
-						name="exchange-value" data-default="<?= $read->forexRate; ?>" <?= $fs(87)->permission->edit ? "" : "disabled"; ?> class="flex"
-						value="<?= (float) number_format($a > $b ? $a / $b : $b / $a, 4); ?>" />
+						   name="exchange-value" data-default="<?= $read->forexRate; ?>" <?= $fs(87)->permission->edit ? "" : "disabled"; ?> class="flex"
+						   value="<?= (float) number_format($a > $b ? $a / $b : $b / $a, 4); ?>" />
 
 					<span id="exchange-hint" class="flex"><?= number_format($a > $b ? $a / $b : $b / $a, 4); ?></span>
 				</div>
@@ -328,10 +328,11 @@ if ($app->xhttp) {
 				<h1>Reference</h1>
 				<div class="btn-set">
 					<input type="text" placeholder="Statement reference..." value="<?= $read->reference ?? "" ?>"
-						data-slodefaultid="<?= $read->reference ?? "" ?>" data-slo="ACC_REFERENCE" title="Reference" tabindex="-1" name="reference"
-						class="flex" />
+						   data-slodefaultid="<?= $read->reference ?? "" ?>" data-slo="ACC_REFERENCE" title="Reference" tabindex="-1" name="reference"
+						   class="flex" />
 					<input type="text" placeholder="Related ID" value="<?= $read->relation ?? "" ?>" data-slodefaultid="<?= $read->relation ?? "" ?>"
-						style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" placeholder="Related ID" name="relation" />
+						   style="max-width:100px;min-width:100px;" title="Related transaction ID" tabindex="-1" placeholder="Related ID"
+						   name="relation" />
 				</div>
 			</label>
 		</div>
@@ -341,8 +342,8 @@ if ($app->xhttp) {
 				<h1>Description</h1>
 				<div class="btn-set">
 					<textarea type="text" placeholder="Statement description..." data-required tabindex="7" title="Statement Description" data-touch="103"
-						style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" name="description" id="description"
-						rows="7"><?= $read->description ?? "" ?></textarea>
+							  style="width:100%;min-width:100%;max-width:100%;min-height:100px;" class="textarea" name="description" id="description"
+							  rows="7"><?= $read->description ?? "" ?></textarea>
 				</div>
 			</label>
 		</div>

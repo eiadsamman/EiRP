@@ -19,7 +19,7 @@ class StatementCategoryProperty
 
 class StatementProperty
 {
-	public Nature $type;
+	public enums\Type $type;
 
 	public int $id;
 	public float $value;

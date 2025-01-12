@@ -72,7 +72,7 @@ class Statement
 				$result              = new StatementProperty();
 				$result->id          = (int) $row['acm_id'];
 				$result->canceled    = (int) $row['acm_rejected'] == 1;
-				$result->type        = Nature::tryFrom((int) $row['acm_type']);
+				$result->type        = enums\Type::tryFrom((int) $row['acm_type']);
 				$result->dateTime    = new \DateTime($row['acm_ctime']);
 				$result->reference   = $row['acm_reference'];
 				$result->description = $row['acm_comments'];

@@ -37,34 +37,7 @@
 }
 
 
-input.numberField {
-	text-align: right;
-	border: none;
-	background-color: transparent;
-	color: var(--root-link-color);
-	margin: 0;
-	padding: 9px;
-	border-radius: var(--input_border-radius);
-	border: solid 1px var(--input_border-color);
-	width: 100%;
-	color: var(--root-font-color);
-	font-size: 1em;
 
-	&:disabled {
-		background-color: var(--button_disabled-bgcolor);
-
-	}
-
-	&:hover {
-		border-color: var(--input-hover_border-color);
-		z-index: 12;
-	}
-
-	&:focus {
-		border-color: var(--input-active_border-color);
-		z-index: 13;
-	}
-}
 
 
 .css_partofbom {

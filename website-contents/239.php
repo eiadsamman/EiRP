@@ -27,7 +27,6 @@ function SidePanelContent(&$app, $pageUrl, $pageTitle)
 						JOIN users ON usr_id = po_usr_id
 						JOIN currencies ON cur_id = po_cur_id
 						JOIN companies ON comp_id = po_comp_id
-						JOIN system_prefix ON prx_id=po_type
 						LEFT JOIN (
 								SELECT _from.curexg_from AS _rate_from,_to.curexg_from AS _rate_to,(_from.curexg_value / _to.curexg_value) AS _rate 
 									FROM currency_exchange AS _from INNER JOIN currency_exchange AS _to

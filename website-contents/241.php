@@ -72,16 +72,17 @@ if ($app->xhttp) {
 			";
 
 		$mysqli_result = $app->db->query($q);
-		$prefix100 = array_key_exists(100, $app->prefixList) ? array_key_exists(100, $app->prefixList) : ["", 0];
-		$prefix110 = array_key_exists(110, $app->prefixList) ? array_key_exists(110, $app->prefixList) : ["", 0];
 
 		if ($mysqli_result->num_rows > 0) {
 			while ($row = $mysqli_result->fetch_assoc()) {
 				$costcenter = $row['ccc_name'];
 
-				$closed          = (is_null($row['po_close_date']) ? "Open" : "Closed");
-				$serial          = $prefix110[0] . $row['po_costcenter'] . str_pad($row['po_serial'], $prefix110[1], "0", STR_PAD_LEFT);
-				$paretnSerial    = $prefix100[0] . $row['parent_costcenter'] . str_pad($row['parent_po_serial'], $prefix100[1], "0", STR_PAD_LEFT);
+				$closed = (is_null($row['po_close_date']) ? "Open" : "Closed");
+
+				$serial       = $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $row['po_serial'], "-" . $row['po_costcenter'] . "-");
+				$paretnSerial = $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $row['parent_po_serial'], "-" . $row['parent_costcenter'] . "-");
+
+
 				$row['po_title'] = empty($row['po_title']) || $row['po_title'] == "" ? "<i>(Untitled)</i>" : $row['po_title'];
 				$grandTotal      = number_format(
 					(($row['po_total'] * (1 - $row['po_discount'] / 100)) + $row['po_additional_amount'])
@@ -90,10 +91,10 @@ if ($app->xhttp) {
 					2
 				);
 
-				$paymentTerm = is_null($row['po_payment_term']) ? "" : PaymentTerm::tryFrom((int) $row['po_payment_term'])->toString();
+				$paymentTerm  = is_null($row['po_payment_term']) ? "" : PaymentTerm::tryFrom((int) $row['po_payment_term'])->toString();
 				$shippingTerm = is_null($row['po_shipping_term']) ? "" : ShippingTerm::tryFrom((int) $row['po_shipping_term'])->name;
 
-				
+
 				echo <<<HTML
 					<a class="panel-item invoicing" href="{$fs(234)->dir}/?id={$row['po_id']}" data-listitem_id="{$row['po_id']}" data-href="{$fs(234)->dir}">
 						<div>

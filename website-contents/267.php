@@ -91,7 +91,7 @@ if ($app->xhttp) {
 
 
 		$grem = new Gremium\Gremium(true, false);
-		$grem->header()->prev("href=\"{$fs(173)->dir}\" data-href=\"{$fs(173)->dir}\"")->serve("<h1>{$party->name}</h1>");//<cite>{$app->prefixList[10][0]}" . str_pad($party->id, $app->prefixList[10][1], "0", STR_PAD_LEFT) . "</cite>
+		$grem->header()->prev("href=\"{$fs(173)->dir}\" data-href=\"{$fs(173)->dir}\"")->serve("<h1>{$party->name}</h1>");
 		$grem->title()->serve("<span class=\"flex\">Customer Information</span>");
 
 		$grem->article()->open(); ?>
@@ -138,7 +138,7 @@ if ($app->xhttp) {
 					<label>
 						<h1>Customer ID / name</h1>
 						<div class="btn-set">
-							<span><?= $app->prefixList[10][0] . str_pad($party->id, $app->prefixList[10][1], "0", STR_PAD_LEFT); ?></span>
+							<span><?= $party->id; ?></span>
 							<span><?= $party->name; ?></span>
 						</div>
 					</label>

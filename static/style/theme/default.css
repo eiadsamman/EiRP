@@ -1,7 +1,7 @@
 .theme-default {
 
 	--root-background-color: #F8F9FB;
-	--root-background-color_backdrop: rgb(250, 250, 250, 0.8);
+	--root-background-color_backdrop: rgb(250, 250, 250, 0.85);
 
 	--root-font-color: rgb(33, 37, 41);
 	--root-font-lightcolor: hsl(200, 20%, 45%);
@@ -78,7 +78,7 @@
 
 .theme-default.dark {
 	--root-background-color: rgb(20, 20, 25, 1);
-	--root-background-color_backdrop: rgb(20, 20, 25, 0.7);
+	--root-background-color_backdrop: rgb(20, 20, 25, 0.9);
 
 	--root-font-color: #eee;
 	--root-font-lightcolor: hsl(200, 13%, 65%);

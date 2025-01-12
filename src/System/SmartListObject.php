@@ -283,7 +283,7 @@ class SmartListObject
 	public function financialTransactionNature(mixed $select = null): string
 	{
 		$output = "";
-		foreach (\System\Finance\Transaction\Nature::array() as $k => $v) {
+		foreach (\System\Finance\Transaction\enums\Type::array() as $k => $v) {
 			$output .= $this->template((string) $k, $v, null, (int) $k == (int) $select);
 		}
 

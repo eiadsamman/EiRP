@@ -114,8 +114,6 @@ if ($app->user->info) {
 
 }
 
-$app->buildPrefixList();
-
 
 if ($app->xhttp) {
 	include_once $app->root . "website-contents/{$fs()->id}.php";

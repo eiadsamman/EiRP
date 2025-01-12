@@ -69,7 +69,8 @@ export class Post extends View {
 		this.currencySelection = $("#currency").slo();
 		this.formMaterialList = document.getElementById("formMaterialsList");
 		this.buttonPost = document.getElementById("appApplicationPost");
-
+		
+		if (this.buttonPost === undefined || this.buttonPost === null) return;
 		this.buttonPost.addEventListener("click", () => {
 			this.post();
 		});

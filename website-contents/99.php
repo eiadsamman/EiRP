@@ -756,7 +756,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					$name       = array();
 					if ($group_v['cols'] == "Type") {
 						foreach ($group_v['reference'] as $ref_v) {
-							$name[] = (\System\Finance\Transaction\Nature::tryFrom((int) $row[$ref_v])->toString());
+							$name[] = (\System\Finance\Transaction\enums\Type::tryFrom((int) $row[$ref_v])->toString());
 						}
 					} else {
 						foreach ($group_v['reference'] as $ref_v) {
@@ -815,7 +815,7 @@ $grem->terminate();
 					<div class="slo_list" data-role="creditor_account">
 						<?php
 						echo $app->user->account && $pre_load_variables ? "<span 
-							data-id=\"{$app->user->account->id}\"><b>&#xea0f;</b><span>[{$app->user->account->currency->shortname}] {$app->user->company->name}: {$app->user->account->type->name}: {$app->user->account->name}</span><input type=\"hidden\" 
+							data-id=\"{$app->user->account->id}\"><b>&#xea0f;</b><span>[{$app->user->account->currency->shortname}] {$app->user->company->name}: {$app->user->account->term->name}: {$app->user->account->name}</span><input type=\"hidden\" 
 							name=\"creditor_account[1]\" value=\"{$app->user->account->id}\" /><label style=\"background-color:#fff\">Exclude<input name=\"creditor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
 						?>
 					</div>
@@ -824,7 +824,7 @@ $grem->terminate();
 					<div class="btn-set normal list"><input type="text" data-list_object="true" data-rel="debitor_account" data-slo="ACC_VIEW" /></div>
 					<div class="slo_list" data-role="debitor_account">
 						<?php
-						echo $app->user->account && $pre_load_variables ? "<span data-id=\"{$app->user->account->id}\"><b>&#xea0f;</b><span>[{$app->user->account->currency->shortname}] {$app->user->company->name}: {$app->user->account->type->name}: {$app->user->account->name}</span><input type=\"hidden\" name=\"debitor_account[1]\" value=\"{$app->user->account->id}\" /><label style=\"background-color:#fff\">Exclude<input name=\"debitor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
+						echo $app->user->account && $pre_load_variables ? "<span data-id=\"{$app->user->account->id}\"><b>&#xea0f;</b><span>[{$app->user->account->currency->shortname}] {$app->user->company->name}: {$app->user->account->term->name}: {$app->user->account->name}</span><input type=\"hidden\" name=\"debitor_account[1]\" value=\"{$app->user->account->id}\" /><label style=\"background-color:#fff\">Exclude<input name=\"debitor_account_exclude[1]\" type=\"checkbox\" ><span></span></label></span>" : "";
 						?>
 					</div>
 				</td>

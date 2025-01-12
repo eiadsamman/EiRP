@@ -143,7 +143,7 @@ if ($r) {
 
 	foreach ($array_output as $main) {
 		$output .= $main['info']['id'] . "\t";
-		$output .= \System\Finance\Transaction\Nature::tryFrom((int)$main['info']['transaction_type'])->value . "\t";
+		$output .= \System\Finance\Transaction\enums\Type::tryFrom((int)$main['info']['transaction_type'])->value . "\t";
 		$output .= $main['details']['creditor']['raw_value'] . "\t";
 		$output .= $main['details']['creditor']['currency'] . "\t";
 		$output .= $main['details']['creditor']['company'] . "\t";
@@ -157,7 +157,7 @@ if ($r) {
 		$output .= preg_replace('#\s+#', ' ', trim($main['info']['comments']));
 		$output .= "\n";
 		$output .= $main['info']['id'] . "\t";
-		$output .= \System\Finance\Transaction\Nature::tryFrom((int)$main['info']['transaction_type'])->value. "\t";
+		$output .= \System\Finance\Transaction\enums\Type::tryFrom((int)$main['info']['transaction_type'])->value. "\t";
 		$output .= $main['details']['debitor']['raw_value'] . "\t";
 		$output .= $main['details']['debitor']['currency'] . "\t";
 		$output .= $main['details']['debitor']['company'] . "\t";

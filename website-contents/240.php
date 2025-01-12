@@ -24,9 +24,9 @@ try {
 
 	$grem = new Gremium\Gremium(false, false);
 
-	$prefix100 = array_key_exists(100, $app->prefixList) ? array_key_exists(100, $app->prefixList) : ["", 0];
 
-	$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$prefix100[0]}" . $read->costCenter->id . str_pad($read->serialNumber, $prefix100[1], "0", STR_PAD_LEFT) . "</cite>");
+
+	$grem->header()->prev("href=\"{$fs(210)->dir}\" data-href=\"{$fs(210)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $read->serialNumber, "-" . $read->costCenter->id . "-")}</cite>");
 	$grem->menu()->sticky(false)->open();
 	echo "<a href=\"{$fs(233)->dir}/?id={$read->id}\" data-href=\"{$fs(233)->dir}/?id={$read->id}\" class=\"edge-left edge-right plus\">&nbsp;New Quotation</a>";
 	echo "<span class=\"flex\"></span>";
@@ -62,7 +62,7 @@ try {
 		<label>
 			<h1>ID</h1>
 			<div class="btn-set">
-				<span><?= $prefix100[0], $read->costCenter->id . str_pad($read->serialNumber, $prefix100[1], "0", STR_PAD_LEFT) ?></span>
+				<span><?= $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $read->serialNumber, "-" . $read->costCenter->id . "-") ?></span>
 			</div>
 		</label>
 		<label>
@@ -165,12 +165,12 @@ try {
 	HTML;
 
 
-	$prefix110 = array_key_exists(110, $app->prefixList) ? array_key_exists(110, $app->prefixList) : ["", 0];
 
 	$sequence = new InvoiceSequence($app);
 	foreach ($sequence->children($read->id) as $node) {
-		echo "	<a href=\"{$fs(234)->dir}/?id={$node->id}\" data-href=\"{$fs(234)->dir}/?id={$node->id}\">
-				<div>" . $prefix110[0] . $read->costCenter->id . str_pad($node->serialNumber, $prefix110[1], "0", STR_PAD_LEFT) . "</div>
+		$uri_get = "{$fs(234)->dir}/?id={$node->id}&document={$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $node->serialNumber, "-" . $read->costCenter->id . "-")}";
+		echo "	<a href=\"$uri_get\" data-href=\"$uri_get\">
+				<div>" . $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $node->serialNumber, "-" . $read->costCenter->id . "-") . "</div>
 				<div>" . $node->currency->shortname . " " . number_format($node->totalValue, 2) . "
 				<br />" . number_format($node->discountRate, 2) . "%</div>
 				<div>" . (empty($node->paymentTerm) ? "-" : $node->paymentTerm->toString()) . "

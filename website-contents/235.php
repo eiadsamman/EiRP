@@ -2,7 +2,7 @@
 require_once("admin/class/invoice.php");
 require_once("admin/class/accounting.php");
 $invoice = new Invoice();
-$invoice->BuildDocumentNumberPrefixList();
+$invoice->BuildDocumentNumberPrefixxList();
 $accounting = new Accounting();
 $_syscur = $accounting->system_default_currency();
 ?>
@@ -42,7 +42,7 @@ $_syscur = $accounting->system_default_currency();
 		if ($r) {
 			while ($row = $r->fetch_assoc()) {
 				echo "<tr>";
-				echo "<td><a href=\"" . $fs(237)->dir . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">" . $app->translatePrefix(1, $row['po_id']) . "</a></td>";
+				echo "<td><a href=\"" . $fs(237)->dir . "/?docid={$row['po_id']}&token=" . md5("sysdoc_" . $row['po_id'] . session_id()) . "\">" . $row['po_id']. "</a></td>";
 				echo "<td>{$row['po_date']}</td>";
 				echo "<td>{$row['comp_name']}</td>";
 				echo "<td>{$row['po_title']}</td>";

@@ -12,7 +12,7 @@ class Receipt extends Transaction
 	public function __construct(protected \System\App &$app)
 	{
 		parent::__construct($app);
-		$this->nature_id = Nature::Receipt->value;
+		$this->nature_id = enums\Type::Receipt->value;
 	}
 	protected function releaseStatementPairs(int $ownerID): bool
 	{

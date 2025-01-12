@@ -6,6 +6,7 @@ namespace System;
 use System\Exceptions\HR\InactiveAccountException;
 use System\Exceptions\HR\InvalidLoginException;
 use System\Finance\Currency;
+use System\Models\Branding;
 use System\Views\Views;
 
 //$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);
@@ -18,8 +19,7 @@ class App
 	public Currency $currency;
 	public ?array $currencies;
 
-	public array $prefixList = array();
-
+	public Branding $branding;
 	public string $subdomain;
 	public int $base_permission = 0;
 	public ResponseStatus $responseStatus;
@@ -86,7 +86,7 @@ class App
 
 
 
-		$this->id = substr(md5(session_id() . $this->broadcast),0,6);
+		$this->id = substr(md5(session_id() . $this->broadcast), 0, 6);
 
 		/* Application session User */
 		$this->user = new Individual\User($this);
@@ -224,41 +224,9 @@ class App
 		$this->base_permission = 2;
 		return true;
 	}
-	public function buildPrefixList(): bool
-	{
-		$this->prefixList = array();
-		$r                = $this->db->query("SELECT prx_id, prx_value, prx_placeholder FROM system_prefix;");
-		if ($r) {
-			while ($row = $r->fetch_assoc()) {
-				$this->prefixList[$row['prx_id']] = array($row['prx_value'], (int) $row['prx_placeholder']);
-			}
-		}
-		return true;
-	}
+	
 
-
-	public function translatePrefix(int $type, int $number): string
-	{
-		if (!is_array($this->prefixList) || sizeof($this->prefixList) == 0) {
-			return (string) $number;
-		}
-		$type = (int) $type;
-		if (isset($this->prefixList[$type])) {
-			return $this->prefixList[$type][0] . str_pad((string) $number, $this->prefixList[$type][1], "0", STR_PAD_LEFT);
-		}
-		return (string) $number;
-	}
-	public function paddingPrefix(int $type, int $number): string
-	{
-		if (!is_array($this->prefixList) || sizeof($this->prefixList) == 0) {
-			return (string) $number;
-		}
-		$type = (int) $type;
-		if (isset($this->prefixList[$type])) {
-			return str_pad((string) $number, $this->prefixList[$type][1], "0", STR_PAD_LEFT);
-		}
-		return (string) $number;
-	}
+	
 
 	public function formatTime(float $time, ?bool $include_seconds = true): string
 	{
@@ -346,6 +314,7 @@ class App
 				exit;
 			}
 		}
+		$this->branding = new Branding($this);
 		return 0;
 	}
 

@@ -213,7 +213,7 @@ class Header extends Blocks
 			echo ($this->stackable && $this->sticky ? " style=\"position:sticky; top: calc({$this->top});\" " : "");
 			echo ">\n";
 
-			echo $this->prev == null ? "" : "\t<a $this->prev class=\"previous\" draggable=\"false\" data-role=\"previous\">&nbsp;</a>\n";
+			echo $this->prev == null ? "" : "\t<a $this->prev class=\"previous\" aria-label=\"Goto to previous page\" draggable=\"false\" data-role=\"previous\">&nbsp;</a>\n";
 			echo $this->status == null ? "" : "\t<span class=\"$this->status\"></span>\n";
 			$this->opened = true;
 		}

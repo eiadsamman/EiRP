@@ -10,11 +10,6 @@ $id          = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
 $invoice     = new System\Finance\Invoice\PurchaseRequest($app);
 $entry       = new System\Finance\Invoice\InvoiceRecord($app);
 
-$prefix100 = array_key_exists(100, $app->prefixList) ? array_key_exists(100, $app->prefixList) : ["", 0];
-$prefix110 = array_key_exists(110, $app->prefixList) ? array_key_exists(110, $app->prefixList) : ["", 0];
-
-
-
 try {
 
 	$read = $entry->get($id);
@@ -29,7 +24,7 @@ try {
 	$totalPreVat = $read->totalValue * (1 - ($read->discountRate ?? 0) / 100) + ($read->addtionalAmmout ?? 0);
 	$grem        = new Gremium\Gremium(false, false);
 
-	$grem->header()->prev("href=\"{$fs(209)->dir}\" data-href=\"{$fs(209)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$prefix110[0]}" . $read->costCenter->id . str_pad($read->serialNumber, $prefix110[1], "0", STR_PAD_LEFT) . "</cite>");
+	$grem->header()->prev("href=\"{$fs(209)->dir}\" data-href=\"{$fs(209)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $read->serialNumber, "-" . $read->costCenter->id . "-")}</cite>");
 	$grem->menu()->sticky(true)->open();
 	echo "<span class=\"flex\"></span>";
 	echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs()->dir}\" id=\"appPrint\" class=\"edge-right edge-left\" tabindex=\"-1\">Print</button>";
@@ -56,7 +51,7 @@ try {
 		<label>
 			<h1>ID</h1>
 			<div class="btn-set">
-				<span><?= $prefix110[0] . $read->costCenter->id . str_pad($read->serialNumber, $prefix110[1], "0", STR_PAD_LEFT) ?></span>
+				<span><?= $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $read->serialNumber, "-" . $read->costCenter->id . "-") ?></span>
 			</div>
 
 		</label>
@@ -72,8 +67,10 @@ try {
 		<label>
 			<h1>Purchase Request</h1>
 			<div class="btn-set">
-				<span><a data-href="<?= "{$fs(240)->dir}/?id={$read->parentId}"; ?>"
-					   href="<?= "{$fs(240)->dir}/?id={$read->parentId}"; ?>"><?= $prefix100[0], $read->costCenter->id . str_pad($read->parentSerialNumber, $prefix100[1], "0", STR_PAD_LEFT) ?></a></span>
+				<span><a data-href="<?= "{$fs(240)->dir}/?id={$read->parentId}"; ?>" href="<?= "{$fs(240)->dir}/?id={$read->parentId}"; ?>">
+						<?=
+							$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $read->parentSerialNumber, "-" . $read->costCenter->id . "-") ?>
+					</a></span>
 			</div>
 			<div class="btn-set">
 				<span style="color: var(--root-font-lightcolor);">Title:</span><span><?= $read->title ?></span>

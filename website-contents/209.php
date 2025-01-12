@@ -1,5 +1,4 @@
 <?php
-use System\Finance\Invoice\enums\Purchase;
 use System\Template\Gremium;
 use System\Timeline\Module;
 use System\Views\PanelView;
@@ -12,8 +11,7 @@ $mods = [
 ];
 $mods = join(",", $mods);
 
-$docType = Purchase::Quotation->value;
-
+$docType = System\Finance\Invoice\enums\Purchase::Quotation->value;
 
 if ($app->xhttp) {
 	$payload = json_decode(file_get_contents('php://input'), true);
@@ -82,7 +80,7 @@ if ($app->xhttp) {
 				FROM
 					inv_main AS _main
 						JOIN users ON usr_id = _main.po_issuedby_id
-						LEFT JOIN system_prefix ON prx_id = $docType
+						LEFT JOIN system_prefix ON prx_sector='Purchase' AND prx_enumid = $docType
 						JOIN inv_costcenter ON ccc_id = po_costcenter
 						JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
 						LEFT JOIN inv_records ON pols_po_id = _main.po_id

@@ -1,4 +1,6 @@
 <?php
+use System\Finance\Transaction\Payment;
+use System\Models\Branding;
 use System\Template\Gremium;
 
 $perpage_val = 20;
@@ -24,8 +26,11 @@ if ($read) {
 		);
 		$grem->terminate();
 	} else {
+
+
+
 		$grem = new Gremium\Gremium(true);
-		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->prefixList[13][0]}" . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT) . "</cite>");
+		$grem->header()->prev("href=\"{$fs(214)->dir}\" data-href=\"{$fs(214)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->branding->formatId($read->type, $read->id)}</cite>");
 		$grem->menu()->open();
 
 		echo "<button type=\"button\" data-href=\"{$fs(91)->dir}/\" class=\"standard edge-left\" tabindex=\"-1\">{$fs(91)->title}</button>";
@@ -43,14 +48,13 @@ if ($read) {
 		$grem->getLast()->close();
 		$grem->title()->serve("<span class=\"flex\">Statement details</span>");
 		$grem->article()->open(); ?>
-		<iframe id="plot-iframe" name="plot-iframe" style="display:block;width:0;height:0px;visibility: hidden"></iframe>
 
 		<div class="form">
 			<label>
 				<h1>Statement ID</h1>
 				<div class="btn-set">
 					<span>
-						<?= $app->prefixList[13][0] . str_pad($read->id, $app->prefixList[13][1], "0", STR_PAD_LEFT); ?>
+						<?= $app->branding->formatId($read->type, $read->id); ?>
 					</span>
 				</div>
 			</label>
@@ -82,13 +86,13 @@ if ($read) {
 				</div>
 			</label>
 		</div>
-		
+
 		<div class="form">
 			<label>
 				<h1>Issuer</h1>
 				<div class="btn-set">
 					<span class="at"><a href="<?= $fs(182)->dir ?>/?id=<?= $read->editor->id ?>"
-							title="<?= $read->editor->fullName() ?>"><?= $read->editor->fullName() ?></a></span>
+						   title="<?= $read->editor->fullName() ?>"><?= $read->editor->fullName() ?></a></span>
 				</div>
 			</label>
 		</div>
@@ -187,7 +191,7 @@ if ($read) {
 				</div>
 			</label>
 		</div>
-		
+
 		<div class="form">
 			<label>
 				<h1>Description</h1>
@@ -199,6 +203,7 @@ if ($read) {
 		<?php
 		$grem->getLast()->close();
 		$grem->terminate();
+		echo '<iframe id="plot-iframe" name="plot-iframe" style="display:block;width:0;height:0px;visibility: hidden;margin:0"></iframe>';
 	}
 } elseif ($id == null) {
 	$grem = new Gremium\Gremium(true);

@@ -131,7 +131,6 @@ if ($app->xhttp) {
 			$grem->getLast()->close();
 		}
 
-		$prefix100 = array_key_exists(100, $app->prefixList) ? array_key_exists(100, $app->prefixList) : ["", 0];
 
 		$grem->title()->serve("<span class=\"flex\">Material request information</span>");
 		$grem->article()->open(); ?>
@@ -142,7 +141,8 @@ if ($app->xhttp) {
 						<h1>Purchase Request</h1>
 						<div class="btn-set">
 							<?php
-							echo "<a class=\"standard\" href=\"{$fs(240)->dir}/?id={$read->id}\" data-href=\"{$fs(240)->dir}/?id={$read->id}\">{$prefix100[0]}" . $read->costCenter->id . str_pad($read->serialNumber, $prefix100[1], "0", STR_PAD_LEFT) . "</a>";
+							
+							echo "<a class=\"standard\" href=\"{$fs(240)->dir}/?id={$read->id}\" data-href=\"{$fs(240)->dir}/?id={$read->id}\">{$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $read->serialNumber, "-" . $read->costCenter->id . "-")}</a>";
 							?>
 						</div>
 					</label>
@@ -254,7 +254,7 @@ if ($app->xhttp) {
 
 					function parseItem($item, $rowNumber)
 					{
-						$inputField = !$item->isGroupingItem ? "<input class=\"numberField itemValue\" name=\"inv_material[{$item->id}]\" data-quantity=\"{$item->quantity}\" type=\"text\" value=\"0.00\" inputmode=\"decimal\" min=\"0\" />" : "";
+						$inputField = !$item->isGroupingItem ? "<input class=\"number-field itemValue\" name=\"inv_material[{$item->id}]\" data-quantity=\"{$item->quantity}\" type=\"text\" value=\"0.00\" inputmode=\"decimal\" min=\"0\" />" : "";
 						echo "
 							<main class=\"" . ($item->relatedItem ? "partsElement" : "") . "\">
 								<div>" . ($item->isGroupingItem ? "" : $rowNumber) . "</div>
@@ -275,40 +275,40 @@ if ($app->xhttp) {
 					<footer>
 						<div></div>
 						<div class="a ellipsis">Subtotal</div>
-						<div><input type="text" id="appSubtotal" inputmode="decimal" disabled value="0.00" class="numberField" /></div>
+						<div><input type="text" id="appSubtotal" inputmode="decimal" disabled value="0.00" class="number-field" /></div>
 					</footer>
 					<footer>
 						<div></div>
 						<div class="a ellipsis">Discount Rate (%)</div>
 						<div><input type="number" id="appDiscount" name="discount" inputmode="decimal" pattern="[0-9.]*" min="0" max="100" value="0.00"
-								   class="numberField" />
+								   class="number-field" />
 						</div>
 					</footer>
 
 					<footer>
 						<div></div>
 						<div class="a ellipsis">Additional amount</div>
-						<div><input type="number" id="appAdditionalAmount" name="additionalAmount" inputmode="decimal" value="0.00" class="numberField" />
+						<div><input type="number" id="appAdditionalAmount" name="additionalAmount" inputmode="decimal" value="0.00" class="number-field" />
 						</div>
 					</footer>
 
 					<footer>
 						<div></div>
 						<div class="a ellipsis">Total</div>
-						<div><input type="text" id="appTotal" inputmode="decimal" disabled value="0.00" class="numberField" /></div>
+						<div><input type="text" id="appTotal" inputmode="decimal" disabled value="0.00" class="number-field" /></div>
 					</footer>
 
 					<footer>
 						<div></div>
 						<div class="a ellipsis">VAT Rate (%)</div>
 						<div><input type="text" id="appVat" inputmode="decimal" data-value="<?= $read->costCenter->vatRate ?? 0; ?>" disabled
-								   value="<?= number_format($read->costCenter->vatRate ?? 0, 2) ?>" class="numberField" /></div>
+								   value="<?= number_format($read->costCenter->vatRate ?? 0, 2) ?>" class="number-field" /></div>
 					</footer>
 
 					<footer>
 						<div></div>
 						<div class="a ellipsis">Grand Total</div>
-						<div><input type="text" id="appGrand" inputmode="decimal" disabled value="0.00" class="numberField" /></div>
+						<div><input type="text" id="appGrand" inputmode="decimal" disabled value="0.00" class="number-field" /></div>
 					</footer>
 
 				</div>
@@ -383,39 +383,6 @@ if ($app->xhttp) {
 
 			.table.inv233 {
 				grid-template-columns: 40px minmax(80px, 3fr) 1fr minmax(100px, 150px);
-
-				input.numberField {
-					-moz-appearance: textfield;
-					-webkit-appearance: textfield;
-					appearance: textfield;
-
-					text-align: right;
-					border: none;
-					color: var(--root-link-color);
-					margin: 0;
-					padding: 9px;
-					border-radius: var(--input_border-radius);
-					border: solid 1px var(--input_border-color);
-					width: 100%;
-					color: var(--root-font-color);
-					font-size: 1em;
-
-					&:hover {
-						border-color: var(--input-hover_border-color);
-						z-index: 12;
-					}
-
-					&:focus {
-						border-color: var(--input-active_border-color);
-						z-index: 13;
-					}
-
-					&::-webkit-outer-spin-button,
-					&::-webkit-inner-spin-button {
-						-webkit-appearance: none;
-						margin: 0;
-					}
-				}
 
 				>header {
 					>.n {

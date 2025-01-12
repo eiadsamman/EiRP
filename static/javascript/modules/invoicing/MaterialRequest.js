@@ -286,7 +286,7 @@ export class Post extends View {
 				inputFieldName = `inv_material[${payload.identifier}][${payload.id}]`;
 			}
 			html += root ? `<td></td>` : `<td class="counter"><i>1</i></td>`;
-			html += `<td style="min-width:100px"><input class="numberField" type="text" inputmode="decimal" name="${inputFieldName}" value="${payload.qty}" ${controlIdentifier} /></td>`;
+			html += `<td style="min-width:100px"><input class="number-field" type="text" inputmode="decimal" name="${inputFieldName}" value="${payload.qty}" ${controlIdentifier} /></td>`;
 		} else {
 			materialRow.classList.add("partOf");
 			let portionOfMain = Application.numberFormat(bounded.quantity * payload.portion, 2);

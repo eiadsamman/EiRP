@@ -47,12 +47,13 @@
 
 			background-color: var(--root-background-color);
 
-			/* background-color: var(--root-ribbon-background-color);
-			border-bottom: solid 1px var(--root-ribbon-border-color); */
 
-			/* backdrop-filter: blur(6px);
-			-webkit-backdrop-filter: blur(6px);
-			-moz-backdrop-filter: blur(6px); */
+			background-color: var(--root-background-color_backdrop);
+			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+
+			backdrop-filter: blur(2px);
+			-webkit-backdrop-filter: blur(2px);
+			-moz-backdrop-filter: blur(2px);
 
 			&.glue {
 				position: sticky;
@@ -209,10 +210,13 @@
 			background-color: var(--root-background-color);
 			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 
-			/* backdrop-filter: blur(6px);
-			-webkit-backdrop-filter: blur(6px);
-			-moz-backdrop-filter: blur(6px); */
 
+			background-color: var(--root-background-color_backdrop);
+			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+
+			backdrop-filter: blur(2px);
+			-webkit-backdrop-filter: blur(2px);
+			-moz-backdrop-filter: blur(2px);
 
 			&.btn-set {
 				justify-content: flex-start;
@@ -263,12 +267,12 @@
 			user-select: none;
 
 			font-weight: normal;
-			background-color: var(--root-background-color);
+			background-color: var(--root-background-color_backdrop);
 			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 
-			/* backdrop-filter: blur(6px);
-			-webkit-backdrop-filter: blur(6px);
-			-moz-backdrop-filter: blur(6px); */
+			backdrop-filter: blur(2px);
+			-webkit-backdrop-filter: blur(2px);
+			-moz-backdrop-filter: blur(2px);
 
 
 			> * {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace System\Finance\Transaction;
+namespace System\Finance\Transaction\enums;
 
 
-enum Nature: int
+enum Type: int
 {
 	use \System\enumLib;
 	case Receipt = 1;

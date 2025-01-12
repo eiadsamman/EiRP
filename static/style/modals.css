@@ -270,6 +270,51 @@ dialog.appHtmlDialog {
 			border-top: solid 1px var(--bomtable-border-color);
 			background-color: var(--bomtable-background-color);
 			transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+
+			input.number-field {
+				-moz-appearance: textfield;
+				-webkit-appearance: textfield;
+				appearance: textfield;
+				text-align: right;
+				border: none;
+				background-color: transparent;
+				color: var(--root-link-color);
+				margin: 0;
+				padding: 9px;
+				border-radius: var(--input_border-radius);
+				border: solid 1px var(--input_border-color);
+				width: 100%;
+				color: var(--root-font-color);
+				font-size: 1em;
+				background-color: var(--bomtable-background-color);
+
+				&:disabled {
+					background-color: var(--button_disabled-bgcolor);
+
+				}
+
+				&:hover {
+					border-color: var(--input-hover_border-color);
+					z-index: 12;
+				}
+
+				&:focus {
+					border-color: var(--input-active_border-color);
+					z-index: 13;
+					outline: solid 2px var(--outline-border-color);
+					outline-offset: 1px;
+				}
+
+				&::-webkit-outer-spin-button,
+				&::-webkit-inner-spin-button {
+					-webkit-appearance: none;
+					margin: 0;
+				}
+
+				&.compact {
+					padding: 3px 9px;
+				}
+			}
 		}
 
 		> span {
@@ -735,9 +780,10 @@ table.dynamic > tbody > tr {
 		display: inline-block;
 	}
 
-	.value-number.positive::after ,.value-number.positive::before {
+	.value-number.positive::after,
+	.value-number.positive::before {
 		content: ")";
-		color:transparent;
+		color: transparent;
 	}
 
 	.value-number.negative::after {

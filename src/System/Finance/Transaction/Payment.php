@@ -12,7 +12,7 @@ class Payment extends Transaction
 	public function __construct(protected \System\App &$app)
 	{
 		parent::__construct($app);
-		$this->nature_id = Nature::Payment->value;
+		$this->nature_id = enums\Type::Payment->value;
 	}
 	protected function releaseStatementPairs(int $ownerID): bool
 	{
