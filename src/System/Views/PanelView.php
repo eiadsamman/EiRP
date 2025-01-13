@@ -87,9 +87,6 @@ class PanelView implements Views
 
 
 
-
-
-
 		/* CRM */
 		$panel                = new PanelGroup();
 		$panel->name          = "Customer";
@@ -105,9 +102,6 @@ class PanelView implements Views
 			new PageAssets(270, 'Post', true),
 		];
 		$this->panelGroups[]  = $panel;
-
-
-
 
 
 
@@ -136,26 +130,15 @@ class PanelView implements Views
 		$panel->javascriptLib = './invoicing/MaterialQuotation.js';
 		$panel->title         = "Quotations";
 		$panel->sidePanelUrl  = $this->app->file->find(241)->dir;
-		$panel->pages         = [209, 233, 234];
+		$panel->pages         = [209, 233, 234, 271];
 		$panel->assets        = [["css", "style/pagefile/Invoicing.css"]];
 		$panel->modules       = [
 			new PageAssets(233, 'Post', true),
 			new PageAssets(209, 'CustomList', true),
 			new PageAssets(234, 'Entry', true),
+			new PageAssets(271, 'CustomSearch', true),
 		];
 		$this->panelGroups[]  = $panel;
-
-
-
-
-
-
-
-
-
-
-
-
 
 	}
 

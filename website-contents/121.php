@@ -1,4 +1,5 @@
 <?php
+use System\Finance\Transaction\enums\Type;
 use System\Individual\Individual;
 use System\Views\PanelView;
 
@@ -47,11 +48,11 @@ if ($app->xhttp) {
 			$mysqli_result = $controller->chunk(false);
 			if ($mysqli_result->num_rows > 0) {
 				while ($row = $mysqli_result->fetch_assoc()) {
-					$pos = $row['atm_value'] >= 0 ? '<span class="stm inc active"></span>' : '<span class="stm pay active"></span>';
-					$att = !is_null($row['up_count']) && (int) $row['up_count'] > 0 ? '<span class="atch"></span>' : "";
-					$ben = (!is_null($row['_party_comp_id']) ? "<span style=\"color:var(--root-link-color)\">{$row['_party_comp_name']}</span>: " : "") . $row['acm_beneficial'];
-					$val = ($row['atm_value'] < 0 ? "(" . number_format(abs($row['atm_value']), 2) . ")" : "" . number_format(abs($row['atm_value']), 2));
-
+					$pos  = $row['atm_value'] >= 0 ? '<span class="stm inc active"></span>' : '<span class="stm pay active"></span>';
+					$att  = !is_null($row['up_count']) && (int) $row['up_count'] > 0 ? '<span class="atch"></span>' : "";
+					$ben  = (!is_null($row['_party_comp_id']) ? "<span style=\"color:var(--root-link-color)\">{$row['_party_comp_name']}</span>: " : "") . $row['acm_beneficial'];
+					$val  = ($row['atm_value'] < 0 ? "(" . number_format(abs($row['atm_value']), 2) . ")" : "" . number_format(abs($row['atm_value']), 2));
+					$type = Type::tryFrom((int) $row['acm_type']);
 
 					$ini = mb_substr($row['usr_firstname'] ?? "", 0, 1) . " " . mb_substr($row['usr_lastname'] ?? "", 0, 1);
 					$car = Individual::colorId((int) ($row['acm_editor_id']));
@@ -62,7 +63,7 @@ if ($app->xhttp) {
 						<a class="panel-item statment-panel" href="{$fs(104)->dir}/?id={$row['acm_id']}" data-listitem_id="{$row['acm_id']}" data-href="{$fs(104)->dir}">
 							<div>
 								<span style="flex: 1">
-									<div><h1>{$ben}</h1><cite>{$att}</cite><cite>{$row['acm_id']}</cite></div>
+									<div><h1>{$ben}</h1><cite>{$att}</cite><cite>{$app->branding->formatId($type,$row['acm_id'])}</cite></div>
 									<div><cite>{$pos}</cite><h1>{$val}</h1><cite>{$row['acm_ctime']}</cite></div>
 									<div><h1>{$row['accgrp_name']}: {$row['acccat_name']}</h1></div>
 								</span>

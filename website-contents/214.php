@@ -1,4 +1,5 @@
 <?php
+use System\Finance\Transaction\enums\Type;
 use System\Template\Gremium;
 
 if ($app->xhttp) {
@@ -70,22 +71,17 @@ if ($app->xhttp) {
 				$att      = null !== ($row['up_count']) && (int) $row['up_count'] > 0 ? '<span class="atch"></span>' : '';
 				$pos      = $row['atm_value'] >= 0 ? "stm inc" : "stm pay";
 				$sign     = $row['atm_value'] <= 0 ? "negative" : "positive";
+				$type     = Type::tryFrom((int) $row['acm_type']);
 				$absValue = number_format(abs($row['atm_value']), 2);
-
-				$outof = (!empty($row['comp_id']) && $row['comp_id'] != $app->user->company->id ? "<span class=\"light\">" . $row['comp_name'] . ": </span> " : "");
-
+				$outof = !empty($row['comp_id']) && $row['comp_id'] != $app->user->company->id ? "<span class=\"light\">" . $row['comp_name'] . ": </span> " : "";
 				echo "<tr data-href=\"{$fs(104)->dir}/?id={$row['acm_id']}\">";
-
 				echo "<td class=\"col-1\">
-					<div>{$row['acm_id']}{$att}</div>
+					<div>{$app->branding->formatId($type,$row['acm_id'])}{$att}</div>
 					<div>{$row['acm_ctime']}</div>
 					<div class=\"in-value $pos\"><span class=\"value-number $sign\">$absValue</span></div>
-					
 					<div>{$outof}{$row['usr_firstname']} {$row['usr_lastname']}</div>
 					";
-
 				echo "</td>";
-
 				echo "<td class=\"col-2\">
 					<span>" . (!is_null($row['_party_comp_id']) ? "<b>{$row['_party_comp_name']}: </b>" : "") . "<span>{$row['acm_beneficial']}</span></span>
 					<span class=\"light\">{$row['accgrp_name']}: {$row['acccat_name']}</span>
@@ -95,17 +91,13 @@ if ($app->xhttp) {
 						<div>" . (is_null($row['acm_comments']) ? "-" : nl2br($row['acm_comments'])) . "</div>
 					</div>
 				</td>";
-
 				echo "<td class=\"blank\"></td>";
 				echo "<td class=\"media-hide $pos\" style=\"text-align:right;\"><span class=\"value-number $sign\">$absValue</span></td>";
 				echo "</tr>";
 			}
 		}
-
 		exit;
 	}
-
-
 
 
 	$grem = new Gremium\Gremium(true);

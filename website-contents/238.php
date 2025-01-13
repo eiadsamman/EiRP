@@ -11,7 +11,7 @@ if ($app->xhttp) {
 		$current = $current < 0 ? 1 : $current;
 
 		$count = 0;
-		$q     = "SELECT COUNT(po_id) FROM inv_main WHERE po_type = $docType AND po_comp_id = {$app->user->company->id}";
+		$q     = "SELECT COUNT(po_id) FROM inv_main JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id} WHERE po_type = $docType AND po_comp_id = {$app->user->company->id}";
 
 		$r = $app->db->query($q);
 		if ($r && $row = $r->fetch_array()) {
@@ -26,33 +26,32 @@ if ($app->xhttp) {
 		$pos = ($current - 1) * PanelView::$itemsPerRequest;
 
 		$q = "SELECT 
-				a1.po_id,
-				a1.po_serial,
+				po_id,
+				po_serial,
 				a2.quotationsCount,
-				a1.po_costcenter,
-				a1.po_voided,
-				a1.po_title,
-				DATE_FORMAT(a1.po_date,'%Y-%m-%d') AS po_date,
-				DATE_FORMAT(a1.po_date,'%H:%i') AS po_time,
+				po_costcenter,
+				po_voided,
+				po_title,
+				DATE_FORMAT(po_date,'%Y-%m-%d') AS po_date,
+				DATE_FORMAT(po_date,'%H:%i') AS po_time,
 				CONCAT_WS(' ',usr_firstname,usr_lastname) AS doc_usr_name,
-				a1.po_close_date,
-				ccc_name,ccc_id
-				
+				po_close_date,
+				ccc_name,ccc_id,
+				COUNT(ir.pols_po_id) AS total_orders
 			FROM
-				inv_main AS a1
-					JOIN users ON usr_id = a1.po_issuedby_id
-					LEFT JOIN system_prefix ON prx_sector='Purchase' AND prx_enumid = $docType
-					JOIN inv_costcenter ON ccc_id = a1.po_costcenter
-					JOIN user_costcenter ON a1.po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
-					LEFT JOIN inv_records ON pols_po_id = a1.po_id
+				inv_main
+					JOIN users ON usr_id = po_issuedby_id
+					JOIN inv_costcenter ON ccc_id = po_costcenter
+					JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
+					LEFT JOIN inv_records ir ON pols_po_id = po_id
 
-					LEFT JOIN (SELECT COUNT(po_id) AS quotationsCount, po_rel FROM inv_main GROUP BY po_rel) AS a2 ON a1.po_id = a2.po_rel
+					LEFT JOIN (SELECT COUNT(po_id) AS quotationsCount, po_rel FROM inv_main GROUP BY po_rel) AS a2 ON po_id = a2.po_rel
 			WHERE
-				a1.po_type = {$docType} AND a1.po_comp_id = {$app->user->company->id}
+				po_type = {$docType} AND po_comp_id = {$app->user->company->id}
 			
 			GROUP BY
-				a1.po_id
-			ORDER BY a1.po_date DESC
+				po_id
+			ORDER BY po_date DESC
 			";
 
 		$mysqli_result = $app->db->query($q);
@@ -64,13 +63,13 @@ if ($app->xhttp) {
 
 
 				$closed                 = (is_null($row['po_close_date']) ? "Open" : "Closed");
-				$row['quotationsCount'] = $row['quotationsCount'] > 0 ? "<span class=\"price-padge\">Quotations {$row['quotationsCount']}</span>" : "<i>(No quotations)</i>";
+				$row['quotationsCount'] = $row['quotationsCount'] > 0 ? "{$row['quotationsCount']} <span class=\"light\">Quotation(s)</span>" : "<span class=\"light\">(No quotations)</span>";
 				echo <<<HTML
 					<a class="panel-item invoicing" href="{$fs(240)->dir}/?id={$row['po_id']}" data-listitem_id="{$row['po_id']}" data-href="{$fs(240)->dir}">
 						<div>
 							<span style="flex: 1">
 								<div><h1>{$row['po_serial']}</h1><cite></cite><cite>{$row['po_title']}</cite></div>
-								<div><h1></h1><cite></cite><cite>{$row['po_date']}</cite></div>
+								<div><h1>{$row['total_orders']} <span class="light">Item(s)</span></h1><cite></cite><h1 style="text-align:right">{$row['po_date']}</h1></div>
 								<div><h1>{$row['quotationsCount']}</h1><cite></cite><cite>{$row['doc_usr_name']}</cite></div>
 							</span>
 						</div>

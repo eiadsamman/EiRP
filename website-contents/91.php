@@ -154,7 +154,7 @@ if ($app->xhttp) {
 							<?php
 							echo "<span>{$app->user->account->name}</span>"; /* {$app->user->account->type->name}:  */
 							if ($app->user->account->role->view) {
-								echo "<span id=\"issuer-account-balance\" class=\"flex\">" . number_format($app->user->account->balance, 2, ".", ",") . "</span>";
+								echo "<span id=\"issuer-account-balance\" class=\"flex\"><span class=\"value-number " . ($app->user->account->balance < 0 ? "negative" : "") . "\">" . number_format(abs($app->user->account->balance), 2, ".", ",") . "</span></span>";
 							}
 							echo "<span>{$app->user->account->currency->shortname}</span>";
 							?>

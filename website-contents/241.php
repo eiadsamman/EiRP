@@ -13,7 +13,7 @@ if ($app->xhttp) {
 		$current = $current < 0 ? 1 : $current;
 
 		$count = 0;
-		$q     = "SELECT COUNT(po_id) FROM inv_main WHERE po_type = $docType AND po_comp_id = {$app->user->company->id}";
+		$q     = "SELECT COUNT(po_id) FROM inv_main a1 JOIN user_costcenter ON a1.po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id} WHERE a1.po_type = $docType AND a1.po_comp_id = {$app->user->company->id}";
 
 		$r = $app->db->query($q);
 		if ($r && $row = $r->fetch_array()) {
@@ -60,7 +60,7 @@ if ($app->xhttp) {
 					JOIN users ON usr_id = a1.po_issuedby_id
 					JOIN inv_costcenter ON ccc_id = a1.po_costcenter
 					JOIN user_costcenter ON a1.po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
-					LEFT JOIN currencies ON a1.po_cur_id = cur_id
+					JOIN currencies ON a1.po_cur_id = cur_id
 					LEFT JOIN inv_records ON pols_po_id = a1.po_id
 					LEFT JOIN inv_main AS a2 ON a2.po_id = a1.po_rel
 			WHERE
@@ -79,7 +79,7 @@ if ($app->xhttp) {
 
 				$closed = (is_null($row['po_close_date']) ? "Open" : "Closed");
 
-				$serial       = $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $row['po_serial'], "-" . $row['po_costcenter'] . "-");
+				$serial       = $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $row['po_serial'], "-" . $row['po_costcenter'] . "-");
 				$paretnSerial = $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $row['parent_po_serial'], "-" . $row['parent_costcenter'] . "-");
 
 
@@ -102,7 +102,7 @@ if ($app->xhttp) {
 								<div><h1>{$serial}</h1><cite> </cite><cite>{$paretnSerial}</cite></div>
 								<div><h1>{$paymentTerm}</h1><cite></cite><cite>{$row['po_title']}</cite></div>
 								<div><h1>{$shippingTerm}</h1><cite></cite><cite>{$row['po_date']}</cite></div>
-								<div><h1><span class="price-padge">{$row['cur_shortname']} {$grandTotal}</span></h1><cite></cite><cite>{$row['doc_usr_name']}</cite></div>
+								<div><h1>{$grandTotal} {$row['cur_shortname']}</h1><cite></cite><cite>{$row['doc_usr_name']}</cite></div>
 								
 							</span>
 						</div>

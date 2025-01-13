@@ -206,7 +206,8 @@ body > article {
 	margin: 0 auto;
 }
 
-body > article > div {outline: solid 1px rgb(255, 0, 0);
+body > article > div {
+	outline: solid 1px rgb(255, 0, 0);
 	flex: 1;
 	/* max-width: var(--dim-max-width); */
 	margin-top: var(--root--menubar-height);
@@ -853,6 +854,27 @@ span.vs-remove {
 	text-overflow: ellipsis;
 }
 
+.value-number.negative::after,
+.value-number.negative::before {
+	display: inline-block;
+}
+
+.value-number.positive::after,
+.value-number.positive::before {
+	content: ")";
+	color: transparent;
+}
+
+.value-number.negative::after {
+	content: ")";
+	color: var(--root-font-lightcolor);
+}
+
+.value-number.negative::before {
+	content: "(";
+	color: var(--root-font-lightcolor);
+}
+
 /* #endregion General*/
 
 /* #region Split View */
@@ -940,7 +962,7 @@ span.vs-remove {
 	margin: 5px;
 	border-radius: 6px;
 
-	min-height: 100px;
+	min-height: 60px;
 	padding: 10px;
 	position: relative;
 	cursor: default;
@@ -1190,6 +1212,7 @@ div.timeline {
 		padding-top: 10px;
 		font-style: normal;
 		color: var(--root-font-lightcolor);
+		
 	}
 
 	> div > div {

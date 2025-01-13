@@ -28,7 +28,7 @@ class StatementOfAccount
 		$query          = "SELECT * 
 		FROM ( 
 			SELECT 
-			 _master.atm_value, 
+			 _master.atm_value, acm_type,
 			 statements_view.acm_id, acm_ctime, statements_view.acm_beneficial, statements_view.acm_comments,
 			 statements_view.accgrp_name,statements_view.acccat_name,acm_editor_id, issuer_badge,usr_firstname, usr_lastname,
 
@@ -47,9 +47,9 @@ class StatementOfAccount
 					) _slave ON _slave.atm_id != _master.atm_id AND _slave.atm_main=_master.atm_main
 				JOIN
 					(SELECT 
-						acc_main.acm_id, acc_main.acm_beneficial, acc_main.acm_comments, acc_main.acm_ctime	,acc_main.acm_rejected,
-						acccat_name, accgrp_name,sub_uploads.up_count, acc_main.acm_editor_id,issuer_badge,
-						editor_profile.usr_firstname, editor_profile.usr_lastname, acc_main.acm_category, comp_id AS _party_comp_id, comp_name AS _party_comp_name, acm_party
+						acm_id, acm_beneficial, acm_comments, acm_ctime	,acm_rejected,acm_type,
+						acccat_name, accgrp_name,sub_uploads.up_count, acm_editor_id,issuer_badge,
+						editor_profile.usr_firstname, editor_profile.usr_lastname, acm_category, comp_id AS _party_comp_id, comp_name AS _party_comp_name, acm_party
 					FROM 
 						acc_main
 						LEFT JOIN 
@@ -57,7 +57,7 @@ class StatementOfAccount
 						JOIN (
 							SELECT acccat_id,acccat_name,accgrp_name
 							FROM acc_categorygroups JOIN acc_categories ON accgrp_id = acccat_group
-							) category_view ON category_view.acccat_id = acc_main.acm_category
+							) category_view ON category_view.acccat_id = acm_category
 						LEFT JOIN
 							(
 								SELECT up_rel, COUNT(1) AS up_count FROM uploads WHERE up_pagefile = " . \System\Attachment\Type::FinanceRecord->value . " AND up_deleted = 0 GROUP BY up_rel
@@ -71,7 +71,7 @@ class StatementOfAccount
 						LEFT JOIN 
 							(
 								SELECT usr_id, usr_firstname, usr_lastname FROM users
-							) AS editor_profile ON editor_profile.usr_id = acc_main.acm_editor_id
+							) AS editor_profile ON editor_profile.usr_id = acm_editor_id
 
 					) statements_view
 					 ON _master.atm_main = statements_view.acm_id

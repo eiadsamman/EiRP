@@ -32,21 +32,21 @@
 
 
 
-#navOutput .stm.inc::before,
-#navOutput .stm.pay::before {
+#navOutput .stm.inc::after,
+#navOutput .stm.pay::after {
 	font-family: Glyphs;
 	position: relative;
 	top: 3px;
-	padding: 0px 5px;
+	padding-left: 4px;
 }
 
-#navOutput .stm.inc::before {
+#navOutput .stm.inc::after {
 	content: "\e91b";
 	font-size: 1.2em;
 	color: limegreen;
 }
 
-#navOutput .stm.pay::before {
+#navOutput .stm.pay::after {
 	content: "\e91c";
 	font-size: 1.2em;
 	color: tomato;

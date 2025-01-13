@@ -11,6 +11,10 @@
 	padding: 0;
 }
 
+.invoicing div > h1 .light {
+	color: var(--root-font-lightcolor);
+}
+
 .invoicing .price-padge {
 	display: inline-block;
 	margin: 3px 0px;
@@ -23,6 +27,10 @@
 .invoicing div > cite {
 	font-style: normal;
 	color: var(--root-font-lightcolor);
+	overflow: hidden;
+	max-width: 150px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 

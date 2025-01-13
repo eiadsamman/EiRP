@@ -470,12 +470,12 @@ table {
 		outline: solid .5px gainsboro;
 	}
 
-	> tr > td.op-edit,
-	> tr > td.op-remove,
-	> tr > td.op-add,
-	> tr > td.op-print,
-	> tr > td.op-donwload,
-	> tr > td.op-display {
+	tr > td.op-edit,
+	tr > td.op-remove,
+	tr > td.op-add,
+	tr > td.op-print,
+	tr > td.op-donwload,
+	tr > td.op-display {
 		padding: 0;
 		cursor: pointer;
 		-webkit-touch-callout: none;
@@ -486,12 +486,12 @@ table {
 		user-select: none;
 	}
 
-	> tr > td.op-edit > *,
-	> tr > td.op-remove > *,
-	> tr > td.op-add > *,
-	> tr > td.op-print > *,
-	> tr > td.op-donwload > *,
-	> tr > td.op-display > * {
+	tr > td.op-edit > *,
+	tr > td.op-remove > *,
+	tr > td.op-add > *,
+	tr > td.op-print > *,
+	tr > td.op-donwload > *,
+	tr > td.op-display > * {
 		display: block;
 		padding: 0px 8px;
 		color: var(--root-font-lightcolor);
@@ -524,7 +524,7 @@ table {
 		width: 100%;
 	}
 
-	> tr > td.op-edit > *:before {
+	tr > td.op-edit > *:before {
 		display: inline-block;
 		content: "\e906";
 		font-family: "icomoon4";
@@ -532,11 +532,11 @@ table {
 		text-align: center;
 	}
 
-	> tr > td.op-edit:hover > * {
+	tr > td.op-edit:hover > * {
 		color: #06c
 	}
 
-	> tr > td.op-remove > *:before {
+	tr > td.op-remove > *:before {
 		display: inline-block;
 		content: "\e62b";
 		font-family: "icomoon";
@@ -544,11 +544,11 @@ table {
 		text-align: center;
 	}
 
-	> tr > td.op-remove:hover > * {
+	tr > td.op-remove:hover > * {
 		color: #f03;
 	}
 
-	> tr > td.op-add > *:before {
+	tr > td.op-add > *:before {
 		display: inline-block;
 		content: "\e630";
 		font-family: "icomoon";
@@ -556,11 +556,11 @@ table {
 		text-align: center;
 	}
 
-	> tr > td.op-add:hover > * {
+	tr > td.op-add:hover > * {
 		color: #0066cc;
 	}
 
-	> tr > td.op-print > *:before {
+	tr > td.op-print > *:before {
 		display: inline-block;
 		content: "\e63b";
 		font-family: "icomoon";
@@ -568,11 +568,11 @@ table {
 		text-align: center;
 	}
 
-	> tr > td.op-print:hover > * {
+	tr > td.op-print:hover > * {
 		color: #ff3c00;
 	}
 
-	> tr > td.op-display > *:before {
+	tr > td.op-display > *:before {
 		display: inline-block;
 		content: "\e9ce";
 		font-family: "icomoon4";
@@ -580,11 +580,11 @@ table {
 		text-align: center;
 	}
 
-	> tr > td.op-display:hover > * {
+	tr > td.op-display:hover > * {
 		color: #00cc33;
 	}
 
-	> tr > td.op-donwload > *:before {
+	tr > td.op-donwload > *:before {
 		display: inline-block;
 		content: "\e60c";
 		font-family: "icomoon";
@@ -592,7 +592,7 @@ table {
 		text-align: center;
 	}
 
-	> tr > td.op-donwload:hover > * {
+	tr > td.op-donwload:hover > * {
 		color: var(--root-link-color);
 	}
 
@@ -761,40 +761,13 @@ table.dynamic > tbody > tr {
 
 
 
-	> .value-number {
+	.value-number {
 		text-align: right;
 		min-width: 80px;
 		width: 150px;
 	}
 
-	.value-number.positive {
-		visibility: visible;
-	}
 
-	.value-number.negative {
-		color: inherit;
-	}
-
-	.value-number.negative::after,
-	.value-number.negative::before {
-		display: inline-block;
-	}
-
-	.value-number.positive::after,
-	.value-number.positive::before {
-		content: ")";
-		color: transparent;
-	}
-
-	.value-number.negative::after {
-		content: ")";
-		color: var(--root-font-lightcolor);
-	}
-
-	.value-number.negative::before {
-		content: "(";
-		color: var(--root-font-lightcolor);
-	}
 
 	.hlight {
 		color: tomato;

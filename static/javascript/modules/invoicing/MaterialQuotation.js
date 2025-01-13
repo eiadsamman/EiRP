@@ -5,6 +5,29 @@ export class CustomList extends List {
 
 }
 
+export class CustomSearch extends Search {
+	run() {
+		this.searchFrom = document.getElementById("searchForm");
+		this.postUrl = this.searchFrom.getAttribute("action");
+		this.searchFrom.addEventListener("submit", (e) => {
+			e.preventDefault();
+			this.post();
+			return false;
+		});
+		document.getElementById("js-input_submit")?.addEventListener("click", () => {
+			this.post();
+		});
+
+		try {
+			
+			let company = $(this.searchFrom.querySelector("[name=\"company\"]")).slo();
+
+			if (this.pana.navigator.state['company']) {
+				company.set(this.pana.navigator.state['company'], "")
+			}
+		} catch (e) { }
+	}
+}
 
 export class Entry extends View {
 	pana = null;
@@ -69,7 +92,7 @@ export class Post extends View {
 		this.currencySelection = $("#currency").slo();
 		this.formMaterialList = document.getElementById("formMaterialsList");
 		this.buttonPost = document.getElementById("appApplicationPost");
-		
+
 		if (this.buttonPost === undefined || this.buttonPost === null) return;
 		this.buttonPost.addEventListener("click", () => {
 			this.post();

@@ -68,49 +68,68 @@ if ($app->xhttp) {
 			$pos = ($current - 1) * PanelView::$itemsPerRequest;
 
 			$q = "SELECT 
-					_main.po_id,
-					CONCAT(prx_value,ccc_id, LPAD(po_serial, prx_placeholder,'0')) AS doc_id,
-					_main.po_voided,
-					_main.po_title,
-					DATE_FORMAT(_main.po_date,'%Y-%m-%d') AS po_date,
-					DATE_FORMAT(_main.po_date,'%H:%i') AS po_time,
+					a1.po_id,
+					a1.po_costcenter,
+					a1.po_serial,
+					a1.po_voided,
+					a1.po_total,
+					a1.po_title,
+					a1.po_discount,
+					a1.po_additional_amount,
+					a1.po_vat_rate,
+					cur_shortname,
+					DATE_FORMAT(a1.po_date,'%Y-%m-%d') AS po_date,
+					DATE_FORMAT(a1.po_date,'%H:%i') AS po_time,
 					CONCAT_WS(' ',usr_firstname,usr_lastname) AS doc_usr_name,
-					_main.po_close_date,
-					ccc_name,ccc_id
+					a1.po_close_date,
+					ccc_name,ccc_id,
+					a2.po_serial AS parent_document,
+					COUNT(ir.pols_po_id) AS total_orders
 				FROM
-					inv_main AS _main
-						JOIN users ON usr_id = _main.po_issuedby_id
-						LEFT JOIN system_prefix ON prx_sector='Purchase' AND prx_enumid = $docType
-						JOIN inv_costcenter ON ccc_id = po_costcenter
-						JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
-						LEFT JOIN inv_records ON pols_po_id = _main.po_id
+					inv_main a1
+						JOIN users ON usr_id = a1.po_issuedby_id
+						JOIN currencies ON a1.po_cur_id = cur_id
+						JOIN inv_costcenter ON ccc_id = a1.po_costcenter
+						JOIN user_costcenter ON a1.po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
+						JOIN inv_main a2 ON a2.po_id = a1.po_rel
+						LEFT JOIN inv_records ir ON pols_po_id = a1.po_id
 				WHERE
-					_main.po_type = $docType AND _main.po_comp_id = {$app->user->company->id}
+					a1.po_type = $docType AND a1.po_comp_id = {$app->user->company->id}
 					AND 1 $filterQuery
-
 				GROUP BY
-					_main.po_id
-
+					a1.po_id
 				ORDER BY 
-					_main.po_date DESC
+					a1.po_date DESC
 				LIMIT 
 					$pos, " . PanelView::$itemsPerRequest . ";
 				";
-			
+
 			$mysqli_result = $app->db->execute_query($q, $filterValues);
 
 			if ($mysqli_result->num_rows > 0) {
 				while ($row = $mysqli_result->fetch_assoc()) {
+
+					$grandTotal      = number_format(
+						(($row['po_total'] * (1 - $row['po_discount'] / 100)) + $row['po_additional_amount'])
+						* (!is_null($row['po_vat_rate']) ? 1 + (float) $row['po_vat_rate'] / 100 : 1)
+						,
+						2
+					);
+
+
 					echo "<tr data-href=\"{$fs(234)->dir}/?id={$row['po_id']}\">";
 					echo "<td class=\"col-1\">
-						<div class=\"light\">{$row['doc_id']}</div>
-						<div><span>{$row['po_title']}</span></div>
+						<div>{$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $row['po_serial'], "-" . $row['po_costcenter'] . "-")}</div>
+						<div class=\"light\">{$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $row['parent_document'], "-" . $row['po_costcenter'] . "-")}</div>
+						<div><span style=\"text-overflow: ellipsis;max-width:200px;display:block;overflow-x: hidden;\">{$row['po_title']}</span></div>
 						<div><span>{$row['doc_usr_name']}</span></div>
 						";
 					echo "</td>";
 					echo "<td class=\"value-comment col-2\">
 						<span>{$row['po_date']} <span class=\"light\">{$row['po_time']}</span></span>
-						<span>{$row['ccc_name']} <i class=\"light\"> / {$row['ccc_id']} </i></span>
+						<span>{$row['ccc_name']} <i class=\"light\"> ({$row['ccc_id']})</i></span>
+						<span>{$row['total_orders']} <span class=\"light\">Item(s)</span></span>
+						<span>$grandTotal {$row['cur_shortname']}</span>
 					</td>";
 					echo "<td class=\"blank\"></td>";
 					echo "<td class=\"media-hide value-number final 0\"></td>";
@@ -127,7 +146,7 @@ if ($app->xhttp) {
 	$grem->header()->serve("<h1><span>{$fs(209)->title}</span></h1>");
 	$legend = $grem->menu()->open();
 	echo <<<HTML
-		<button id="searchButton" class="edge-left edge-right search" data-href="{$fs(269)->dir}" data-target="{$fs(269)->dir}"><span class="small-media-hide"> Search</span></button>
+		<button id="searchButton" class="edge-left edge-right search" data-href="{$fs(271)->dir}" data-target="{$fs(271)->dir}"><span class="small-media-hide"> Search</span></button>
 		<input type="button" id="cancelSearchButton" style="display: none;font-family: glyphs" class="edge-right error" data-href="{$fs()->dir}" href="{$fs()->dir}" value="&#xe901;" />
 
 		<span class="flex" style="justify-content: flex-end"><span class="small-media-hide" id="navEntries">0 records</span></span>
@@ -147,7 +166,7 @@ if ($app->xhttp) {
 			<thead class="table-head" style="top: calc(163px - var(--gremium-header-toggle));background-color: #fff;z-index: 1;">
 			<tr>
 				<td>ID</td>
-				<td>Purchase Quotations</td>
+				<td>Quotation</td>
 				<td class="blank" style="width: 100%"></td>
 				<td></td>
 				</tr>

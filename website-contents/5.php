@@ -284,7 +284,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 					style="display:none;position: absolute;background-color: rgba(230,230,234,0.7);top:0px;left:0px;right:0px;bottom: 0px;z-index: 8;cursor: wait;">
 				</div>
 				<div class="btn-set"
-					style="position: sticky;top:112px;z-index: 4;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
+					style="position: sticky;top:105px;z-index: 4;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
 					<span class="flex">User Information</span><button id="FormInfoModifySubmitButton" type="button">Save</button>
 				</div>
 				<div style="padding-left:10px;margin-top:10px;/*overflow-y: auto;max-height: 253px;*/">
@@ -341,7 +341,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 					style="display:none;position: absolute;background-color: rgba(230,230,234,0.7);top:0px;left:0px;right:0px;bottom: 0px;z-index: 8;cursor: wait;">
 				</div>
 				<div class="btn-set"
-					style="position: sticky;top:112px;z-index: 3;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
+					style="position: sticky;top:105px;z-index: 3;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
 					<span class="flex">Registered Commpanies</span><input class="flex" data-slo="COMPANY" id="ListObjectAddCompany" type="text"
 						placeholder="Add Company..." name=""><button id="FormCompanyModifySubmitButton" type="button">Save</button>
 				</div>
@@ -380,7 +380,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 					style="display:none;position: absolute;background-color: rgba(230,230,234,0.7);top:0px;left:0px;right:0px;bottom: 0px;z-index: 8;cursor: wait;">
 				</div>
 				<div class="btn-set"
-					style="position: sticky;top:112px;z-index: 2;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
+					style="position: sticky;top:105px;z-index: 2;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
 					<span class="flex">Registered Cost Centers</span><input class="flex" data-slo="COSTCENTER" id="ListObjectAddCostCenter" type="text"
 						placeholder="Add Cost Center..." name=""><button id="FormCostCenterModifySubmitButton" type="button">Save</button>
 				</div>
@@ -419,7 +419,7 @@ if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id(
 			<input type="hidden" name="invoke" value="accounts">
 			<div style="margin-top:0px;margin-bottom:5px;">
 				<div class="btn-set"
-					style="position: sticky;top:112px;z-index: 1;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
+					style="position: sticky;top:105px;z-index: 1;padding-top:15px;padding-bottom:0px;background-color:var(--root-background-color)">
 					<span class="flex">Registered Accounts</span><input class="flex" data-slo="ACC_ALL" id="ListObjectAddAccount" type="text"
 						placeholder="Add Account..." name=""><button id="FormAccountModifySubmitButton" type="button">Save</button>
 				</div>

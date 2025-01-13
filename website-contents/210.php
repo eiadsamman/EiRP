@@ -46,7 +46,6 @@ if ($app->xhttp) {
 					$filterQuery .= " AND {$cond['sql']} = ? ";
 				}
 			}
-
 		}
 
 		$count = 0;
@@ -66,35 +65,35 @@ if ($app->xhttp) {
 		header("Vendor-Ouput-Current: $current");
 
 		if ($count > 0) {
-
 			$pos = ($current - 1) * PanelView::$itemsPerRequest;
-
-			$q = "SELECT 
-					_main.po_id,
-					CONCAT(prx_value,ccc_id, LPAD(po_serial, prx_placeholder,'0')) AS doc_id,
-					_main.po_voided,
-					_main.po_title,
-					DATE_FORMAT(_main.po_date,'%Y-%m-%d') AS po_date,
-					DATE_FORMAT(_main.po_date,'%H:%i') AS po_time,
+			$q   = "SELECT 
+					po_id,
+					po_serial,
+					po_voided,
+					po_title,
+					po_costcenter,
+					DATE_FORMAT(po_date,'%Y-%m-%d') AS po_date,
+					DATE_FORMAT(po_date,'%H:%i') AS po_time,
 					CONCAT_WS(' ',usr_firstname,usr_lastname) AS doc_usr_name,
-					_main.po_close_date,
-					ccc_name,ccc_id
+					po_close_date,
+					ccc_name,ccc_id,
+					COUNT(ir.pols_po_id) AS total_orders
+					
 				FROM
-					inv_main AS _main
-						JOIN users ON usr_id = _main.po_issuedby_id
-						LEFT JOIN system_prefix ON prx_sector='Purchase' AND prx_enumid = $docType
-						LEFT JOIN inv_records ON pols_po_id = _main.po_id
+					inv_main
+						JOIN users ON usr_id = po_issuedby_id
+						LEFT JOIN inv_records ir ON pols_po_id = po_id
 						JOIN inv_costcenter ON ccc_id = po_costcenter
 						JOIN user_costcenter ON po_costcenter = usrccc_ccc_id AND usrccc_usr_id = {$app->user->info->id}
 				WHERE
-					_main.po_type = $docType AND _main.po_comp_id = {$app->user->company->id}
+					po_type = $docType AND po_comp_id = {$app->user->company->id}
 					AND 1 $filterQuery
-
+					
 				GROUP BY
-					_main.po_id
+					po_id
 
 				ORDER BY 
-					_main.po_date DESC
+					po_date DESC
 				LIMIT 
 					$pos, " . PanelView::$itemsPerRequest . ";
 				";
@@ -107,14 +106,15 @@ if ($app->xhttp) {
 					echo "<tr data-href=\"{$fs(240)->dir}/?id={$row['po_id']}\">";
 
 					echo "<td class=\"col-1\">
-						<div class=\"light\">{$row['doc_id']}</div>
-						<div><span>{$row['po_title']}</span></div>
+						<div class=\"light\">{$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $row['po_serial'], "-" . $row['po_costcenter'] . "-")}</div>
+						<div><span style=\"text-overflow: ellipsis;max-width:200px;display:block;overflow-x: hidden;\">{$row['po_title']}</span></div>
 						<div><span>{$row['doc_usr_name']}</span></div>
 						";
 					echo "</td>";
 					echo "<td class=\"value-comment col-2\">
 						<span>{$row['po_date']} <span class=\"light\">{$row['po_time']}</span></span>
-						<span>{$row['ccc_name']} <i class=\"light\"> / {$row['ccc_id']} </i></span>
+						<span>{$row['ccc_name']} <i class=\"light\"> ({$row['ccc_id']})</i></span>
+						<span>{$row['total_orders']} <span class=\"light\">Item(s)</span></span>
 					</td>";
 					echo "<td class=\"blank\"></td>";
 
