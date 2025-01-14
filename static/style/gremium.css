@@ -79,6 +79,8 @@
 				flex: 1;
 				text-align: right;
 				font-style: normal;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 
 			> ul {

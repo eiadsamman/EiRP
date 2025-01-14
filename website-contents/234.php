@@ -172,10 +172,8 @@ try {
 	<div class="table local01">
 		<header>
 			<div>#</div>
-			<div>Part Number</div>
-			<div>Item</div>
+			<div>Product</div>
 			<div class="n">Quantity</div>
-			<div>Unit</div>
 			<div class="n">Cost</div>
 			<div class="n">Inline</div>
 
@@ -191,10 +189,8 @@ try {
 			echo "
 				<main class=\"" . ($item->relatedItem ? "partsElement" : "") . "\">
 					<div>" . ($item->isGroupingItem ? "" : $rowNumber) . "</div>
-					<div>{$item->material->longId}</div>
-					<div class=\"ellipsis\">{$item->material->name}</div>
-					<div class=\"n\">" . number_format($item->quantity, 2) . "</div>
-					<div>{$item->material->unit->name}</div>
+					<div class=\"ellipsis\">{$item->material->longId}</br >{$item->material->name}</div>
+					<div class=\"n\">" . number_format($item->quantity, 2) . "<br />{$item->material->unit->name}</div>
 					<div class=\"n\">" . ($item->isGroupingItem ? "" : rtrim(rtrim(number_format($item->value, 5), "0"), ".")) . "</div>
 					<div class=\"n\">" . ($item->isGroupingItem ? "" : number_format($item->value * $item->quantity, 2)) . "</div>
 				</main>
@@ -234,7 +230,7 @@ try {
 
 		.table {
 			&.local01 {
-				grid-template-columns: 40px minmax(130px, 1fr) minmax(10px, 3fr) 1fr 60px 1fr 1fr;
+				grid-template-columns: 50px minmax(120px, 5fr) 1fr 1fr 1fr;
 			}
 
 			&.local03 {

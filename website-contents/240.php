@@ -105,10 +105,8 @@ try {
 	<div class="table local01">
 		<header>
 			<div>#</div>
-			<div>Part Number</div>
-			<div>Item</div>
+			<div>Product</div>
 			<div class="n">Quantity</div>
-			<div>Unit</div>
 		</header>
 		<?php
 		$items         = new InvoiceItems($app);
@@ -133,10 +131,8 @@ try {
 			echo <<<HTML
 				<main class="{$cssDefinition}">
 					<div>{$showRowNumber}</div>
-					<div>{$item->material->longId}</div>
-					<div class="ellipsis">{$item->material->name}</div>
-					<div class="n">{$quantity}</div>
-					<div>{$item->material->unit->name}</div>
+					<div class="ellipsis">{$item->material->longId}<br />{$item->material->name}</div>
+					<div class="n">{$quantity}<br />{$item->material->unit->name}</div>
 				</main>
 			HTML;
 			return $item->isGroupingItem ? $rowNumber : $rowNumber + 1;
@@ -157,10 +153,8 @@ try {
 	echo <<<HTML
 		<div class="table local02">
 		<header>
-			<div>#</div>
 			<div>Value</div>
 			<div>Terms</div>
-			<div>Posted By</div>
 		</header>
 	HTML;
 
@@ -170,12 +164,18 @@ try {
 	foreach ($sequence->children($read->id) as $node) {
 		$uri_get = "{$fs(234)->dir}/?id={$node->id}&document={$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $node->serialNumber, "-" . $read->costCenter->id . "-")}";
 		echo "	<a href=\"$uri_get\" data-href=\"$uri_get\">
-				<div>" . $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $node->serialNumber, "-" . $read->costCenter->id . "-") . "</div>
-				<div>" . $node->currency->shortname . " " . number_format($node->totalValue, 2) . "
-				<br />" . number_format($node->discountRate, 2) . "%</div>
-				<div>" . (empty($node->paymentTerm) ? "-" : $node->paymentTerm->toString()) . "
-				<br />" . (empty($node->shippingTerm) ? "-" : $node->shippingTerm->toString()) . "</div>
-				<div>{$node->issuedBy->fullName()}<br/>{$node->issuingDate->format("Y-m-d")}<br />{$node->issuingDate->format("H:i")}</div>
+				<div>
+					" . $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $node->serialNumber, "-" . $read->costCenter->id . "-") . "
+					<br />{$node->issuingDate->format("Y-m-d")} {$node->issuingDate->format("H:i")}
+					<br /><span class=\"light\">Issued by</span> {$node->issuedBy->fullName()}
+				</div>
+				
+				<div>
+					" . (empty($node->paymentTerm) ? "-" : $node->paymentTerm->toString()) . "
+					<br />" . (empty($node->shippingTerm) ? "-" : $node->shippingTerm->toString()) . "
+					<br /><span class=\"light\">Total Value</span> " . number_format($node->totalValue, 2) . " {$node->currency->shortname}
+					<br /><span class=\"light\">Discount</span> " . number_format($node->discountRate, 2) . "%
+				</div>
 			</a>
 		";
 	}
@@ -206,19 +206,31 @@ try {
 
 		.table {
 			&.local01 {
-				grid-template-columns: 40px minmax(130px, 1fr) minmax(10px, 3fr) 1fr 60px;
+				grid-template-columns: 50px minmax(130px, 1fr) 1fr;
 			}
 
 			&.local02 {
-				grid-template-columns: 120px 1fr 1fr 1fr;
+				grid-template-columns: 1fr 3fr;
 			}
 
-			>main {
+			>header {
+				>.n {
+					text-align: right;
+				}
+			}
+
+			>main,
+			>a {
 				display: contents;
 
 				>.n {
 					text-align: right;
 				}
+
+				.light {
+					color: var(--root-font-lightcolor);
+				}
+
 
 				&.partsElement>div {
 					background-color: var(--slo-menu-itemhover-background-color);

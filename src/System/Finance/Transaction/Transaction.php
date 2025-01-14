@@ -294,13 +294,14 @@ abstract class Transaction extends Instructions
 
 		$stmt = $this->app->db->prepare("UPDATE uploads SET up_rel = NULL WHERE up_rel = ?;");
 		$stmt->bind_param("i", $statementID);
-		
+
 		return $stmt->execute();
 	}
 	private function processEdit(int $statementID): bool
 	{
 		$stmt = $this->app->db->prepare(
 			"UPDATE acc_main SET
+				acm_company = ?,
 				acm_usr_id = ?,
 				acm_ctime = ?,
 				acm_type = ?,
@@ -321,7 +322,8 @@ abstract class Transaction extends Instructions
 		$openState = $this->open ? 0 : 1;
 
 		$stmt->bind_param(
-			"isisissdiiiii",
+			"iisisissdiiiii",
+			$this->app->user->company->id,
 			$this->individual,
 			$dateTime,
 			$this->nature_id,
@@ -349,14 +351,15 @@ abstract class Transaction extends Instructions
 	private function processPost(): bool
 	{
 		$stmt      = $this->app->db->prepare(
-			"INSERT INTO acc_main (acm_usr_id,acm_editor_id,acm_ctime,acm_time,acm_type,acm_beneficial,acm_category,acm_comments,acm_reference,acm_realvalue,acm_realcurrency,acm_rel,acm_party
-			) VALUES (?,?,?,?,? ,?,?,?,?,?, ?,?,?);"
+			"INSERT INTO acc_main (acm_company,acm_usr_id,acm_editor_id,acm_ctime,acm_time,acm_type,acm_beneficial,acm_category,acm_comments,acm_reference,acm_realvalue,acm_realcurrency,acm_rel,acm_party
+			) VALUES (?, ?,?,?,?,? ,?,?,?,?,?, ?,?,?);"
 		);
 		$dateTime  = $this->dateTime->format("Y-m-d");
 		$timeStamp = (new \DateTime("now"))->format("Y-m-d H:i:s");
 
 		$stmt->bind_param(
-			"iissisissdiii",
+			"iiissisissdiii",
+			$this->app->user->company->id,
 			$this->individual,
 			$this->app->user->info->id,
 			$dateTime,
