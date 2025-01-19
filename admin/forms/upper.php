@@ -88,25 +88,33 @@ $SmartListObject  = new SmartListObject($app);
 		<span class="header-ribbon noprint">
 			<div>
 				<div class="btnheader-set" style="white-space:nowrap"><?php
+
 				if ($app->user->logged && $app->user->company && $app->user->company->logo) {
 					echo "<a href=\"\" tabindex=\"-1\" id=\"header-menu-home\" style=\"padding:9px 8px 8px 8px\" title=\"Company `{$app->user->company->name}`\"><span><img alt=\"{$app->user->company->name} Logo\" src=\"download/?id={$app->user->company->logo}&pr=t\" height=\"30\" /></span></a>";
 				} else {
 					echo "<a href=\"\" tabindex=\"-1\" title=\"Homepage\" id=\"header-menu-home\" class=\"ico-home\"><span></span></a>";
 				}
 				if ($app->user->logged) {
-					echo "<a id=\"header-menu-button\" title=\"{$fs()->id}: {$fs()->title}, (Ctrl+m)\" href=\"{$fs()->dir}\"><span style=\"font-family:icomoon4;\">&#xe9bd;</span></a>";
-					echo "<span class=\"gap\" style=\"text-align:right;\"></span>";
-					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=company\" tabindex=\"-1\" title=\"Running Company\" id=\"jqroot_com\">" . ($app->user->company ? $app->user->company->name : "N/A") . "</a>";
-					echo "<a href=\"{$fs()->dir}/?--sys_sel-change=account\" tabindex=\"-1\" title=\"Running Account\" id=\"jqroot_sec\">" . (isset($app->user->account) ? "<span class=\"mediabond-hide\"></span>" . (!is_null($app->user->account->term) ? "{$app->user->account->term->termType()}: {$app->user->account->term->name}: " : "") . "{$app->user->account->name}" : "N/A") . "</a>";
+					$ui_balance = "";
+					$ui_company= ($app->user->company ? $app->user->company->name : "N/A");
+					$ui_account = (isset($app->user->account) ? (!is_null($app->user->account->term) ? "{$app->user->account->term->name}: " : "") . "{$app->user->account->name}" : "N/A");
 					if ($app->user->account && $app->user->account->role->view) {
-						echo "<span id=\"jqroot_bal\">" . ($app->user->account->balance < 0 ? "(" . number_format(abs($app->user->account->balance), 2, ".", ",") . ")" : number_format(abs($app->user->account->balance), 2, ".", ","));
-						echo " {$app->user->account->currency->shortname}</span>";
+						$ui_balance = ($app->user->account->balance < 0 ? "(" . number_format(abs($app->user->account->balance), 2, ".", ",") . ")" : number_format(abs($app->user->account->balance), 2, ".", ",")) . $app->user->account->currency->shortname;
 					} elseif ($app->user->account) {
-						echo "<span>{$app->user->account->currency->shortname}</span>";
+						$ui_balance = $app->user->account->currency->shortname;
 					}
-					echo "<a tabindex=\"-1\" class=\"mediabond-hide toggleLightMode\" href=\"{$fs()->dir}/\" title=\"Toggle Dark Mode\"><span style=\"font-family:icomoon4;\">&#xe9d4;</span></a>";
-					echo "<a href=\"{$fs(27)->dir}/\" tabindex=\"-1\" id=\"header-menu-useraccount-button\" title=\"User Settings\"><span style=\"font-family:icomoon4;\">&#xe971;</span></a>"; //<cite>1</cite>
-					echo "<a href=\"$app->http_root/?logout=" . uniqid() . "\" tabindex=\"-1\" id=\"header-menu-logout\" title=\"Logout\"><span style=\"font-family:icomoon4;\">&#xe9b6;</span></a>";
+
+					//<cite>1</cite>
+					echo <<<HTML
+						<a id="header-menu-button" title="{$fs()->id}: {$fs()->title}, (Ctrl+m)" href="{$fs()->dir}"><span style="font-family:icomoon4;">&#xe9bd;</span></a>
+						<span class="gap" style="text-align:right;"></span>
+						<a href="{$fs()->dir}/?--sys_sel-change=company" tabindex="-1" title="Running Company" id="jqroot_com">$ui_company</a>
+						<a href="{$fs()->dir}/?--sys_sel-change=account" tabindex="-1" title="Running Account" id="jqroot_sec">$ui_account<div class="mediabond-show">$ui_balance</div></a>
+						<span class="mediabond-hide" id="jqroot_bal">$ui_balance</span>
+						<a tabindex="-1" class="mediabond-hide toggleLightMode" href="{$fs()->dir}/" title="Toggle Dark Mode"><span style="font-family:icomoon4;">&#xe9d4;</span></a>
+						<a href="{$fs(27)->dir}/" tabindex="-1" id="header-menu-useraccount-button" title="User Settings"><span style="font-family:icomoon4;">&#xe971;</span></a>
+						<a href="$app->http_root/?logout={$app->id}" tabindex="-1" id="header-menu-logout" title="Logout"><span style="font-family:icomoon4;">&#xe9b6;</span></a>
+					HTML;
 				}
 				?></div>
 			</div>

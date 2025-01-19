@@ -39,7 +39,7 @@ if ($mysqli_result) {
 				<div class="padge {$padge_type}">{$badge_uri}</div>
 				<div style="text-align: right;" class="sup"><div style="text-align:left">{$row['acm_id']}</div>{$row['atm_value']}</div>
 				<div class="sup"><div>{$time->format("Y")}</div>{$time->format("d<\s\u\b>S</\s\u\b> M")}</div>
-				<div class="ellipsis sup"><div>{$row['accgrp_name']}: {$row['acccat_name']}</div>{$row['acm_beneficial']}</div>
+				<div class="ellipsis sup"><div>{$row['acccat_name']}</div>{$row['acm_beneficial']}</div>
 				<!-- <td>{$row['acccat_name']}</td> -->
 			</a>
 		HTML;
