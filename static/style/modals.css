@@ -354,6 +354,55 @@ dialog.appHtmlDialog {
 		text-overflow: ellipsis;
 	}
 
+	a > div.control,
+	main > div.control {
+		padding: 0px;
+
+		> button {
+			cursor: pointer;
+			background-color: transparent;
+			border: none;
+			display: block;
+			padding: 0px 20px;
+			height: 100%;
+			border-radius: var(--input_border-radius);
+
+			&::before {
+				font-family: 1.2em;
+				display: inline-block;
+				content: "\e62b";
+				font-family: "icomoon";
+				width: 20px;
+				text-align: center;
+			}
+
+			&.delete {
+				&::before {
+					content: "\e62b";
+				}
+
+				&:hover {
+					color: red;
+				}
+
+				&:focus {
+					outline: solid 2px var(--outline-border-color);
+					outline-offset: -1px;
+				}
+
+				&:active {
+					transform: translateY(0.08rem);
+				}
+			}
+
+		}
+
+
+
+
+
+	}
+
 	> header > div {
 		border: none;
 		cursor: default;

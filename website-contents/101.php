@@ -258,7 +258,7 @@ if ($app->xhttp) {
 					<input name="individual" id="individual" type="text" placeholder="Beneficiary ID" class="flex" tabindex="-1" title="System user"
 						   data-slo=":LIST" data-source="_/UserList/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_userList.a"
 						   value="<?= $read->individual ? $read->individual->fullName() : ""; ?>"
-						   data-slodefaultid="<?= $read->individual ? $read->individual->id : ""; ?>" />
+						   <?= $read->individual ? " data-slodefaultid=\"{$read->individual->id}\" " : ""; ?> />
 				</div>
 			</label>
 		</div>

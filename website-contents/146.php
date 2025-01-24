@@ -4,10 +4,8 @@
 $database = array(
 	'table' => 'mat_materials',
 	'tableselect' => "mat_materials 
-						LEFT JOIN mat_unit ON mat_unt_id=unt_id
 						LEFT JOIN mat_materialtype ON mat_mattyp_id=mattyp_id
 						LEFT JOIN brands ON brand_id = mat_brand_id
-						
 						LEFT JOIN 
 							(
 								SELECT 
@@ -38,8 +36,12 @@ $database = array(
 
 		'mat_name' => array(null, 'Name', true, null, 'text', 'string', true, null, null, '<b>text</b> material short name'),
 
-		'unt_name' => array(null, 'Unit', true, null, 'slo', 'string', false, 'UNITS', 'mat_unt_id', '<b>list</b> type'),
-		'mat_unt_id' => array(null, '', false, null, 'sloref', 'int', true, null, null),
+		'mat_unitsystem' => array(null, 'Unit', true, null, 'enum', 'int', true,  \System\enums\UnitSystem::class, '_/Units/slo/' . md5($app->id . $app->user->company->id) . '/slo_Units.a', ''),
+
+
+		'mat_perbox' => array(null, 'Units per box', false, null, 'text', 'string', true, null, null, '<b>float</b> Units per box'),
+
+		'mat_ean' => array(null, 'EAN Code', false, null, 'text', 'string', true, null, null, '<b>float</b> EAN Code'),
 
 		'mat_date' => array("DATE_FORMAT(mat_date, '%Y-%m-%d')", 'Date', false, null, 'hidden', 'string', false, null, null, null, '', false),
 
@@ -67,5 +69,7 @@ $database = array(
 		}
 	),
 );
+
+
 
 include("website-contents/major.editor.php");

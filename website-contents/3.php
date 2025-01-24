@@ -1,4 +1,6 @@
 <?php
+
+
 function replaceARABIC($str)
 {
 	$str = str_replace(["أ", "إ", "آ"], "[أإاآ]+", $str);
@@ -17,10 +19,12 @@ if ($limit > 15) {
 }
 
 $rl = array();
-require_once ("website-contents/slo.database.php");
+require_once("website-contents/slo.database.php");
 if (!isset($rl[$role])) {
 	exit;
 }
+
+header("Content-Type: application/json; charset=utf-8");
 
 //Initiate startup variables
 $q     = preg_replace('/[^\p{Arabic}\da-z_\- ]/ui', " ", $_POST['query']);
@@ -63,6 +67,7 @@ $select_statment = array_merge(
 	$rl[$role]['minselect'],
 	$rl[$role]['return_id'],
 	$rl[$role]['return_value'],
+	$rl[$role]['params'],
 );
 $select_statment = array_unique($select_statment);
 if (sizeof($select_statment) == 0) {
@@ -83,69 +88,64 @@ foreach ($select_statment as $k => $v) {
 $sq = trim($sq);
 
 
-$q =
+$q  =
 	"SELECT
 		$selectquery
 	FROM
 		" . $rl[$role]['from'] . "
-		" . ($sq != "" || trim($rl[$role]['where']) != "" ? "WHERE" : "") . "
+		" . ($sq != "" || trim((string) $rl[$role]['where']) != "" ? "WHERE" : "") . "
 			" . $sq . "
-			" . ($sq != "" && trim($rl[$role]['where']) != "" ? " AND " . $rl[$role]['where'] : "") . "
-		" . (isset($rl[$role]['group']) && trim($rl[$role]['group']) != "" ? " GROUP BY " . $rl[$role]['group'] . " " : "") . "
-		" . (isset($rl[$role]['union']) && trim($rl[$role]['union']) != "" ? " " . $rl[$role]['union'] . " " : "") . "
+			" . ($sq != "" && trim((string) $rl[$role]['where']) != "" ? " AND " . $rl[$role]['where'] : "") . "
+		" . (isset($rl[$role]['group']) && trim((string) $rl[$role]['group']) != "" ? " GROUP BY " . $rl[$role]['group'] . " " : "") . "
+		" . (isset($rl[$role]['union']) && trim((string) $rl[$role]['union']) != "" ? " " . $rl[$role]['union'] . " " : "") . "
 		" . (isset($rl[$role]['order']) && is_array($rl[$role]['order']) ? " ORDER BY " . implode(",", $rl[$role]['order']) : "") . "
 	LIMIT 0, $limit";
+$li = [];
 
 if ($r = $app->db->query($q)) {
 	while ($row = $r->fetch_assoc()) {
-		$cute      = "";
-		$return_id = "";
+		//echo "<div data-return_id=\"$return_id\">";
+		$item = [
+			"id" => "",
+			"value" => [],
+			"select" => [],
+			"minselect" => [],
+			"params" => []
+		];
 		foreach ($rl[$role]['return_id'] as $msel => $msev) {
 			if (isset($row[$msel])) {
-				$return_id .= $cute . $row[$msel];
-				$cute      = ", ";
+				$item["id"] = $row[$msel];
 			}
 		}
 
-		$return_id = addslashes($return_id);
-		echo "<div data-return_id=\"$return_id\">";
-
-		$cute = "";
-		echo "<div>";
+		
 		foreach ($rl[$role]['select'] as $msel => $msev) {
 			if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
-				echo $cute . $row[$msel];
-				$cute = ", ";
+				$item["select"][] = $row[$msel];
 			}
 		}
-		echo "</div>";
 
-
-		if (sizeof($rl[$role]['minselect']) > 0) {
-			$cute = "";
-			echo "<span>";
-			foreach ($rl[$role]['minselect'] as $msel => $msev) {
-				if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
-					echo $cute . $row[$msel];
-					$cute = ", ";
-				}
+		foreach ($rl[$role]['minselect'] as $msel => $msev) {
+			if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
+				$item["minselect"][] = $row[$msel];
 			}
-			echo "</span>";
 		}
 
-
-		$cute = "";
-		echo "<p>";
 		foreach ($rl[$role]['return_value'] as $msel => $msev) {
 			if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
-				echo $cute . $row[$msel];
-				$cute = " ";
+				$item["value"][] = $row[$msel];
 			}
 		}
-		echo "</p>";
+		foreach ($rl[$role]['params'] as $msel => $msev) {
+			if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
+				$item["params"][$msel] = $row[$msel];
+			}
+		}
 
-		echo "</div>";
+		$li[] = $item;
 	}
+	echo json_encode($li);
 } else {
-	echo "<div><div>`Smart List Object` server error...</div></div>";
+	echo json_encode(["error" => "SQL Error", "errno" => __LINE__]);
 }
+

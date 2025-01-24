@@ -11,17 +11,17 @@ $rl["A001"] = array(
 	"group" => "",
 );
 
-$rl["A002"] = $rl["A001"];
+$rl["A002"]          = $rl["A001"];
 $rl["A002"]["where"] = " bom_mattype = 'ZHLB' ";
 
-$rl["A003"] = $rl["A001"];
+$rl["A003"]          = $rl["A001"];
 $rl["A003"]["where"] = " bom_mattype = 'ZUNF' ";
 
 
-$rl["A004"] = $rl["A001"];
+$rl["A004"]                 = $rl["A001"];
 $rl["A004"]["return_value"] = array("bom_sapdesc" => "bom_sapdesc");
-$rl["A004"]["return_id"] = array("bom_id" => "bom_id");
-$rl["A004"]["where"] = " ";
+$rl["A004"]["return_id"]    = array("bom_id" => "bom_id");
+$rl["A004"]["where"]        = " ";
 
 
 
@@ -163,7 +163,7 @@ $rl["D002"] = array(
 	"group" => "",
 );
 
-$rl["E001"] = array(
+$rl["E001"]  = array(
 	"from" => "labour_section",
 	"return_id" => array("lsc_id" => "lsc_id"),
 	"return_value" => array("lsc_name" => "lsc_name"),
@@ -173,7 +173,7 @@ $rl["E001"] = array(
 	"where" => "",
 	"group" => "",
 );
-$rl["E002"] = array(
+$rl["E002"]  = array(
 	"from" => "labour_type JOIN labour_section ON lsc_id=lty_section",
 	"return_id" => array("lty_id" => "lty_id"),
 	"return_value" => array('name' => 'CONCAT(lsc_name,", ",lty_name)'),
@@ -739,19 +739,6 @@ $rl["EAN"] = array(
 
 
 
-$rl["UNITS"] = array(
-	"from" => "mat_unit",
-	"return_id" => array("unt_id" => "unt_id"),
-	"return_value" => array("unt_name" => "unt_name"),
-	"select" => array("unt_name" => "unt_name"),
-	"minselect" => array("unt_category" => "unt_category"),
-	"search" => array("unt_name" => "unt_name"),
-	"where" => " ",
-	"group" => " ",
-	"order" => array("unt_category", "unt_name")
-);
-
-
 $rl["MAT_CATEGORY_GROUP"] = array(
 	"from" => "mat_categorygroup",
 	"return_id" => array("matcatgrp_id" => "matcatgrp_id"),
@@ -826,6 +813,7 @@ $rl["BOM"] = array(
 	"select" => array("cat_alias" => "cat_alias", "mat_name" => "mat_name"),
 	"minselect" => array("mat_long_id" => "mat_long_id", "mattyp_name" => "mattyp_name", "mat_date" => "mat_date"),
 	"search" => array("mat_id" => "mat_id", "mat_name" => "mat_name", "mat_longname" => "mat_longname", "mat_date" => "mat_date", "mat_long_id" => "mat_long_id", "cat_alias" => "cat_alias", "mattyp_name" => "mattyp_name"),
+	"params" => ["unitsystem" => "mat_unitsystem"],
 	"where" => " ",
 	"group" => " ",
 	"order" => array("mat_name")

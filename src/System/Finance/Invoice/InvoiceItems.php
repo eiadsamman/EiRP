@@ -7,7 +7,6 @@ use System\Finance\Invoice\structs\InvoiceItem;
 use System\Profiles\MaterialGategoryProfile;
 use System\Profiles\MaterialGroupProfile;
 use System\Profiles\MaterialProfile;
-use System\Profiles\UnitProfile;
 
 
 class InvoiceItems
@@ -33,7 +32,6 @@ class InvoiceItems
 
 				/* Material  */
 				mat_id,mat_name, mat_long_id,mat_longname,
-				unt_id, unt_name, unt_category,unt_decim,
 				matcatgrp_name, matcatgrp_id, matcat_name, matcat_id,
 				brand_id, brand_name
 			FROM 
@@ -41,12 +39,10 @@ class InvoiceItems
 				JOIN (
 					SELECT 
 						mat_id,mat_name, mat_long_id,mat_longname,
-						unt_id, unt_name, unt_category,unt_decim,
 						matcatgrp_name, matcatgrp_id, matcat_name, matcat_id,
 						brand_id, brand_name
 					FROM 
 						mat_materials 
-							JOIN mat_unit ON mat_unt_id = unt_id
 							JOIN mat_materialtype ON mat_mattyp_id = mattyp_id
 							LEFT JOIN brands ON brand_id = mat_brand_id
 							JOIN 
@@ -74,7 +70,8 @@ class InvoiceItems
 			)
 		);
 		$invoiceItem->material->longName = $itemRow['mat_longname'];
-		$invoiceItem->material->unit     = new UnitProfile((int) $itemRow['unt_id'], $itemRow['unt_name'], $itemRow['unt_category'], (int) $itemRow['unt_decim']);
+		//$invoiceItem->material->unit     = new UnitProfile((int) $itemRow['uxnt_id'], $itemRow['uxnt_name'], $itemRow['uxnt_category'], (int) $itemRow['uxnt_decim']);
+		//$invoiceItem->material->unit     = new UnitProfile(0, 'Name', 'Categ', (int) 3);
 
 		$invoiceItem->relatedItem       = is_null($itemRow['pols_rel_id']) ? null : (int) $itemRow['pols_rel_id'];
 		$invoiceItem->quantity          = (float) $itemRow['pols_issued_qty'];

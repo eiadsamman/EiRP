@@ -22,7 +22,7 @@ class InvoiceItem
 
 	public array $subItems = []; 
 
-	public function __debuginfo(): array
+	public function __debugInfo(): array
 	{
 		return [
 			$this->material,

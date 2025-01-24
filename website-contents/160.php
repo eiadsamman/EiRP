@@ -1,33 +1,38 @@
 <?php
+use System\Models\Material;
 use System\Template\Gremium;
 
-/*
- * Todo:
- *	create master table for BOM insertions with date and owner
- *
- */
+
+function tempalteDescription($materialId = "-", $creationDate = "-", $type = "-", $category = "-", $materialName = "-")
+{
+	return "<div>
+		<div class=\"form\"><label><h1>Material ID</h1><div class=\"btn-set\"><span>$materialId</span></div></label><label><h1>Creation date</h1><div class=\"btn-set\"><span>$creationDate</span></div></label></div>
+		<div class=\"form\"><label><h1>Type</h1><div class=\"btn-set\"><span>$type</span></div></label><label><h1>Category</h1><div class=\"btn-set\"><span>$category</span></div></label></div>
+		<div class=\"form\"><label><h1>Material Name</h1><div class=\"btn-set\"><span>$materialName</span></div></label><label></label></div>
+		</div>";
+}
 
 
 if (isset($_POST['method']) && $_POST['method'] == 'save') {
 	$matid = (int) $_POST['matid'];
 
 	if (is_array($_POST['bom_material']) && sizeof($_POST['bom_material']) > 0) {
-		$material_id = 0;
-		$material_part_id = 0;
+		$material_id       = 0;
+		$material_part_id  = 0;
 		$material_quantity = 0;
-		$rbool = true;
+		$rbool             = true;
 
 
 		$app->db->autocommit(false);
 
 		$rbool &= $app->db->query("DELETE FROM mat_bom WHERE mat_bom_mat_id={$matid};");
-		$stmt = $app->db->prepare("INSERT INTO mat_bom (mat_bom_mat_id, mat_bom_part_id, mat_bom_quantity, mat_bom_level) VALUES (?,?,?,1);");
+		$stmt  = $app->db->prepare("INSERT INTO mat_bom (mat_bom_mat_id, mat_bom_part_id, mat_bom_quantity, mat_bom_level) VALUES (?,?,?,1);");
 		$stmt->bind_param("iid", $material_id, $material_part_id, $material_quantity);
 		foreach ($_POST['bom_material'] as $lvl1_k => $lvl1_v) {
 			if (isset($lvl1_v[1], $_POST['bom_quantity'][$lvl1_k]) && (int) $lvl1_v[1] > 0) {
 				/* Set the material ID in the BOM table to `negative` to exclude it from integrity check */
-				$material_id = -((int) $matid);
-				$material_part_id = (int) $lvl1_v[1];
+				$material_id       = -((int) $matid);
+				$material_part_id  = (int) $lvl1_v[1];
 				$material_quantity = (float) $_POST['bom_quantity'][$lvl1_k];
 				$rbool &= $stmt->execute();
 				if (!$rbool) {
@@ -92,293 +97,336 @@ if (isset($_POST['method']) && $_POST['method'] == 'save') {
 }
 
 if (isset($_POST['method']) && $_POST['method'] == 'getunit') {
-	$id = (int) $_POST['id'];
-	$r = $app->db->query(
-		"SELECT 
-			unt_name, unt_decim
-		FROM
-			mat_materials 
-				JOIN mat_unit ON mat_unt_id=unt_id
-		WHERE
-			mat_id = $id
-		"
-	);
-	if ($r && $row = $r->fetch_assoc()) {
-		header("HTTP_X_RESPONSE: SUCCESS");
-		echo $row['unt_name'];
-	} else {
-		header("HTTP_X_RESPONSE: ERR");
-		echo "Submitting quotation failed, database error";
+	$id              = (int) $_POST['id'];
+	$defaultSystemId = $app->unit->defaultUnit((int) $id);
+	if ($defaultSystemId) {
+		$default = $app->unit->getUnit((int) $id, $defaultSystemId);
 	}
+	echo json_encode([
+		"id" => (int) $id,
+		"name" => \System\enums\UnitSystem::tryFrom((int) $id)->toString(),
+		"default_id" => $defaultSystemId ? $app->unit->defaultUnit((int) $id) : 0,
+		"default_symbol" => $defaultSystemId ? $default->symbol : "",
+	]);
 	exit;
 }
 
 
 if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "show") {
-	$bomid = (int) $_POST['id'];
-	$r = $app->db->query(
-		"SELECT 
-			mat_id, mat_long_id, mattyp_description ,cat_alias, mat_name, mat_date
-		FROM
-			mat_materials 
-				JOIN mat_materialtype ON mattyp_id=mat_mattyp_id 
-				LEFT JOIN 
-				(
-					SELECT 
-						CONCAT_WS(\", \", matcatgrp_name, matcat_name) AS cat_alias , matcat_id 
-					FROM 
-						mat_category LEFT JOIN mat_categorygroup ON matcat_matcatgrp_id = matcatgrp_id
-				) AS _category ON mat_matcat_id=_category.matcat_id
-		WHERE
-			mat_id = $bomid
-		"
-	);
-
-	echo "<div>";
-	if ($r) {
-		if ($row = $r->fetch_assoc()) {
-			echo '
-			<div>
-				<div class="template-gridLayout">
-					<div><span>Material ID</span><div>' . $row['mat_long_id'] . '</div></div>
-					<div><span>Creation date</span><div>' . $row['mat_date'] . '</div></div>
-					<div><span></span><div></div></div>
-				</div>
-				<div class="template-gridLayout">
-					<div><span>Type</span><div>' . $row['mattyp_description'] . '</div></div>
-					<div><span>Category</span><div>' . $row['cat_alias'] . '</div></div>
-					<div><span></span><div></div></div>
-				</div>
-				<div class="template-gridLayout">
-					<div><span>Material Name</span><div>' . $row['mat_name'] . '</div></div>
-				</div>
-			</div>';
+	header("Content-Type: application/json; charset=utf-8");
+	$output   = ["description" => [], "items" => []];
+	$material = new Material($app);
+	if ($loadedMaterial = $material->load((int) $_POST['id'])) {
+		$output['description']['id']           = $loadedMaterial->longId;
+		$output['description']['creationDate'] = $loadedMaterial->creationDate->format("Y-m-d");
+		$output['description']['type']         = (string) $loadedMaterial->type;
+		$output['description']['category']     = $loadedMaterial->category->group->name . ": " . $loadedMaterial->category->name;
+		$output['description']['name']         = $loadedMaterial->name;
+		foreach ($material->parts($loadedMaterial->id) as $part) {
+			$output['items'][$part->id] = [
+				'id' => "{$part->id}",
+				'longId' => "{$part->longId}",
+				'creationDate' => $part->creationDate->format("Y-m-d"),
+				'type' => (string) $part->type,
+				'category' => $part->category->group->name . ": " . $part->category->name,
+				'quantity' => $part->quantity,
+				'name' => $part->name,
+				'unitName' => $part->unit->symbol,
+				'unitSystemId' => $part->unitSystem->value
+			];
 		}
 	}
-	echo "<div><table class=\"form-table\" id=\"bom-contents\">";
-	echo "
-		<thead>
-			<tr>
-				<td>#</td>
-				<td width=\"100%\">Part material</td>
-				<td colspan=\"2\">Quantity</td>
-			</tr>
-		</thead>
-		<tbody>";
-
-	$r = $app->db->query(
-		"SELECT 
-				mat_bom_id,mat_id,mat_long_id,cat_alias,mat_name,unt_name,unt_decim,mat_bom_quantity
-			FROM
-				mat_bom 
-					JOIN (
-						SELECT 
-							mat_id, mat_long_id, mattyp_id ,cat_alias, mat_name, unt_name, unt_decim
-						FROM
-							mat_materials 
-								JOIN mat_materialtype ON mattyp_id=mat_mattyp_id 
-								JOIN mat_unit ON mat_unt_id=unt_id
-								LEFT JOIN 
-								(
-									SELECT 
-										CONCAT_WS(\", \", matcatgrp_name, matcat_name) AS cat_alias , matcat_id 
-									FROM 
-										mat_category LEFT JOIN mat_categorygroup ON matcat_matcatgrp_id = matcatgrp_id
-								) AS _category ON mat_matcat_id=_category.matcat_id
-						) AS mast_conj ON mast_conj.mat_id = mat_bom_part_id
-			WHERE
-				mat_bom_mat_id = $bomid
-			ORDER BY
-				mat_bom_id
-			"
-	);
-
-	if ($r && $r->num_rows > 0) {
-		while ($row = $r->fetch_assoc()) {
-			echo "<tr class=\"level\">
-					<td>
-						<span></span>
-					</td>
-					<td>
-						<div class=\"btn-set\">
-						<input type=\"text\" class=\"flex\" name=\"bom_material[d{$row['mat_bom_id']}]\" value=\"{$row['mat_long_id']} {$row['cat_alias']}, {$row['mat_name']}\" data-slo=\"BOM\" data-slodefaultid=\"{$row['mat_id']}\" />
-						</div>
-					</td>
-					<td>
-						<div class=\"btn-set\">
-							<input type=\"text\" name=\"bom_quantity[d{$row['mat_bom_id']}]\" class=\"material-qty\" value=\"" . number_format($row['mat_bom_quantity'], $row['unt_decim'], ".", ",") . "\" />
-							<span style=\"min-width:50px;text-align:center\" class=\"mat-unit\">
-								{$row['unt_name']}
-							</span>
-						</div>
-					</td>
-					<td class=\"op-remove jQdel_lvl0\"><span></span></td>
-				</tr>";
-		}
-	}
-	echo "</tbody></table></div>";
-	echo "</div>";
+	echo json_encode($output);
 	exit;
 }
 
 
 ?>
 <style>
-	.material-qty {
-		width: 100px;
-		text-align: right;
-	}
+	.table {
+		&.local01 {
+			grid-template-columns: minmax(50px, auto) minmax(130px, 1fr) 180px 60px;
+		}
 
-	body {
-		counter-reset: level 0;
-	}
-
-	.level {
-		counter-increment: level;
-	}
-
-	.level>td:first-child>span {
-		display: block;
-		padding: 7px;
-	}
-
-	.level>td>span:before {
-		content: counter(level);
+		.input-qunatity {
+			text-align: right;
+			width: 100px;
+		}
 	}
 </style>
+
 <?php
 $grem = new Gremium\Gremium();
 $grem->header()->serve("<h1>BOM Manager</h1>");
 $grem->menu()->open();
-echo "<span>Material name</span>";
-echo "<input type=\"text\" data-slo=\"BOM\" class=\"flex\" id=\"jQmaterialSelection\" />";
-echo "<button type=\"button\" id=\"jQsubmit\">Save material build</button>";
+echo <<<HTML
+	<span>Material name</span>
+	<input type="text" data-slo="BOM" class="flex" id="material-select-button" />
+	<button type="button" id="save-button" disabled>Save material build</button>
+HTML;
+$grem->getLast()->close();
+$grem->title()->serve("<span class=\"flex\">Material desciprtion</span>");
+$grem->article()->serve("<div id=\"material-description\">" . tempalteDescription() . "</div>");
+$grem->title()->serve("Bill of materials");
+$grem->legend()->serve("<span class=\"flex\"></span><button type=\"button\" class=\"edge-left\" disabled id=\"part-add-button\">Add material</button>");
+$grem->article()->open();
+echo <<<HTML
+	<form id="material-list-form">
+		<div id="material-parts" class="table local01">
+			<header>
+				<div>#</div>
+				<div>Material</div>
+				<div>Quantity</div>
+				<div></div>
+			</header>
+		</div>
+	</form>
+HTML;
 $grem->getLast()->close();
 
-$grem->title()->serve("<span class=\"flex\">Material desciprtion</span>");
-$grem->article()->serve("<div id=\"jQdesc\"></div>");
-
-$grem->title()->serve("Bill of materials");
-$grem->legend()->serve("<span class=\"flex\"></span><button type=\"button\" disabled class=\"edge-left\" id=\"jqAddmaterial\">Add material</button>");
-$grem->article()->serve("<form action=\"\" id=\"jQmainform\"><input type=\"hidden\" name=\"method\" value=\"save\" /><div id=\"jQmain\"></div></form>");
 $grem->terminate();
 ?>
 <script>
-	$(function () {
-		let uniqueid = 0;
-		$("#jQmainform").on('submit', function (e) {
-			e.preventDefault();
-			var $this = $(this);
-			$.ajax({
-				url: "",
-				type: "POST",
-				data: $this.serialize() + '&matid=' + $("#jQmaterialSelection_1").val()
-			}).done(function (o, textStatus, request) {
-				let response = request.getResponseHeader('HTTP_X_RESPONSE');
-				if (response == "ERR") {
-					messagesys.failure(o);
-				} else if (response == "SUCCESS") {
-					messagesys.success("Material BOM build updated successfully");
-				} else if (response == "INTEGRITYERROR") {
-					messagesys.failure("Integriy error, parent material can not be a part of itself");
-				}
-			});
-			return false;
-		});
-		$("#jQsubmit").on('click', function () {
-			$("#jQmainform").submit();
-		});
-
-		let getUnit = function (mat_id, dom) {
-			overlay.show();
-			$.ajax({
-				url: "<?php echo $fs()->dir; ?>",
-				type: "POST",
-				data: { "method": "getunit", "id": mat_id },
-			}).done(function (o, textStatus, request) {
-				let response = request.getResponseHeader('HTTP_X_RESPONSE');
-				if (response == "ERR") {
-					messagesys.failure(o);
-				} else if (response == "SUCCESS") {
-					dom.html(o);
-				}
-			}).fail(function (m) {
-				messagesys.failure(m);
-			}).always(function () {
-				overlay.hide();
-			});
-		}
-		let clearUnit = function (dom) {
-			dom.html("-");
+	class BillOfMaterial {
+		constructor() {
+			this.activeMaterial = 0;
+			this.submitButton = null;
+			this.submitForm = null;
+			this.partAddButton = null;
+			this.materialSelectButton = null;
+			this.materialParts = null;
+			this.events();
 		}
 
+		descriptionTemplate(id = "-", creationDate = "-", type = "-", category = "-", name = "-") {
+			return `
+				<div>
+					<div class="form"><label><h1>Material ID</h1><div class="btn-set"><span>${id}</span></div></label><label><h1>Creation date</h1><div class="btn-set"><span>${creationDate}</span></div></label></div>
+					<div class="form"><label><h1>Type</h1><div class="btn-set"><span>${type}</span></div></label><label><h1>Category</h1><div class="btn-set"><span>${category}</span></div></label></div>
+					<div class="form"><label><h1>Material Name</h1><div class="btn-set"><span>${name}</span></div></label><label></label></div>
+				</div>
+			`
+		}
 
-		$("#jQmaterialSelection").slo({
-			"limit": 7,
-			onselect: function (selected_bom) {
-				$.ajax({
-					url: "",
-					type: "POST",
-					data: { "id": selected_bom.key, "method": "show" }
-				}).done(function (o, textStatus, request) {
-					$data = $(o);
-					$childs = [];
-					$childs[0] = $data.children().first().first();
-					$childs[1] = $childs[0].next();
-					$childs[1].find("input[data-slo]").slo({
-						onselect: function (data) {
-							getUnit(data.key, $(this).closest("tr").find(".mat-unit"));
-						}, ondeselect: function () {
-							clearUnit($(this).closest("tr").find(".mat-unit"));
-						}
-					});
-					$("#jQdesc").html($childs[0]);
-					$("#jQmain").html($childs[1]);
-
-					$(".material-qty").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
-						OnlyFloat(this, null, 0);
-					});
-					$("#jqAddmaterial").prop("disabled", false)
+		events() {
+			document.addEventListener("DOMContentLoaded", () => {
+				this.submitButton = document.getElementById("save-button");
+				this.submitForm = document.getElementById("material-list-form");
+				this.partAddButton = document.getElementById("part-add-button");
+				this.materialDescription = document.getElementById("material-description");
+				this.materialSelectButton = document.getElementById("material-select-button");
+				this.materialParts = document.getElementById("material-parts");
+				this.submitButton.addEventListener("click", () => {
+					this.post();
 				});
-			},
-			ondeselect: function () {
-				$("#jQmain").html("");
-				$("#jQdesc").html("");
-				$("#jqAddmaterial").prop("disabled", true)
+				this.submitForm.addEventListener("submit", (e) => {
+					e.preventDefault();
+					this.post();
+					return;
+				});
+				this.partAddButton.addEventListener("click", () => {
+					this.addPartRow();
+				});
+				$(this.materialSelectButton).slo({
+					onselect: (selected_bom) => {
+						this.activeMaterial = selected_bom.key
+						this.submitButton.disabled = false;
+						this.partAddButton.disabled = false;
+						this.loadMaterial();
+					},
+					ondeselect: () => {
+						this.activeMaterial = 0;
+						this.materialDescription.innerHTML = this.descriptionTemplate();
+						this.clearForms();
+						this.partAddButton.disabled = true;
+						this.submitButton.disabled = true;
+					}
+				});
+			});
+		}
+
+		updateCounters() {
+			let counter = 1;
+			this.materialParts.querySelectorAll("main").forEach((e) => {
+				e.querySelector("div>span").innerHTML = `<div class="btn-set"><span>${counter}</span></div>`;
+				counter++;
+			});
+		}
+
+		clearForms() {
+			this.materialParts.querySelectorAll("main").forEach((e) => {
+				e.remove();
+			});
+		}
+
+		clearUnit(domOwner) {
+			let dom = domOwner.querySelector(".qty-unit-container");
+			if (dom != undefined) {
+				dom.innerHTML = "";
 			}
-		});
+		}
 
-		$("#jqAddmaterial").on('click', function () {
-			uniqueid++;
-			let $temp = "";
-			$temp += "<tr class=\"level\"><td><span></span></td>";
-			$temp += "<td><div class=\"btn-set\"><input type=\"text\" class=\"flex\" name=\"bom_material[a" + uniqueid + "]\" data-slo=\"BOM\" /></div></td>";
-			$temp += "<td><div class=\"btn-set\">";
-			$temp += "<input type=\"text\" name=\"bom_quantity[a" + uniqueid + "]\" class=\"material-qty\" value=\"0\" />";
-			$temp += "<span style=\"min-width:50px;text-align:center\" class=\"mat-unit\">-</span>";
-			$temp += "</div></td>";
-			$temp += "<td class=\"op-remove jQdel_lvl0\"><span></span></td>";
-			$temp += "</tr>";
-			$temp = $($temp);
+		async getUnit(unitSystem, domOwner) {
+			const formData = new FormData(this.submitForm);
+			formData.append("method", "getunit");
+			formData.append("id", unitSystem);
+
+			const response = await fetch('<?= $fs()->dir ?>', {
+				method: 'POST',
+				mode: "cors",
+				cache: "no-cache",
+				credentials: "same-origin",
+				referrerPolicy: "no-referrer",
+				headers: {
+					"X-Requested-With": "fetch",
+					"Application-From": "same",
+					'Accept': 'application/json',
+				},
+				body: formData,
+			});
+			const payload = await response.json();
+
+			let uri = "_/UnitMeasurment/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_UnitMeasurment.a?unit=" + payload.id;
+
+			let unitInputHtml = `
+					<input type="number" class="input-qunatity" name="quantity[]" value="0" />
+					<input type="text" style="width: 60px" class="mat-unit" name=\"unit[]\"
+						data-source="${uri}" ` + (payload.default_id != 0 ? ` value="${payload.default_symbol}" data-slodefaultid="${payload.default_id}" ` : ``) + `
+						data-slo=":LIST" />`;
+			let dom = domOwner.querySelector(".qty-unit-container");
+			if (dom != undefined) {
+				dom.innerHTML = unitInputHtml;
+				dom.querySelectorAll("input").forEach(element => {
+					if (element.dataset.slo !== undefined)
+						$(element).slo();
+				})
+			}
+		}
+
+		async loadMaterial() {
+			this.clearForms();
+			const formData = new FormData();
+			formData.append("method", "show");
+			formData.append("id", this.activeMaterial);
+			const response = await fetch('<?= $fs()->dir ?>', {
+				method: 'POST',
+				mode: "cors",
+				cache: "no-cache",
+				credentials: "same-origin",
+				referrerPolicy: "no-referrer",
+				headers: {
+					"X-Requested-With": "fetch",
+					"Application-From": "same",
+					'Accept': 'application/json',
+				},
+				body: formData,
+			});
+			const payload = await response.json();
+			console.log(payload)
+			this.materialDescription.innerHTML = this.descriptionTemplate(payload.description.id, payload.description.creationDate, payload.description.type, payload.description.category, payload.description.name);
+			Object.keys(payload.items).forEach((key) => {
+				this.addPartRow(
+					{
+						"material": {
+							"id": payload.items[key].id,
+							"name": payload.items[key].longId + ", " + payload.items[key].name
+						},
+						"quantity": payload.items[key].quantity,
+						"unit": {
+							"id": payload.items[key].unitSystemId,
+							"name": payload.items[key].unitName,
+						}
+					}
+				);
+			});
+			this.addPartRow();
+			this.updateCounters();
+		}
 
 
-			$temp.find("input[data-slo]").slo({
-				onselect: function (data) {
-					getUnit(data.key, $temp.find(".mat-unit"));
-				}, ondeselect: function () {
-					clearUnit($(this).closest("tr").find(".mat-unit"));
-				}
+		deleteRow(domOwner) {
+			domOwner.remove();
+			this.updateCounters();
+		}
+
+		addPartRow(part = null) {
+			let emptyRow = false;
+			let uri = "";
+			let html = "";
+			let domElem = document.createElement("main");
+
+			if (part == null) {
+				emptyRow = true;
+				html = `
+					<div><span></span></div>
+					<div><div class="btn-set"><input type="text" class="flex materialselection" name="material[]" data-slo="BOM" /></div></div>
+					<div><div class="btn-set qty-unit-container"></div></div>
+					<div class="control"><button type="button" class="delete"></button></div>`;
+			} else {
+				uri = "_/UnitMeasurment/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_UnitMeasurment.a?unit=" + part.unit.id;
+
+				html = `
+					<div><span></span></div>
+					<div>
+						<div class="btn-set">
+							<input type="text" class="flex materialselection" value="${part.material.name}" data-slodefaultid="${part.material.id}" name="material[]" data-slo="BOM" />
+						</div>
+					</div>
+					<div>
+						<div class="btn-set qty-unit-container">		
+							<input type="number" class="input-qunatity" name="quantity[]" value="${part.quantity}" />
+							<input type="text" style="width: 60px" class="mat-unit" name=\"unit[]\" data-source="${uri}" value="${part.unit.name}" data-slodefaultid="${part.unit.id}" data-slo=":LIST" />
+						</div>
+					</div>
+					<div class="control"><button type="button" class="delete"></button></div>
+				`;
+			}
+
+			domElem.innerHTML = html;
+			domElem.querySelectorAll("input").forEach(element => {
+				if (element.dataset.slo == "BOM")
+					$(element).slo({
+						onselect: (data) => { this.getUnit(data.embeds.params.unitsystem, domElem); },
+						ondeselect: () => { this.clearUnit(domElem); }
+					});
+				if (element.dataset.slo == ":LIST")
+					$(element).slo({});
+
 			});
 
-			$("#bom-contents").append($temp);
-			$(".material-qty").on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
-				OnlyFloat(this, null, 0);
+			domElem.querySelectorAll("button").forEach(element => {
+				if (element.classList.contains("delete"))
+					element.addEventListener("click", (e) => {
+						this.deleteRow(domElem);
+					})
+
 			});
-		});
 
-		$("#jQmain").on('click', '.jQdel_lvl0', function () {
-			$(this).closest("tr").remove();
-		});
+			this.materialParts.appendChild(domElem);
+			this.updateCounters();
+		}
 
-	});
+		async post() {
+			const formData = new FormData(this.submitForm);
+			formData.append("method", "save");
+			formData.append("matid", this.activeMaterial);
+
+			const response = await fetch('<?= $fs()->dir ?>', {
+				method: 'POST',
+				mode: "cors",
+				cache: "no-cache",
+				credentials: "same-origin",
+				referrerPolicy: "no-referrer",
+				headers: {
+					"X-Requested-With": "fetch",
+					"Application-From": "same",
+					'Accept': 'application/json',
+				},
+				body: formData,
+			});
+			const payload = await response.json();
+		}
+	}
+
+	bom = new BillOfMaterial();
 </script>

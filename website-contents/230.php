@@ -1,6 +1,5 @@
 <?php
 use System\Finance\CostCenter;
-use System\Finance\Invoice\InvoiceItem;
 use System\Finance\Invoice\PurchaseRequest;
 use System\Models\Material;
 use System\Profiles\MaterialProfile;
@@ -59,7 +58,7 @@ if ($app->xhttp) {
 				//Load material BOM and assign parent quantities for each part
 				if ($item->isGroupingItem) {
 					$subMaterials = new Material($app);
-					foreach ($subMaterials->children($item->material->id) as $material) {
+					foreach ($subMaterials->parts($item->material->id) as $material) {
 						$subItem                    = new \System\Finance\Invoice\structs\InvoiceItem();
 						$subItem->material          = $material;
 						$subItem->quantity          = $item->quantity * $material->bomPortion;
@@ -108,7 +107,7 @@ if ($app->xhttp) {
 					data-id		= "{$mat->id}"
 					data-longid	= "{$mat->longId}"
 					data-name	= "{$mat->name}"
-					data-unit	= "{$mat->unit->name}"
+					data-unit	= "{$mat->unitSystem->name}"
 					data-type	= "{$mat->category->name}"
 					data-qty	= "{$qty}"
 				></div>
@@ -120,7 +119,7 @@ if ($app->xhttp) {
 			HTML;
 
 			echo "<table><tbody>";
-			foreach ($material->children($id) as $mat) {
+			foreach ($material->parts($id) as $mat) {
 				echo "<tr>";
 				echo "<td class=\"subMaterial\"
 					data-id		 = \"{$mat->id}\"
@@ -158,7 +157,7 @@ if ($app->xhttp) {
 				$output['id']     = $mat->id;
 				$output['longId'] = $mat->longId;
 				$output['name']   = $mat->name;
-				$output['unit']   = $mat->unit->name;
+				$output['unit']   = $mat->unitSystem->name;
 				$output['type']   = $mat->category->name;
 				$output['qty']    = $qty;
 			} else {

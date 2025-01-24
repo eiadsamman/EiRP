@@ -201,7 +201,6 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "checkitem") {
 				JOIN mat_materialtype ON mattyp_id=mat_type 
 				JOIN mat_bom_schematic ON mat_sch_type_id=mat_type
 				JOIN companies ON comp_id=mat_vendor
-				JOIN mat_unit ON mat_unit_id=unt_id
 		WHERE
 			mat_id=$id;
 		");

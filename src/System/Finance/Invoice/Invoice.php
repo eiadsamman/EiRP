@@ -7,7 +7,6 @@ use System\Finance\Invoice\enums\PaymentTerm;
 use System\Finance\Invoice\enums\ShippingTerm;
 use System\Finance\Invoice\structs\InvoiceDetails;
 use System\Finance\Invoice\structs\InvoiceItem;
-use System\Models\Material;
 use System\Profiles\AccountProfile;
 use System\Profiles\CompanyProfile;
 use System\Profiles\CostCenterProfile;

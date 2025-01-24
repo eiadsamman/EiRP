@@ -15,7 +15,8 @@ $database = array(
 		'comp_name' => [null, 'Name', true, null, 'text', 'string', true, null, null],
 
 
-		'file_logo' => [null, 'Logo', true, null, 'file', '242', true, null, null],
+		'file_logo' => [null, 'Logo', true, null, 'file', System\Attachment\Type::CompanyLogo->value, true, null, null],
+
 		'comp_tellist' => [null, 'Contact numbers', false, null, 'textarea', 'string', true, null, null],
 		'comp_emaillist' => [null, 'Contact Emails', false, null, 'textarea', 'string', true, null, null],
 

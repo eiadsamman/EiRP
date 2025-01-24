@@ -5,7 +5,7 @@ $database = array(
 	'tablename' => 'Currencies',
 
 	'fields' => array(
-		'cur_id'  => array(null, 'ID', true, null, 'primary', 'int', true, null, null),
+		'cur_id' => array(null, 'ID', true, null, 'primary', 'int', true, null, null),
 		'cur_name' => array(null, 'Name', true, null, 'text', 'string', true, null, null, '<b>char(32)</b> currency name'),
 		'cur_shortname' => array(null, 'Short name', true, null, 'text', 'string', true, null, null, '<b>char(4)</b> currency short name'),
 		'cur_symbol' => array(null, 'Symbol', true, null, 'text', 'string', true, null, null, '<b>char(6)</b> currency symbol'),

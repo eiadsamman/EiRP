@@ -192,58 +192,54 @@ ul > li {
 
 /* #endregion */
 
-/* #region Layout Content*/
 body {
 	padding: 0px;
+
+	> article {
+		display: flex;
+		justify-content: left;
+		height: 100%;
+		background-color: var(--root-background-color);
+		transition: background-color var(--transition-speed) ease;
+		margin: 0 auto;
+
+		> div {
+			flex: 1;
+			margin-top: var(--root--menubar-height);
+			text-align: left;
+			padding: 0px 15px;
+			filter: blur(0px);
+			transition: filter 0.2s ease-out;
+			margin-bottom: 0px;
+
+			&.blur {
+				filter: blur(2px);
+			}
+		}
+	}
+
+	&::-webkit-scrollbar {
+		width: 0.8em;
+		background-color: var(--root-ribbon-background-color);
+	}
+
+	&::-webkit-scrollbar-track {
+		/* background-color: var(--root-ribbon-background-color); */
+		line-height: 1;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-right: solid 1px var(--input_border-color);
+		background-color: var(--input-hover_border-color);
+		/* background-color: var(--input-hover_border-color); */
+	}
+
+	&::-webkit-scrollbar-button {
+		outline: none;
+	}
 }
 
-body > article {
-	display: flex;
-	justify-content: left;
-	height: 100%;
-	background-color: var(--root-background-color);
-	transition: background-color var(--transition-speed) ease;
-	margin: 0 auto;
-}
 
-body > article > div {
-	outline: solid 1px rgb(255, 0, 0);
-	flex: 1;
-	/* max-width: var(--dim-max-width); */
-	margin-top: var(--root--menubar-height);
-	text-align: left;
-	padding: 0px 15px;
-	filter: blur(0px);
-	transition: filter 0.2s ease-out;
-
-	margin-bottom: 0px;
-
-}
-
-body > article > div.blur {
-	filter: blur(2px);
-}
-
-body::-webkit-scrollbar {
-	width: 0.8em;
-	background-color: var(--root-ribbon-background-color);
-}
-
-body::-webkit-scrollbar-track {
-	/* background-color: var(--root-ribbon-background-color); */
-	line-height: 1;
-}
-
-/* body::-webkit-scrollbar-button {
-} */
-
-body::-webkit-scrollbar-thumb {
-	border-right: solid 1px var(--input_border-color);
-	background-color: var(--input-hover_border-color);
-	/* background-color: var(--input-hover_border-color); */
-}
-
-/* #endregion */
 
 /* #region - Ribbon*/
 span.header-ribbon {
@@ -359,7 +355,6 @@ span.header-ribbon {
 
 /* #endregion */
 
-/* #region - Menus*/
 span.header-menu {
 	position: fixed;
 	inset: 0px;
@@ -437,8 +432,6 @@ span.header-menu {
 	}
 }
 
-
-/* #endregion */
 
 /* #region - Left hand menus*/
 span.header-menu.lefthand > div > div {

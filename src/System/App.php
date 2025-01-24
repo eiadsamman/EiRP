@@ -21,6 +21,7 @@ class App
 
 	public Branding $branding;
 	public string $subdomain;
+	public \System\Unit $unit;
 	public int $base_permission = 0;
 	public ResponseStatus $responseStatus;
 	public bool $xhttp = false;
@@ -85,7 +86,7 @@ class App
 		session_start();
 
 
-
+		$this->unit=  new \System\Unit();
 		$this->id = substr(md5(session_id() . $this->broadcast), 0, 6);
 
 		/* Application session User */
@@ -98,6 +99,7 @@ class App
 		} else {
 			$this->xhttp = false;
 		}
+		$this->unitMeasurment    = new \System\Unit();
 		$this->permissions_array = array();
 		$this->view              = null;
 
@@ -224,9 +226,9 @@ class App
 		$this->base_permission = 2;
 		return true;
 	}
-	
 
-	
+
+
 
 	public function formatTime(float $time, ?bool $include_seconds = true): string
 	{

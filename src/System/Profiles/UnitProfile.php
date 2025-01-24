@@ -5,11 +5,7 @@ namespace System\Profiles;
 
 class UnitProfile
 {
-
-
-	public function __construct(public int $id, public string $name, public string $category, public int $precision)
+	public function __construct(public int $id, public string $symbol, public string $name, public float $rate)
 	{
-
 	}
-
 }

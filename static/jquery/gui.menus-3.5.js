@@ -158,39 +158,6 @@ $(document).ready(function (e) {
 		e.preventDefault();
 	});
 
-	var jqroot_bal = $("#jqroot_bal"),
-		jqroot_sec = $("#jqroot_sec"),
-		jqroot_com = $("#jqroot_com");
-
-
-	const BALANCE_UPDATE = function () {
-		$.ajax({
-			data: {},
-			url: "acc/report/balupd",
-			type: "POST"
-		}).done(function (data) {
-			try { var json = JSON.parse(data); } catch (err) { return; }
-			if (json.currency != undefined && json.currency != undefined && json.currency != false && json.value != false) {
-				jqroot_bal.show();
-				jqroot_bal.html(json.value + " " + json.currency);
-			} else {
-				jqroot_bal.hide();
-			}
-			if (json.company != undefined && json.company != false) {
-				jqroot_com.html(json.company);
-			} else {
-				jqroot_com.html("N/A");
-			}
-			if (json.group != undefined && json.name != undefined && json.group != false && json.name != false) {
-				jqroot_sec.html("<span class=\"mediabond-hide\">" + json.group + ": </span>" + json.name);
-			} else {
-				jqroot_sec.html("N/A");
-			}
-		});
-	}
-
-	//setInterval(function () { BALANCE_UPDATE(); }, 10000);
-
 	$.fn.serialize = function (options) {
 		return $.param(this.serializeArray(options));
 	};

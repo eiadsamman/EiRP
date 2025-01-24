@@ -255,7 +255,7 @@ if ($doc_id)
 								FROM
 									mat_materials
 										JOIN mat_materialtype ON mattyp_id=mat_mattyp_id
-										JOIN mat_unit ON unt_id = mat_unt_id
+										JOIN matx_unit ON unt_id = mat_unitsystem
 										LEFT JOIN 
 											(SELECT CONCAT_WS(', ', matcatgrp_name, matcat_name) AS cat_alias , matcat_id 
 												FROM mat_category LEFT JOIN mat_categorygroup ON matcat_matcatgrp_id = matcatgrp_id

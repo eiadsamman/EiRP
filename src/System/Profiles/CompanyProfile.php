@@ -27,7 +27,7 @@ class CompanyProfile
 
 
 
-	public function __tostring(): string
+	public function __toString(): string
 	{
 		return $this->name;
 	}

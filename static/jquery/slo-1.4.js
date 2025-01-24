@@ -5,6 +5,7 @@ class SmartListObjectHandler {
 	range = null;
 	items_limit = null;
 	items_embeds = {};
+	join_delimiter = ", ";
 	constructor(initial = null, start = null, end = null) {
 		this.initial = initial;
 		this.output = false;
@@ -12,6 +13,15 @@ class SmartListObjectHandler {
 		this.items_limit = 5;
 	}
 	set() { }
+	specialChars(str) {
+		let output = str;
+		output = output.replace(/[\]\[\)\(\.\*\&\\\/]*/, "");
+		output = output.replace(/[أإاآ]/, "[أإاآ]");
+		output = output.replace(/[ةه]/, "[ةه]");
+		output = output.replace(/[يى]/, "[يى]");
+		return output;
+
+	}
 	clear() {
 		this.output = false;
 	}
@@ -31,12 +41,96 @@ class SmartListObjectHandler {
 		output += `<div data-return_id="${return_id}" data-embedIndex="${embedIndex}">`;
 		output += `<div>${title}</div>`;
 		output += highlight != null && highlight != "" ? `<span>${highlight}</span>` : ``;
-		output += `<p>${return_value}</p>`;
+
+		if (typeof return_value == "object") {
+			output += `<p>` + return_value.join(this.join_delimiter) + `</p>`;
+		} else {
+			output += `<p>${return_value}</p>`;
+		}
 		output += `</div>`;
 		return output;
 	}
 }
 
+class DatabaseHandler extends SmartListObjectHandler {
+	isLoading = true;
+	dataset = [];
+	xhttp = null;
+	role = null;
+	fetch_parameter = null;
+	constructor(initial = null, role) {
+		super(initial, null, null);
+		this.role = initial.attr('data-slo');
+		this.fetch_parameter = initial.attr('data-sloparam') === undefined ? false : this.fetch_parameter;
+		this.dropdown = false;
+		this.isLoading = false;
+	}
+
+	itemGenerator() {
+		return "";
+	}
+	async validate(input, exact = false) {
+		if (this.isLoading) return;
+		if (exact)
+			return (this.current !== false);
+		this.output = [];
+
+		const formData = new FormData(this.formMaterialList);
+		formData.append("role", this.role);
+		formData.append("query", input);
+		formData.append("limit", this.items_limit);
+		if (this.fetch_parameter) {
+			formData.append(this.fetch_parameter, "");
+		}
+
+		const response = await fetch('slo', {
+			method: 'POST',
+			mode: "cors",
+			cache: "no-cache",
+			credentials: "same-origin",
+			referrerPolicy: "no-referrer",
+			headers: {
+				"X-Requested-With": "fetch",
+				"Application-From": "same",
+				'Accept': 'application/json',
+			},
+			body: formData,
+		});
+		const payload = await response.json();
+		this.isLoading = false;
+		this.dataset = payload;
+		this.output = this.dataset;
+		if (this.initial.attr("default") !== undefined) {
+			let selected = this.dataset.find((e) => e.id == this.initial.attr("default"));
+			if (selected !== undefined) {
+				this.initial[0].slo.set(selected.id, selected.value)
+			}
+		}
+
+		return (this.output.length > 0);
+	}
+
+	generate() {
+		if (this.isLoading) return "";
+		this.items_embeds = {};
+		let buffer = "";
+		let index = 0;
+		if (this.output !== false) {
+			this.output.forEach(listitem => {
+				index++;
+				/* Use `value` instead of `id` when the loader dosen't provide an `id` attribute*/
+				this.items_embeds[index] = listitem;
+				buffer += super.itemGenerator(listitem.value, listitem.id ?? listitem.value, listitem.value, listitem.highlight, index);
+			});
+		}
+		return buffer;
+	}
+	toString(leading_zero = true) {
+		if (this.current == undefined || this.current === false) return "";
+		//return [this.current.id, this.current.value];
+		return [0, ""];
+	}
+}
 class ListHandler extends SmartListObjectHandler {
 	isLoading = true;
 	dataset = [];
@@ -48,6 +142,9 @@ class ListHandler extends SmartListObjectHandler {
 		this.dropdown = false;
 
 		if (dataSourceUrl) {
+			/**
+			 * Load provided URL
+			 */
 			fetch(dataSourceUrl, {
 				method: 'GET',
 				cache: "default",/*reload , default*/
@@ -57,11 +154,16 @@ class ListHandler extends SmartListObjectHandler {
 					"Content-Type": "application/json",
 				},
 			})
-				.then(response => response.json())
+				.then(response => {
+					this.isLoading = false;
+					return response.json();
+				})
 				.then((payload) => {
 					this.dataset = payload;
-					this.isLoading = false;
-
+					/**
+					 * If data attribute `default` is presented search server dataset for match and set corrisponding item as selected
+					 * Other wise set first element in the dataset list as selected
+					 */
 					if (initial.attr("default") !== undefined) {
 						let selected = this.dataset.find((e) => e.id == initial.attr("default"));
 						if (selected !== undefined) {
@@ -74,6 +176,9 @@ class ListHandler extends SmartListObjectHandler {
 				});
 		} else {
 			this.isLoading = false;
+			/**
+			 * Read predefined HTML DataList elements
+			 * */
 			$("#" + initial.attr("data-list")).children('option').each(function () {
 				buffer.push({
 					id: this.dataset.id ?? "",
@@ -91,18 +196,19 @@ class ListHandler extends SmartListObjectHandler {
 		}
 
 	}
-	specialChars(str) {
-		let output = str;
-		output = output.replace(/[\]\[\)\(\.\*\&\\\/]*/, "");
-		output = output.replace(/[أإاآ]/, "[أإاآ]");
-		output = output.replace(/[ةه]/, "[ةه]");
-		output = output.replace(/[يى]/, "[يى]");
-		return output;
-
-	}
 	itemGenerator() {
 		return "";
 	}
+	/**
+	 * Proccess user input
+	 * Search dataset using regular expression for matches
+	 * If module is set to dropdown, stop processing input and display all items instead
+	 * 
+	 * @param {string} input - User input text
+	 * @param {boolean} exact - Checks whether there is a selected item or not, and in either ways stop processing  
+	 * 
+	 * @returns {void}
+	 * */
 	validate(input, exact = false) {
 		if (this.isLoading) return;
 		if (exact)
@@ -117,6 +223,9 @@ class ListHandler extends SmartListObjectHandler {
 		let chunks_found_count = 0;
 
 		if (this.dropdown) {
+			/**
+			 * Stack first `items_limit` items
+			 */
 			for (let listitem of this.dataset) {
 				if (chunks_found_count > this.items_limit)
 					break;
@@ -124,6 +233,12 @@ class ListHandler extends SmartListObjectHandler {
 				chunks_found_count++
 			}
 		} else {
+			/**
+			 * Splits user input text at `spaces` and match each segment against each item using regular expression
+			 * Breaks on `items_limit` limit
+			 * Push matches on output stack
+			 * 
+			 */
 			let regeexp = null;
 			const chunks = input.split(" ");
 			for (let listitem of this.dataset) {
@@ -152,6 +267,11 @@ class ListHandler extends SmartListObjectHandler {
 			return true;
 		}
 	}
+
+	/**
+	 * Generates list items from output stack
+	 * @returns {void}
+	 */
 	generate() {
 		if (this.isLoading) return "";
 		this.items_embeds = {};
@@ -166,10 +286,6 @@ class ListHandler extends SmartListObjectHandler {
 			});
 		}
 		return buffer;
-	}
-	toString(leading_zero = true) {
-		if (this.current === false) return "";
-		return [this.current.id, this.current.value];
 	}
 }
 
@@ -439,52 +555,25 @@ class SmartListObject {
 		this.is_selectobject = false;
 		this.state = state.idle;
 		this.hadfocus = false;
-		this.handler = this.objectHandler();
+		this.handler = null;
+		this.handlerType();
 		this.events = { onselect: function () { }, ondeselect: function () { }, onkeydown: function (e) { }, onkeyup: function () { } }
-		this.parameters = this.htmltext.attr('data-sloparam');
 		this.init();
+		this.populate = this.populatingFunction;
+	}
 
-
-		this.populate = function () { };
-		if (this.handler instanceof SmartListObjectHandler) {
-			this.populate = this.populateByHandler;
+	/**
+	 * Libraries provided within this code
+	 */
+	async populatingFunction() {
+		if (await this.handler.validate(this.htmltext.val())) {
+			this.selection_win.html(this.handler.generate());
+			this.selection = this.selection_win.find(">div:first-child");
+			this.selection.addClass("active");
+			this.show();
 		} else {
-			this.populate = this.populateByAJAX;
+			this.hide();
 		}
-	}
-	populateByHandler() {
-		if (this.handler !== null) {
-			let validate = this.handler.validate(this.htmltext.val());
-			if (validate) {
-				this.selection_win.html(this.handler.generate());
-				this.selection = this.selection_win.find(">div:first-child");
-				this.selection.addClass("active");
-				this.show();
-			} else {
-				this.hide();
-			}
-		}
-	}
-	populateByAJAX() {
-		if (this.xhttp != null)
-			this.xhttp.abort();
-		this.xhttp = $.ajax({
-			type: 'POST',
-			url: 'slo',
-			data: slomerge({ 'role': this.role, 'query': this.htmltext.val(), 'limit': this.items_limit }, this.parameters)
-		}).done((data) => {
-			if (data != "") {
-				this.selection_win.css({ "visibility": "hidden", "display": "block", "position": "fixed" });
-				this.selection_win.html(data);
-				this.selection = this.selection_win.find(">div:first-child");
-				this.selection.addClass("active");
-				this.show();
-			} else {
-				this.hide();
-			}
-		}).fail((a, b, c) => {
-			this.state = state.idle;
-		});
 	}
 	init() {
 		this.htmltext.attr("autocomplete", "off");
@@ -513,37 +602,40 @@ class SmartListObject {
 				this.container.addClass(class_name);
 			});
 		}
-		if (this.htmltext.attr('data-slodefaultid') != undefined && this.htmltext.attr('data-slodefaultid') != "") {
+		if (this.htmltext.attr('data-slodefaultid') != undefined) {
 			this.htmlhidden.val(this.htmltext.attr('data-slodefaultid'));
-			this.stamp(stamp.valid)
+			this.stamp(stamp.valid);
 		}
 	}
-	objectHandler() {
-		let handler = null;
-		if (this.role == ":NUMBER") {
-			handler = new NumberHandler(this.htmltext.val() ?? null, this.htmltext.attr("data-rangestart") ?? null, this.htmltext.attr("data-rangeend") ?? null);
-		} else if (this.role == ":DATE") {
-			handler = new DateHandler(this.htmltext.val() ?? null, this.htmltext.attr("data-rangestart") ?? null, this.htmltext.attr("data-rangeend") ?? null);
-		} else if (this.role == ":LIST") {
-			handler = new ListHandler(this.htmltext);
 
+	async handlerType() {
+		let asynchandler = false;
+		if (this.role == ":NUMBER") {
+			this.handler = new NumberHandler(this.htmltext.val() ?? null, this.htmltext.attr("data-rangestart") ?? null, this.htmltext.attr("data-rangeend") ?? null);
+		} else if (this.role == ":DATE") {
+			this.handler = new DateHandler(this.htmltext.val() ?? null, this.htmltext.attr("data-rangestart") ?? null, this.htmltext.attr("data-rangeend") ?? null);
+		} else if (this.role == ":LIST") {
+			this.handler = new ListHandler(this.htmltext);
 		} else if (this.role == ":SELECT") {
 			this.container.addClass("slo-select");
 			this.htmltext.prop("readonly", true);
-			handler = new ListHandler(this.htmltext);
+			this.handler = new ListHandler(this.htmltext);
 			this.is_selectobject = true;
-			handler.dropdown = true;
+			this.handler.dropdown = true;
+		} else {
+			asynchandler = true;
+			this.handler = new DatabaseHandler(this.htmltext);
+			this.stamp(stamp.unvalid)
 		}
-		/* Initilize handlers */
-		if (handler !== null) {
-			handler.setItemsLimit(this.items_limit);
-			if (handler.validate(this.htmltext.val(), true)) {
-				this.set(handler.toString(true)[0], handler.toString(true)[1]);
-				this.stamped = true;
-			}
+		this.handler.setItemsLimit(this.items_limit);
+		//Set current selection to the first element without displaying the selection window
+		if (!asynchandler && this.handler.validate(this.htmltext.val(), true)) {
+			this.set(this.handler.toString(true)[0], this.handler.toString(true)[1]);
+			this.stamped = true;
 		}
-		return handler;
 	}
+
+
 	disable() {
 		this.disabled = true;
 		this.htmlhidden.prop("disabled", true);
@@ -666,6 +758,8 @@ class SmartListObject {
 		}
 	}
 	call_onselect() {
+
+		/* static\javascript\modules\invoicing\MaterialQuotation.js */
 		if (typeof (this.events.onselect) == "function") {
 			let embededIndex = this.selection.attr("data-embedIndex");
 			let embededObject = {};

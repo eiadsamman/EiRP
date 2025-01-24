@@ -19,7 +19,7 @@ export class CustomSearch extends Search {
 		});
 
 		try {
-			
+
 			let company = $(this.searchFrom.querySelector("[name=\"company\"]")).slo();
 
 			if (this.pana.navigator.state['company']) {
@@ -89,7 +89,9 @@ export class Post extends View {
 		this.vendorAttention = $("#attention").slo();
 		this.paymentTerm = $("#paymentTerm").slo();
 		this.ShippingTerm = $("#ShippingTerm").slo();
-		this.currencySelection = $("#currency").slo();
+		this.currencySelection = $("#currency").slo({
+			onselect: (e) => { console.log(e); }
+		});
 		this.formMaterialList = document.getElementById("formMaterialsList");
 		this.buttonPost = document.getElementById("appApplicationPost");
 

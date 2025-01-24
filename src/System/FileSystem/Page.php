@@ -7,6 +7,7 @@ class Page extends Data
 	private array $files = array();
 	protected \System\App $app;
 	private Data $inuse;
+	private array $map = ["download" => 187];
 	function __construct(\System\App &$app, int $language = 1)
 	{
 		$this->app      = $app;
@@ -78,7 +79,7 @@ class Page extends Data
 	{
 		return $this->inuse;
 	}
-	public function __invoke(int $id = null): Data|bool
+	public function __invoke(int|string $id = null): Data|bool
 	{
 		if ($id === null) {
 			return $this->inuse;
@@ -86,13 +87,14 @@ class Page extends Data
 			return $this->find($id);
 		}
 	}
-	public function find(int $id): Data|bool
+	public function find(int|string $id): Data|bool
 	{
-		if ($id != 0 && array_key_exists($id, $this->files)) {
+		if (gettype($id) == "integer" && $id != 0 && array_key_exists($id, $this->files)) {
 			return $this->files[$id];
-		} else {
-			return false;
+		} elseif (gettype($id) == "string" && array_key_exists($id, $this->map) && array_key_exists($this->map[$id], $this->files)) {
+			return $this->files[$this->map[$id]];
 		}
+		return false;
 	}
 	public function children(int $id): \Generator
 	{

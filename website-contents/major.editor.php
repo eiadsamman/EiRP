@@ -144,9 +144,12 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 	foreach ($database['fields'] as $fieldk => $fieldv) {
 		if ($fieldv[4] != "file") {
 			if ($fieldv[6] == true) { /*Allow field value updating*/
-				if (($fieldv[4] == 'hidden' || $fieldv[4] == 'text' || $fieldv[4] == 'textarea')) {
-					$q .= $smart . sqlvalue($fieldv[5], $_POST[$database['hash']['r'][$fieldk]], isset($_POST[$database['hash']['r'][$fieldk]]));
-
+				if (($fieldv[4] == 'hidden' || $fieldv[4] == 'text' || $fieldv[4] == 'textarea' || $fieldv[4] == 'enum')) {
+					if($fieldv[4] == 'enum'){
+						$q .= $smart . sqlvalue($fieldv[5], $_POST[$database['hash']['r'][$fieldk]][1], isset($_POST[$database['hash']['r'][$fieldk]][1]));
+					}else{
+						$q .= $smart . sqlvalue($fieldv[5], $_POST[$database['hash']['r'][$fieldk]], isset($_POST[$database['hash']['r'][$fieldk]]));
+					}
 				} elseif (($fieldv[4] == 'slo')) {
 
 					if ($fieldv[7] == ":LIST") {
@@ -169,7 +172,6 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 				}
 			} else {
 				if ($fieldv[4] == 'slo') {
-
 					$q .= $smart . sqlvalue($database['fields'][$fieldv[8]][5], $_POST[$database['hash']['r'][$fieldk]][1], isset($_POST[$database['hash']['r'][$fieldk]][1]));
 				}
 			}
@@ -184,7 +186,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 	foreach ($database['fields'] as $fieldk => $fieldv) {
 		if ($fieldv[4] != "file") {
 			if ($fieldv[6] == true) { /*Allow field value updating*/
-				if (($fieldv[4] == 'hidden' || $fieldv[4] == 'text' || $fieldv[4] == 'textarea')) {
+				if (($fieldv[4] == 'hidden' || $fieldv[4] == 'text' || $fieldv[4] == 'textarea' || $fieldv[4] == 'enum')) {
 					$q .= $smart . "`$fieldk`=VALUES(`$fieldk`)";
 				} elseif (($fieldv[4] == 'slo')) {
 					$q .= $smart . "`$fieldk`=VALUES(`$fieldk`)";
@@ -299,6 +301,11 @@ if ($fs()->permission->delete && isset($_POST['method']) && $_POST['method'] == 
 	exit;
 }
 
+/**
+ * 
+ * ??
+ * 
+ */
 
 if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepare'], $_POST['id']) && (!isset($database['readonly']) || !$database['readonly'])) {
 	$_POST['id'] = (int) $_POST['id'];
@@ -351,12 +358,28 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 				</label>
 				
 				</div>";
+		} elseif ($fieldv[4] == 'enum' && enum_exists($fieldv[7])) {
+			$enum = $fieldv[7]::tryFrom((int)$cleaned[$fieldk])->toString();
+
+			echo "<div class=\"form\">
+				<label>
+					<h1>{$fieldv[1]}</h1>
+					<div class=\"btn-set\">
+						<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" 
+							data-source=\"{$fieldv[8]}\"
+							data-slo=\":LIST\" class=\"flex\" style=\"min-width:250px;\"
+							" . (isset($cleaned[$fieldk]) ? " value=\"$enum\" data-slodefaultid=\"{$cleaned[$fieldk]}\" " : "") . " 
+							name=\"{$database['hash']['r'][$fieldk]}\" />
+					</div>
+				</label>
+				</div>";
 		} elseif ($fieldv[4] == 'slo') {
 			if ($fieldv[7] == ":LIST") {
 				echo "<div class=\"form\"><label>
 					<h1>{$fieldv[1]}</h1>
 					<div class=\"btn-set\">
-						<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" data-list=\"{$fieldv[8]}\"
+						<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" 
+							data-source=\"{$fieldv[8]}\"
 							data-slo=\"{$fieldv[7]}\" class=\"flex\" style=\"min-width:250px;\"
 							" . (isset($cleaned[$fieldk]) ? " value=\"" . $cleaned[$fieldk] . "\" " : "") . " 
 							" . (isset($cleaned[$fieldv[8]]) ? " data-slodefaultid=\"" . $cleaned[$fieldv[8]] . "\" " : "") . " name=\"{$database['hash']['r'][$fieldk]}\" />
@@ -489,6 +512,12 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 				} elseif ($fieldv[4] == 'slo' && (isset($searchCriteria['search_' . $database['hash']['r'][$fieldk]][1]) && (int) ($searchCriteria['search_' . $database['hash']['r'][$fieldk]][1]) != 0)) {
 					$searchQuery .= " AND {$fieldv[8]} = " . ((int) $searchCriteria['search_' . $database['hash']['r'][$fieldk]][1]);
 					$searchOccurrenece++;
+
+				} elseif ($fieldv[4] == 'enum') {
+					if ($fieldv[5] == "int" && is_numeric($searchCriteria['search_' . $database['hash']['r'][$fieldk]])) {
+						$searchQuery .= " AND {$fieldk} = " . (int) $searchCriteria['search_' . $database['hash']['r'][$fieldk]];
+						$searchOccurrenece++;
+					}
 				} elseif ($fieldv[4] == 'bool') {
 					//$searchQuery.=" AND {$fieldk} = ".((int)$searchCriteria['search_'.$fieldk][1]);
 				} elseif ($fieldv[4] == 'file') {
@@ -573,6 +602,7 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 
 					if ($fieldv[4] == "bool") {
 						echo ((int) $row[$fieldk] == 1 ? "Yes" : "");
+
 					} elseif ($fieldv[4] == "file") {
 						if (is_null($row[$fieldk . "_count"])) {
 							echo "-";
@@ -584,6 +614,13 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 							echo (is_null($row[$fieldk]) ? $fieldv[12] : htmlentities($row[$fieldk]));
 						} elseif ($fieldv[4] == "textarea") {
 							echo (htmlentities(is_null($row[$fieldk]) ? "" : $row[$fieldk])); //nl2br
+						} elseif ($fieldv[4] == "enum") {
+							if (enum_exists($fieldv[7])) {
+								$enum = $fieldv[7]::tryFrom((int)$row[$fieldk])->toString();
+								echo htmlentities($enum);
+							} else {
+								echo "-";
+							}
 						} else {
 							echo htmlentities(is_null($row[$fieldk]) ? "" : $row[$fieldk]);
 						}
@@ -647,7 +684,7 @@ $grem_main->menu()->open();
 <!-- <input disabled="disabled" id="jQnavFirst" type="button" value="First" class="edge-left" /> -->
 <input disabled="disabled" class="pagination prev edge-left" value="&#xe91a;" id="jQnavPrev" type="button" />
 <input type="text" id="js-input_page-current" placeholder="#" data-slo=":NUMBER" style="width:80px;text-align:center" data-rangestart="1" value="0"
-	data-rangeend="1" />
+	   data-rangeend="1" />
 <input disabled="disabled" class="pagination next edge-right" value="&#xe91d;" id="jQnavNext" type="button" value="Next" />
 <input type="button" style="text-align:center;display:none" id="jQnavTitle" value="0 pages" />
 <span type="text" style="text-align:center;min-width:80px;" readonly id="jQnavTotal">0 records</span>
@@ -664,7 +701,7 @@ $grem_main->article()->open();
 
 <table class="hover" id="jQmtable" style="margin-top:1px;">
 	<thead>
-		<tr data-id="0" style="position: sticky; top: calc(var(--root--menubar-height) + 115px - var(--gremium-header-toggle));">
+		<tr data-id="0" style="position: sticky; top: calc(var(--root--menubar-height) + 100px - var(--gremium-header-toggle));z-index:99">
 			<?php
 			$colspan = 0
 				+ ($fs()->permission->delete && !(isset($database['disable-delete']) && $database['disable-delete']) ? 1 : 0)
@@ -720,6 +757,8 @@ $grem_main->terminate();
 				echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input $autofocus type=\"text\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" class=\"text\" /></div></label></div>";
 			} elseif ($fieldv[4] == 'slo') {
 				echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input $autofocus type=\"text\" data-slo=\"{$fieldv[7]}\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" /></div></label></div>";
+			} elseif ($fieldv[4] == 'enum') {
+				echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><input $autofocus type=\"text\" data-slo=\":LIST\" data-source=\"{$fieldv[8]}\" class=\"flex\" name=\"search_{$database['hash']['r'][$fieldk]}\" /></div></label></div>";
 			} elseif ($fieldv[4] == 'bool') {
 				echo "<div class=\"form\"><label><h1>{$fieldv[1]}</h1><div class=\"btn-set\"><label><input $autofocus type=\"checkbox\" name=\"search_{$database['hash']['r'][$fieldk]}\" />{$fieldv[1]}</label></div></label></div>";
 			} elseif ($fieldv[4] == 'textarea') {
@@ -947,6 +986,7 @@ $grem_main->terminate();
 							url: '<?= $fs()->dir; ?>',
 							data: _ser,
 						}).done(function (data) {
+							console.log(data)
 							$form.find("input,button,textarea").prop("disabled", false);
 							$form.find("#jQsubmit").focus();
 
@@ -962,12 +1002,16 @@ $grem_main->terminate();
 							if (json.result == true) {
 								if (json.method == 0) {
 									messagesys.success("Record added successfully");
+									modal.close();
+									modal.destroy();
 									Populate();
 								} else {
 									messagesys.success("Record modified successfully");
+									modal.close();
+									modal.destroy();
 									Populate();
 								}
-								modal.destroy();
+								
 							} else {
 								messagesys.failure(json.string);
 							}

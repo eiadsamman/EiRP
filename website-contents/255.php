@@ -2,18 +2,17 @@
 
 $r = $app->db->query(
 	"SELECT
-	mat_id,mat_long_id,mat_name,cat_alias,mattyp_name,unt_name,unt_decim,
+	mat_id,mat_long_id,mat_name,cat_alias,mattyp_name,
 	SUM(pols_issued_qty) AS _matsum
 	
 FROM
 	inv_records 
 	JOIN (
 		SELECT 
-			mat_id,mat_long_id,mat_name,cat_alias,mattyp_name,unt_name,unt_decim
+			mat_id,mat_long_id,mat_name,cat_alias,mattyp_name
 		FROM
 			mat_materials
 				JOIN mat_materialtype ON mattyp_id=mat_mattyp_id
-				JOIN mat_unit ON unt_id = mat_unt_id
 				LEFT JOIN 
 					(SELECT CONCAT_WS(', ', matcatgrp_name, matcat_name) AS cat_alias , matcat_id 
 						FROM mat_category LEFT JOIN mat_categorygroup ON matcat_matcatgrp_id = matcatgrp_id
@@ -29,8 +28,6 @@ GROUP BY
 
 
 echo "<table>";
-
-
 echo "<tbody>";
 if($r){
 	while($row=$r->fetch_assoc()){

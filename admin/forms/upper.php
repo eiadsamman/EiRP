@@ -109,7 +109,7 @@ $SmartListObject  = new SmartListObject($app);
 						<a id="header-menu-button" title="{$fs()->id}: {$fs()->title}, (Ctrl+m)" href="{$fs()->dir}"><span style="font-family:icomoon4;">&#xe9bd;</span></a>
 						<span class="gap" style="text-align:right;"></span>
 						<a href="{$fs()->dir}/?--sys_sel-change=company" tabindex="-1" title="Running Company" id="jqroot_com">$ui_company</a>
-						<a href="{$fs()->dir}/?--sys_sel-change=account" tabindex="-1" title="Running Account" id="jqroot_sec">$ui_account<div class="mediabond-show">$ui_balance</div></a>
+						<a href="{$fs()->dir}/?--sys_sel-change=account" tabindex="-1" title="Running Account" id="jqroot_sec">$ui_account<div class="mediabond-show" id="jqroot_balmin">$ui_balance</div></a>
 						<span class="mediabond-hide" id="jqroot_bal">$ui_balance</span>
 						<a tabindex="-1" class="mediabond-hide toggleLightMode" href="{$fs()->dir}/" title="Toggle Dark Mode"><span style="font-family:icomoon4;">&#xe9d4;</span></a>
 						<a href="{$fs(27)->dir}/" tabindex="-1" id="header-menu-useraccount-button" title="User Settings"><span style="font-family:icomoon4;">&#xe971;</span></a>

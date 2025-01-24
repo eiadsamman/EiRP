@@ -613,6 +613,7 @@ export class Post extends View {
 
 					$("#issuer-account-balance").html(payload.balance);
 					$("#jqroot_bal").html(payload.balance + " " + payload.currency);
+					$("#jqroot_balmin").html(payload.balance + " " + payload.currency);
 
 					if (payload.type == "receipt" || payload.type == "payment") {
 						messagesys.success("Transaction `" + payload.insert_id + "` posted successfully");

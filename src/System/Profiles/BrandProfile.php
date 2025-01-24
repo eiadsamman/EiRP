@@ -3,9 +3,17 @@ declare(strict_types=1);
 
 namespace System\Profiles;
 
+use System\Attachment\File;
+
 class BrandProfile
 {
-	public function __construct(public int $id, public string $name, public ?string $logo = null)
+
+	public string $name;
+	public array $attachments = [];
+
+	public function __construct(public int $id, string $name)
 	{
+		$this->name = $name;
+
 	}
 }
