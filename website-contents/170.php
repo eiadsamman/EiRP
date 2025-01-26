@@ -1,10 +1,10 @@
 <?php
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 
 if ($app->xhttp) {
 
-	$accounting  = new \System\Finance\Accounting($app);
+	$accounting  = new \System\Controller\Finance\Accounting($app);
 	$perpage_val = 20;
 
 	$payload = json_decode(file_get_contents('php://input'), true);

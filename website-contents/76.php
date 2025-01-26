@@ -1,8 +1,8 @@
 <?php
 
-use System\Individual\Individual;
+use System\Controller\Individual\Individual;
 
-$controller = new System\Finance\StatementOfAccount\Snapview($app);
+$controller = new System\Controller\Finance\StatementOfAccount\Snapview($app);
 $controller->criteria->setCurrentPage(1);
 $controller->criteria->setRecordsPerPage(4);
 

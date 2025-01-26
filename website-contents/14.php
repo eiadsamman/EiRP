@@ -1,5 +1,5 @@
 <?php
-use System\Personalization\Bookmark;
+use System\Controller\Personalization\Bookmark;
 $bookmarks = new Bookmark($app);
 $limit = 0;
 foreach ($bookmarks->list() as $bookmark) {

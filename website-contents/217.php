@@ -1,5 +1,5 @@
 <?php
-use System\Graphics\SVG\CurveRelative;
+use System\Lib\Graphics\SVG\CurveRelative;
 
 if (!$app->xhttp && $app->user->company->id) {
 	echo "<div class=\"accounts-overview\"><div class=\"tickets\" data-uri=\"{$fs(217)->dir}\">";
@@ -8,7 +8,7 @@ if (!$app->xhttp && $app->user->company->id) {
 	$curve = new CurveRelative(12, 10, -.5);
 	$accounts_count = 4;
 
-	$ident = \System\Personalization\Identifiers::SystemCountAccountSelection->value;
+	$ident = \System\Controller\Personalization\Identifiers::SystemCountAccountSelection->value;
 
 	$date_object = new \DateTime();
 	$date_object->modify("-6 day");

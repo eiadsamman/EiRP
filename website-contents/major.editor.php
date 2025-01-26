@@ -1,9 +1,9 @@
 <?php
 
-use System\IO\AttachLib;
-use System\Template\Gremium\Gremium;
-use System\Timeline\Action;
-use System\Timeline\Timeline;
+use System\Lib\AttachLib;
+use System\Layout\Gremium\Gremium;
+use System\Controller\Timeline\Action;
+use System\Controller\Timeline\Timeline;
 
 
 /*
@@ -250,7 +250,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 			$tl = new Timeline($app);
 
 			foreach ($database['timeline'] as $module) {
-				if (gettype($module) == "object" && get_class($module) == 'System\Timeline\Module') {
+				if (gettype($module) == "object" && get_class($module) == 'System\Controller\Timeline\Module') {
 					$tl->register($module, $idvalue == 0 ? Action::Create : Action::Modify, $affected_id);
 				}
 			}

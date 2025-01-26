@@ -1,5 +1,5 @@
 <?php
-$predefined=new \System\Finance\PredefinedRules($app);
+$predefined=new \System\Controller\Finance\PredefinedRules($app);
 $defines   =$predefined->paymentRules();
 
 if (sizeof($defines) > 0) {

@@ -1,8 +1,8 @@
 <?php
-use System\Finance\AccountRole;
-use System\Finance\Forex;
-use System\Template\Gremium;
-use System\Finance\Account;
+use System\Controller\Finance\AccountRole;
+use System\Controller\Finance\Forex;
+use System\Layout\Gremium;
+use System\Controller\Finance\Account;
 use System\SmartListObject;
 
 
@@ -25,7 +25,7 @@ if ($app->xhttp) {
 			$statementNature = !empty($_POST['statement-nature']) && (int) $_POST['statement-nature'][1] != 0 ? (int) $_POST['statement-nature'][1] : 0;
 
 			if ($statementNature == 0) {
-				throw new System\Exceptions\Finance\TransactionException("Select a valid statmenet type");
+				throw new System\Core\Exceptions\Finance\TransactionException("Select a valid statmenet type");
 			}
 
 			$accountRole              = [new AccountRole(), new AccountRole()];
@@ -33,11 +33,11 @@ if ($app->xhttp) {
 			$accountRole[1]->inbound  = true;
 
 			if ($statementNature == 1) {
-				$transaction = new System\Finance\Transaction\Receipt($app);
+				$transaction = new System\Controller\Finance\Transaction\Receipt($app);
 				$transaction->issuerAccount(new Account($app, (int) $_POST['target-account'][1], $accountRole[0]));
 				$transaction->targetAccount(new Account($app, (int) $_POST['source-account'][1], $accountRole[1]));
 			} else {
-				$transaction = new System\Finance\Transaction\Payment($app);
+				$transaction = new System\Controller\Finance\Transaction\Payment($app);
 				$transaction->issuerAccount(new Account($app, (int) $_POST['source-account'][1], $accountRole[0]));
 				$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1], $accountRole[1]));
 			}
@@ -80,13 +80,13 @@ if ($app->xhttp) {
 			$result['errno'] = 300;
 			$result['error'] = 'Uknown error, contact system administrator';
 			$app->errorHandler->logError($e);
-		} catch (System\Exceptions\Finance\TransactionException $e) {
+		} catch (System\Core\Exceptions\Finance\TransactionException $e) {
 			$result['errno'] = $e->getCode();
 			$result['error'] = $e->getMessage();
-		} catch (System\Exceptions\Finance\AccountNotFoundException $e) {
+		} catch (System\Core\Exceptions\Finance\AccountNotFoundException $e) {
 			$result['errno'] = 203;
 			$result['error'] = $e->getMessage();
-		} catch (System\Exceptions\Finance\ForexException $e) {
+		} catch (System\Core\Exceptions\Finance\ForexException $e) {
 			$result['errno'] = 300;
 			$result['error'] = "Forex conversion failed";
 		} catch (\mysqli_sql_exception $e) {
@@ -122,7 +122,7 @@ if ($app->xhttp) {
 	/**
 	 * Open transaction record
 	 */
-	$statement = new System\Finance\Transaction\Statement($app);
+	$statement = new System\Controller\Finance\Transaction\Statement($app);
 	$read      = $statement->read($id ?? 0);
 	if (!$read) {
 		$grem = new Gremium\Gremium();
@@ -298,7 +298,7 @@ if ($app->xhttp) {
 		<div class="form">
 			<label style="flex:0" for="">
 				<h1>Attachments</h1>
-				<div class="btn-set">
+				<div class="btn-set js_upload_container">
 					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
 					<input type="button" id="js_upload_trigger" class="js_upload_trigger edge-right edge-left" value="Upload" />
 					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
@@ -308,13 +308,13 @@ if ($app->xhttp) {
 								<tbody>
 									<?php
 									foreach ($read->attachments as $attachment) {
-										echo \System\Attachment\Template::itemDom($attachment->id, "image", $attachment->name, true, 'attachments');
+										echo \System\Lib\Upload\Template::itemDom($attachment->id, "image", $attachment->name, true, 'attachments');
 									}
 									$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
-									$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
+									$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Lib\Upload\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
 									if ($r_release) {
 										while ($row_release = $r_release->fetch_assoc()) {
-											echo \System\Attachment\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
+											echo \System\Lib\Upload\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
 										}
 									}
 									?>
@@ -355,10 +355,10 @@ if ($app->xhttp) {
 	?>
 	<div>
 		<datalist id="js-ref_creditor-list" style="display: none;">
-			<?= $SmartListObject->userAccountsOutbound($read->creditor ? $read->creditor->id : null, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
+			<?= $SmartListObject->userAccountsOutbound($read->creditor ? $read->creditor->id : null, null, \System\Controller\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
 		</datalist>
 		<datalist id="js-ref_debitor-list" style="display: none;">
-			<?= $SmartListObject->userAccountsInbound($read->debitor ? $read->debitor->id : null, null, \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
+			<?= $SmartListObject->userAccountsInbound($read->debitor ? $read->debitor->id : null, null, \System\Controller\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
 		</datalist>
 		<datalist id="js-ref_nature-list">
 			<?= $SmartListObject->financialTransactionNature($read->type->value); ?>

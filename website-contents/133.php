@@ -1,6 +1,6 @@
 <?php
 
-use System\Individual\Attendance\Registration;
+use System\Controller\Individual\Attendance\Registration;
 
 if ($_SERVER['REQUEST_METHOD'] != "POST") {
 	exit;

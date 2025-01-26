@@ -1,11 +1,11 @@
 <?php
-use System\Finance\Transaction\Payment;
+use System\Controller\Finance\Transaction\Payment;
 use System\Models\Branding;
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 $perpage_val = 20;
 $id          = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
-$statement   = new System\Finance\Transaction\Statement($app);
+$statement   = new System\Controller\Finance\Transaction\Statement($app);
 $read        = $statement->read($id ?? 0);
 
 if ($read) {

@@ -1,5 +1,5 @@
 <?php
-use System\Template\Gremium\Gremium;
+use System\Layout\Gremium\Gremium;
 
 $imageMimes = array(
 	"image/jpeg",
@@ -64,7 +64,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "update") {
 				LEFT JOIN labour_method ON lbr_mth_id = lbr_payment_method
 				LEFT JOIN workingtimes ON lwt_id = lbr_workingtimes
 				LEFT JOIN labour_transportation ON lbr_transportation=trans_id
-				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . \System\Attachment\Type::HrPerson->value . " AND up_deleted = 0
+				LEFT JOIN uploads ON up_rel=lbr_id AND up_pagefile=" . \System\Lib\Upload\Type::HrPerson->value . " AND up_deleted = 0
 				LEFT JOIN labour_type_salary ON lbr_typ_sal_lty_id = usr_jobtitle AND lbr_typ_sal_lwt_id = lbr_workingtimes AND lbr_typ_sal_method = lbr_payment_method
 				LEFT JOIN companies ON comp_id = usr_entity
 		WHERE
@@ -81,7 +81,7 @@ $q_socialid_uploads_query =
 		FROM uploads 
 		WHERE 
 			(" . ($arr_array_input != false ? " up_rel={$arr_array_input['usr_id']} OR " : "") . " (up_rel=0 AND up_user={$app->user->info->id}))
-			AND up_deleted=0 AND (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " OR up_pagefile=" . \System\Attachment\Type::HrID->value . ") ORDER BY up_rel DESC, up_date DESC;";
+			AND up_deleted=0 AND (up_pagefile=" . \System\Lib\Upload\Type::HrPerson->value . " OR up_pagefile=" . \System\Lib\Upload\Type::HrID->value . ") ORDER BY up_rel DESC, up_date DESC;";
 
 $r = $app->db->query($q_socialid_uploads_query);
 while ($row_socialid_uploads = $r->fetch_assoc()) {
@@ -219,7 +219,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 	<div class="form predefined">
 		<label for="">
 			<h1>ID Card</h1>
-			<div class="btn-set">
+			<div class="btn-set js_upload_container">
 				<span id="js_upload_count_1" class="js_upload_count"><span>0</span></span>
 				<input type="button" id="js_upload_trigger_1" class="js_upload_trigger" value="Upload" />
 				<input type="file" id="js_uploader_btn_1" class="js_uploader_btn" multiple="multiple" accept="image/*" />
@@ -246,7 +246,7 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 	<div class="form predefined">
 		<label for="">
 			<h1>Personal photo</h1>
-			<div class="btn-set">
+			<div class="btn-set js_upload_container">
 				<span id="js_upload_count" class="js_upload_count"><span>0</span></span>
 				<input type="button" id="js_upload_trigger" class="js_upload_trigger " style="max-width:100px" value="Upload" />
 				<input type="file" id="js_uploader_btn" class="js_uploader_btn" accept="image/*" />
@@ -255,8 +255,8 @@ if (($arr_array_input != false && $fs(227)->permission->edit) || ($arr_array_inp
 						<table class="hover">
 							<tbody>
 								<?php
-								if (isset($arr_array_uploads[\System\Attachment\Type::HrPerson->value]) && is_array($arr_array_uploads[\System\Attachment\Type::HrPerson->value])) {
-									foreach ($arr_array_uploads[\System\Attachment\Type::HrPerson->value] as $fileIndex => $file) {
+								if (isset($arr_array_uploads[\System\Lib\Upload\Type::HrPerson->value]) && is_array($arr_array_uploads[\System\Lib\Upload\Type::HrPerson->value])) {
+									foreach ($arr_array_uploads[\System\Lib\Upload\Type::HrPerson->value] as $fileIndex => $file) {
 										echo UploadDOM($fileIndex, in_array($file[3], $imageMimes) ? "image" : "document", $file[0], ((int) $file[4] == 0 ? false : true), "perosnal_image");
 									}
 								}

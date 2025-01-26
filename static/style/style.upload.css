@@ -2,9 +2,14 @@
 	display: none !important;
 }
 
-.js_upload_count {
+.js_upload_container {
 	position: relative;
+}
+
+.js_upload_count {
+
 	padding-right: 22px !important;
+	white-space: nowrap !important;
 }
 
 .js_upload_count::before {
@@ -26,20 +31,21 @@
 
 .js_upload_list {
 	position: absolute;
+	top: 100%;
 	width: 0px;
 	z-index: 101;
 	padding: 0px !important;
-	visibility: hidden;
+
 }
 
-.js_upload_list>div {
+
+
+.js_upload_list > div {
 	position: absolute;
 	display: none;
-	visibility: visible;
 	border: solid 1px #aaa;
 	top: 100%;
 	margin-top: 2px;
-
 	min-width: 200px;
 	min-height: 30px;
 	max-height: 221px;
@@ -47,8 +53,14 @@
 	overflow-x: hidden;
 	background-color: var(--root-ribbon-menu-background-color);
 	border-collapse: collapse;
+	padding: 3px;
+	border: solid 1px var(--input_border-color);
+	box-shadow: 0px 0px 8px rgba(50, 50, 50, 0.1);
+	border-radius: var(--input_border-radius);
 
-	border: solid 1px var(--root-ribbon-border-color);
+	&.visible {
+		display: block;
+	}
 
 	/* border-color: rgba(82, 168, 236, .75);
 	-webkit-box-shadow: 0 0 4px rgba(82, 168, 236, .7);
@@ -57,10 +69,10 @@
 
 }
 
-.js_upload_list>div>table>tbody>tr>td.content {
+.js_upload_list > div > table > tbody > tr > td.content {
 	width: 100%;
 }
 
-.js_upload_list>div>table>tbody>tr>td.progress {
+.js_upload_list > div > table > tbody > tr > td.progress {
 	text-align: center;
 }

@@ -1,10 +1,10 @@
 <?php
 //warehouse/grir/new/
 
-use System\Finance\Accounting;
-use System\Finance\DocumentException;
-use System\Finance\DocumentMaterialListException;
-use System\Finance\Invoice;
+use System\Controller\Finance\Accounting;
+use System\Controller\Finance\DocumentException;
+use System\Controller\Finance\DocumentMaterialListException;
+use System\Controller\Finance\Invoice;
 use System\SmartListObject;
 
 $invoice 	= new Invoice($app);
@@ -162,7 +162,7 @@ if ($doc_id)
 		$chain	= $invoice->Chain($doc_id);
 
 		if (sizeof($chain) < 3 || $chain[2] != $doc_id) {
-			throw new \System\Finance\DocumentMaterialListException("Requested document not found", 31001);
+			throw new \System\Controller\Finance\DocumentMaterialListException("Requested document not found", 31001);
 		}
 		$doc_rm = $invoice->GetMaterialRequestDoc($chain[0]);
 		$doc_rfq = $invoice->GetPurchaseQuotationDoc($chain[1]);

@@ -1,5 +1,5 @@
 <?php
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 $arr_feild = array(
 	"gender" => array("Gender", "G000", "usr_gender"),
@@ -47,7 +47,7 @@ function GetEmployeesList(&$app, $fs, $simulate_template, &$grem)
 				LEFT JOIN labour_shifts ON lsf_id=lbr_shift
 				LEFT JOIN user_employeeselection AS sel_empusr ON sel_usremp_emp_id = lbr_id AND sel_usremp_usr_id = {$app->user->info->id}
 				LEFT JOIN gender ON gnd_id = usr_gender
-				LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " ) AND up_rel=lbr_id AND up_deleted = 0 
+				LEFT JOIN uploads ON (up_pagefile=" . \System\Lib\Upload\Type::HrPerson->value . " ) AND up_rel=lbr_id AND up_deleted = 0 
 		WHERE
 			( (usr_role & b'001') > 0 ) AND lbr_resigndate IS NULL AND usr_entity = {$app->user->company->id}
 		GROUP BY

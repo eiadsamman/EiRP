@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace System\Profiles;
 
-use System\Finance\Currency;
-use System\Finance\AccountRole;
+use System\Controller\Finance\Currency;
+use System\Controller\Finance\AccountRole;
 
-use System\Finance\Term\Asset;
-use System\Finance\Term\Equity;
-use System\Finance\Term\IncomeStatement;
-use System\Finance\Term\Liability;
+use System\Controller\Finance\Term\Asset;
+use System\Controller\Finance\Term\Equity;
+use System\Controller\Finance\Term\IncomeStatement;
+use System\Controller\Finance\Term\Liability;
 
 class AccountProfile
 {

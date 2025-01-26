@@ -1,5 +1,5 @@
 <?php
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 if ($app->xhttp) {
 	$payload = json_decode(file_get_contents('php://input'), true);

@@ -1,5 +1,5 @@
 <?php
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 if (isset($_POST['method']) && $_POST['method'] == 'changepassword') {
 	$r = $app->db->query("SELECT usr_password FROM users WHERE usr_id={$app->user->info->id};");

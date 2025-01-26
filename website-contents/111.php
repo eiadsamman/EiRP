@@ -1,6 +1,6 @@
 <?php
 
-use System\FileSystem\Page;
+use System\Core\FileSystem\Page;
 
 if (isset($_POST['glyph'])) {
 	if ($app->db->query("UPDATE pagefile SET trd_attrib4=" . ($_POST['glyph'] == "" ? "NULL" : "'{$_POST['glyph']}'") . " WHERE trd_id=" . ((int)$_POST['id']) . "")) {
@@ -121,7 +121,7 @@ function inner(Page $fs, int $id)
 {
 	static $cnt = 1;
 	$check = true;
-	$f = new  \System\FileSystem\Data();
+	$f = new  \System\Core\FileSystem\Data();
 	foreach ($fs->children($id) as $file_id => $file) {
 
 		$cnt += $check ? 1 : 0;
@@ -154,7 +154,7 @@ function inner(Page $fs, int $id)
 	<tbody id="jQoutput">
 		<?php
 
-		$f = new  \System\FileSystem\Data();
+		$f = new  \System\Core\FileSystem\Data();
 		foreach ($fs->children(0) as $file_id => $file) {
 			$f = $file;
 			if ($f->visible == true) {

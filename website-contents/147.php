@@ -1,5 +1,5 @@
 <?php
-use System\Timeline\Module;
+use System\Controller\Timeline\Module;
 
 $database = array(
 	'table' => 'companies',
@@ -15,7 +15,7 @@ $database = array(
 		'comp_name' => [null, 'Name', true, null, 'text', 'string', true, null, null],
 
 
-		'file_logo' => [null, 'Logo', true, null, 'file', System\Attachment\Type::CompanyLogo->value, true, null, null],
+		'file_logo' => [null, 'Logo', true, null, 'file', System\Lib\Upload\Type::CompanyLogo->value, true, null, null],
 
 		'comp_tellist' => [null, 'Contact numbers', false, null, 'textarea', 'string', true, null, null],
 		'comp_emaillist' => [null, 'Contact Emails', false, null, 'textarea', 'string', true, null, null],

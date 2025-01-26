@@ -1,5 +1,5 @@
 <?php
-use System\Graphics\SVG\CurveRelativePositive;
+use System\Lib\Graphics\SVG\CurveRelativePositive;
 
 
 if (!$app->xhttp && $app->user->company->id) {
@@ -17,11 +17,11 @@ if (!$app->xhttp && $app->user->company->id) {
 	$date_end_shift   = $date_end->modify("+2 month");
 
 	try {
-		$att_reports = new System\Individual\Attendance\Reports($app);
+		$att_reports = new System\Controller\Individual\Attendance\Reports($app);
 		$curratt     = $att_reports->OngoingAttendance($app->user->company->id);
-		$ind_reports = new System\Individual\Reports($app);
+		$ind_reports = new System\Controller\Individual\Reports($app);
 		$totindv     = $ind_reports->RegisteredEmployees($app->user->company->id);
-	} catch (\System\Exceptions\Instance\SQLException $e) {
+	} catch (\System\Core\Exceptions\Instance\SQLException $e) {
 		$curratt = 0;
 		$totindv = 0;
 	}

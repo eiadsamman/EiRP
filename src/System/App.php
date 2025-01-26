@@ -3,18 +3,19 @@ declare(strict_types=1);
 
 namespace System;
 
-use System\Exceptions\HR\InactiveAccountException;
-use System\Exceptions\HR\InvalidLoginException;
-use System\Finance\Currency;
+use System\Core\Exceptions\HR\InactiveAccountException;
+use System\Core\Exceptions\HR\InvalidLoginException;
+use System\Controller\Finance\Currency;
 use System\Models\Branding;
+use System\Routes\Routes;
 use System\Views\Views;
 
 //$__pagevisitcountexclude = array(20, 19, 33, 207, 27, 3, 35, 191, 186, 187, 180);
 class App
 {
 	public string $id;
-	public readonly MySQL $db;
-	public readonly Individual\User $user;
+	public readonly Core\MySQL $db;
+	public readonly Controller\Individual\User $user;
 	public string $broadcast = "";
 	public Currency $currency;
 	public ?array $currencies;
@@ -25,7 +26,7 @@ class App
 	public int $base_permission = 0;
 	public ResponseStatus $responseStatus;
 	public bool $xhttp = false;
-	public \System\Log\ErrorHandler $errorHandler;
+	public \System\Core\Log\ErrorHandler $errorHandler;
 	public const PERMA_ID = array(
 		"index" => 19,
 		"login" => 20,
@@ -34,13 +35,14 @@ class App
 	);
 	public string $root;
 	public string $http_root;
-	public Settings $settings;
+	public Core\Settings $settings;
 
 	public ?Views $view;
+	public ?Routes $route;
 
-	public \System\FileSystem\Page $file;
+	public \System\Core\FileSystem\Page $file;
 	protected array $permissions_array = array();
-	private string|null $route = null;
+	private string|null $uri = null;
 
 	function __construct(string $root, string $settings_file, ?bool $cache = true)
 	{
@@ -50,11 +52,11 @@ class App
 
 		/* Create HTTP response status code instance */
 		$this->responseStatus = new ResponseStatus();
-		$this->errorHandler   = new \System\Log\ErrorHandler($this->root . "/admin/error.log");
+		$this->errorHandler   = new \System\Core\Log\ErrorHandler($this->root . "/admin/error.log");
 
 
 		/* Get System settings */
-		$this->settings = new Settings($this->root . $settings_file);
+		$this->settings = new Core\Settings($this->root . $settings_file);
 		if (!$this->settings->read()) {
 			$this->errorHandler->customError("Reading setting file failed");
 			$this->responseStatus->InternalServerError->response();
@@ -86,11 +88,11 @@ class App
 		session_start();
 
 
-		$this->unit=  new \System\Unit();
-		$this->id = substr(md5(session_id() . $this->broadcast), 0, 6);
+		$this->unit = new \System\Unit();
+		$this->id   = substr(md5(session_id() . $this->broadcast), 0, 6);
 
 		/* Application session User */
-		$this->user = new Individual\User($this);
+		$this->user = new Controller\Individual\User($this);
 
 		/* Page requested with XHTTP  */
 
@@ -99,7 +101,7 @@ class App
 		} else {
 			$this->xhttp = false;
 		}
-		$this->unitMeasurment    = new \System\Unit();
+		$this->unit              = new Unit();
 		$this->permissions_array = array();
 		$this->view              = null;
 
@@ -134,23 +136,23 @@ class App
 
 	public function resolveArray()
 	{
-		return explode("/", $this->route);
+		return explode("/", $this->uri);
 	}
 
 	public function register(string $route): bool
 	{
 		$route       = $this->prepareURI($route);
-		$this->route = $route == "" ? $this->settings->site['index'] : $route;
+		$this->uri = $route == "" ? $this->settings->site['index'] : $route;
 
 		return true;
 	}
 
 	public function resolve(): string
 	{
-		return $this->route;
+		return $this->uri;
 	}
 
-	public function permission(int $id): Permission|bool
+	public function permission(int $id): Core\Permission|bool
 	{
 		if (array_key_exists($id, $this->permissions_array)) {
 			return $this->permissions_array[$id];
@@ -186,7 +188,7 @@ class App
 		$stmt = $this->db->prepare("SELECT per_id,per_title,per_order FROM permissions");
 		if ($stmt->execute() && $rec = $stmt->get_result()) {
 			while ($row = $rec->fetch_assoc()) {
-				$this->permissions_array[$row['per_id']]        = new Permission();
+				$this->permissions_array[$row['per_id']]        = new Core\Permission();
 				$this->permissions_array[$row['per_id']]->id    = $row['per_id'];
 				$this->permissions_array[$row['per_id']]->name  = $row['per_title'];
 				$this->permissions_array[$row['per_id']]->level = $row['per_order'];
@@ -196,7 +198,7 @@ class App
 	public function databaseConnect(string $host, string $user, string $pass, string $database)
 	{
 		try {
-			$this->db = new MySQL($host, $user, $pass, $database);
+			$this->db = new Core\MySQL($host, $user, $pass, $database);
 			if ($this->db->connect_errno) {
 				$this->errorHandler->customError("Connection to the database filed");
 				$this->responseStatus->NotFound->response();
@@ -276,7 +278,7 @@ class App
 			} catch (\mysqli_sql_exception $e) {
 				$this->errorHandler->logError($e);
 				return 9;
-			} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
+			} catch (\System\Core\Exceptions\HR\PersonNotFoundException $e) {
 				$this->errorHandler->logError($e);
 				return 4;
 			}
@@ -325,6 +327,7 @@ class App
 		if (class_exists('System\\Views\\' . $viewName)) {
 			$className  = 'System\\Views\\' . $viewName;
 			$this->view = new $className($this);
+			
 			return true;
 		} else {
 			$this->view = null;

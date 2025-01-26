@@ -13,7 +13,7 @@ class MenuListItems extends \System\Views\Chunk\Chunk
 	{
 		$this->headerJSONCacheGzip();
 		$output = "[";
-		$ident  = \System\Personalization\Identifiers::SystemFrequentVisit->value;
+		$ident  = \System\Controller\Personalization\Identifiers::SystemFrequentVisit->value;
 		$q      = <<<SQL
 			SELECT 
 				trd_directory, CONCAT(trd_id,': ', pfl_value) AS pagefile_title
@@ -54,7 +54,7 @@ class MenuListItems extends \System\Views\Chunk\Chunk
 		header("Content-Encoding: gzip");
 
 		$output    = "<b class=\"index-link\"><span style=\"color:#333;font-family:icomoon;\">&#xe600;</span><a class=\"alink\" href=\"\">Homepage</a></b>";
-		$hierarchy = new \System\FileSystem\Hierarchy($this->app, $this->app->user->info->permissions);
+		$hierarchy = new \System\Core\FileSystem\Hierarchy($this->app, $this->app->user->info->permissions);
 		$output .= $hierarchy->render();
 
 		echo gzencode($output);

@@ -1,9 +1,9 @@
 <?php
 
-use System\Finance\Accounting;
-use System\Finance\DocumentException;
-use System\Finance\DocumentMaterialListException;
-use System\Finance\Invoice;
+use System\Controller\Finance\Accounting;
+use System\Controller\Finance\DocumentException;
+use System\Controller\Finance\DocumentMaterialListException;
+use System\Controller\Finance\Invoice;
 use System\Template\Body;
 //purchase/po/view
 

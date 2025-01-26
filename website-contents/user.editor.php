@@ -1,7 +1,7 @@
 <?php
 $debug = false;
 
-use System\Template\Gremium\Gremium;
+use System\Layout\Gremium\Gremium;
 
 function fnConvOnlyNumbers($input)
 {
@@ -244,10 +244,10 @@ if (isset($_POST['EmployeeFormMethod'], $_POST['EmployeeFormID'], $_POST['Token'
 					$UploadsSep   = ",";
 				}
 			}
-			$releaseUploads = $app->db->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$UserID AND (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " OR up_pagefile=" . \System\Attachment\Type::HrID->value . ");");
+			$releaseUploads = $app->db->query("UPDATE uploads SET up_rel=0 WHERE up_rel=$UserID AND (up_pagefile=" . \System\Lib\Upload\Type::HrPerson->value . " OR up_pagefile=" . \System\Lib\Upload\Type::HrID->value . ");");
 			if ($releaseUploads) {
 				if ($UploadsFound) {
-					if (!$app->db->query("UPDATE uploads SET up_rel=$UserID WHERE up_id IN ({$UploadsIDs}) AND (up_pagefile=" . \System\Attachment\Type::HrPerson->value . " OR up_pagefile=" . \System\Attachment\Type::HrID->value . ");")) {
+					if (!$app->db->query("UPDATE uploads SET up_rel=$UserID WHERE up_id IN ({$UploadsIDs}) AND (up_pagefile=" . \System\Lib\Upload\Type::HrPerson->value . " OR up_pagefile=" . \System\Lib\Upload\Type::HrID->value . ");")) {
 						$arrparser['result']           = false;
 						$arrparser['source']["global"] = "Assinging uploads to the employee failed";
 					}
@@ -475,7 +475,7 @@ echo "</form>";
 				list_button: $("#js_upload_count"),
 				emptymessage: "[No files uploaded]",
 				upload_url: "<?= $fs(186)->dir ?>",
-				relatedpagefile: <?php echo \System\Attachment\Type::HrPerson->value; ?>,
+				relatedpagefile: <?php echo \System\Lib\Upload\Type::HrPerson->value; ?>,
 				multiple: false,
 				inputname: "perosnal_image",
 				domhandler: $("#UploadPersonalDOMHandler"),
@@ -492,7 +492,7 @@ echo "</form>";
 				list_button: $("#js_upload_count_1"),
 				emptymessage: "[No files uploaded]",
 				upload_url: "<?= $fs(186)->dir ?>",
-				relatedpagefile: <?php echo \System\Attachment\Type::HrID->value; ?>,
+				relatedpagefile: <?php echo \System\Lib\Upload\Type::HrID->value; ?>,
 				multiple: true,
 				inputname: "social_id_image",
 				align: "right",

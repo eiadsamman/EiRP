@@ -141,7 +141,7 @@ class Company extends CompanyProfile
 	private function checkIntegrity(): bool
 	{
 		if (null == $this->name || "" == trim($this->name)) {
-			throw new \System\Exceptions\Company\InvalidData("Invalid company name");
+			throw new \System\Core\Exceptions\Company\InvalidData("Invalid company name");
 		} else {
 			$this->name = trim($this->name);
 
@@ -149,7 +149,7 @@ class Company extends CompanyProfile
 				$this->name
 			]);
 			if ($r->num_rows > 0) {
-				throw new \System\Exceptions\Company\InvalidData("Company name already exists", 100);
+				throw new \System\Core\Exceptions\Company\InvalidData("Company name already exists", 100);
 			}
 		}
 
@@ -158,7 +158,7 @@ class Company extends CompanyProfile
 	public function add(): bool|null
 	{
 		if (!$this->app->file->find($this->companySystemFileId)->permission->add) {
-			throw new \System\Exceptions\Exceptions("Permissions denied");
+			throw new \System\Core\Exceptions\Exceptions("Permissions denied");
 		}
 		$this->checkIntegrity();
 		$stmt = $this->app->db->execute_query(
@@ -192,10 +192,10 @@ class Company extends CompanyProfile
 	public function update(): bool|null
 	{
 		if (empty($this->internalId)) {
-			throw new \System\Exceptions\Exceptions("No company loaded");
+			throw new \System\Core\Exceptions\Exceptions("No company loaded");
 		}
 		if (!$this->app->file->find($this->companySystemFileId)->permission->edit) {
-			throw new \System\Exceptions\Exceptions("Permissions denied");
+			throw new \System\Core\Exceptions\Exceptions("Permissions denied");
 		}
 		$this->prepare();
 		$stmt = $this->app->db->prepare(
@@ -228,10 +228,10 @@ class Company extends CompanyProfile
 	public function delete(): bool|null
 	{
 		if (empty($this->internalId)) {
-			throw new \System\Exceptions\Exceptions("No company loaded");
+			throw new \System\Core\Exceptions\Exceptions("No company loaded");
 		}
 		if (!$this->app->file->find($this->companySystemFileId)->permission->delete) {
-			throw new \System\Exceptions\Exceptions("Permissions denied");
+			throw new \System\Core\Exceptions\Exceptions("Permissions denied");
 		}
 
 		$stmt = $this->app->db->prepare("DELETE FROM companies WHERE comp_id = ?;");

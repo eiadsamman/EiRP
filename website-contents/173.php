@@ -1,6 +1,6 @@
 <?php
-use System\Template\Gremium;
-use System\Timeline\Module;
+use System\Layout\Gremium;
+use System\Controller\Timeline\Module;
 use System\Views\PanelView;
 
 $mods = [

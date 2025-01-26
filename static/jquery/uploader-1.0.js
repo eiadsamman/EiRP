@@ -200,22 +200,22 @@
 					_liststate = true;
 					setZIndex(true);
 					setUploadListPosition();
-					dom_placeholder.show();
+					dom_placeholder.addClass("visible")
 				} else if (state === false) {
 					_liststate = false;
 					setZIndex(false);
-					dom_placeholder.hide();
+					dom_placeholder.removeClass("visible");
 				}
 			} else {
 				if (_liststate == false) {
 					_liststate = true;
 					setZIndex(true);
 					setUploadListPosition();
-					dom_placeholder.show();
+					dom_placeholder.addClass("visible")
 				} else {
 					_liststate = false;
 					setZIndex(false);
-					dom_placeholder.hide();
+					dom_placeholder.removeClass("visible");
 				}
 			}
 		}

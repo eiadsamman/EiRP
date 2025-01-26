@@ -1,6 +1,6 @@
 <?php
-use System\Personalization\Bookmark;
-use System\Template\Gremium;
+use System\Controller\Personalization\Bookmark;
+use System\Layout\Gremium;
 
 $bookmark = new Bookmark($app);
 
@@ -88,7 +88,7 @@ $grem->terminate();
 
 <datalist id="js-ref_list" style="display: none;">
 	<?php
-	$ident = \System\Personalization\Identifiers::SystemFrequentVisit->value;
+	$ident = \System\Controller\Personalization\Identifiers::SystemFrequentVisit->value;
 	$q = <<<SQL
 	SELECT 
 		pfl_value, trd_id

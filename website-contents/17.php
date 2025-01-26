@@ -1,8 +1,8 @@
 <?php
-use System\Personalization\DashboardReports;
-use System\Personalization\Personalization;
-use System\Personalization\RecordsPerPage;
-use System\Template\Gremium;
+use System\Controller\Personalization\DashboardReports;
+use System\Controller\Personalization\Personalization;
+use System\Controller\Personalization\RecordsPerPage;
+use System\Layout\Gremium;
 
 $salt = date("YmdHm") . session_id() . "(08#F(&Go7g32f";
 $dashboard = new DashboardReports($app);

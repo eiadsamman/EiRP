@@ -1,8 +1,8 @@
 <?php
 
-use System\Finance\Accounting;
-use System\Finance\DocumentException;
-use System\Finance\Invoice;
+use System\Controller\Finance\Accounting;
+use System\Controller\Finance\DocumentException;
+use System\Controller\Finance\Invoice;
 //purchase/po/view
 
 
@@ -106,7 +106,7 @@ if ($doc_id) {
 		}
 		echo '</tbody></table>';
 		echo $_TEMPLATE->NewFrameBodyEnd();
-	} catch (\System\Finance\DocumentException $e) {
+	} catch (\System\Controller\Finance\DocumentException $e) {
 		$_TEMPLATE->Title("&nbsp;Not Found!", null, "", "mark-error");
 		$_TEMPLATE->NewFrameTitle("<span class=\"flex\">Loading GRIR failed, one or more of the following might be the cause:</span>");
 		$_TEMPLATE->NewFrameBody('<ul>
@@ -115,7 +115,7 @@ if ($doc_id) {
 			<li>Database query failed, contact system administrator</li>
 			<li>Permission denied or not enough privileges to proceed with this document</li>
 			<ul>');
-	} catch (\System\Finance\DocumentMaterialListException $e) {
+	} catch (\System\Controller\Finance\DocumentMaterialListException $e) {
 		$_TEMPLATE->Title("Materials list error!", null, "", "mark-error");
 		$_TEMPLATE->NewFrameBody('<ul>
 			<li>Plotting materials list failed</li>

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 namespace System\Views\Chunk;
-use System\Financeerm;
-use System\Finance\Term\Asset;
-use System\Finance\Term\Equity;
-use System\Finance\Term\IncomeStatement;
-use System\Finance\Term\Liability;
+use System\Controller\Financeerm;
+use System\Controller\Finance\Term\Asset;
+use System\Controller\Finance\Term\Equity;
+use System\Controller\Finance\Term\IncomeStatement;
+use System\Controller\Finance\Term\Liability;
 
 class FinanceTerms extends \System\Views\Chunk\Chunk
 {

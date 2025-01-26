@@ -34,13 +34,13 @@ if ($app->xhttp) {
 
 
 
-use System\Template\Gremium\Gremium;
+use System\Layout\Gremium\Gremium;
 
 
 $maps = [
-	["Finance \ Purchasing", System\Finance\Invoice\enums\Purchase::class],
-	["Finance \ Sales", System\Finance\Invoice\enums\Sale::class],
-	["Finance \ Transactions", System\Finance\Transaction\enums\Type::class],
+	["Finance \ Purchasing", System\Controller\Finance\Invoice\enums\Purchase::class],
+	["Finance \ Sales", System\Controller\Finance\Invoice\enums\Sale::class],
+	["Finance \ Transactions", System\Controller\Finance\Transaction\enums\Type::class],
 ];
 
 

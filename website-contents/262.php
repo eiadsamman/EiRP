@@ -1,14 +1,14 @@
 <?php
 use System\App;
-use System\Finance\Account;
-use System\Finance\Currency;
-use System\Finance\Term;
-use System\Finance\Term\Asset;
-use System\Finance\Term\Equity;
-use System\Finance\Term\IncomeStatement;
-use System\Finance\Term\Liability;
+use System\Controller\Finance\Account;
+use System\Controller\Finance\Currency;
+use System\Controller\Finance\Term;
+use System\Controller\Finance\Term\Asset;
+use System\Controller\Finance\Term\Equity;
+use System\Controller\Finance\Term\IncomeStatement;
+use System\Controller\Finance\Term\Liability;
 use System\Profiles\AccountProfile;
-use System\Template\Gremium\Gremium;
+use System\Layout\Gremium\Gremium;
 
 
 

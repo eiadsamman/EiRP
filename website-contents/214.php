@@ -1,16 +1,16 @@
 <?php
-use System\Finance\Transaction\enums\Type;
-use System\Template\Gremium;
+use System\Controller\Finance\Transaction\enums\Type;
+use System\Layout\Gremium;
 
 if ($app->xhttp) {
 
-	$accounting  = new \System\Finance\Accounting($app);
+	$accounting  = new \System\Controller\Finance\Accounting($app);
 	$perpage_val = 20;
 
 	$payload = json_decode(file_get_contents('php://input'), true);
 
 	if (isset($payload['objective']) && $payload['objective'] == 'list') {
-		$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
+		$controller = new System\Controller\Finance\StatementOfAccount\StatementOfAccount($app);
 		$controller->criteria->setRecordsPerPage($perpage_val);
 
 		if (!empty($payload['statement-id'])) {

@@ -1,6 +1,6 @@
 <?php
 
-use System\Template\Gremium\Gremium;
+use System\Layout\Gremium\Gremium;
 
 
 $expirydate = false;

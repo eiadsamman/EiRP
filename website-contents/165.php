@@ -14,7 +14,7 @@
 			FROM 
 				user_settings 
 			WHERE 
-				usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . "
+				usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Controller\Personalization\Identifiers::AccountCustomeQuerySave->value . "
 			;"
 		);
 		if ($r) {

@@ -1,10 +1,10 @@
 <?php
-use System\Template\Gremium;
-use System\Template\Gremium\Status;
+use System\Layout\Gremium;
+use System\Layout\Gremium\Status;
 
 
 if ($app->xhttp && isset($_POST['method']) && $_POST['method'] == "statement_report") {
-	$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
+	$controller = new System\Controller\Finance\StatementOfAccount\StatementOfAccount($app);
 
 	/* Date input processing */
 	$date_start   = isset($_POST['from']) ? $app->dateValidate($_POST['from']) : false;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace System\Views;
 
 use System\App;
-use System\Template\Gremium\Gremium;
+use System\Layout\Gremium\Gremium;
 use System\Views\Views;
 
 

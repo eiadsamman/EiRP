@@ -52,11 +52,11 @@
 	color: #888;
 }
 
-tr.partsElement > td {
+main.partsElement > div {
 	background-color: var(--slo-menu-itemhover-background-color);
 }
 
-tr.partsRoot > td {
+main.partsRoot > div {
 	border-bottom: solid 2px var(--bomtable-border-color);
 }
 
@@ -65,8 +65,8 @@ tr.partsRoot > td {
 	padding-right: 10px;
 }
 
-.partOf > td {
-	color: var(--root-font-lightcolor);
+.partOf > div {
+	color: var(--root-font-lightcolor) !important;
 }
 
 .subMaterial {
@@ -87,4 +87,8 @@ tr.partsRoot > td {
 
 #appMaterialsTable > tbody > tr > td:nth-child(4) {
 	width: 100%;
+}
+
+.table.local230 {
+	grid-template-columns: minmax(50px, auto) auto   1fr  auto;
 }

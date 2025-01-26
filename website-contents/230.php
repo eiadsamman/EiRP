@@ -1,12 +1,12 @@
 <?php
-use System\Finance\CostCenter;
-use System\Finance\Invoice\PurchaseRequest;
+use System\Controller\Finance\CostCenter;
+use System\Controller\Finance\Invoice\PurchaseRequest;
 use System\Models\Material;
 use System\Profiles\MaterialProfile;
-use System\Template\Gremium\Gremium;
-use System\Timeline\Action;
-use System\Timeline\Module;
-use System\Timeline\Timeline;
+use System\Layout\Gremium\Gremium;
+use System\Controller\Timeline\Action;
+use System\Controller\Timeline\Module;
+use System\Controller\Timeline\Timeline;
 
 const ERROR_ROOT = 230000;
 if ($app->xhttp) {
@@ -38,14 +38,11 @@ if ($app->xhttp) {
 			}
 
 			$invoice->curreny(null);
-
 			$materialServicies = [];
-
-
 			//$app->errorHandler->customError(print_r($_POST,true));
 
 			foreach ($_POST['inv_material'] as $key => $material) {
-				$item                 = new \System\Finance\Invoice\structs\InvoiceItem();
+				$item                 = new \System\Controller\Finance\Invoice\structs\InvoiceItem();
 				$item->isGroupingItem = !strpos($key, "@") ? false : true;
 
 				if (is_array($material)) {
@@ -59,7 +56,7 @@ if ($app->xhttp) {
 				if ($item->isGroupingItem) {
 					$subMaterials = new Material($app);
 					foreach ($subMaterials->parts($item->material->id) as $material) {
-						$subItem                    = new \System\Finance\Invoice\structs\InvoiceItem();
+						$subItem                    = new \System\Controller\Finance\Invoice\structs\InvoiceItem();
 						$subItem->material          = $material;
 						$subItem->quantity          = $item->quantity * $material->bomPortion;
 						$subItem->quantityDelivered = $item->quantity * $material->bomPortion;
@@ -69,21 +66,14 @@ if ($app->xhttp) {
 				$invoice->appendItem($item);
 			}
 
-
-
-
 			$insert_id = $invoice->post();
-
-			$tl = new Timeline($app);
+			$tl        = new Timeline($app);
 			$tl->register(module: Module::InvoicingMaterialRequest, action: Action::Create, owner: $insert_id);
-
-
 			$result = array(
 				"result" => true,
 				"insert_id" => $insert_id,
 				"forward" => $fs(240)->dir,
 			);
-
 		} catch (Exception $e) {
 			$result = array(
 				"result" => false,
@@ -153,13 +143,23 @@ if ($app->xhttp) {
 
 		if ($mat) {
 			if ($mat->subMaterialsCount == 0) {
-				$output['result'] = 2;
-				$output['id']     = $mat->id;
-				$output['longId'] = $mat->longId;
-				$output['name']   = $mat->name;
-				$output['unit']   = $mat->unitSystem->name;
-				$output['type']   = $mat->category->name;
-				$output['qty']    = $qty;
+				$output['result']            = 2;
+				$output['id']                = $mat->id;
+				$output['longId']            = $mat->longId;
+				$output['name']              = $mat->name;
+				$output['unitSystemId']      = $mat->unitSystem->value;
+				$output['unitDefaultId']     = 0;
+				$output['unitDefaultSymbol'] = "";
+				$output['type']              = $mat->category->group->name . ": " . $mat->category->name;
+				$output['qty']               = $qty;
+
+				if ($unitDefault = $app->unit->defaultUnit((int) $mat->unitSystem->value)) {
+					if ($unitProfile = $app->unit->getUnit((int) $mat->unitSystem->value, $unitDefault)) {
+						$output['unitDefaultId']     = $unitProfile->id;
+						$output['unitDefaultSymbol'] = $unitProfile->symbol;
+					}
+				}
+
 			} else {
 				$output['result'] = 1;
 			}
@@ -256,31 +256,27 @@ if ($app->xhttp) {
 			</label>
 		</div>
 	</form>
+	<form id="formMaterialsList">
+		<div class="table local230" id="materialsList" action="<?= $fs()->dir ?>">
+			<header>
+				<div>#</div>
+				<div>Quantity</div>
+				<div>Part Number</div>
+				<div></div>
+			</header>
 
-	<form id="formMaterialsList" action="<?= $fs()->dir ?>">
-		<table class="hover">
-			<thead>
-				<tr>
-					<td>#</td>
-					<td>Quantity</td>
-					<td>Unit</td>
-					<td>Part Number</td>
-					<td width="100%">Description</td>
-					<td>Type</td>
-					<td></td>
-				</tr>
-			</thead>
-			<tbody id="materialsList">
-			</tbody>
-		</table>
+			<!-- <tbody id="materialsList">
+		</tbody> -->
+
+		</div>
 	</form>
 
 	<?php
-	$grem->terminate();
-	?>
-	<div style="height: 50vh;"></div>
 
-	<?php
+	$grem->getLast()->close();
+	$grem->terminate(true);
+
+
 	exit;
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 if ($app->user->account) {
-	$accounting = new System\Finance\Accounting($app);
+	$accounting = new System\Controller\Finance\Accounting($app);
 
 	echo json_encode(array(
 		'company' => $app->user->company ? $app->user->company->name : false,

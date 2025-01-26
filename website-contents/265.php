@@ -15,13 +15,13 @@ $database = array(
 
 		'commercial_legalName' => [null, 'Legal name', true, null, 'text', 'string', true, null, null],
 		'commercial_registrationNumber' => [null, 'Registration number', true, null, 'text', 'string', true, null, null],
-		'file_doc' => [null, 'Documents', false, null, 'file', \System\Attachment\Type::CompanyCommercialDoc->value, true, null, null],
+		'file_doc' => [null, 'Documents', false, null, 'file', \System\Lib\Upload\Type::CompanyCommercialDoc->value, true, null, null],
 
 		'commercial_taxNumber' => [null, 'Tax number', true, null, 'text', 'string', true, null, null],
-		'file_tax' => [null, 'Documents', false, null, 'file', \System\Attachment\Type::CompanyTaxDoc->value, true, null, null],
+		'file_tax' => [null, 'Documents', false, null, 'file', \System\Lib\Upload\Type::CompanyTaxDoc->value, true, null, null],
 
 		'commercial_vatNumber' => [null, 'VAT number', true, "100%", 'text', 'string', true, null, null],
-		'file_vat' => [null, 'Documents', false, null, 'file', \System\Attachment\Type::CompanyVatDoc->value, true, null, null],
+		'file_vat' => [null, 'Documents', false, null, 'file', \System\Lib\Upload\Type::CompanyVatDoc->value, true, null, null],
 
 	),
 	'order' => array('commercial_companyId', 'commercial_id'),

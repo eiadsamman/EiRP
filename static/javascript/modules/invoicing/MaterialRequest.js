@@ -85,7 +85,6 @@ export class Post extends View {
 
 		this.formMaterialList.addEventListener("submit", (event) => {
 			event.preventDefault();
-
 			return false;
 		});
 
@@ -240,7 +239,7 @@ export class Post extends View {
 			if (element.dataset.portion != undefined) {
 				let portion = parseFloat(element.dataset.portion);
 				let quantity = !isNaN(updated_value) && !isNaN(portion) ? Application.numberFormat((updated_value * portion), 2) : "0";
-				element.querySelector("div.boundedPartQty").innerText = quantity;
+				element.querySelector("span.boundedPartQty").innerText = quantity;
 			}
 		});
 	}
@@ -261,10 +260,11 @@ export class Post extends View {
 		});
 	}
 
-	appendMaterialItem = function (payload, root = null, bounded = false) {
+	appendMaterialItem(payload, root = null, bounded = false) {
 		let html = ``;
-		//<input type="hidden" name="po_bom_part[][0]" value="0" />
-		let materialRow = document.createElement("TR");
+
+		let materialRow = document.createElement("MAIN");
+		let uri = "_/UnitMeasurment/slo/unique/slo_UnitMeasurment.a?unit=" + payload.unitSystemId;
 
 		materialRow.classList.add("cssc");
 
@@ -279,25 +279,37 @@ export class Post extends View {
 
 		if (bounded == false) {
 			let controlIdentifier = "";
-			let inputFieldName = `inv_material[][${payload.id}]`;
+			let inputFieldName = `[][${payload.id}]`;
 			if (payload.identifier != undefined) {
 				/* Material selected as a group parent, the identifier is used to controll children */
 				controlIdentifier = ` data-identifier="${payload.identifier}" `;
-				inputFieldName = `inv_material[${payload.identifier}][${payload.id}]`;
+				inputFieldName = `[${payload.identifier}][${payload.id}]`;
 			}
-			html += root ? `<td></td>` : `<td class="counter"><i>1</i></td>`;
-			html += `<td style="min-width:100px"><input class="number-field" type="text" inputmode="decimal" name="${inputFieldName}" value="${payload.qty}" ${controlIdentifier} /></td>`;
+			html += root ? `<div></div>` : `<div class="counter"><i>1</i></div>`;
+			html += `
+			
+				<div>
+					<input class="number-field" style="width:90px;" type="text" inputmode="decimal" name="inv_material${inputFieldName}" value="${payload.qty}" ${controlIdentifier} />
+					<input class="number-field" style="width:60px;text-align:left" name="inv_unit[${inputFieldName}]" data-slo=":LIST" type="text" data-slodefaultid="${payload.unitDefaultId}" value="${payload.unitDefaultSymbol}" data-source="${uri}" />
+				</div>`;
+
 		} else {
 			materialRow.classList.add("partOf");
 			let portionOfMain = Application.numberFormat(bounded.quantity * payload.portion, 2);
-			html += `<td class="counter"><i>1</i></td>`;
-			html += `<td><div class="boundedPartQty">${portionOfMain}</div></td>`;
+			html += `<div class="counter"><i>1</i></div>`;
+			html += `<div style="text-align:right;">
+						<span class="boundedPartQty">${portionOfMain}</span> <span>${payload.unit}</span>
+					</div>`;
 		}
-		html += `<td>${payload.unit}</td>
-				<td>${payload.longId}</td>
-				<td>${payload.name}</td>
-				<td>${payload.type}</td>`;
+
+		html += `
+				<div>
+				${payload.longId} ${payload.type}<br />
+				${payload.name}
+				</div>`;
 		materialRow.innerHTML = html;
+
+		$(materialRow.querySelector(`[data-slo=":LIST"]`)).slo();
 
 		let idnListender = materialRow.querySelector("input[data-identifier]");
 		if (idnListender) {
@@ -305,14 +317,14 @@ export class Post extends View {
 			idnListender.addEventListener("input", (e) => { this.updateBomQunatity(e.target); });
 		}
 
-		let removeButton = document.createElement("TD");
+		let removeButton = document.createElement("DIV");
 		if (bounded == false) {
-			removeButton.classList.add("op-remove");
+			removeButton.classList.add("control");
 			removeButton.classList.add("noselect");
 			if (root) {
 				removeButton.dataset.identifier = root;
 			}
-			removeButton.innerHTML = "<span></span>";
+			removeButton.innerHTML = `<button type="button" class="delete" />`;
 			removeButton.addEventListener("click", (e) => {
 				if (e.currentTarget.dataset.identifier != undefined) {
 					this.removeMaterialParts(e.currentTarget.dataset.identifier);
@@ -328,6 +340,7 @@ export class Post extends View {
 
 	async materialAdd() {
 		if (this.busy) return;
+
 		let materialId = parseInt(materialSelection.slo.get().id);
 		let materialQty = parseInt(materialQuantity.value);
 		let response = null;
@@ -355,6 +368,7 @@ export class Post extends View {
 		this.busy = false;
 		if (response.ok) {
 			const payload = await response.json();
+
 			this.busy = false;
 			if (payload.result == 2) {
 				this.appendMaterialItem(payload)

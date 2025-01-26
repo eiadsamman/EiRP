@@ -16,7 +16,7 @@ header('Content-Disposition: attachment;filename="Statement of Account ' . date(
 ob_end_clean();
 
 if (isset($_POST['method']) && $_POST['method'] == "statement_export") {
-	$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
+	$controller = new System\Controller\Finance\StatementOfAccount\StatementOfAccount($app);
 
 	/* Date input processing */
 	$date_start   = isset($_POST['from']) ? $app->dateValidate($_POST['from']) : false;

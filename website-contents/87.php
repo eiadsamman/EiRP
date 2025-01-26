@@ -72,7 +72,7 @@ if ($app->xhttp) {
 	exit;
 }
 
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 /* Fetch latest update log */
 $stmt   = $app->db->prepare(

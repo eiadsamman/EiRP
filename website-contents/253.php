@@ -1,13 +1,13 @@
 <?php
 
-use System\Finance\DocumentException;
+use System\Controller\Finance\DocumentException;
 use System\Template\Body;
-use \System\Finance\Invoice;
+use \System\Controller\Finance\Invoice;
 //warehouse/grir/new/
 
 
 $invoice 	= new Invoice($app);
-$accounting = new \System\Finance\Accounting($app);
+$accounting = new \System\Controller\Finance\Accounting($app);
 
 
 if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {

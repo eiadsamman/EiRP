@@ -19,7 +19,7 @@ class UnitMeasurment extends \System\Views\Chunk\Chunk
 		$this->headerJSONCacheGzip();
 		$output   = "[";
 		$smart    = "";
-		$measures = $this->app->unitMeasurment->list((int) $_GET['unit']);
+		$measures = $this->app->unit->list((int) $_GET['unit']);
 
 		foreach ($measures as $unit_key=>$unit_param) {
 			$output .= $smart . "{";

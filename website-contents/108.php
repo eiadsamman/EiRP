@@ -19,7 +19,7 @@ if (isset($_GET['id'])) {
 				JOIN users ON usr_id = lbr_id
 				JOIN permissions ON per_id = usr_privileges
 				LEFT JOIN labour_shifts ON lbr_shift = lsf_id
-				LEFT JOIN uploads ON up_pagefile=" . \System\Attachment\Type::HrPerson->value . " AND up_rel=lbr_id
+				LEFT JOIN uploads ON up_pagefile=" . \System\Lib\Upload\Type::HrPerson->value . " AND up_rel=lbr_id
 				LEFT JOIN (
 					SELECT
 						lty_id,lty_name,lsc_name

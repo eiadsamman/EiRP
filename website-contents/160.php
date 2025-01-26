@@ -1,6 +1,6 @@
 <?php
 use System\Models\Material;
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 
 function tempalteDescription($materialId = "-", $creationDate = "-", $type = "-", $category = "-", $materialName = "-")
@@ -16,24 +16,61 @@ function tempalteDescription($materialId = "-", $creationDate = "-", $type = "-"
 if (isset($_POST['method']) && $_POST['method'] == 'save') {
 	$matid = (int) $_POST['matid'];
 
-	if (is_array($_POST['bom_material']) && sizeof($_POST['bom_material']) > 0) {
+	if (is_array($_POST['bom_qty']) && is_array($_POST['bom_unit']) && sizeof($_POST['bom_qty']) > 0) {
+		$output            = [
+			"result" => false,
+			"message" => "",
+			"highlight" => []
+		];
 		$material_id       = 0;
 		$material_part_id  = 0;
 		$material_quantity = 0;
+		$unit_id           = 0;
 		$rbool             = true;
 
+		$presented_parts = [];
+		foreach ($_POST['bom_qty'] as $part_id => $bom_qty) {
+			if (in_array($part_id, $presented_parts)) {
+				$rbool                 = false;
+				$output['highlight'][] = $part_id;
+				continue;
+			}
+			if ((float) $bom_qty > 0 && (int) $_POST['bom_unit'][$part_id][1] > 0) {
+				$presented_parts[] = $part_id;
+			} else {
+				$rbool                 = false;
+				$output['highlight'][] = $part_id;
+				$output['message']     = "Invalid parts parameters, check all parts quantities and units";
+			}
+		}
+
+		if (!$rbool) {
+			echo json_encode($output);
+			exit;
+		}
 
 		$app->db->autocommit(false);
 
 		$rbool &= $app->db->query("DELETE FROM mat_bom WHERE mat_bom_mat_id={$matid};");
-		$stmt  = $app->db->prepare("INSERT INTO mat_bom (mat_bom_mat_id, mat_bom_part_id, mat_bom_quantity, mat_bom_level) VALUES (?,?,?,1);");
-		$stmt->bind_param("iid", $material_id, $material_part_id, $material_quantity);
-		foreach ($_POST['bom_material'] as $lvl1_k => $lvl1_v) {
-			if (isset($lvl1_v[1], $_POST['bom_quantity'][$lvl1_k]) && (int) $lvl1_v[1] > 0) {
-				/* Set the material ID in the BOM table to `negative` to exclude it from integrity check */
+		$stmt  = $app->db->prepare(
+			"INSERT INTO 
+				mat_bom (mat_bom_mat_id, mat_bom_part_id, mat_bom_quantity, mat_bom_level, mat_bom_unitsystem, mat_bom_unit,mat_bom_tolerance)
+			SELECT 
+				?,mat_id,?,1,mat_unitsystem,?,0 
+			FROM 
+				mat_materials
+			WHERE
+				mat_id = ? "
+		);
+
+		$stmt->bind_param("idii", $material_id, $material_quantity, $unit_id, $material_part_id);
+
+		foreach ($_POST['bom_qty'] as $part_id => $bom_qty) {
+			if ((float) $bom_qty > 0 && (int) $_POST['bom_unit'][$part_id][1] > 0) {
 				$material_id       = -((int) $matid);
-				$material_part_id  = (int) $lvl1_v[1];
-				$material_quantity = (float) $_POST['bom_quantity'][$lvl1_k];
+				$material_part_id  = (int) $part_id;
+				$material_quantity = (float) $bom_qty;
+				$unit_id           = (int) $_POST['bom_unit'][$part_id][1];
 				$rbool &= $stmt->execute();
 				if (!$rbool) {
 					break;
@@ -41,73 +78,46 @@ if (isset($_POST['method']) && $_POST['method'] == 'save') {
 			}
 		}
 
-
 		/**
 		 * Recursive product parts integrity check
 		 * Search for material id within the bom recursively
 		 */
 		$rintegrity = $app->db->query(
 			"WITH RECURSIVE cte (mat_bom_mat_id, mat_bom_part_id, level) AS (
-
 				SELECT     mat_bom_mat_id, mat_bom_part_id, 1 level
 				FROM       mat_bom
 				WHERE      mat_bom_mat_id = -$matid
-
 				UNION ALL
-
 				SELECT     p.mat_bom_mat_id, p.mat_bom_part_id, level + 1
 				FROM       mat_bom p
 				INNER JOIN cte
 				  ON p.mat_bom_mat_id = cte.mat_bom_part_id AND level < 100
 			)
-			
 			SELECT * FROM cte
 			WHERE cte.mat_bom_part_id = $matid;"
 		);
 
-		if ($rintegrity) {
+		if ($rbool && $rintegrity) {
 			/* If material found inside the material itself, rollback all queries and return an error */
 			if ($rintegrity->num_rows > 0) {
-				header("HTTP_X_RESPONSE: INTEGRITYERROR");
 				$app->db->rollback();
 			} else {
 				/* Integrity check passed, set material ID back to positive */
 				$rfixminus = $app->db->query("UPDATE mat_bom SET mat_bom_mat_id = $matid WHERE mat_bom_mat_id = -$matid;");
 				if ($rfixminus) {
-					header("HTTP_X_RESPONSE: SUCCESS");
+					$output['result'] = true;
 					$app->db->commit();
 				} else {
-					header("HTTP_X_RESPONSE: ERR");
 					$app->db->rollback();
 				}
 			}
-
 		} else {
-			header("HTTP_X_RESPONSE: ERR");
 			$app->db->rollback();
 		}
 
-
-	} else {
-		$app->db->query("DELETE FROM mat_bom WHERE mat_bom_mat_id={$matid};");
-		header("HTTP_X_RESPONSE: SUCCESS");
 	}
 
-	exit;
-}
-
-if (isset($_POST['method']) && $_POST['method'] == 'getunit') {
-	$id              = (int) $_POST['id'];
-	$defaultSystemId = $app->unit->defaultUnit((int) $id);
-	if ($defaultSystemId) {
-		$default = $app->unit->getUnit((int) $id, $defaultSystemId);
-	}
-	echo json_encode([
-		"id" => (int) $id,
-		"name" => \System\enums\UnitSystem::tryFrom((int) $id)->toString(),
-		"default_id" => $defaultSystemId ? $app->unit->defaultUnit((int) $id) : 0,
-		"default_symbol" => $defaultSystemId ? $default->symbol : "",
-	]);
+	echo json_encode($output);
 	exit;
 }
 
@@ -132,6 +142,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "show") {
 				'quantity' => $part->quantity,
 				'name' => $part->name,
 				'unitName' => $part->unit->symbol,
+				'unitId' => $part->unit->id,
 				'unitSystemId' => $part->unitSystem->value
 			];
 		}
@@ -145,7 +156,15 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "show") {
 <style>
 	.table {
 		&.local01 {
-			grid-template-columns: minmax(50px, auto) minmax(130px, 1fr) 180px 60px;
+			grid-template-columns: minmax(40px, auto) minmax(130px, 1fr) 180px 60px;
+		}
+
+		>main.invalid>div {
+			color: red;
+
+			&:first-child {
+				border-left: solid 3px red
+			}
 		}
 
 		.input-qunatity {
@@ -156,7 +175,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "show") {
 </style>
 
 <?php
-$grem = new Gremium\Gremium();
+$grem = new Gremium\Gremium(true, false);
 $grem->header()->serve("<h1>BOM Manager</h1>");
 $grem->menu()->open();
 echo <<<HTML
@@ -167,10 +186,27 @@ HTML;
 $grem->getLast()->close();
 $grem->title()->serve("<span class=\"flex\">Material desciprtion</span>");
 $grem->article()->serve("<div id=\"material-description\">" . tempalteDescription() . "</div>");
-$grem->title()->serve("Bill of materials");
-$grem->legend()->serve("<span class=\"flex\"></span><button type=\"button\" class=\"edge-left\" disabled id=\"part-add-button\">Add material</button>");
+$grem->title()->serve("Material parts");
+
 $grem->article()->open();
 echo <<<HTML
+	<form id="formMaterialAdd" action="{$fs()->dir}">
+		<div class="form" style="">
+			<label style="flex:1;">
+				<h1>Material</h1>
+				<div class="btn-set">
+					<input id="input-part-selection" data-slo="BOM" class="flex" type="text" />
+				</div>
+			</label>
+			<label style="max-width:80px">
+				<h1></h1>
+				<div class="btn-set" style="max-width:80px;min-width:80px">
+					<button id="button-part-add" disabled class="flex" type="button">Add</button>
+				</div>
+			</label>
+		</div>
+	</form>
+	
 	<form id="material-list-form">
 		<div id="material-parts" class="table local01">
 			<header>
@@ -184,7 +220,7 @@ echo <<<HTML
 HTML;
 $grem->getLast()->close();
 
-$grem->terminate();
+$grem->terminate(true);
 ?>
 <script>
 	class BillOfMaterial {
@@ -193,8 +229,11 @@ $grem->terminate();
 			this.submitButton = null;
 			this.submitForm = null;
 			this.partAddButton = null;
+			this.partAddMaterial = null;
+			this.partSelected = null;
 			this.materialSelectButton = null;
 			this.materialParts = null;
+
 			this.events();
 		}
 
@@ -210,28 +249,53 @@ $grem->terminate();
 
 		events() {
 			document.addEventListener("DOMContentLoaded", () => {
+				this.partAddMaterial = document.getElementById("input-part-selection");
 				this.submitButton = document.getElementById("save-button");
 				this.submitForm = document.getElementById("material-list-form");
-				this.partAddButton = document.getElementById("part-add-button");
+				this.partAddButton = document.getElementById("button-part-add");
 				this.materialDescription = document.getElementById("material-description");
 				this.materialSelectButton = document.getElementById("material-select-button");
 				this.materialParts = document.getElementById("material-parts");
 				this.submitButton.addEventListener("click", () => {
 					this.post();
 				});
+
+				this.partAddMaterial = $(this.partAddMaterial).slo({
+					onselect: (data) => {
+						this.partSelected = {
+							"material": {
+								"id": parseInt(data.key),
+								"name": data.value
+							},
+							"quantity": 0,
+							"unit": {
+								"system": data.embeds.params.unitsystem,
+								"id": 0,
+								"name": "",
+							}
+						}
+						this.addPartRow(this.partSelected);
+						this.partAddMaterial.clear();
+
+					}, ondeselect: () => { this.partSelected = null; }
+				}).clear();
+				this.partAddMaterial.disable();
+
 				this.submitForm.addEventListener("submit", (e) => {
 					e.preventDefault();
 					this.post();
 					return;
 				});
 				this.partAddButton.addEventListener("click", () => {
-					this.addPartRow();
+					if (this.partSelected)
+						this.addPartRow(this.partSelected);
 				});
 				$(this.materialSelectButton).slo({
 					onselect: (selected_bom) => {
 						this.activeMaterial = selected_bom.key
 						this.submitButton.disabled = false;
 						this.partAddButton.disabled = false;
+						this.partAddMaterial.enable();
 						this.loadMaterial();
 					},
 					ondeselect: () => {
@@ -240,15 +304,16 @@ $grem->terminate();
 						this.clearForms();
 						this.partAddButton.disabled = true;
 						this.submitButton.disabled = true;
+						this.partAddMaterial.disable();
 					}
-				});
+				}).clear();
 			});
 		}
 
 		updateCounters() {
 			let counter = 1;
 			this.materialParts.querySelectorAll("main").forEach((e) => {
-				e.querySelector("div>span").innerHTML = `<div class="btn-set"><span>${counter}</span></div>`;
+				e.querySelector("div>span").innerHTML = `${counter}`;
 				counter++;
 			});
 		}
@@ -263,43 +328,6 @@ $grem->terminate();
 			let dom = domOwner.querySelector(".qty-unit-container");
 			if (dom != undefined) {
 				dom.innerHTML = "";
-			}
-		}
-
-		async getUnit(unitSystem, domOwner) {
-			const formData = new FormData(this.submitForm);
-			formData.append("method", "getunit");
-			formData.append("id", unitSystem);
-
-			const response = await fetch('<?= $fs()->dir ?>', {
-				method: 'POST',
-				mode: "cors",
-				cache: "no-cache",
-				credentials: "same-origin",
-				referrerPolicy: "no-referrer",
-				headers: {
-					"X-Requested-With": "fetch",
-					"Application-From": "same",
-					'Accept': 'application/json',
-				},
-				body: formData,
-			});
-			const payload = await response.json();
-
-			let uri = "_/UnitMeasurment/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_UnitMeasurment.a?unit=" + payload.id;
-
-			let unitInputHtml = `
-					<input type="number" class="input-qunatity" name="quantity[]" value="0" />
-					<input type="text" style="width: 60px" class="mat-unit" name=\"unit[]\"
-						data-source="${uri}" ` + (payload.default_id != 0 ? ` value="${payload.default_symbol}" data-slodefaultid="${payload.default_id}" ` : ``) + `
-						data-slo=":LIST" />`;
-			let dom = domOwner.querySelector(".qty-unit-container");
-			if (dom != undefined) {
-				dom.innerHTML = unitInputHtml;
-				dom.querySelectorAll("input").forEach(element => {
-					if (element.dataset.slo !== undefined)
-						$(element).slo();
-				})
 			}
 		}
 
@@ -322,7 +350,6 @@ $grem->terminate();
 				body: formData,
 			});
 			const payload = await response.json();
-			console.log(payload)
 			this.materialDescription.innerHTML = this.descriptionTemplate(payload.description.id, payload.description.creationDate, payload.description.type, payload.description.category, payload.description.name);
 			Object.keys(payload.items).forEach((key) => {
 				this.addPartRow(
@@ -333,13 +360,13 @@ $grem->terminate();
 						},
 						"quantity": payload.items[key].quantity,
 						"unit": {
-							"id": payload.items[key].unitSystemId,
+							"system": payload.items[key].unitSystemId,
+							"id": payload.items[key].unitId,
 							"name": payload.items[key].unitName,
 						}
 					}
 				);
 			});
-			this.addPartRow();
 			this.updateCounters();
 		}
 
@@ -349,49 +376,28 @@ $grem->terminate();
 			this.updateCounters();
 		}
 
-		addPartRow(part = null) {
-			let emptyRow = false;
-			let uri = "";
-			let html = "";
+		addPartRow(part) {
 			let domElem = document.createElement("main");
 
-			if (part == null) {
-				emptyRow = true;
-				html = `
+			let uri = "_/UnitMeasurment/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_UnitMeasurment.a?unit=" + part.unit.system;
+			let unitpre = part.unit.id != 0 ? ` value=${part.unit.name} data-slodefaultid=${part.unit.id}` : '';
+			domElem.dataset.partid = part.material.id;
+			let html = `
 					<div><span></span></div>
-					<div><div class="btn-set"><input type="text" class="flex materialselection" name="material[]" data-slo="BOM" /></div></div>
-					<div><div class="btn-set qty-unit-container"></div></div>
-					<div class="control"><button type="button" class="delete"></button></div>`;
-			} else {
-				uri = "_/UnitMeasurment/slo/<?= md5($app->id . $app->user->company->id); ?>/slo_UnitMeasurment.a?unit=" + part.unit.id;
-
-				html = `
-					<div><span></span></div>
-					<div>
-						<div class="btn-set">
-							<input type="text" class="flex materialselection" value="${part.material.name}" data-slodefaultid="${part.material.id}" name="material[]" data-slo="BOM" />
-						</div>
+					<div class="ellipsis">
+						${part.material.name}
 					</div>
 					<div>
-						<div class="btn-set qty-unit-container">		
-							<input type="number" class="input-qunatity" name="quantity[]" value="${part.quantity}" />
-							<input type="text" style="width: 60px" class="mat-unit" name=\"unit[]\" data-source="${uri}" value="${part.unit.name}" data-slodefaultid="${part.unit.id}" data-slo=":LIST" />
-						</div>
+						<input class="number-field" style="width:90px" name="bom_qty[${part.material.id}]" type="text" value="${part.quantity}" inputmode="decimal" min="0" />
+						<input class="number-field" style="width:60px;text-align:left" name="bom_unit[${part.material.id}]" data-slo=":LIST" type="text" ${unitpre} data-source="${uri}" />
 					</div>
 					<div class="control"><button type="button" class="delete"></button></div>
 				`;
-			}
 
 			domElem.innerHTML = html;
 			domElem.querySelectorAll("input").forEach(element => {
-				if (element.dataset.slo == "BOM")
-					$(element).slo({
-						onselect: (data) => { this.getUnit(data.embeds.params.unitsystem, domElem); },
-						ondeselect: () => { this.clearUnit(domElem); }
-					});
 				if (element.dataset.slo == ":LIST")
 					$(element).slo({});
-
 			});
 
 			domElem.querySelectorAll("button").forEach(element => {
@@ -407,24 +413,44 @@ $grem->terminate();
 		}
 
 		async post() {
-			const formData = new FormData(this.submitForm);
-			formData.append("method", "save");
-			formData.append("matid", this.activeMaterial);
-
-			const response = await fetch('<?= $fs()->dir ?>', {
-				method: 'POST',
-				mode: "cors",
-				cache: "no-cache",
-				credentials: "same-origin",
-				referrerPolicy: "no-referrer",
-				headers: {
-					"X-Requested-With": "fetch",
-					"Application-From": "same",
-					'Accept': 'application/json',
-				},
-				body: formData,
+			this.materialParts.querySelectorAll(`main`).forEach(elem => {
+				elem.classList.remove("invalid")
 			});
-			const payload = await response.json();
+			try {
+				overlay.show();
+				const formData = new FormData(this.submitForm);
+				formData.append("method", "save");
+				formData.append("matid", this.activeMaterial);
+
+				const response = await fetch('<?= $fs()->dir ?>', {
+					method: 'POST',
+					mode: "cors",
+					cache: "no-cache",
+					credentials: "same-origin",
+					referrerPolicy: "no-referrer",
+					headers: {
+						"X-Requested-With": "fetch",
+						"Application-From": "same",
+						'Accept': 'application/json',
+					},
+					body: formData,
+				});
+				const payload = await response.json();
+				overlay.hide();
+				if (payload.result) {
+					messagesys.success("Material Bil of Materials updated successfully");
+				} else {
+					this.materialParts.querySelectorAll(`main[data-partid]`).forEach(elem => {
+						if (payload.highlight.includes(parseInt(elem.dataset.partid))) {
+							elem.classList.add("invalid")
+						}
+					});
+					messagesys.failure(payload.message);
+				}
+
+			} catch (e) {
+				messagesys.failure(e);
+			}
 		}
 	}
 

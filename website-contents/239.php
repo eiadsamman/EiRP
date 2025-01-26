@@ -1,13 +1,13 @@
 <?php
 
-use \System\Finance\Invoice;
+use \System\Controller\Finance\Invoice;
 use System\Template\Side;
 
 $_SIDE = new Side();
 
 function SidePanelContent(&$app, $pageUrl, $pageTitle)
 {
-	$accounting = new \System\Finance\Accounting($app);
+	$accounting = new \System\Controller\Finance\Accounting($app);
 	$_syscur = $accounting->system_default_currency();
 
 	echo "<div><span>Purchase Orders</span></div>";

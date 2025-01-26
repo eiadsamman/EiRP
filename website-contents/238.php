@@ -1,5 +1,5 @@
 <?php
-use System\Finance\Invoice\enums\Purchase;
+use System\Controller\Finance\Invoice\enums\Purchase;
 use System\Views\PanelView;
 $docType = Purchase::Request->value;
 
@@ -59,7 +59,7 @@ if ($app->xhttp) {
 			while ($row = $mysqli_result->fetch_assoc()) {
 				$costcenter       = $row['ccc_name'];
 				$row['po_title']  = is_null($row['po_title']) || trim($row['po_title']) == "" ? "<i>(Untitled)</i>" : $row['po_title'];
-				$row['po_serial'] = $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $row['po_serial'], "-" . $row['po_costcenter'] . "-");
+				$row['po_serial'] = $app->branding->formatId(System\Controller\Finance\Invoice\enums\Purchase::Request, $row['po_serial'], "-" . $row['po_costcenter'] . "-");
 
 
 				$closed                 = (is_null($row['po_close_date']) ? "Open" : "Closed");

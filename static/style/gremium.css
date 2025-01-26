@@ -339,11 +339,18 @@
 				row-gap: 25px;
 				padding-bottom: 20px;
 
+
 				> label {
+
 					flex-grow: 1;
 					flex-shrink: 0;
 					flex-basis: 0%;
 
+					> .btn-set > span {
+						white-space: wrap;
+						line-height: 1.5em;
+						height: auto;
+					}
 
 					> h1,
 					> div {

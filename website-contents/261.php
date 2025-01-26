@@ -1,6 +1,6 @@
 <?php
 
-use System\Individual\Attendance\Registration;
+use System\Controller\Individual\Attendance\Registration;
 
 $att = new Registration($app);
 $loc = $att->DefaultCheckInternalAccounts($app->user->company->id);

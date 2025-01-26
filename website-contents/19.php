@@ -1,6 +1,6 @@
 <?php
-use System\Personalization\DashboardReports;
-use System\Template\Gremium;
+use System\Controller\Personalization\DashboardReports;
+use System\Layout\Gremium;
 $debug     = $app->user->info->id == 1100;
 $debug     = false;
 $debugarr  = [];

@@ -1,9 +1,9 @@
 <?php
 
 use System\App;
-use System\Individual\Attendance\Registration;
+use System\Controller\Individual\Attendance\Registration;
 use System\SmartListObject;
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 
 $settings = array();

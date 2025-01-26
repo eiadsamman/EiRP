@@ -1,11 +1,11 @@
 <?php
 use System\Models\Company;
 use System\Models\Country;
-use System\Template\Gremium;
+use System\Layout\Gremium;
 use System\SmartListObject;
-use System\Timeline\Action;
-use System\Timeline\Module;
-use System\Timeline\Timeline;
+use System\Controller\Timeline\Action;
+use System\Controller\Timeline\Module;
+use System\Controller\Timeline\Timeline;
 
 if ($app->xhttp) {
 	if (isset($_POST['objective']) && $_POST['objective'] == 'transaction') {
@@ -48,7 +48,7 @@ if ($app->xhttp) {
 		} catch (TypeError $e) {
 			$result['error'] = "Provide all required fields";
 			$result['errno'] = $e->getCode();
-		} catch (\System\Exceptions\Company\InvalidData $e) {
+		} catch (\System\Core\Exceptions\Company\InvalidData $e) {
 			$result['error'] = $e->getMessage();
 			$result['errno'] = $e->getCode();
 		}
@@ -99,7 +99,7 @@ if ($app->xhttp) {
 			</label>
 			<label for="" style="min-width:250px">
 				<h1>Attachments</h1>
-				<div class="btn-set">
+				<div class="btn-set js_upload_container">
 					<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
 					<input type="button" tabindex="5" id="js_upload_trigger" class="js_upload_trigger edge-right edge-left" value="Upload" />
 					<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
@@ -109,10 +109,10 @@ if ($app->xhttp) {
 								<tbody>
 									<?php
 									$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
-									$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
+									$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Lib\Upload\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
 									if ($r_release) {
 										while ($row_release = $r_release->fetch_assoc()) {
-											echo \System\Attachment\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
+											echo \System\Lib\Upload\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
 										}
 									}
 									?>

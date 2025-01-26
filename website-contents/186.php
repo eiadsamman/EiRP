@@ -1,7 +1,7 @@
 <?php
 set_time_limit(60 * 3);
 ini_set('memory_limit', '512M');
-$ulib = new System\IO\AttachLib($app);
+$ulib = new System\Lib\AttachLib($app);
 
 //Upload plugin requires (style/style.upload.css) & (jquery/uploader-1.0.js) files
 
@@ -105,7 +105,7 @@ if (isset($_POST, $_POST['upload_file']) && $_POST['upload_file'] == "true" && !
 					//Reduce image size
 					if (in_array($up_mime_type, $accepted_mimes)) {
 						if (in_array($up_mime_type, $resize_mimes)) {
-							$image = new System\IO\SimpleImage();
+							$image = new System\Lib\SimpleImage();
 
 							if ($image->load($cdnpath . DIRECTORY_SEPARATOR . $up_id) !== false) {
 								$image->FixOrientation();
@@ -174,7 +174,7 @@ if (isset($_POST, $_POST['upload_file']) && $_POST['upload_file'] == "true" && !
 }
 
 /*
-<div class="btn-set">
+<div class="btn-set js_upload_container">
 	<input type="file" id="js_uploader_btn" multiple="multiple" accept="*//*" capture="camera" />
 	<button id="js_upload_trigger">Attachments</button>
 	<span id="js_upload_list"></span>

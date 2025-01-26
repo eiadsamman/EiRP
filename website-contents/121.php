@@ -1,6 +1,6 @@
 <?php
-use System\Finance\Transaction\enums\Type;
-use System\Individual\Individual;
+use System\Controller\Finance\Transaction\enums\Type;
+use System\Controller\Individual\Individual;
 use System\Views\PanelView;
 
 if ($app->xhttp) {
@@ -15,7 +15,7 @@ if ($app->xhttp) {
 			exit;
 		}
 
-		$controller = new System\Finance\StatementOfAccount\StatementOfAccount($app);
+		$controller = new System\Controller\Finance\StatementOfAccount\StatementOfAccount($app);
 
 		$controller->criteria->setRecordsPerPage(PanelView::$itemsPerRequest);
 		//$controller->criteria->statementID(7207);

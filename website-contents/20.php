@@ -1,5 +1,5 @@
 <?php
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 if ($access_error == 403) {
 	$grem = new Gremium\Gremium();

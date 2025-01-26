@@ -10,7 +10,7 @@ class PaymentTerms extends \System\Views\Chunk\Chunk
 		$this->headerJSONCacheGzip();
 		$output = "[";
 		$smart  = "";
-		$terms  = \System\Finance\Invoice\enums\PaymentTerm::cases();
+		$terms  = \System\Controller\Finance\Invoice\enums\PaymentTerm::cases();
 		foreach ($terms as $term) {
 			if ($term->value < 100) {
 				continue;
@@ -31,7 +31,7 @@ class PaymentTerms extends \System\Views\Chunk\Chunk
 		$this->headerJSONCacheGzip();
 		$output = "[";
 		$smart  = "";
-		$terms  = \System\Finance\Invoice\enums\PaymentTerm::cases();
+		$terms  = \System\Controller\Finance\Invoice\enums\PaymentTerm::cases();
 		foreach ($terms as $term) {
 			if ($term->value < 100) {
 				continue;

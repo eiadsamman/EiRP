@@ -1,8 +1,8 @@
 <?php
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 if (isset($_POST['bulk'])) {
-	$att = new System\Individual\Attendance\Registration($app);
+	$att = new System\Controller\Individual\Attendance\Registration($app);
 	$output = "";
 	$lines = explode("\n", $_POST['bulk']);
 	$unique = array();
@@ -21,7 +21,7 @@ if (isset($_POST['bulk'])) {
 
 
 if (isset($_POST['serial'])) {
-	$att = new System\Individual\Attendance\Registration($app);
+	$att = new System\Controller\Individual\Attendance\Registration($app);
 
 	try {
 		$att->load($_POST['serial']);
@@ -36,10 +36,10 @@ if (isset($_POST['serial'])) {
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 			echo $att->info->fullName();
 		}
-	} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
+	} catch (\System\Core\Exceptions\HR\PersonNotFoundException $e) {
 		header("ATT_RESULT: NOTFOUND");
 		header("ATT_IMAGE_ID: 0");
-	} catch (System\Individual\Attendance\ExceptionCheckedout $e) {
+	} catch (System\Controller\Individual\Attendance\ExceptionCheckedout $e) {
 		header("ATT_RESULT: DUPLICATE");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->fullName();

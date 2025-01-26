@@ -1,7 +1,7 @@
 <?php
 
-use System\Individual\Attendance\Registration;
-use System\Template\Gremium;
+use System\Controller\Individual\Attendance\Registration;
+use System\Layout\Gremium;
 
 $att = new Registration($app);
 $loc = $att->DefaultCheckInternalAccounts($app->user->company->id);
@@ -23,21 +23,21 @@ if (isset($_POST['serial'])) {
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 			echo $att->info->fullName();
 		}
-	} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
+	} catch (\System\Core\Exceptions\HR\PersonNotFoundException $e) {
 		header("ATT_RESULT: NOTFOUND");
 		header("ATT_IMAGE_ID: 0");
-	} catch (\System\Exceptions\HR\PersonResignedException $e) {
+	} catch (\System\Core\Exceptions\HR\PersonResignedException $e) {
 		header("ATT_RESULT: RESIGNED");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 		echo $att->info->fullName();
-	} catch (\System\Individual\Attendance\ExceptionNotSignedIn $e) {
+	} catch (\System\Controller\Individual\Attendance\ExceptionNotSignedIn $e) {
 		header("ATT_RESULT: NOTSIGEND");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 		echo $att->info->fullName();
-	} catch (\System\Individual\Attendance\LocationInvalid $e) {
+	} catch (\System\Controller\Individual\Attendance\LocationInvalid $e) {
 		header("ATT_RESULT: SECTOR");
 		header("ATT_IMAGE_ID: 0");
-	} catch (\System\Individual\Attendance\ExceptionTimeLimit $e) {
+	} catch (\System\Controller\Individual\Attendance\ExceptionTimeLimit $e) {
 		header("ATT_RESULT: TIMELIMIT");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 		echo $att->info->fullName();
@@ -54,7 +54,7 @@ if (isset($_POST['populate'])) {
 		while ($row = $r->fetch_assoc()) {
 
 			$photo = $row['up_id'] != null ? "download/?id={$row['up_id']}&pr=t" : "static/images/user-r.jpg";
-			System\Template\Body::AttendanceTicketPlot(null, $photo, $row['lbr_id'], $row['usr_firstname']);
+			//System\Template\Body::AttendanceTicketPlot(null, $photo, $row['lbr_id'], $row['usr_firstname']);
 		}
 	}
 	exit;

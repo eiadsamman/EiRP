@@ -1,6 +1,6 @@
 <?php
 
-use System\Finance\Accounting;
+use System\Controller\Finance\Accounting;
 
 if (isset($_POST['method']) && $_POST['method'] == "fetch") {
 	$accounting = new Accounting($app);

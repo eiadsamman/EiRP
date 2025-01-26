@@ -18,7 +18,7 @@ function inner(&$app, $id, $selectedPermission)
 
 			while ($row = $r->fetch_assoc()) {
 				echo "<tr id=\"{$row['trd_id']}\"><td>{$row['trd_id']}</td>";
-				$permission = new System\FileSystem\Permission($row['pfp_value']);
+				$permission = new System\Core\FileSystem\Permission($row['pfp_value']);
 				
 				
 				echo "<td><div class=\"btn-set small operations\" data-trd_id=\"{$row['trd_id']}\" data-trd_per=\"$selectedPermission\">";
@@ -55,7 +55,7 @@ if (isset($_POST['permission'])) {
 			trd_zorder;"
 	)) {
 		while ($row = $r->fetch_assoc()) {
-			$permission = new System\FileSystem\Permission($row['pfp_value']);
+			$permission = new System\Core\FileSystem\Permission($row['pfp_value']);
 			echo  "<tr id=\"{$row['trd_id']}\"><td>{$row['trd_id']}</td>";
 			
 			echo  "<td><div class=\"btn-set small operations\" data-trd_id=\"{$row['trd_id']}\" data-trd_per=\"{$_POST['permission']}\">";

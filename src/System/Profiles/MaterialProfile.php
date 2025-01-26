@@ -12,7 +12,7 @@ class MaterialProfile
 	public string|null $longName = null;
 	public int $subMaterialsCount;
 	public float $bomPortion = 0;
-	public \System\enums\UnitSystem|null $unitSystem = null;
+	public \System\Enum\UnitSystem|null $unitSystem = null;
 	public MaterialGategoryProfile $category;
 	public ?BrandProfile $brand;
 	public float $unitsPerBox = 0;

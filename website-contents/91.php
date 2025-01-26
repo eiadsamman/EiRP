@@ -1,15 +1,15 @@
 <?php
-use System\Finance\AccountRole;
-use System\Finance\Forex;
-use System\Template\Gremium;
-use System\Finance\Account;
+use System\Controller\Finance\AccountRole;
+use System\Controller\Finance\Forex;
+use System\Layout\Gremium;
+use System\Controller\Finance\Account;
 use System\SmartListObject;
-use System\Timeline\Action;
-use System\Timeline\Module;
-use System\Timeline\Timeline;
+use System\Controller\Timeline\Action;
+use System\Controller\Timeline\Module;
+use System\Controller\Timeline\Timeline;
 
-$predefined  = new \System\Finance\PredefinedRules($app);
-$accounting  = new \System\Finance\Accounting($app);
+$predefined  = new \System\Controller\Finance\PredefinedRules($app);
+$accounting  = new \System\Controller\Finance\Accounting($app);
 $defines     = $predefined->incomeRules();
 $perpage_val = 20;
 
@@ -28,7 +28,7 @@ if ($app->xhttp) {
 			$accountRole           = new AccountRole();
 			$accountRole->outbound = true;
 
-			$transaction = new System\Finance\Transaction\Receipt($app);
+			$transaction = new System\Controller\Finance\Transaction\Receipt($app);
 			$transaction->issuerAccount($app->user->account);
 			$transaction->targetAccount(new Account($app, (int) $_POST['target-account'][1], $accountRole));
 			$transaction->date($_POST['date'][0]);
@@ -54,7 +54,7 @@ if ($app->xhttp) {
 			}
 
 			if ($transaction->post()) {
-				new System\Personalization\FrequentAccountUse($app, (int) $_POST['target-account'][1]);
+				new System\Controller\Personalization\FrequentAccountUse($app, (int) $_POST['target-account'][1]);
 				$balance             = $app->user->account->getBalance();
 				$result['result']    = true;
 				$result['insert_id'] = $transaction->insert_id;
@@ -76,13 +76,13 @@ if ($app->xhttp) {
 			$result['errno'] = 300;
 			$result['error'] = 'Uknown error, contact system administrator';
 			$app->errorHandler->logError($e);
-		} catch (System\Exceptions\Finance\TransactionException $e) {
+		} catch (System\Core\Exceptions\Finance\TransactionException $e) {
 			$result['errno'] = $e->getCode();
 			$result['error'] = $e->getMessage();
-		} catch (System\Exceptions\Finance\AccountNotFoundException $e) {
+		} catch (System\Core\Exceptions\Finance\AccountNotFoundException $e) {
 			$result['errno'] = 203;
 			$result['error'] = $e->getMessage();
-		} catch (System\Exceptions\Finance\ForexException $e) {
+		} catch (System\Core\Exceptions\Finance\ForexException $e) {
 			$result['errno'] = 300;
 			$result['error'] = "Forex conversion failed";
 		} catch (\mysqli_sql_exception $e) {
@@ -236,7 +236,7 @@ if ($app->xhttp) {
 				<div class="form">
 					<label style="flex:0" for="">
 						<h1>Attachments</h1>
-						<div class="btn-set">
+						<div class="btn-set js_upload_container">
 							<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
 							<input type="button" id="js_upload_trigger" class="js_upload_trigger edge-right edge-left" value="Upload" />
 							<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />
@@ -246,10 +246,10 @@ if ($app->xhttp) {
 										<tbody>
 											<?php
 											$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
-											$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Attachment\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
+											$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user={$app->user->info->id} AND up_pagefile=" . \System\Lib\Upload\Type::FinanceRecord->value . " AND up_rel=0 AND up_deleted=0 LIMIT 50;");
 											if ($r_release) {
 												while ($row_release = $r_release->fetch_assoc()) {
-													echo \System\Attachment\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
+													echo \System\Lib\Upload\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
 												}
 											}
 											?>
@@ -345,7 +345,7 @@ if ($app->xhttp) {
 				?>
 			</datalist>
 			<datalist id="js-ref_creditor-list" style="display: none;">
-				<?= $SmartListObject->userAccountsOutbound(null, [$app->user->account->id], \System\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
+				<?= $SmartListObject->userAccountsOutbound(null, [$app->user->account->id], \System\Controller\Personalization\Identifiers::SystemCountAccountOperation->value); ?>
 			</datalist>
 		</div>
 		<?php

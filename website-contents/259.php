@@ -6,7 +6,7 @@
 <pre>
 <?php
 
-use System\Individual\Attendance\Registration;
+use System\Controller\Individual\Attendance\Registration;
 
 set_time_limit(0);
 

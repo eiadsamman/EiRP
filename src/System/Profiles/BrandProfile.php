@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace System\Profiles;
 
-use System\Attachment\File;
+use System\Lib\Upload\File;
 
 class BrandProfile
 {

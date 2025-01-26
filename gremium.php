@@ -1,5 +1,5 @@
 <?php
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 
 $grem = new Gremium\Gremium(true, false);

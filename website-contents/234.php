@@ -1,14 +1,14 @@
 <?php
-use System\Finance\Invoice\InvoiceItems;
-use System\Template\Gremium;
-use System\Timeline\Action;
-use System\Timeline\Module;
-use System\Timeline\Timeline;
+use System\Controller\Finance\Invoice\InvoiceItems;
+use System\Layout\Gremium;
+use System\Controller\Timeline\Action;
+use System\Controller\Timeline\Module;
+use System\Controller\Timeline\Timeline;
 
 $perpage_val = 20;
 $id          = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
-$invoice     = new System\Finance\Invoice\PurchaseRequest($app);
-$entry       = new System\Finance\Invoice\InvoiceRecord($app);
+$invoice     = new System\Controller\Finance\Invoice\PurchaseRequest($app);
+$entry       = new System\Controller\Finance\Invoice\InvoiceRecord($app);
 
 try {
 
@@ -24,7 +24,7 @@ try {
 	$totalPreVat = $read->totalValue * (1 - ($read->discountRate ?? 0) / 100) + ($read->addtionalAmmout ?? 0);
 	$grem        = new Gremium\Gremium(false, false);
 
-	$grem->header()->prev("href=\"{$fs(209)->dir}\" data-href=\"{$fs(209)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $read->serialNumber, "-" . $read->costCenter->id . "-")}</cite>");
+	$grem->header()->prev("href=\"{$fs(209)->dir}\" data-href=\"{$fs(209)->dir}\"")->serve("<h1>{$fs()->title}</h1><cite>{$app->branding->formatId(System\Controller\Finance\Invoice\enums\Purchase::Quotation, $read->serialNumber, "-" . $read->costCenter->id . "-")}</cite>");
 	$grem->menu()->sticky(true)->open();
 	echo "<span class=\"flex\"></span>";
 	echo "<button data-key=\"{$read->id}\" data-ploturl=\"{$fs()->dir}\" id=\"appPrint\" class=\"edge-right edge-left\" tabindex=\"-1\">Print</button>";
@@ -51,7 +51,7 @@ try {
 		<label>
 			<h1>ID</h1>
 			<div class="btn-set">
-				<span><?= $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $read->serialNumber, "-" . $read->costCenter->id . "-") ?></span>
+				<span><?= $app->branding->formatId(System\Controller\Finance\Invoice\enums\Purchase::Quotation, $read->serialNumber, "-" . $read->costCenter->id . "-") ?></span>
 			</div>
 
 		</label>
@@ -69,7 +69,7 @@ try {
 			<div class="btn-set">
 				<span><a data-href="<?= "{$fs(240)->dir}/?id={$read->parentId}"; ?>" href="<?= "{$fs(240)->dir}/?id={$read->parentId}"; ?>">
 						<?=
-							$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $read->parentSerialNumber, "-" . $read->costCenter->id . "-") ?>
+							$app->branding->formatId(System\Controller\Finance\Invoice\enums\Purchase::Request, $read->parentSerialNumber, "-" . $read->costCenter->id . "-") ?>
 					</a></span>
 			</div>
 			<div class="btn-set">

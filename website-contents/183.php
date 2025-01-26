@@ -1,6 +1,6 @@
 <?php
-use System\Individual\Attendance\Registration;
-use System\Template\Gremium;
+use System\Controller\Individual\Attendance\Registration;
+use System\Layout\Gremium;
 
 $grem = new Gremium\Gremium(false);
 $attendance = new Registration($app);

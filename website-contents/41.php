@@ -1,8 +1,8 @@
 <?php
 
 $__type = array(
-	1 => \System\Personalization\Identifiers::SystemProductiontrackSection->value,
-	2 => \System\Personalization\Identifiers::SystemProductiontrackMaterial->value
+	1 => \System\Controller\Personalization\Identifiers::SystemProductiontrackSection->value,
+	2 => \System\Controller\Personalization\Identifiers::SystemProductiontrackMaterial->value
 );
 
 function PopulateConfigs(&$app)

@@ -1,6 +1,6 @@
 <?php
 
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchrecord") {
 	$employeeID = (int) $_POST['employeeID'];
@@ -52,9 +52,9 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 			}
 
 			$socialidphotos = "-";
-			if (isset($arr_socialids[\System\Attachment\Type::HrID->value])) {
+			if (isset($arr_socialids[\System\Lib\Upload\Type::HrID->value])) {
 				$socialidphotos = "";
-				foreach ($arr_socialids[\System\Attachment\Type::HrID->value] as $record) {
+				foreach ($arr_socialids[\System\Lib\Upload\Type::HrID->value] as $record) {
 					$socialidphotos .= "<a title=\"{$record[0]}\" href=\"{$fs(187)->dir}/?id={$record[3]}&pr=v\"><img src=\"{$fs(187)->dir}/?id={$record[3]}&pr=t\" /></a>";
 				}
 			}
@@ -68,10 +68,10 @@ if (isset($_POST['method'], $_POST['employeeID']) && $_POST['method'] == "fetchr
 				$grem->article()->open();
 				$img = "user.jpg";
 				if (
-					isset($arr_socialids[\System\Attachment\Type::HrPerson->value]) && is_array($arr_socialids[\System\Attachment\Type::HrPerson->value])
-					&& sizeof($arr_socialids[\System\Attachment\Type::HrPerson->value]) > 0
+					isset($arr_socialids[\System\Lib\Upload\Type::HrPerson->value]) && is_array($arr_socialids[\System\Lib\Upload\Type::HrPerson->value])
+					&& sizeof($arr_socialids[\System\Lib\Upload\Type::HrPerson->value]) > 0
 				) {
-					$imgid = reset($arr_socialids[\System\Attachment\Type::HrPerson->value])[3];
+					$imgid = reset($arr_socialids[\System\Lib\Upload\Type::HrPerson->value])[3];
 					$img   = "download/?id={$imgid}&pr=t";
 					unset($imgid);
 				}

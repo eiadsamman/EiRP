@@ -1,8 +1,8 @@
 <?php
 
-use System\Individual\Attendance\VisualReport;
+use System\Controller\Individual\Attendance\VisualReport;
 use System\SmartListObject;
-use System\Template\Gremium\Gremium;
+use System\Layout\Gremium\Gremium;
 
 function getAttendanceReport(&$app, $dateFrom, $dateTo, $employeeID)
 {

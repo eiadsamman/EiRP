@@ -1,7 +1,7 @@
 <?php
-use System\Finance\Invoice\enums\PaymentTerm;
-use System\Finance\Invoice\enums\Purchase;
-use System\Finance\Invoice\enums\ShippingTerm;
+use System\Controller\Finance\Invoice\enums\PaymentTerm;
+use System\Controller\Finance\Invoice\enums\Purchase;
+use System\Controller\Finance\Invoice\enums\ShippingTerm;
 use System\Views\PanelView;
 $docType = Purchase::Quotation->value;
 
@@ -79,8 +79,8 @@ if ($app->xhttp) {
 
 				$closed = (is_null($row['po_close_date']) ? "Open" : "Closed");
 
-				$serial       = $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Quotation, $row['po_serial'], "-" . $row['po_costcenter'] . "-");
-				$paretnSerial = $app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $row['parent_po_serial'], "-" . $row['parent_costcenter'] . "-");
+				$serial       = $app->branding->formatId(System\Controller\Finance\Invoice\enums\Purchase::Quotation, $row['po_serial'], "-" . $row['po_costcenter'] . "-");
+				$paretnSerial = $app->branding->formatId(System\Controller\Finance\Invoice\enums\Purchase::Request, $row['parent_po_serial'], "-" . $row['parent_costcenter'] . "-");
 
 
 				$row['po_title'] = empty($row['po_title']) || $row['po_title'] == "" ? "<i>(Untitled)</i>" : $row['po_title'];

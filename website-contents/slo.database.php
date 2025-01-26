@@ -491,10 +491,10 @@ $rl["ACC_788"] = array(
 			FROM 
 				companies 
 					JOIN user_company ON comp_id=urc_usr_comp_id AND urc_usr_id={$app->user->info->id}
-					JOIN user_settings ON usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Personalization\Identifiers::SystemWorkingCompany->value . " AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
+					JOIN user_settings ON usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Controller\Personalization\Identifiers::SystemWorkingCompany->value . " AND usrset_usr_defind_name='UNIQUE' AND usrset_value=comp_id
 			) AS _companies ON prt_company_id=_companies.comp_id
 			
-		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::SystemCountAccountSelection->value . "
+		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Controller\Personalization\Identifiers::SystemCountAccountSelection->value . "
 		",
 	"return_id" => array("prt_id" => "prt_id"),
 	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name, \": \", prt_name)"),
@@ -512,7 +512,7 @@ $rl["ACC_OPERATION"] = array(
 		JOIN currencies ON cur_id=prt_currency
 		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id}
 		JOIN companies ON prt_company_id=comp_id
-		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Personalization\Identifiers::SystemCountAccountOperation->value . "
+		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Controller\Personalization\Identifiers::SystemCountAccountOperation->value . "
 		",
 	"return_id" => array("prt_id" => "prt_id"),
 	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
@@ -529,7 +529,7 @@ $rl["ACC_VIEW"] = array(
 		JOIN currencies ON cur_id=prt_currency
 		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_view=1
 		JOIN companies ON prt_company_id=comp_id
-		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Personalization\Identifiers::SystemCountAccountOperation->value . "
+		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Controller\Personalization\Identifiers::SystemCountAccountOperation->value . "
 		",
 	"return_id" => array("prt_id" => "prt_id"),
 	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
@@ -556,7 +556,7 @@ $rl["ACC_OUTBOUND"] = array(
 		JOIN currencies ON cur_id=prt_currency
 		JOIN user_partition ON prt_id=upr_prt_id AND upr_usr_id={$app->user->info->id} AND upr_prt_outbound=1
 		JOIN companies ON prt_company_id=comp_id
-		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Personalization\Identifiers::SystemCountAccountOperation->value . "
+		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Controller\Personalization\Identifiers::SystemCountAccountOperation->value . "
 		",
 	"return_id" => array("prt_id" => "prt_id"),
 	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
@@ -887,7 +887,7 @@ $rl["COMPANY"] = array(
 $rl["COMPANY_USER"] = array(
 	"from" => "companies 
 				JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id={$app->user->info->id}
-				LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::SystemCountCompanySelection->value . " ",
+				LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Controller\Personalization\Identifiers::SystemCountCompanySelection->value . " ",
 	"return_id" => array("comp_id" => "comp_id"),
 	"return_value" => array("comp_name" => "comp_name"),
 	"select" => array("comp_name" => "comp_name"),

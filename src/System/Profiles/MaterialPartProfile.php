@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace System\Profiles;
 
-use System\enums\UnitSystem;
+use System\Enum\UnitSystem;
 
 class MaterialPartProfile extends MaterialProfile
 {

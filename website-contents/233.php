@@ -1,11 +1,11 @@
 <?php
-use System\Finance\Invoice\InvoiceItems;
-use System\Finance\Invoice\InvoiceRecord;
-use System\Finance\Invoice\PurchaseQuotation;
-use System\Template\Gremium;
-use System\Timeline\Action;
-use System\Timeline\Module;
-use System\Timeline\Timeline;
+use System\Controller\Finance\Invoice\InvoiceItems;
+use System\Controller\Finance\Invoice\InvoiceRecord;
+use System\Controller\Finance\Invoice\PurchaseQuotation;
+use System\Layout\Gremium;
+use System\Controller\Timeline\Action;
+use System\Controller\Timeline\Module;
+use System\Controller\Timeline\Timeline;
 
 
 const SALT = "#F@*G3HP#1{F@4*H(";
@@ -100,7 +100,7 @@ if ($app->xhttp) {
 
 	$id = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
 
-	$entry = new System\Finance\Invoice\InvoiceRecord($app);
+	$entry = new System\Controller\Finance\Invoice\InvoiceRecord($app);
 	try {
 		$read = $entry->get($id);
 
@@ -142,7 +142,7 @@ if ($app->xhttp) {
 						<div class="btn-set">
 							<?php
 							
-							echo "<a class=\"standard\" href=\"{$fs(240)->dir}/?id={$read->id}\" data-href=\"{$fs(240)->dir}/?id={$read->id}\">{$app->branding->formatId(System\Finance\Invoice\enums\Purchase::Request, $read->serialNumber, "-" . $read->costCenter->id . "-")}</a>";
+							echo "<a class=\"standard\" href=\"{$fs(240)->dir}/?id={$read->id}\" data-href=\"{$fs(240)->dir}/?id={$read->id}\">{$app->branding->formatId(System\Controller\Finance\Invoice\enums\Purchase::Request, $read->serialNumber, "-" . $read->costCenter->id . "-")}</a>";
 							?>
 						</div>
 					</label>

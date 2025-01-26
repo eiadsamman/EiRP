@@ -1,6 +1,6 @@
 <?php
 
-use System\Template\Gremium\Gremium;
+use System\Layout\Gremium\Gremium;
 if ($h__requested_with_ajax && isset($_POST['posubmit'])) {
 }
 

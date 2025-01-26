@@ -10,7 +10,6 @@ use System\Profiles\MaterialGroupProfile;
 use System\Profiles\MaterialPartProfile;
 use System\Profiles\MaterialProfile;
 use System\Profiles\MaterialTypeProfile;
-use System\Profiles\UnitProfile;
 
 
 class Material
@@ -51,7 +50,7 @@ class Material
 			$output->name              = $row['mat_name'] ?? "";
 			$output->longName          = $row['mat_longname'] ?? "";
 			$output->subMaterialsCount = is_null($row['_sub_materials']) ? 0 : (int) $row['_sub_materials'];
-			$output->unitSystem        = \System\enums\UnitSystem::tryFrom((int) $row['mat_unitsystem']);
+			$output->unitSystem        = \System\Enum\UnitSystem::tryFrom((int) $row['mat_unitsystem']);
 			$output->creationDate      = new \DateTime((string) $row['mat_date']);
 			$output->type              = new MaterialTypeProfile((string) $row['mattyp_name'], (string) $row['mattyp_description']);
 
@@ -87,13 +86,13 @@ class Material
 					up_rel DESC, up_date DESC;",
 			[
 				$brandProfile->id,
-				\System\Attachment\Type::BrandLogo->value
+				\System\Lib\Upload\Type::BrandLogo->value
 			]
 		);
 		if ($exec) {
 			$brandProfile->attachments = [];
 			while ($row = $exec->fetch_assoc()) {
-				//$brandProfile->attachments[$ro['']]=new \System\Attachment\File();
+				//$brandProfile->attachments[$ro['']]=new \System\Lib\Upload\File();
 			}
 		}
 	}
@@ -131,10 +130,10 @@ class Material
 				$output->name         = $row['mat_name'] ?? "";
 				$output->longName     = $row['mat_longname'] ?? "";
 				$output->quantity     = (float) $row['mat_bom_quantity'];
-				$output->unitSystem   = \System\enums\UnitSystem::tryFrom((int) $row['mat_bom_unitsystem']);
+				$output->unitSystem   = \System\Enum\UnitSystem::tryFrom((int) $row['mat_bom_unitsystem']);
 				$output->creationDate = new \DateTime((string) $row['mat_date']);
 				$output->type         = new MaterialTypeProfile((string) $row['mattyp_name'], (string) $row['mattyp_description']);
-				$output->unit         = $this->app->unit->getUnit((int) $row['mat_bom_unitsystem'], (int) $row['mat_bom_unit']);
+				$output->unit         = $this->app->unit->getUnit((int) $row['mat_bom_unitsystem'], (int) $row['mat_bom_unit']) ?? null;
 				;
 
 				$output->category = new MaterialGategoryProfile(

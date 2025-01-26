@@ -5,11 +5,11 @@ use System\App;
 spl_autoload_register(function ($class) {
 	$class = __DIR__ . DIRECTORY_SEPARATOR . "src/" . (str_replace('\\', '/', $class)) . '.php';
 	if (is_file($class)) {
-		include_once ($class);
+		include_once($class);
 	}
 });
 $mt          = microtime(true);
-$performance = new System\Log\Performance(__DIR__ . "/admin/performance.log");
+$performance = new System\Core\Log\Performance(__DIR__ . "/admin/performance.log");
 $app         = new App(__DIR__, "settings.json", true);
 $app->databaseConnect($app->settings->database['host'], $app->settings->database['username'], $app->settings->database['password'], $app->settings->database['name']);
 $app->build();
@@ -26,7 +26,7 @@ if (!empty($al) && sizeof($al) > 1 && $al[0] == "_") {
 }
 
 
-$app->file = new System\FileSystem\Page($app);
+$app->file = new System\Core\FileSystem\Page($app);
 $fs        = $app->file;
 $urlParse  = $fs->parse($app->resolve());
 if (!$urlParse) {
@@ -41,9 +41,9 @@ if ($fs()->enabled == false) {
 	if ($fs()->id != $app::PERMA_ID['index']) {
 		$app->responseStatus->Forbidden->response();
 	}
-	require_once ($app->root . "/admin/forms/upper.php");
-	require_once ($app->root . "website-contents/" . $app::PERMA_ID['login'] . ".php");
-	require_once ($app->root . "/admin/forms/lower.php");
+	require_once($app->root . "/admin/forms/upper.php");
+	require_once($app->root . "website-contents/" . $app::PERMA_ID['login'] . ".php");
+	require_once($app->root . "/admin/forms/lower.php");
 	exit;
 }
 
@@ -84,9 +84,9 @@ if ($app->user->info) {
 		if ($_GET['--sys_sel-change'] == "company" && $fs()->id != 3) {
 			$r = $app->db->query("SELECT comp_name,comp_id FROM companies JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id=" . $app->user->info->id . ";");
 			if ($r) {
-				require_once ($app->root . "/admin/forms/upper.php");
-				require_once ($app->root . "website-contents/207.php");
-				require_once ($app->root . "/admin/forms/lower.php");
+				require_once($app->root . "/admin/forms/upper.php");
+				require_once($app->root . "website-contents/207.php");
+				require_once($app->root . "/admin/forms/lower.php");
 				exit;
 			}
 		}
@@ -95,16 +95,16 @@ if ($app->user->info) {
 		if ($_GET['--sys_sel-change'] == "account" && $fs()->id != 3) {
 			$r = $app->db->query("SELECT prt_name,prt_id,cur_symbol,cur_name,cur_id,cur_shortname FROM `acc_accounts` LEFT JOIN currencies ON cur_id=prt_currency JOIN user_partition ON upr_prt_id=prt_id AND upr_usr_id=" . $app->user->info->id . ";");
 			if ($r) {
-				require_once ($app->root . "/admin/forms/upper.php");
-				require_once ($app->root . "website-contents/33.php");
-				require_once ($app->root . "/admin/forms/lower.php");
+				require_once($app->root . "/admin/forms/upper.php");
+				require_once($app->root . "website-contents/33.php");
+				require_once($app->root . "/admin/forms/lower.php");
 				exit;
 			}
 		}
 	}
 
-	$frequentVisit = new System\Personalization\FrequentVisit($app);
-	$themeDarkMode = new System\Personalization\ThemeDarkMode($app);
+	$frequentVisit = new System\Controller\Personalization\FrequentVisit($app);
+	$themeDarkMode = new System\Controller\Personalization\ThemeDarkMode($app);
 	$frequentVisit->register($fs()->id);
 	if ($app->xhttp && isset($_POST['--toggle-theme-mode'])) {
 		$mode = $_POST['--toggle-theme-mode'] === "dark" ? 1 : 0;

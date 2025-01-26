@@ -1,5 +1,5 @@
 <?php
-use System\Template\Gremium\Gremium;
+use System\Layout\Gremium\Gremium;
 
 if ($fs()->permission->edit && isset($_POST['change-cwk'], $_POST['status'])) {
 	$_POST['change-cwk'] = (int) $_POST['change-cwk'];

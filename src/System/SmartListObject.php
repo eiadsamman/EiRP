@@ -54,7 +54,7 @@ class SmartListObject
 
 
 	public function userAccounts(
-		?\System\Finance\AccountRole &$role = null,
+		?\System\Controller\Finance\AccountRole &$role = null,
 		?int $company_id = null,
 		mixed $select = null,
 		?array $exclude = null,
@@ -62,7 +62,7 @@ class SmartListObject
 	): string {
 		$output = "";
 		if ($identity == null) {
-			$identity = \System\Personalization\Identifiers::SystemCountAccountSelection->value;
+			$identity = \System\Controller\Personalization\Identifiers::SystemCountAccountSelection->value;
 		}
 		try {
 			if (
@@ -107,7 +107,7 @@ class SmartListObject
 	): string {
 		$output = "";
 		if ($identity == null) {
-			$identity = \System\Personalization\Identifiers::SystemCountCompanySelection->value;
+			$identity = \System\Controller\Personalization\Identifiers::SystemCountCompanySelection->value;
 		}
 		try {
 			if (
@@ -156,13 +156,13 @@ class SmartListObject
 
 	public function userAccountsInbound(mixed $select = null, ?array $exclude = null, ?int $identity = null): string
 	{
-		$role          = new \System\Finance\AccountRole();
+		$role          = new \System\Controller\Finance\AccountRole();
 		$role->inbound = true;
 		return $this->userAccounts(role: $role, select: $select, exclude: $exclude, identity: $identity);
 	}
 	public function userAccountsOutbound(mixed $select = null, ?array $exclude = null, ?int $identity = null): string
 	{
-		$role           = new \System\Finance\AccountRole();
+		$role           = new \System\Controller\Finance\AccountRole();
 		$role->outbound = true;
 		return $this->userAccounts(role: $role, select: $select, exclude: $exclude, identity: $identity);
 	}
@@ -283,7 +283,7 @@ class SmartListObject
 	public function financialTransactionNature(mixed $select = null): string
 	{
 		$output = "";
-		foreach (\System\Finance\Transaction\enums\Type::array() as $k => $v) {
+		foreach (\System\Controller\Finance\Transaction\enums\Type::array() as $k => $v) {
 			$output .= $this->template((string) $k, $v, null, (int) $k == (int) $select);
 		}
 

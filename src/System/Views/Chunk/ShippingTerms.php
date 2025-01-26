@@ -10,7 +10,7 @@ class ShippingTerms extends \System\Views\Chunk\Chunk
 		$this->headerJSONCacheGzip();
 		$output = "[";
 		$smart  = "";
-		$terms  = \System\Finance\Invoice\enums\ShippingTerm::cases();
+		$terms  = \System\Controller\Finance\Invoice\enums\ShippingTerm::cases();
 		foreach ($terms as $term) {
 			if ($term->value < 100) {
 				continue;
@@ -31,7 +31,7 @@ class ShippingTerms extends \System\Views\Chunk\Chunk
 		$this->headerJSONCacheGzip();
 		$output = "[";
 		$smart  = "";
-		$terms  = \System\Finance\Invoice\enums\ShippingTerm::cases();
+		$terms  = \System\Controller\Finance\Invoice\enums\ShippingTerm::cases();
 		foreach ($terms as $term) {
 			if ($term->value < 100) {
 				continue;

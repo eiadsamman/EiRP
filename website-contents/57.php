@@ -1,12 +1,12 @@
 <?php
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 if (isset($_POST['bulk'])) {
 	exit;
 }
 
 if (isset($_POST['serial'])) {
-	$att = new System\Individual\Attendance\Registration($app);
+	$att = new System\Controller\Individual\Attendance\Registration($app);
 	$att->SetDefaultCheckInAccount($app->user->company->id);
 	try {
 		$att->load((int) $_POST['serial']);
@@ -21,25 +21,25 @@ if (isset($_POST['serial'])) {
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 			echo $att->info->fullName();
 		}
-	} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
+	} catch (\System\Core\Exceptions\HR\PersonNotFoundException $e) {
 		header("ATT_RESULT: NOTFOUND");
 		header("ATT_IMAGE_ID: 0");
-	} catch (\System\Exceptions\HR\PersonResignedException $e) {
+	} catch (\System\Core\Exceptions\HR\PersonResignedException $e) {
 		header("ATT_RESULT: RESIGNED");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->fullName();
-	} catch (System\Individual\Attendance\ExceptionNotSignedIn $e) {
+	} catch (System\Controller\Individual\Attendance\ExceptionNotSignedIn $e) {
 		header("ATT_RESULT: NOTSIGEND");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->fullName();
-	} catch (System\Individual\Attendance\LocationInvalid $e) {
+	} catch (System\Controller\Individual\Attendance\LocationInvalid $e) {
 		header("ATT_RESULT: SECTOR");
 		header("ATT_IMAGE_ID: 0");
-	} catch (System\Individual\Attendance\ExceptionTimeLimit $e) {
+	} catch (System\Controller\Individual\Attendance\ExceptionTimeLimit $e) {
 		header("ATT_RESULT: TIMELIMIT");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->fullName();
-	} catch (System\Individual\Attendance\ExceptionDuplicateCheckin $e) {
+	} catch (System\Controller\Individual\Attendance\ExceptionDuplicateCheckin $e) {
 		header("ATT_RESULT: DUPLICATE");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ? $att->info->photoid : "0"));
 		echo $att->info->fullName();
@@ -49,7 +49,7 @@ if (isset($_POST['serial'])) {
 }
 
 
-$att = new System\Individual\Attendance\Registration($app);
+$att = new System\Controller\Individual\Attendance\Registration($app);
 $defaultaccount = $att->DefaultCheckInAccount($app->user->company->id);
 if (!$defaultaccount) {
 	echo "<h3>Selected company isn't valid or no linked account for check-in operations</h3>";

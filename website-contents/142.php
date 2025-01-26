@@ -123,7 +123,7 @@ if (isset($_GET['id'])) {
 						acc_accounts
 							JOIN acc_temp ON atm_account_id = prt_id
 							JOIN companies ON comp_id = prt_company_id
-							LEFT JOIN uploads ON (up_pagefile=" . \System\Attachment\Type::CompanyLogo->value . " ) AND up_rel = prt_company_id AND up_deleted = 0
+							LEFT JOIN uploads ON (up_pagefile=" . \System\Lib\Upload\Type::CompanyLogo->value . " ) AND up_rel = prt_company_id AND up_deleted = 0
 					) AS _merge ON _merge.atm_main = acm_id AND _merge.atm_dir = IF(acm_type = 1, 1, 0)
 		WHERE
 			acm_rejected = 0 AND acm_id = {$_GET['id']}

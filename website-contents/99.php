@@ -1,9 +1,9 @@
 <?php
 
-use System\Finance\Accounting;
-use System\Personalization\RecordsPerPage;
+use System\Controller\Finance\Accounting;
+use System\Controller\Personalization\RecordsPerPage;
 use System\SmartListObject;
-use System\Template\Gremium;
+use System\Layout\Gremium;
 
 define("TRANSACTION_ATTACHMENT_PAGEFILE", "188");
 
@@ -260,7 +260,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'load_query') {
 		exit;
 	}
 
-	$r = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_usr_defind_name='{$_POST['query_id']}' AND usrset_usr_id='{$app->user->info->id}'");
+	$r = $app->db->query("SELECT usrset_value FROM user_settings WHERE usrset_type = " . \System\Controller\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_usr_defind_name='{$_POST['query_id']}' AND usrset_usr_id='{$app->user->info->id}'");
 	if ($r) {
 		if ($row = $r->fetch_assoc()) {
 			$arr_output['result'] = true;
@@ -303,7 +303,7 @@ if (isset($_POST['save_query'])) {
 
 	$_POST['save_name'] = str_replace(array("'", '"', "\\", "(", ")"), "-", $_POST['save_name']);
 	$r                  = $app->db->query('INSERT INTO 
-		user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) VALUES (' . $app->user->info->id . ',' . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . ',\'' . $_POST["save_name"] . '\',\'' .
+		user_settings (usrset_usr_id,usrset_type,usrset_usr_defind_name,usrset_value,usrset_time) VALUES (' . $app->user->info->id . ',' . \System\Controller\Personalization\Identifiers::AccountCustomeQuerySave->value . ',\'' . $_POST["save_name"] . '\',\'' .
 		$prepare . '\',FROM_UNIXTIME(' . time() . ')) ON DUPLICATE KEY UPDATE
 		usrset_value=\'' . $prepare . '\',
 		usrset_time=FROM_UNIXTIME(\'' . time() . '\')
@@ -327,7 +327,7 @@ if (isset($_POST['method']) && $_POST['method'] == "delete_query") {
 	if (!isset($_POST['query_id'])) {
 		echo "0";
 	}
-	$r = $app->db->query("DELETE FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_usr_defind_name = '{$_POST['query_id']}'");
+	$r = $app->db->query("DELETE FROM user_settings WHERE usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Controller\Personalization\Identifiers::AccountCustomeQuerySave->value . " AND usrset_usr_defind_name = '{$_POST['query_id']}'");
 	if ($r) {
 		echo "1";
 	} else {
@@ -756,7 +756,7 @@ if (isset($_POST['method']) && $_POST['method'] == 'filter') {
 					$name       = array();
 					if ($group_v['cols'] == "Type") {
 						foreach ($group_v['reference'] as $ref_v) {
-							$name[] = (\System\Finance\Transaction\enums\Type::tryFrom((int) $row[$ref_v])->toString());
+							$name[] = (\System\Controller\Finance\Transaction\enums\Type::tryFrom((int) $row[$ref_v])->toString());
 						}
 					} else {
 						foreach ($group_v['reference'] as $ref_v) {

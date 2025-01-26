@@ -10,7 +10,7 @@ class Units extends \System\Views\Chunk\Chunk
 		$this->headerJSONCacheGzip();
 		$output = "[";
 		$smart  = "";
-		$terms  = \System\enums\UnitSystem::cases();
+		$terms  = \System\Enum\UnitSystem::cases();
 		foreach ($terms as $term) {
 			$output .= $smart . "{";
 			$output .= "\"id\": {$term->value},";
@@ -27,7 +27,7 @@ class Units extends \System\Views\Chunk\Chunk
 		$this->headerJSONCacheGzip();
 		$output = "[";
 		$smart  = "";
-		$terms  = \System\enums\UnitSystem::cases();
+		$terms  = \System\Enum\UnitSystem::cases();
 		foreach ($terms as $term) {
 			$output .= $smart . "{";
 			$output .= "\"id\": {$term->value},";

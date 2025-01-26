@@ -1,5 +1,5 @@
 <?php
-use System\Timeline\Module;
+use System\Controller\Timeline\Module;
 use System\Views\PanelView;
 $mods = [
 	Module::Company->value,

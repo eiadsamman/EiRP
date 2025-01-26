@@ -1,9 +1,9 @@
 <?php
 use System\Models\Company;
-use System\Template\Gremium;
-use System\Timeline\Action;
-use System\Timeline\Module;
-use System\Timeline\Timeline;
+use System\Layout\Gremium;
+use System\Controller\Timeline\Action;
+use System\Controller\Timeline\Module;
+use System\Controller\Timeline\Timeline;
 
 
 if ($app->xhttp) {
@@ -223,10 +223,10 @@ if ($app->xhttp) {
 		$prev_docs      = "";
 		$accepted_mimes = array("image/jpeg", "image/gif", "image/bmp", "image/png");
 		$r_release      = $app->db->query("SELECT up_id,up_name,up_size,up_mime FROM uploads WHERE up_user = {$app->user->info->id} 
-			AND up_pagefile=" . \System\Attachment\Type::Timeline->value . " AND up_rel = 0 AND up_deleted = 0 LIMIT 50;");
+			AND up_pagefile=" . \System\Lib\Upload\Type::Timeline->value . " AND up_rel = 0 AND up_deleted = 0 LIMIT 50;");
 		if ($r_release) {
 			while ($row_release = $r_release->fetch_assoc()) {
-				$prev_docs .= \System\Attachment\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
+				$prev_docs .= \System\Lib\Upload\Template::itemDom($row_release['up_id'], (in_array($row_release['up_mime'], $accepted_mimes) ? "image" : "document"), $row_release['up_name'], false, 'attachments');
 			}
 		}
 
@@ -257,7 +257,7 @@ if ($app->xhttp) {
 					<div class="form">
 						<label for="">
 							<h1>Attachments</h1>
-							<div class="btn-set">
+							<div class="btn-set js_upload_container">
 								<span id="js_upload_count" class="js_upload_count"><span>0 / 0</span></span>
 								<input type="button" id="js_upload_trigger" class="js_upload_trigger edge-right edge-left" value="Upload" />
 								<input type="file" id="js_uploader_btn" class="js_uploader_btn" multiple="multiple" accept="image/*" />

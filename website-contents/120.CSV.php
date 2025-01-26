@@ -1,6 +1,6 @@
 <?php
 
-use System\Finance\Accounting;
+use System\Controller\Finance\Accounting;
 
 function replaceARABIC($str){
 	$str=str_replace(["أ","إ","آ"],"[أإاآ]+",$str);
@@ -137,7 +137,7 @@ if ($r) {
 		foreach ($array_output as $main) {
 			fputcsv($output, array(
 				$main['info']['id'],
-				\System\Finance\Transaction\enums\Type::tryFrom((int)$main['info']['transaction_type'])->value,
+				\System\Controller\Finance\Transaction\enums\Type::tryFrom((int)$main['info']['transaction_type'])->value,
 				$main['details']['creditor']['raw_value'],
 				$main['details']['creditor']['currency'],
 				$main['details']['creditor']['account'],
@@ -151,7 +151,7 @@ if ($r) {
 
 			fputcsv($output, array(
 				$main['info']['id'],
-				\System\Finance\Transaction\enums\Type::tryFrom((int)$main['info']['transaction_type'])->value,
+				\System\Controller\Finance\Transaction\enums\Type::tryFrom((int)$main['info']['transaction_type'])->value,
 				$main['details']['debitor']['raw_value'],
 				$main['details']['debitor']['currency'],
 				$main['details']['debitor']['account'],

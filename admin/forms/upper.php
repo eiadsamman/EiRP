@@ -1,12 +1,12 @@
 <?php
-use System\Finance\Term;
-use System\Individual\Individual;
+use System\Controller\Finance\Term;
+use System\Controller\Individual\Individual;
 ob_start();
 ob_implicit_flush(true);
 $_v = !empty($app->settings->site['environment']) && $app->settings->site['environment'] === "development" ? substr(uniqid(), 9, 4) : $app->settings->site['version'];
 
-use System\Finance\AccountRole;
-use System\Personalization\Bookmark;
+use System\Controller\Finance\AccountRole;
+use System\Controller\Personalization\Bookmark;
 use System\SmartListObject;
 
 $__workingaccount = false;
@@ -148,7 +148,7 @@ $SmartListObject  = new SmartListObject($app);
 						echo "<div style=\"padding-left:15px;\">No company selected</div>";
 					} else {
 						$ptp  = array();
-						$scas = \System\Personalization\Identifiers::SystemCountAccountSelection->value;
+						$scas = \System\Controller\Personalization\Identifiers::SystemCountAccountSelection->value;
 						if (
 							$r = $app->db->query(
 								"SELECT 
@@ -203,7 +203,7 @@ $SmartListObject  = new SmartListObject($app);
 			comp_id,comp_name 
 		FROM companies 
 			JOIN user_company ON urc_usr_comp_id = comp_id AND urc_usr_id = " . $app->user->info->id . "
-			LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_type = " . \System\Personalization\Identifiers::SystemCountCompanySelection->value . "
+			LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id=" . $app->user->info->id . " AND usrset_type = " . \System\Controller\Personalization\Identifiers::SystemCountCompanySelection->value . "
 		ORDER BY
 			(usrset_value+0) DESC"
 					);
