@@ -41,8 +41,10 @@ class SmartListObjectHandler {
 			return "";
 		} else if (typeof object == "object") {
 			return `<${wrapper}>${Object.values(object).join(this.join_delimiter)}</${wrapper}>`;
-		} else {
+		} else if (typeof object == "string" && object.length > 0) {
 			return `<${wrapper}>${object}</${wrapper}>`;;
+		}else{
+			return "";
 		}
 	}
 

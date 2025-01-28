@@ -103,7 +103,7 @@ class Material
 			"SELECT 
 				mat_id,mat_name, mat_long_id,mat_longname,mat_unitsystem,mat_date,
 				matcatgrp_name, matcatgrp_id, matcat_name, matcat_id,
-				brand_id, brand_name, 
+				brand_id, brand_name, mat_bom_order,
 				mattyp_name,mattyp_description,
 				mat_bom_quantity, mat_bom_unitsystem, mat_bom_unit, mat_bom_tolerance
 			FROM 
@@ -116,11 +116,12 @@ class Material
 			WHERE
 				mat_bom_mat_id = ?
 			ORDER BY
-				mat_bom_level;",
+				 mat_bom_order;",
 			[
 				$mat_id
 			]
 		);
+
 		if ($r) {
 			while ($row = $r->fetch_assoc()) {
 				$output               = new MaterialPartProfile();
@@ -134,8 +135,6 @@ class Material
 				$output->creationDate = new \DateTime((string) $row['mat_date']);
 				$output->type         = new MaterialTypeProfile((string) $row['mattyp_name'], (string) $row['mattyp_description']);
 				$output->unit         = $this->app->unit->getUnit((int) $row['mat_bom_unitsystem'], (int) $row['mat_bom_unit']) ?? null;
-				;
-
 				$output->category = new MaterialGategoryProfile(
 					(int) $row['matcat_id'],
 					$row['matcat_name'],

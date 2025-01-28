@@ -214,10 +214,6 @@ class Registration extends \System\Controller\Individual\Employee
 							ORDER BY ltr_usr_id, ltr_ctime
 						) AS atttable ON sequence_num.seq <= DATEDIFF(atttable.ltr_otime, atttable.ltr_ctime)
 
-
-
-
-
 					WHERE
 						DATE(ltr_ctime + INTERVAL seq DAY)  >= '{$dateFrom->format("Y-m-d H:i:s")}'
 						AND

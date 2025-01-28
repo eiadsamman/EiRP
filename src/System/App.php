@@ -37,7 +37,7 @@ class App
 	public string $http_root;
 	public Core\Settings $settings;
 
-	public ?Routes $route;
+	public ?Routes $route = null;
 
 	public \System\Core\FileSystem\Page $file;
 	protected array $permissions_array = array();
@@ -139,7 +139,7 @@ class App
 
 	public function register(string $route): bool
 	{
-		$route       = $this->prepareURI($route);
+		$route     = $this->prepareURI($route);
 		$this->uri = $route == "" ? $this->settings->site['index'] : $route;
 
 		return true;
@@ -323,9 +323,9 @@ class App
 	public function viewVendor(string $viewName): bool
 	{
 		if (class_exists('System\\Routes\\' . $viewName)) {
-			$className  = 'System\\Routes\\' . $viewName;
+			$className   = 'System\\Routes\\' . $viewName;
 			$this->route = new $className($this);
-			
+
 			return true;
 		} else {
 			$this->route = null;

@@ -24,12 +24,10 @@ if ($app->xhttp) {
 		exit;
 	}
 
-
 	if (isset($_POST['method'], $_POST['employeeID'], $_POST['dateFrom'], $_POST['dateTo']) && $_POST['method'] == "fetchrecord") {
 		$employeeID = (int) $_POST['employeeID'];
 		$dateFrom   = $app->dateValidate($_POST['dateFrom'], false) ?? time();
 		$dateTo     = $app->dateValidate($_POST['dateTo'], true) ?? time();
-
 
 		if ($dateTo - $dateFrom > 86400 * 62) {
 			echo "Date range is too large, maximum allowed range is 60 days";
@@ -44,9 +42,6 @@ if ($app->xhttp) {
 			} else {
 				echo "Invalid date range, maximum allowed range is 60 days";
 			}
-			exit;
-		} else {
-			exit;
 		}
 	}
 
@@ -90,7 +85,6 @@ echo "
 			<input id=\"employeIDFormSearch\" type=\"text\" data-slo=\":LIST\" data-list=\"emplist\" class=\"flex\" placeholder=\"Employee ID or name\"  />
 		</div>
 	</label>
-	
 	<label style=\"min-width:300px;\">
 		<h1>Date range</h1>
 		<div class=\"btn-set\">

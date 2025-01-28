@@ -17,8 +17,8 @@ $app->register($_SERVER['REQUEST_URI']);
 $access_error = $app->sessionOpen();
 $al           = $app->resolveArray();
 if (!empty($al) && sizeof($al) > 1 && $al[0] == "_") {
-	if (class_exists('System\\Views\\Chunk\\' . $al[1])) {
-		$className  = 'System\\Views\\Chunk\\' . $al[1];
+	if (class_exists('System\\Routes\\Chunk\\' . $al[1])) {
+		$className  = 'System\\Routes\\Chunk\\' . $al[1];
 		$chunkClass = new $className($app, $al);
 		$chunkClass->render();
 		exit;
@@ -115,11 +115,11 @@ if ($app->user->info) {
 }
 
 
+
 if ($app->xhttp) {
 	include_once $app->root . "website-contents/{$fs()->id}.php";
 } else {
 	$app->viewVendor($fs()->loader);
-
 	if ($fs()->headers['html-header'] == 0)
 		include_once $app->root . "/admin/forms/upper.php";
 
@@ -128,11 +128,8 @@ if ($app->xhttp) {
 		2 => include_once $app->root . "website-contents/0.php",
 		3 => $app->route != null ? $app->route->render() : ""
 	};
-
-
 	if ($fs()->headers['html-header'] == 0)
 		include_once $app->root . "/admin/forms/lower.php";
-
 }
 
 $performance->fullReport($fs()->dir, $app->user->info->id);

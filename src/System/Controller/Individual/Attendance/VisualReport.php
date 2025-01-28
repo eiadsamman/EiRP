@@ -27,7 +27,7 @@ class VisualReport
 {
 
 	protected \System\App $app;
-	private bool $_dump = false;
+	private bool $_dump = true;
 	private $_weekend = array();
 	private $_arratt = array();
 	private $_arrhol = array();
@@ -362,9 +362,9 @@ class VisualReport
 
 		//$this->app->errorHandler->customError($q);
 
-		if (
-			$ra = $this->app->db->query($q)
-		) {
+		echo $q;
+
+		if ($ra = $this->app->db->query($q)) {
 			while ($rowa = $ra->fetch_assoc()) {
 				$endTime = new \DateTimeImmutable($rowa['_tend']);
 				$strTime = new \DateTimeImmutable($rowa['_tstart']);
@@ -375,11 +375,12 @@ class VisualReport
 				}
 
 				if (!isset($this->_partitionlist[$rowa['prt_id']])) {
-					$colorlist                             = array();
-					$rowa['prt_color']                     = substr(str_pad($rowa['prt_color'] ?? "000000", 6, "0", STR_PAD_LEFT), 0, 6);
-					$colorlist[0]                          = hexdec($rowa['prt_color'][0] . $rowa['prt_color'][1]);
-					$colorlist[1]                          = hexdec($rowa['prt_color'][2] . $rowa['prt_color'][4]);
-					$colorlist[2]                          = hexdec($rowa['prt_color'][4] . $rowa['prt_color'][5]);
+					$colorlist         = array();
+					$rowa['prt_color'] = substr(str_pad($rowa['prt_color'] ?? "000000", 6, "0", STR_PAD_LEFT), 0, 6);
+					$colorlist[0]      = hexdec($rowa['prt_color'][0] . $rowa['prt_color'][1]);
+					$colorlist[1]      = hexdec($rowa['prt_color'][2] . $rowa['prt_color'][4]);
+					$colorlist[2]      = hexdec($rowa['prt_color'][4] . $rowa['prt_color'][5]);
+
 					$this->_partitionlist[$rowa['prt_id']] = array($rowa['comp_name'] . ": " . $rowa['prt_name'], implode(",", $colorlist), (float) $rowa['prt_lbr_perc']);
 				}
 
@@ -387,12 +388,11 @@ class VisualReport
 				$date  = $strTime->format("Y-m-d");
 
 				if (!isset($this->_arratt[$month])) {
-					$this->_arratt[$month] = array();
+					$this->_arratt[$month] = [];
 				}
 				if (!isset($this->_arratt[$month][$date])) {
-					$this->_arratt[$month][$date] = array();
+					$this->_arratt[$month][$date] = [];
 				}
-
 
 				$au                = new AttendaceUnit();
 				$au->startTime     = $strTime;

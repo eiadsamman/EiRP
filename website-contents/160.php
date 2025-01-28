@@ -52,21 +52,23 @@ if (isset($_POST['method']) && $_POST['method'] == 'save') {
 		$app->db->autocommit(false);
 
 		$rbool &= $app->db->query("DELETE FROM mat_bom WHERE mat_bom_mat_id={$matid};");
-		$stmt  = $app->db->prepare(
+		$stmt    = $app->db->prepare(
 			"INSERT INTO 
-				mat_bom (mat_bom_mat_id, mat_bom_part_id, mat_bom_quantity, mat_bom_level, mat_bom_unitsystem, mat_bom_unit,mat_bom_tolerance)
+				mat_bom (mat_bom_mat_id, mat_bom_part_id, mat_bom_quantity, mat_bom_level, mat_bom_unitsystem, mat_bom_unit,mat_bom_tolerance, mat_bom_order)
 			SELECT 
-				?,mat_id,?,1,mat_unitsystem,?,0 
+				?,mat_id,?,1,mat_unitsystem,?,0,?
 			FROM 
 				mat_materials
 			WHERE
 				mat_id = ? "
 		);
+		$counter = 0;
 
-		$stmt->bind_param("idii", $material_id, $material_quantity, $unit_id, $material_part_id);
+		$stmt->bind_param("idiii", $material_id, $material_quantity, $unit_id, $counter, $material_part_id);
 
 		foreach ($_POST['bom_qty'] as $part_id => $bom_qty) {
 			if ((float) $bom_qty > 0 && (int) $_POST['bom_unit'][$part_id][1] > 0) {
+				$counter++;
 				$material_id       = -((int) $matid);
 				$material_part_id  = (int) $part_id;
 				$material_quantity = (float) $bom_qty;
@@ -133,7 +135,7 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "show") {
 		$output['description']['category']     = $loadedMaterial->category->group->name . ": " . $loadedMaterial->category->name;
 		$output['description']['name']         = $loadedMaterial->name;
 		foreach ($material->parts($loadedMaterial->id) as $part) {
-			$output['items'][$part->id] = [
+			$output['items'][] = [
 				'id' => "{$part->id}",
 				'longId' => "{$part->longId}",
 				'creationDate' => $part->creationDate->format("Y-m-d"),
@@ -351,6 +353,7 @@ $grem->terminate(true);
 				body: formData,
 			});
 			const payload = await response.json();
+			console.log(payload)
 			this.materialDescription.innerHTML = this.descriptionTemplate(payload.description.id, payload.description.creationDate, payload.description.type, payload.description.category, payload.description.name);
 			Object.keys(payload.items).forEach((key) => {
 				this.addPartRow(
@@ -443,7 +446,7 @@ $grem->terminate(true);
 				} else {
 					this.materialParts.querySelectorAll(`main[data-partid]`).forEach(elem => {
 						if (payload.highlight.includes(parseInt(elem.dataset.partid))) {
-							elem.classList.add("invalid")
+							elem.classList.add("invalid");
 						}
 					});
 					messagesys.failure(payload.message);
