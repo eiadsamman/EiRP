@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-namespace System\Views\Chunk;
+namespace System\Routes\Chunk;
 
-class FinanceCurrencyList extends \System\Views\Chunk\Chunk
+class FinanceCurrencyList extends \System\Routes\Chunk\Chunk
 {
 	protected function slo(): void
 	{

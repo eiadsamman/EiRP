@@ -1,7 +1,7 @@
 <?php
 use System\Controller\Finance\Transaction\enums\Type;
 use System\Controller\Individual\Individual;
-use System\Views\PanelView;
+use System\Layout\Views\PanelView;
 
 if ($app->xhttp) {
 	$request = json_decode(file_get_contents('php://input'), true);
@@ -17,7 +17,7 @@ if ($app->xhttp) {
 
 		$controller = new System\Controller\Finance\StatementOfAccount\StatementOfAccount($app);
 
-		$controller->criteria->setRecordsPerPage(PanelView::$itemsPerRequest);
+		$controller->criteria->setRecordsPerPage($app->user->recordsPerRequest);
 		//$controller->criteria->statementID(7207);
 		//$controller->criteria->statementBeneficiary('مصطفى');
 

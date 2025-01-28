@@ -64,7 +64,6 @@ export class Entry extends View {
 	}
 }
 
-
 export class Post extends View {
 	busy = null;
 	addwin = null;
@@ -550,8 +549,6 @@ export class Post extends View {
 	}
 
 	panelItemBuild(content) {
-
-
 		let type = content.positive ? "inc" : "pay";
 		let attc = content.attachements > 0 ? '<span class="atch"></span>' : '';
 		let padge = "";
@@ -659,7 +656,6 @@ export class Post extends View {
 		}
 	}
 }
-
 
 export class CustomSearch extends Search {
 	run() {

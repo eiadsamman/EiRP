@@ -38,7 +38,6 @@ class Account extends AccountProfile
 		$this->load($accountId);
 	}
 
-
 	public function load(int $accountId): bool
 	{
 		if (
@@ -108,5 +107,13 @@ class Account extends AccountProfile
 			}
 		}
 		return 0;
+	}
+
+	public function __debugInfo()
+	{
+		return [
+			'ID' => $this->id,
+			'Name' => $this->name,
+		];
 	}
 }

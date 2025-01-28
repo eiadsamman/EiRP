@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
-namespace System\Views\Chunk;
+namespace System\Routes\Chunk;
 
 
-class ShippingTerms extends \System\Views\Chunk\Chunk
+class PaymentTerms extends \System\Routes\Chunk\Chunk
 {
 	protected function json(): void
 	{
 		$this->headerJSONCacheGzip();
 		$output = "[";
 		$smart  = "";
-		$terms  = \System\Controller\Finance\Invoice\enums\ShippingTerm::cases();
+		$terms  = \System\Controller\Finance\Invoice\enums\PaymentTerm::cases();
 		foreach ($terms as $term) {
 			if ($term->value < 100) {
 				continue;
@@ -18,7 +18,7 @@ class ShippingTerms extends \System\Views\Chunk\Chunk
 			
 			$output .= $smart . "{";
 			$output .= "\"id\": {$term->value},";
-			$output .= "\"value\": \"[{$term->name}] {$term->toString()}\" ";
+			$output .= "\"value\": \"{$term->toString()}\" ";
 			$output .= "}";
 			$smart  = ",";
 		}
@@ -31,14 +31,14 @@ class ShippingTerms extends \System\Views\Chunk\Chunk
 		$this->headerJSONCacheGzip();
 		$output = "[";
 		$smart  = "";
-		$terms  = \System\Controller\Finance\Invoice\enums\ShippingTerm::cases();
+		$terms  = \System\Controller\Finance\Invoice\enums\PaymentTerm::cases();
 		foreach ($terms as $term) {
 			if ($term->value < 100) {
 				continue;
 			}
 			$output .= $smart . "{";
 			$output .= "\"id\": {$term->value},";
-			$output .= "\"value\": \"[{$term->name}] {$term->toString()}\"";
+			$output .= "\"value\": \"{$term->toString()}\"";
 			$output .= "}";
 			$smart  = ",";
 		}

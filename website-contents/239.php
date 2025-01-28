@@ -1,7 +1,7 @@
 <?php
 
 use \System\Controller\Finance\Invoice;
-use System\Template\Side;
+use System\Layout\Side;
 
 $_SIDE = new Side();
 

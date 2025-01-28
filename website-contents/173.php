@@ -1,7 +1,7 @@
 <?php
 use System\Layout\Gremium;
 use System\Controller\Timeline\Module;
-use System\Views\PanelView;
+use System\Layout\Views\PanelView;
 
 $mods = [
 	Module::Company->value,
@@ -53,7 +53,7 @@ if ($app->xhttp) {
 		if ($r && $row = $r->fetch_array()) {
 			$count = $row[0];
 		}
-		$pages = ceil($count / PanelView::$itemsPerRequest);
+		$pages = ceil($count / $app->user->recordsPerRequest);
 
 
 		header("Vendor-Ouput-Count: $count");
@@ -63,7 +63,7 @@ if ($app->xhttp) {
 
 		if ($count > 0) {
 
-			$pos = ($current - 1) * PanelView::$itemsPerRequest;
+			$pos = ($current - 1) * $app->user->recordsPerRequest;
 			$q   = "SELECT
 				comp_id, comp_name, _cashValue, _tltot, _tlread, (_tltot - _tlread) AS _tlnew,tl_timestamp, 
 				DATE_FORMAT(mm.tl_timestamp, '%b %D, %Y') AS _datestamp, DATE_FORMAT(mm.tl_timestamp, '%H:%i ') AS _timestamp,
@@ -100,7 +100,7 @@ if ($app->xhttp) {
 
 			WHERE 1 $filterQuery
 			ORDER BY tl_timestamp DESC ,comp_id
-			LIMIT $pos, " . PanelView::$itemsPerRequest . ";";
+			LIMIT $pos, {$app->user->recordsPerRequest};";
 
 			$mysqli_result = $app->db->execute_query($q, $filterValues);
 

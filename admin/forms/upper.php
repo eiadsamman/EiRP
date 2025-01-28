@@ -60,8 +60,8 @@ $SmartListObject  = new SmartListObject($app);
 		} ?>
 	</script>
 	<?php
-	if ($app->view != null) {
-		$app->view->htmlAssets("?rev=$_v");
+	if ($app->route != null) {
+		$app->route->htmlAssets("?rev=$_v");
 	}
 	if (array_key_exists('css', $fs()->cdns)) {
 		$load = explode(";", $fs()->cdns['css']);

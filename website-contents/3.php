@@ -61,13 +61,12 @@ if (!isset($rl[$role]['hide'])) {
 	$rl[$role]['hide'] = array();
 }
 
-
 $select_statment = array_merge(
 	$rl[$role]['select'],
 	$rl[$role]['minselect'],
-	$rl[$role]['return_id'],
-	$rl[$role]['return_value'],
-	$rl[$role]['params'],
+	$rl[$role]['id'],
+	$rl[$role]['value'],
+	$rl[$role]['params'] ?? [],
 );
 $select_statment = array_unique($select_statment);
 if (sizeof($select_statment) == 0) {
@@ -104,7 +103,6 @@ $li = [];
 
 if ($r = $app->db->query($q)) {
 	while ($row = $r->fetch_assoc()) {
-		//echo "<div data-return_id=\"$return_id\">";
 		$item = [
 			"id" => "",
 			"value" => [],
@@ -112,33 +110,16 @@ if ($r = $app->db->query($q)) {
 			"minselect" => [],
 			"params" => []
 		];
-		foreach ($rl[$role]['return_id'] as $msel => $msev) {
-			if (isset($row[$msel])) {
-				$item["id"] = $row[$msel];
-			}
-		}
 
-		
-		foreach ($rl[$role]['select'] as $msel => $msev) {
-			if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
-				$item["select"][] = $row[$msel];
-			}
-		}
-
-		foreach ($rl[$role]['minselect'] as $msel => $msev) {
-			if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
-				$item["minselect"][] = $row[$msel];
-			}
-		}
-
-		foreach ($rl[$role]['return_value'] as $msel => $msev) {
-			if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
-				$item["value"][] = $row[$msel];
-			}
-		}
-		foreach ($rl[$role]['params'] as $msel => $msev) {
-			if (isset($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
-				$item["params"][$msel] = $row[$msel];
+		foreach ($item as $key => $data) {
+			foreach ($rl[$role][$key] as $msel => $msev) {
+				if (isset($row[$msel]) && !is_null($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
+					if (is_array($item[$key])) {
+						$item[$key][$msel] = $row[$msel];
+					} else {
+						$item[$key] = $row[$msel];
+					}
+				}
 			}
 		}
 

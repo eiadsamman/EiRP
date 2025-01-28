@@ -20,6 +20,7 @@ class User extends Individual
 	public ?Account $account = null;
 	public ?array $assosiateAccounts;
 	private $rememberloginage = (86400 * 7);
+	public int $recordsPerRequest = 20;
 
 	public function __toString(): string
 	{
@@ -31,7 +32,6 @@ class User extends Individual
 			'account' => $this->account->id . " " . $this->account->name,
 		], true);
 	}
-
 
 	public function load(int $userid): bool
 	{
@@ -94,9 +94,6 @@ class User extends Individual
 			}
 		}
 	}
-
-
-
 	private function loadSession(): void
 	{
 		$this->loadAssosiatedAccounts();
@@ -139,7 +136,7 @@ class User extends Individual
 					if ($row['session_account'] != null)
 						$this->account = new Account($this->app, (int) $row['session_account']);
 				} catch (AccountNotFoundException $e) {
-				} 
+				}
 			}
 		}
 	}
@@ -288,4 +285,14 @@ class User extends Individual
 		return true;
 	}
 
+
+	public function __debugInfo()
+	{
+		return [
+			'ID' => $this->info->id,
+			'Name' => $this->info->fullName(),
+			'Company' => $this->company,
+			'Account' => $this->account,
+		];
+	}
 }

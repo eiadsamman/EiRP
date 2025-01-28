@@ -126,7 +126,7 @@ if ($app->xhttp) {
 	match ($fs()->headers['contents']) {
 		1 => include_once $app->root . "website-contents/{$fs()->id}.php",
 		2 => include_once $app->root . "website-contents/0.php",
-		3 => $app->view != null ? $app->view->render() : ""
+		3 => $app->route != null ? $app->route->render() : ""
 	};
 
 

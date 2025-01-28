@@ -6,7 +6,7 @@ use System\Controller\Finance\Invoice;
 //purchase/po/view
 
 
-$_TEMPLATE 	= new \System\Template\Body();
+$_TEMPLATE 	= new \System\Layout\Body();
 $invoice 	= new Invoice($app);
 $accounting = new Accounting($app);
 

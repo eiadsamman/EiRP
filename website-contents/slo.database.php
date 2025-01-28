@@ -2,8 +2,8 @@
 
 $rl["A001"] = array(
 	"from" => "data",
-	"return_id" => array("bom_id" => "bom_id"),
-	"return_value" => array("bom_beipn" => "bom_beipn", "bom_sapno" => "bom_sapno"),
+	"id" => array("bom_id" => "bom_id"),
+	"value" => array("bom_beipn" => "bom_beipn", "bom_sapno" => "bom_sapno"),
 	"select" => array("bom_beipn" => "bom_beipn", "bom_sapno" => "bom_sapno"),
 	"minselect" => array("bom_mattype" => "bom_mattype", "bom_sapdesc" => "bom_sapdesc"),
 	"search" => array('bom_beipn' => 'bom_beipn', 'bom_sapno' => 'bom_sapno', 'bom_sapdesc' => 'bom_sapdesc', 'bom_mattype' => 'bom_mattype'),
@@ -19,8 +19,8 @@ $rl["A003"]["where"] = " bom_mattype = 'ZUNF' ";
 
 
 $rl["A004"]                 = $rl["A001"];
-$rl["A004"]["return_value"] = array("bom_sapdesc" => "bom_sapdesc");
-$rl["A004"]["return_id"]    = array("bom_id" => "bom_id");
+$rl["A004"]["value"] = array("bom_sapdesc" => "bom_sapdesc");
+$rl["A004"]["id"]    = array("bom_id" => "bom_id");
 $rl["A004"]["where"]        = " ";
 
 
@@ -30,8 +30,8 @@ $rl["PAGEFILE"] = array(
 		JOIN pagefile_language ON pfl_trd_id=trd_id AND pfl_lng_id=1 
 		JOIN 
 			pagefile_permissions ON pfp_trd_id=trd_id AND pfp_per_id={$app->user->info->permissions}",
-	"return_id" => array("trd_directory" => "trd_directory"),
-	"return_value" => array("pfl_value" => "pfl_value"),
+	"id" => array("trd_directory" => "trd_directory"),
+	"value" => array("pfl_value" => "pfl_value"),
 	"select" => array("pfl_value" => "pfl_value"),
 	"minselect" => array("trd_id" => "trd_id", "trd_directory" => "trd_directory"),
 	"search" => array("pfl_value" => "pfl_value", "trd_directory" => "trd_directory", "trd_id" => "trd_id"),
@@ -43,8 +43,8 @@ $rl["PAGEFILE"] = array(
 
 $rl["B001"] = array(
 	"from" => "users JOIN permissions ON usr_privileges = per_id ",
-	"return_id" => array("usr_id" => "usr_id"),
-	"return_value" => array("usr_username" => "usr_username", "username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
+	"id" => array("usr_id" => "usr_id"),
+	"value" => array("usr_username" => "usr_username", "username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"select" => array("userinfo" => "CONCAT(usr_id,\": \",usr_username)"),
 	"minselect" => array("username_exteneded" => "   CONCAT( \"[\", per_title , \"] \" , CONCAT_WS(' ', COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) )    "),
 	"search" => array('usr_firstname' => 'usr_firstname', 'usr_lastname' => 'usr_lastname', 'usr_username' => 'usr_username', 'usr_id' => 'usr_id'),
@@ -55,8 +55,8 @@ $rl["B001"] = array(
 
 $rl["USERS"] = array(
 	"from" => "users",
-	"return_id" => array("usr_id" => "usr_id"),
-	"return_value" => array("usr_username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
+	"id" => array("usr_id" => "usr_id"),
+	"value" => array("usr_username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"select" => array("usr_username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect" => array(),
 	"search" => array('usr_firstname' => 'usr_firstname', 'usr_lastname' => 'usr_lastname', 'usr_username' => 'usr_username', 'usr_id' => 'usr_id'),
@@ -71,8 +71,8 @@ $rl["USERS"] = array(
 
 $rl["B002"] = array(
 	"from" => "users JOIN labour ON lbr_id=usr_id",
-	"return_id" => array("usr_id" => "usr_id"),
-	"return_value" => array("usr_username" => "usr_username"),
+	"id" => array("usr_id" => "usr_id"),
+	"value" => array("usr_username" => "usr_username"),
 	"select" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname", "usr_username" => "usr_username"),
 	"minselect" => array(),
 	"search" => array('usr_firstname' => 'usr_firstname', 'usr_lastname' => 'usr_lastname', 'usr_username' => 'usr_username'),
@@ -81,8 +81,8 @@ $rl["B002"] = array(
 );
 $rl["B003"] = array(
 	"from" => "users JOIN labour ON lbr_id=usr_id ",
-	"return_id" => array("usr_id" => "usr_id"),
-	"return_value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
+	"id" => array("usr_id" => "usr_id"),
+	"value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
 	"select" => array("username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect" => array(),
 	"search" => array('usr_firstname' => 'usr_firstname', 'usr_lastname' => 'usr_lastname', 'usr_id' => 'usr_id'),
@@ -91,8 +91,8 @@ $rl["B003"] = array(
 );
 $rl["B00S"] = array(
 	"from" => "users JOIN labour ON lbr_id=usr_id  ",
-	"return_id" => array("usr_id" => "usr_id"),
-	"return_value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
+	"id" => array("usr_id" => "usr_id"),
+	"value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
 	"select" => array("username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect" => array(),
 	"search" => array('usr_firstname' => 'usr_firstname', 'usr_lastname' => 'usr_lastname', 'usr_id' => 'usr_id'),
@@ -103,8 +103,8 @@ $rl["B00S"] = array(
 
 $rl["USER_COMPANY_VENDOR"] = array(
 	"from" => "users JOIN labour ON lbr_id=usr_id ",
-	"return_id" => array("usr_id" => "usr_id"),
-	"return_value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
+	"id" => array("usr_id" => "usr_id"),
+	"value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
 	"select" => array("username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect" => array(),
 	"search" => array('usr_firstname' => 'usr_firstname', 'usr_lastname' => 'usr_lastname', 'usr_id' => 'usr_id'),
@@ -116,8 +116,8 @@ $rl["USER_COMPANY_VENDOR"] = array(
 
 $rl["C001"] = array(
 	"from" => "permissions",
-	"return_id" => array("per_id" => "per_id"),
-	"return_value" => array("per_title" => "per_title"),
+	"id" => array("per_id" => "per_id"),
+	"value" => array("per_title" => "per_title"),
 	"select" => array("per_title" => "per_title"),
 	"minselect" => array(),
 	"search" => array('per_title' => 'per_title'),
@@ -128,8 +128,8 @@ $rl["C001"] = array(
 
 $rl["PERM_LEVEL"] = array(
 	"from" => "permissions",
-	"return_id" => array("per_id" => "per_id"),
-	"return_value" => array("per_title" => "per_title"),
+	"id" => array("per_id" => "per_id"),
+	"value" => array("per_title" => "per_title"),
 	"select" => array("per_title" => "per_title"),
 	"minselect" => array(),
 	"search" => array('per_title' => 'per_title'),
@@ -140,8 +140,8 @@ $rl["PERM_LEVEL"] = array(
 
 $rl["D001"] = array(
 	"from" => "cobjecttype",
-	"return_id" => array("cot_id" => "cot_id"),
-	"return_value" => array("cot_name" => "cot_name"),
+	"id" => array("cot_id" => "cot_id"),
+	"value" => array("cot_name" => "cot_name"),
 	"select" => array("cot_name" => "cot_name"),
 	"minselect" => array(),
 	"search" => array('cot_name' => 'cot_name'),
@@ -154,8 +154,8 @@ $rl["D002"] = array(
 				JOIN companies ON comp_id = prt_company_id
 				JOIN currencies ON cur_id = prt_currency
 				",
-	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("zname" => "CONCAT('[',cur_shortname,'] ', CONCAT_WS(': ', comp_name, prt_name))"),
+	"id" => array("prt_id" => "prt_id"),
+	"value" => array("zname" => "CONCAT('[',cur_shortname,'] ', CONCAT_WS(': ', comp_name, prt_name))"),
 	"select" => array("zname" => "CONCAT('[',cur_shortname,']', CONCAT_WS(': ', comp_name, prt_name))"),
 	"minselect" => array(),
 	"search" => array("prt_name" => "prt_name", "comp_name" => "comp_name", "cur_shortname" => "cur_shortname", "cur_name" => "cur_name"),
@@ -165,8 +165,8 @@ $rl["D002"] = array(
 
 $rl["E001"]  = array(
 	"from" => "labour_section",
-	"return_id" => array("lsc_id" => "lsc_id"),
-	"return_value" => array("lsc_name" => "lsc_name"),
+	"id" => array("lsc_id" => "lsc_id"),
+	"value" => array("lsc_name" => "lsc_name"),
 	"select" => array("lsc_name" => "lsc_name"),
 	"minselect" => array(),
 	"search" => array("lsc_name" => "lsc_name"),
@@ -175,8 +175,8 @@ $rl["E001"]  = array(
 );
 $rl["E002"]  = array(
 	"from" => "labour_type JOIN labour_section ON lsc_id=lty_section",
-	"return_id" => array("lty_id" => "lty_id"),
-	"return_value" => array('name' => 'CONCAT(lsc_name,", ",lty_name)'),
+	"id" => array("lty_id" => "lty_id"),
+	"value" => array('name' => 'CONCAT(lsc_name,", ",lty_name)'),
 	"select" => array('lsc_name' => 'lsc_name', 'lty_name' => 'lty_name'),
 	"minselect" => array(),
 	"search" => array('lty_name' => 'lty_name', 'lsc_name' => 'lsc_name'),
@@ -185,8 +185,8 @@ $rl["E002"]  = array(
 );
 $rl["E002A"] = array(
 	"from" => "labour_type JOIN labour_section ON lsc_id=lty_section",
-	"return_id" => array("lty_id" => "lty_id"),
-	"return_value" => array('name' => 'CONCAT(lsc_name,", ",lty_name)'),
+	"id" => array("lty_id" => "lty_id"),
+	"value" => array('name' => 'CONCAT(lsc_name,", ",lty_name)'),
 	"select" => array('lsc_name' => 'lsc_name', 'lty_name' => 'lty_name'),
 	"minselect" => array(),
 	"search" => array('lty_name' => 'lty_name', 'lsc_name' => 'lsc_name'),
@@ -196,8 +196,8 @@ $rl["E002A"] = array(
 
 $rl["E003"] = array(
 	"from" => "labour_shifts",
-	"return_id" => array("lsf_id" => "lsf_id"),
-	"return_value" => array("lsf_name" => "lsf_name"),
+	"id" => array("lsf_id" => "lsf_id"),
+	"value" => array("lsf_name" => "lsf_name"),
 	"select" => array("lsf_name" => "lsf_name"),
 	"minselect" => array(),
 	"search" => array("lsf_name" => "lsf_name"),
@@ -207,8 +207,8 @@ $rl["E003"] = array(
 
 $rl["E004"] = array(
 	"from" => "labour_residentail",
-	"return_id" => array("ldn_id" => "ldn_id"),
-	"return_value" => array("ldn_name" => "ldn_name"),
+	"id" => array("ldn_id" => "ldn_id"),
+	"value" => array("ldn_name" => "ldn_name"),
 	"select" => array("ldn_name" => "ldn_name"),
 	"minselect" => array(),
 	"search" => array("ldn_name" => "ldn_name"),
@@ -222,8 +222,8 @@ $rl["E005"] = array(
 			JOIN users ON usr_id=lbr_id 
 			LEFT JOIN labour_type ON usr_jobtitle = lty_id 
 			LEFT JOIN labour_shifts ON lsf_id = lbr_shift",
-	"return_id" => array("usr_id" => "usr_id"),
-	"return_value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
+	"id" => array("usr_id" => "usr_id"),
+	"value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
 	"select" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
 	"minselect" => array(),
 	"search" => array('usr_lastname' => 'usr_lastname', 'usr_firstname' => 'usr_firstname', "lsf_name" => "lsf_name", "lty_name" => "lty_name"),
@@ -234,8 +234,8 @@ $rl["E005"] = array(
 
 $rl["G000"] = array(
 	"from" => "gender",
-	"return_id" => array("gnd_id" => "gnd_id"),
-	"return_value" => array("gnd_name" => "gnd_name"),
+	"id" => array("gnd_id" => "gnd_id"),
+	"value" => array("gnd_name" => "gnd_name"),
 	"select" => array("gnd_name" => "gnd_name"),
 	"minselect" => array(),
 	"search" => array("gnd_name" => "gnd_name"),
@@ -260,8 +260,8 @@ $rl["BIRTHDATE"] = array(
 				cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as e
 				
 		) a",
-	"return_id" => array("Date" => "a.Date"),
-	"return_value" => array("formated" => "a.formated"),
+	"id" => array("Date" => "a.Date"),
+	"value" => array("formated" => "a.formated"),
 	"select" => array("formated" => "a.formated"),
 	"minselect" => array(),
 	"search" => array("Date" => "a.Date", "formated" => "a.formated", "formated2" => "a.formated2"),
@@ -286,8 +286,8 @@ $rl["DATE"] = array(
 			cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as d
 	
 		) a",
-	"return_id" => array("Date" => "a.Date"),
-	"return_value" => array("formated" => "a.formated"),
+	"id" => array("Date" => "a.Date"),
+	"value" => array("formated" => "a.formated"),
 	"select" => array("formated" => "a.formated"),
 	"minselect" => array(),
 	"search" => array("search" => "a.search", "search2" => "a.search2", "Date" => "a.Date"),
@@ -308,8 +308,8 @@ $rl["DATE_FUTURE"] = array(
 				cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
 				cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as d
 		) a",
-	"return_id" => array("Date" => "a.Date"),
-	"return_value" => array("formated" => "a.formated"),
+	"id" => array("Date" => "a.Date"),
+	"value" => array("formated" => "a.formated"),
 	"select" => array("Date" => "a.Date"),
 	"minselect" => array(),
 	"search" => array("Date" => "a.Date", "formated" => "a.formated", "formated2" => "a.formated2"),
@@ -331,8 +331,8 @@ $rl["WIDE_DATE"] = array(
 			cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as d
 	
 		) a",
-	"return_id" => array("Date" => "a.Date"),
-	"return_value" => array("formated" => "a.formated"),
+	"id" => array("Date" => "a.Date"),
+	"value" => array("formated" => "a.formated"),
 	"select" => array("Date" => "a.Date"),
 	"minselect" => array(),
 	"search" => array("Date" => "a.Date", "formated" => "a.formated", "formated2" => "a.formated2"),
@@ -353,8 +353,8 @@ $rl["DATE_MONTH_BACK"] = array(
 				cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
 				cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as d
 		) a",
-	"return_id" => array("select_date" => "a.select_date"),
-	"return_value" => array("formated" => "a.formated"),
+	"id" => array("select_date" => "a.select_date"),
+	"value" => array("formated" => "a.formated"),
 	"select" => array("select_date" => "a.select_date"),
 	"minselect" => array(),
 	"search" => array("select_date" => "a.select_date", "formated" => "a.formated"),
@@ -374,8 +374,8 @@ $rl["YEAR"] = array(
 				cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
 				cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
 		) a",
-	"return_id" => array("Date" => "a.Date"),
-	"return_value" => array("formated" => "a.formated"),
+	"id" => array("Date" => "a.Date"),
+	"value" => array("formated" => "a.formated"),
 	"select" => array("formated" => "a.formated"),
 	"minselect" => array(),
 	"search" => array("Date" => "a.Date", "formated" => "a.formated"),
@@ -394,8 +394,8 @@ $rl["MONTH"] = array(
 		   	cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
 			cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
 		) a",
-	"return_id" => array("Date" => "a.Date"),
-	"return_value" => array("formated" => "a.formated"),
+	"id" => array("Date" => "a.Date"),
+	"value" => array("formated" => "a.formated"),
 	"select" => array("formated" => "a.formated"),
 	"minselect" => array(),
 	"search" => array("Date" => "a.Date", "formated" => "a.formated"),
@@ -414,8 +414,8 @@ $rl["MONTH_NAME"] = array(
 		   	cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
 			cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
 		) a",
-	"return_id" => array("Date" => "a.Date"),
-	"return_value" => array("formated" => "a.formated"),
+	"id" => array("Date" => "a.Date"),
+	"value" => array("formated" => "a.formated"),
 	"select" => array("formated" => "a.formated"),
 	"minselect" => array(),
 	"search" => array("Date" => "a.Date", "formated" => "a.formated"),
@@ -428,8 +428,8 @@ $rl["MONTH_NAME"] = array(
 
 $rl["USERPARTITION"] = array(
 	"from" => " user_partition JOIN `acc_accounts` ON prt_id=upr_prt_id ",
-	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("prt_name" => "prt_name"),
+	"id" => array("prt_id" => "prt_id"),
+	"value" => array("prt_name" => "prt_name"),
 	"select" => array("prt_name" => "prt_name"),
 	"minselect" => array(),
 	"search" => array("prt_name" => "prt_name"),
@@ -442,8 +442,8 @@ $rl["USERPARTITION"] = array(
 
 $rl["ACC_CATGRP"] = array(
 	"from" => " acc_categorygroups ",
-	"return_id" => array("accgrp_id" => "accgrp_id"),
-	"return_value" => array("accgrp_name" => "accgrp_name"),
+	"id" => array("accgrp_id" => "accgrp_id"),
+	"value" => array("accgrp_name" => "accgrp_name"),
 	"select" => array("accgrp_name" => "accgrp_name"),
 	"minselect" => array(),
 	"search" => array("accgrp_name" => "accgrp_name"),
@@ -455,8 +455,8 @@ $rl["ACC_CATGRP"] = array(
 
 $rl["ACC_CAT"] = array(
 	"from" => " acc_categories JOIN acc_categorygroups ON accgrp_id=acccat_group LEFT JOIN acc_main ON acccat_id=acm_category ",
-	"return_id" => array("acccat_id" => "acccat_id"),
-	"return_value" => array("name" => " CONCAT(accgrp_name,\": \",acccat_name) "),
+	"id" => array("acccat_id" => "acccat_id"),
+	"value" => array("name" => " CONCAT(accgrp_name,\": \",acccat_name) "),
 	"select" => array("name" => " CONCAT(accgrp_name,\": \",acccat_name) ", "bensum" => "count(acccat_name)"),
 	"minselect" => array(),
 	"search" => array("acccat_name" => "acccat_name", "accgrp_name" => "accgrp_name"),
@@ -471,8 +471,8 @@ $rl["ACC_CAT"] = array(
 
 $rl["ACC"] = array(
 	"from" => " `acc_accounts` JOIN currencies ON cur_id = prt_currency",
-	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (IFNULL(cur_shortname,\"<span style='color:#f03'>[N/A]</span>\") , \" \" ,prt_name)"),
+	"id" => array("prt_id" => "prt_id"),
+	"value" => array("name" => " CONCAT (IFNULL(cur_shortname,\"<span style='color:#f03'>[N/A]</span>\") , \" \" ,prt_name)"),
 	"select" => array("name" => " CONCAT (cur_shortname , \" \" ,prt_name)"),
 	"minselect" => array(),
 	"search" => array("prt_name" => "prt_name", "cur_shortname" => "cur_shortname", "cur_name" => "cur_name"),
@@ -496,8 +496,8 @@ $rl["ACC_788"] = array(
 			
 		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Controller\Personalization\Identifiers::SystemCountAccountSelection->value . "
 		",
-	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name, \": \", prt_name)"),
+	"id" => array("prt_id" => "prt_id"),
+	"value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name, \": \", prt_name)"),
 	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , _companies.comp_name, \": \", prt_name)"),
 	"minselect" => array(),
 	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "_companies.comp_name"),
@@ -514,8 +514,8 @@ $rl["ACC_OPERATION"] = array(
 		JOIN companies ON prt_company_id=comp_id
 		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Controller\Personalization\Identifiers::SystemCountAccountOperation->value . "
 		",
-	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
+	"id" => array("prt_id" => "prt_id"),
+	"value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"minselect" => array(),
 	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "comp_name"),
@@ -531,8 +531,8 @@ $rl["ACC_VIEW"] = array(
 		JOIN companies ON prt_company_id=comp_id
 		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Controller\Personalization\Identifiers::SystemCountAccountOperation->value . "
 		",
-	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
+	"id" => array("prt_id" => "prt_id"),
+	"value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"minselect" => array(),
 	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "comp_name"),
@@ -558,8 +558,8 @@ $rl["ACC_OUTBOUND"] = array(
 		JOIN companies ON prt_company_id=comp_id
 		LEFT JOIN user_settings ON usrset_usr_defind_name=prt_id AND usrset_usr_id={$app->user->info->id} AND usrset_type=" . \System\Controller\Personalization\Identifiers::SystemCountAccountOperation->value . "
 		",
-	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
+	"id" => array("prt_id" => "prt_id"),
+	"value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"minselect" => array(),
 	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "comp_name"),
@@ -579,8 +579,8 @@ $rl["ACC_ALL"] = array(
 		JOIN currencies ON cur_id=prt_currency
 		JOIN companies ON prt_company_id=comp_id
 		",
-	"return_id" => array("prt_id" => "prt_id"),
-	"return_value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
+	"id" => array("prt_id" => "prt_id"),
+	"value" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"select" => array("name" => " CONCAT (\"[\", cur_shortname , \"] \" , comp_name, \": \", prt_name)"),
 	"minselect" => array(),
 	"search" => array("prt_name" => "prt_name", "cur_name" => "cur_name", "cur_shortname" => "cur_shortname", "comp_name" => "comp_name"),
@@ -593,8 +593,8 @@ $rl["ACC_ALL"] = array(
 
 $rl["CURRENCY"] = array(
 	"from" => " currencies ",
-	"return_id" => array("cur_id" => "cur_id"),
-	"return_value" => array("name" => " CONCAT(cur_name,\" (\",cur_symbol,\")\")"),
+	"id" => array("cur_id" => "cur_id"),
+	"value" => array("name" => " CONCAT(cur_name,\" (\",cur_symbol,\")\")"),
 	"select" => array("name" => " CONCAT(cur_name,\" (\",cur_symbol,\")\")"),
 	"minselect" => array(),
 	"search" => array("cur_name" => "cur_name"),
@@ -606,8 +606,8 @@ $rl["CURRENCY"] = array(
 
 $rl["CURRENCY_SYMBOL"] = array(
 	"from" => " currencies ",
-	"return_id" => array("cur_id" => "cur_id"),
-	"return_value" => array("cur_shortname" => "cur_shortname"),
+	"id" => array("cur_id" => "cur_id"),
+	"value" => array("cur_shortname" => "cur_shortname"),
 	"select" => array("cur_shortname" => "cur_shortname"),
 	"minselect" => array(),
 	"search" => array("cur_name" => "cur_name", "cur_symbol" => "cur_symbol", "cur_shortname" => "cur_shortname"),
@@ -620,8 +620,8 @@ $rl["CURRENCY_SYMBOL"] = array(
 
 $rl["ACC_REFERENCE"] = array(
 	"from" => " acc_main ",
-	"return_id" => array("name" => "DISTINCT acm_reference"),
-	"return_value" => array("name" => "DISTINCT acm_reference"),
+	"id" => array("name" => "DISTINCT acm_reference"),
+	"value" => array("name" => "DISTINCT acm_reference"),
 	"select" => array("name" => "DISTINCT acm_reference"),
 	"minselect" => array(),
 	"search" => array("acm_reference" => "acm_reference"),
@@ -634,8 +634,8 @@ $rl["ACC_REFERENCE"] = array(
 
 $rl["ACC_EDITORS"] = array(
 	"from" => " users JOIN acc_main ON acm_editor_id=usr_id ",
-	"return_id" => array("usr_id" => "usr_id"),
-	"return_value" => array("editorname" => "DISTINCT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,''))"),
+	"id" => array("usr_id" => "usr_id"),
+	"value" => array("editorname" => "DISTINCT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,''))"),
 	"select" => array("editorname" => "DISTINCT CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,''))"),
 	"minselect" => array(),
 	"search" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
@@ -652,8 +652,8 @@ $rl["HIR_LABOUR"] = array(
 			JOIN users  ON lbr_id=usr_id 
 			JOIN job_hierarchyroles ON jhr_job_id = usr_jobtitle
 			",
-	"return_id" => array("usr_id" => "usr_id"),
-	"return_value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
+	"id" => array("usr_id" => "usr_id"),
+	"value" => array("usr_firstname" => "usr_firstname", "usr_lastname" => "usr_lastname"),
 	"select" => array("username" => "CONCAT_WS(' ',COALESCE(usr_firstname,''),COALESCE(usr_lastname,'')) "),
 	"minselect" => array(),
 	"search" => array('usr_firstname' => 'usr_firstname', 'usr_lastname' => 'usr_lastname', 'usr_id' => 'usr_id', ),
@@ -664,8 +664,8 @@ $rl["HIR_LABOUR"] = array(
 
 $rl["ABSENCE_TYPE"] = array(
 	"from" => "absence_types",
-	"return_id" => array("abs_typ_id" => "abs_typ_id"),
-	"return_value" => array("abs_typ_name" => "abs_typ_name"),
+	"id" => array("abs_typ_id" => "abs_typ_id"),
+	"value" => array("abs_typ_name" => "abs_typ_name"),
 	"select" => array("abs_typ_name" => "abs_typ_name"),
 	"minselect" => array(),
 	"search" => array("abs_typ_name" => "abs_typ_name"),
@@ -676,8 +676,8 @@ $rl["ABSENCE_TYPE"] = array(
 
 $rl["WORKING_TIMES"] = array(
 	"from" => "workingtimes",
-	"return_id" => array("lwt_id" => "lwt_id"),
-	"return_value" => array("lwt_name" => "lwt_name"),
+	"id" => array("lwt_id" => "lwt_id"),
+	"value" => array("lwt_name" => "lwt_name"),
 	"select" => array("lwt_name" => "lwt_name"),
 	"minselect" => array(),
 	"search" => array("lwt_name" => "lwt_name"),
@@ -689,8 +689,8 @@ $rl["WORKING_TIMES"] = array(
 
 $rl["MAT_TYPE"] = array(
 	"from" => "mat_materialtype",
-	"return_id" => array("mattyp_id" => "mattyp_id"),
-	"return_value" => array("mattyp_name" => "mattyp_name"),
+	"id" => array("mattyp_id" => "mattyp_id"),
+	"value" => array("mattyp_name" => "mattyp_name"),
 	"select" => array("mattyp_name" => "mattyp_name"),
 	"minselect" => array("mattyp_description" => "mattyp_description"),
 	"search" => array("mattyp_name" => "mattyp_name", "mattyp_description" => "mattyp_description"),
@@ -702,8 +702,8 @@ $rl["MAT_TYPE"] = array(
 
 $rl["COMPANIES"] = array(
 	"from" => "companies JOIN user_company ON urc_usr_comp_id = comp_id AND urc_usr_id = {$app->user->info->id}",
-	"return_id" => array("comp_id" => "comp_id"),
-	"return_value" => array("comp_name" => "comp_name"),
+	"id" => array("comp_id" => "comp_id"),
+	"value" => array("comp_name" => "comp_name"),
 	"select" => array("comp_name" => "comp_name"),
 	"minselect" => array(),
 	"search" => array("comp_name" => "comp_name"),
@@ -714,8 +714,8 @@ $rl["COMPANIES"] = array(
 
 $rl["COMPANIES_ALL"] = array(
 	"from" => "companies",
-	"return_id" => array("comp_id" => "comp_id"),
-	"return_value" => array("comp_name" => "comp_name"),
+	"id" => array("comp_id" => "comp_id"),
+	"value" => array("comp_name" => "comp_name"),
 	"select" => array("comp_name" => "comp_name"),
 	"minselect" => array(),
 	"search" => array("comp_name" => "comp_name"),
@@ -727,8 +727,8 @@ $rl["COMPANIES_ALL"] = array(
 
 $rl["EAN"] = array(
 	"from" => "mat_ean",
-	"return_id" => array("ean_id" => "ean_id"),
-	"return_value" => array("ean_value" => "ean_value"),
+	"id" => array("ean_id" => "ean_id"),
+	"value" => array("ean_value" => "ean_value"),
 	"select" => array("ean_value" => "ean_value"),
 	"minselect" => array(),
 	"search" => array("ean_value" => "ean_value"),
@@ -741,8 +741,8 @@ $rl["EAN"] = array(
 
 $rl["MAT_CATEGORY_GROUP"] = array(
 	"from" => "mat_categorygroup",
-	"return_id" => array("matcatgrp_id" => "matcatgrp_id"),
-	"return_value" => array("matcatgrp_name" => "matcatgrp_name"),
+	"id" => array("matcatgrp_id" => "matcatgrp_id"),
+	"value" => array("matcatgrp_name" => "matcatgrp_name"),
 	"select" => array("matcatgrp_name" => "matcatgrp_name"),
 	"minselect" => array(),
 	"search" => array("matcatgrp_name" => "matcatgrp_name"),
@@ -754,8 +754,8 @@ $rl["MAT_CATEGORY_GROUP"] = array(
 $rl["MAT_CATEGORY"] = array(
 	"from" => "mat_category LEFT JOIN mat_categorygroup ON matcatgrp_id = matcat_matcatgrp_id",
 
-	"return_id" => array("matcat_id" => "matcat_id"),
-	"return_value" => array("r_name" => "CONCAT_WS(\", \", matcatgrp_name, matcat_name)"),
+	"id" => array("matcat_id" => "matcat_id"),
+	"value" => array("r_name" => "CONCAT_WS(\", \", matcatgrp_name, matcat_name)"),
 
 	"select" => array("r_name" => "CONCAT_WS(\", \", matcatgrp_name, matcat_name)"),
 
@@ -771,8 +771,8 @@ $rl["MAT_CATEGORY"] = array(
 
 $rl["CALENDAR_OPERATIONS"] = array(
 	"from" => "calendar_operations",
-	"return_id" => array("cop_id" => "cop_id"),
-	"return_value" => array("cop_name" => "cop_name"),
+	"id" => array("cop_id" => "cop_id"),
+	"value" => array("cop_name" => "cop_name"),
 	"select" => array("cop_name" => "cop_name"),
 	"minselect" => array(),
 	"search" => array("cop_name" => "cop_name"),
@@ -783,8 +783,8 @@ $rl["CALENDAR_OPERATIONS"] = array(
 
 $rl["TRANSPORTATION"] = array(
 	"from" => "labour_transportation",
-	"return_id" => array("trans_id" => "trans_id"),
-	"return_value" => array("trans_name" => "trans_name"),
+	"id" => array("trans_id" => "trans_id"),
+	"value" => array("trans_name" => "trans_name"),
 	"select" => array("trans_name" => "trans_name"),
 	"minselect" => array("details" => "CONCAT_WS(\", \",CONCAT('Capacity: ',trans_capacity),IF(NULLIF(trans_plate, '') IS NULL, NULL, trans_plate))"),
 	"search" => array("trans_name" => "trans_name"),
@@ -807,8 +807,8 @@ $rl["BOM"] = array(
 						mat_category LEFT JOIN mat_categorygroup ON matcat_matcatgrp_id = matcatgrp_id
 				) AS _category ON mat_matcat_id=_category.matcat_id
 			",
-	"return_id" => array("mat_id" => "mat_id"),
-	"return_value" => array("mat_long_id" => "mat_long_id", "cat_alias" => "cat_alias", "mat_name" => "mat_name"),
+	"id" => array("mat_id" => "mat_id"),
+	"value" => array("mat_long_id" => "mat_long_id", "cat_alias" => "cat_alias", "mat_name" => "mat_name"),
 
 	"select" => array("cat_alias" => "cat_alias", "mat_name" => "mat_name"),
 	"minselect" => array("mat_long_id" => "mat_long_id", "mattyp_name" => "mattyp_name", "mat_date" => "mat_date"),
@@ -822,8 +822,8 @@ $rl["BOM"] = array(
 
 $rl["ABS_STARTS"] = array(
 	"from" => "absence_starts",
-	"return_id" => array("abs_srt_id" => "abs_srt_id"),
-	"return_value" => array("abs_srt_name" => "abs_srt_name"),
+	"id" => array("abs_srt_id" => "abs_srt_id"),
+	"value" => array("abs_srt_name" => "abs_srt_name"),
 	"select" => array("abs_srt_name" => "abs_srt_name"),
 	"minselect" => array(),
 	"search" => array('abs_srt_name' => 'abs_srt_name'),
@@ -834,8 +834,8 @@ $rl["ABS_STARTS"] = array(
 
 $rl["BUSINESS_FIELD"] = array(
 	"from" => "business_field",
-	"return_id" => array("bisfld_id" => "bisfld_id"),
-	"return_value" => array("bisfld_name" => "bisfld_name"),
+	"id" => array("bisfld_id" => "bisfld_id"),
+	"value" => array("bisfld_name" => "bisfld_name"),
 	"select" => array("bisfld_name" => "bisfld_name"),
 	"minselect" => array(),
 	"search" => array('bisfld_name' => 'bisfld_name', 'bisfld_category' => 'bisfld_category'),
@@ -846,8 +846,8 @@ $rl["BUSINESS_FIELD"] = array(
 
 $rl["SALARY_PAYMENT_METHOD"] = array(
 	"from" => "labour_method",
-	"return_id" => array("lbr_mth_id" => "lbr_mth_id"),
-	"return_value" => array("lbr_mth_name" => "lbr_mth_name"),
+	"id" => array("lbr_mth_id" => "lbr_mth_id"),
+	"value" => array("lbr_mth_name" => "lbr_mth_name"),
 	"select" => array("lbr_mth_name" => "lbr_mth_name"),
 	"minselect" => array(),
 	"search" => array('lbr_mth_name' => 'lbr_mth_name'),
@@ -859,8 +859,8 @@ $rl["SALARY_PAYMENT_METHOD"] = array(
 
 $rl["COUNTRIES"] = array(
 	"from" => "countries",
-	"return_id" => array("cntry_id" => "cntry_id"),
-	"return_value" => array("cntry_name" => "cntry_name"),
+	"id" => array("cntry_id" => "cntry_id"),
+	"value" => array("cntry_name" => "cntry_name"),
 	"select" => array("cntry_name" => "cntry_name"),
 	"minselect" => array(),
 	"search" => array('cntry_name' => 'cntry_name', 'cntry_code' => 'cntry_code', 'cntry_abrv' => 'cntry_abrv'),
@@ -873,8 +873,8 @@ $rl["COUNTRIES"] = array(
 
 $rl["COMPANY"] = array(
 	"from" => "companies",
-	"return_id" => array("comp_id" => "comp_id"),
-	"return_value" => array("comp_name" => "comp_name"),
+	"id" => array("comp_id" => "comp_id"),
+	"value" => array("comp_name" => "comp_name"),
 	"select" => array("comp_name" => "comp_name"),
 	"minselect" => array(),
 	"search" => array('comp_name' => 'comp_name'),
@@ -888,8 +888,8 @@ $rl["COMPANY_USER"] = array(
 	"from" => "companies 
 				JOIN user_company ON urc_usr_comp_id=comp_id AND urc_usr_id={$app->user->info->id}
 				LEFT JOIN user_settings ON usrset_usr_defind_name=comp_id AND usrset_usr_id={$app->user->info->id} AND usrset_type = " . \System\Controller\Personalization\Identifiers::SystemCountCompanySelection->value . " ",
-	"return_id" => array("comp_id" => "comp_id"),
-	"return_value" => array("comp_name" => "comp_name"),
+	"id" => array("comp_id" => "comp_id"),
+	"value" => array("comp_name" => "comp_name"),
 	"select" => array("comp_name" => "comp_name"),
 	"minselect" => array(),
 	"search" => array('comp_name' => 'comp_name'),
@@ -903,8 +903,8 @@ $rl["COMPANY_USER"] = array(
 
 $rl["BRANDS"] = array(
 	"from" => "brands",
-	"return_id" => array("brand_id" => "brand_id"),
-	"return_value" => array("brand_name" => "brand_name"),
+	"id" => array("brand_id" => "brand_id"),
+	"value" => array("brand_name" => "brand_name"),
 	"select" => array("brand_name" => "brand_name"),
 	"minselect" => array(),
 	"search" => array('brand_name' => 'brand_name'),
@@ -916,8 +916,8 @@ $rl["BRANDS"] = array(
 
 $rl["COSTCENTER"] = array(
 	"from" => "inv_costcenter",
-	"return_id" => array("ccc_id" => "ccc_id"),
-	"return_value" => array("ccc_name" => "ccc_name"),
+	"id" => array("ccc_id" => "ccc_id"),
+	"value" => array("ccc_name" => "ccc_name"),
 	"select" => array("ccc_name" => "ccc_name"),
 	"minselect" => array(),
 	"search" => array('ccc_name' => 'ccc_name'),
@@ -930,8 +930,8 @@ $rl["COSTCENTER_USER"] = array(
 	"from" => "inv_costcenter 
 				JOIN user_costcenter ON ccc_id=usrccc_ccc_id AND usrccc_usr_id={$app->user->info->id}
 				",
-	"return_id" => array("ccc_id" => "ccc_id"),
-	"return_value" => array("ccc_name" => "ccc_name"),
+	"id" => array("ccc_id" => "ccc_id"),
+	"value" => array("ccc_name" => "ccc_name"),
 	"select" => array("ccc_name" => "ccc_name"),
 	"minselect" => array(),
 	"search" => array('ccc_name' => 'ccc_name'),

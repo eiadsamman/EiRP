@@ -155,7 +155,7 @@ if ($h__requested_with_ajax && isset($_POST['vdocid'], $_POST['token'])) {
 }
 
 $SmartListObject = new SmartListObject($app);
-$_TEMPLATE 	= new \System\Template\Body();
+$_TEMPLATE 	= new \System\Layout\Body();
 $doc_id		= $invoice->DocumentURI();
 if ($doc_id)
 	try {

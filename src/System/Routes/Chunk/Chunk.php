@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace System\Views\Chunk;
+namespace System\Routes\Chunk;
 
 use System\App;
 

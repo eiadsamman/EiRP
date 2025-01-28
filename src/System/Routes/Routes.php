@@ -28,9 +28,6 @@ abstract class HTMLAssetsMap
 
 abstract class Routes
 {
-	public static int $itemsPerRequest = 20;
-
-
 	public string $name = "";
 	public string $title = "";
 	public string $sidePanelUrl = "";
@@ -47,13 +44,11 @@ abstract class Routes
 	{
 	}
 
+
 	public function render(): void
 	{
-
-		echo 'asf';
 		$fs = $this->app->file;
-
-		if(array_key_exists($fs->id, $this->modules)){
+		if (array_key_exists($fs->id, $this->modules)) {
 			echo "\n\t\t\t<div class=\"split-view\">\n";
 			echo "\t\t\t\t<div class=\"panel entire" . ($this->modules[$fs->id]->sidePanelVisible ? "" : " hide") . "\" id=\"pana-Side\">\n";
 			$grem_panel       = new Gremium(true, true, false, "pana-Scroll");
@@ -68,36 +63,63 @@ abstract class Routes
 			echo "$tab\t<div class=\"body\" id=\"pana-Body\"></div>";
 			echo "\n\t\t\t</div>\n";
 			$_getJSON = json_encode($_GET);
-			$perpage  = static::$itemsPerRequest;
 			/* JS Payload */
 			echo <<<HTML
 			{$tab}<script type="module">
 				{$tab}import { PaNa } from './static/javascript/modules/PanelView.js';
 				{$tab}let pn = new PaNa();
-				{$tab}pn.itemPerRequest = {$perpage};
+				{$tab}pn.itemPerRequest = {$this->app->user->recordsPerRequest};
 				{$tab}pn.init("{$fs()->dir}", {$_getJSON});
 				{$tab}pn.run(true);
 			{$tab}</script>\n
 			HTML;
 		}
-
-
 	}
 
 	public function htmlAssets(string $version): void
 	{
 		echo "\n";
-		foreach ($this->assets as $asset) {
+		foreach ($this->assets as $asset)
 			echo "\t" . HTMLAssetsMap::print($asset[0], $asset[1], $version) . "\n";
-		}
 
-		foreach ($this->sharedAssets as $asset) {
+		foreach ($this->sharedAssets as $asset)
 			echo "\t" . HTMLAssetsMap::print($asset[0], $asset[1], $version) . "\n";
-		}
 	}
 
-	public function groupBuildJSON(): string
+	static public function groupBuildJSON(App &$app): string
 	{
-		return "";
+		$output  = [];
+		$routers = [
+			TransactionRoute::class,
+			CustomerRoute::class,
+			PurchaseRequestRoute::class,
+			PurchaseQuotationRoute::class,
+		];
+
+		foreach ($routers as $route) {
+			$instance                         = new $route($app);
+			$output[$instance->name]          = [];
+			$output[$instance->name]['title'] = $instance->title;
+			$output[$instance->name]['url']   = $instance->sidePanelUrl;
+			$output[$instance->name]['js']    = $instance->javascriptLib;
+
+			$output[$instance->name]['assets'] = ['css' => [], 'js' => []];
+			foreach ($instance->assets as $asset) {
+				$output[$instance->name]['assets'][$asset[0]][] = $asset[1];
+			}
+
+			$output[$instance->name]['modules'] = [];
+
+			
+			foreach ($instance->modules as $moduleKey => $module) {
+				$output[$instance->name]['modules'][$app->file->find($moduleKey)->dir] = [
+					$moduleKey,
+					$app->file->find($moduleKey)->title,
+					$module->sidePanelVisible,
+					$module->javascriptModuleClass,
+				];
+			}
+		}
+		return json_encode($output, JSON_PRETTY_PRINT);
 	}
 }

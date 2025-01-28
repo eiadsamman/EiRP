@@ -358,7 +358,7 @@ $slo = new SmartListObject($app);
 		<label>
 			<h1>From</h1>
 			<div class="btn-set">
-				<input type="text" class="flex" name="dateFrom" id="input-date-start" data-slo=":DATE" value="<?php echo date("Y-m-1"); ?>">
+				<input type="text" class="flex" name="dateFrom" id="input-date-start" data-slo=":DATE" value="<?php echo date("Y-m-01"); ?>">
 			</div>
 		</label>
 		<label>

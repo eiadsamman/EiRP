@@ -4,7 +4,7 @@ use System\Controller\Finance\Accounting;
 use System\Controller\Finance\DocumentException;
 use System\Controller\Finance\DocumentMaterialListException;
 use System\Controller\Finance\Invoice;
-use System\Template\Body;
+use System\Layout\Body;
 //purchase/po/view
 
 $_TEMPLATE 	= new Body();

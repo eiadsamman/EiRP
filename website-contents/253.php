@@ -1,7 +1,7 @@
 <?php
 
 use System\Controller\Finance\DocumentException;
-use System\Template\Body;
+use System\Layout\Body;
 use \System\Controller\Finance\Invoice;
 //warehouse/grir/new/
 

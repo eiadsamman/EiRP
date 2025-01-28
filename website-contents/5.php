@@ -1,11 +1,11 @@
 <?php
 if (isset($_GET['modify-user'], $_GET['token']) && $_GET['token'] == session_id()) {
 
-	$modify_user = new System\Controller\Individual\Employee($app);
+	$modify_user = new System\Individual\Employee($app);
 
 	try {
 		$modify_user->load((int) $_GET['modify-user']);
-	} catch (\System\Core\Exceptions\HR\PersonNotFoundException $e) {
+	} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
 	}
 
 

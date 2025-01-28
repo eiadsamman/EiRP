@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace System\Routes;
 
-
 use System\App;
 use System\Routes\PageAssets;
 
@@ -15,9 +14,8 @@ class TransactionRoute extends Routes
 		$this->javascriptLib = './finance/transaction.js';
 		$this->title         = "Statements";
 		$this->sidePanelUrl  = $this->app->file->find(121)->dir;
-		//$this->pages         = [91, 95, 101, 104, 170, 214];
-		$this->assets  = [["css", "style/pagefile/statement-control.css"], ["css", "style/pagefile/TransactionView.css"]];
-		$this->modules = [
+		$this->assets        = [["css", "style/pagefile/statement-control.css"], ["css", "style/pagefile/TransactionView.css"]];
+		$this->modules       = [
 			91 => new PageAssets('Post', true),
 			95 => new PageAssets('Post', true),
 			101 => new PageAssets('Post', true),
@@ -26,5 +24,4 @@ class TransactionRoute extends Routes
 			214 => new PageAssets('CustomList', true),
 		];
 	}
-
 }

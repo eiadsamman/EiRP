@@ -1,6 +1,6 @@
 <?php
 use System\Controller\Finance\Invoice\enums\Purchase;
-use System\Views\PanelView;
+use System\Layout\Views\PanelView;
 $docType = Purchase::Request->value;
 
 
@@ -17,13 +17,13 @@ if ($app->xhttp) {
 		if ($r && $row = $r->fetch_array()) {
 			$count = $row[0];
 		}
-		$pages = ceil($count / PanelView::$itemsPerRequest);
+		$pages = ceil($count / $app->user->recordsPerRequest);
 
 		header("res_count: {$count}");
 		header("res_pages: {$pages}");
 		header("res_current: {$current}");
 
-		$pos = ($current - 1) * PanelView::$itemsPerRequest;
+		$pos = ($current - 1) * $app->user->recordsPerRequest;
 
 		$q = "SELECT 
 				po_id,

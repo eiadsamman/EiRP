@@ -23,10 +23,10 @@ if (isset($_POST['serial'])) {
 			header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 			echo $att->info->fullName();
 		}
-	} catch (\System\Core\Exceptions\HR\PersonNotFoundException $e) {
+	} catch (\System\Exceptions\HR\PersonNotFoundException $e) {
 		header("ATT_RESULT: NOTFOUND");
 		header("ATT_IMAGE_ID: 0");
-	} catch (\System\Core\Exceptions\HR\PersonResignedException $e) {
+	} catch (\System\Exceptions\HR\PersonResignedException $e) {
 		header("ATT_RESULT: RESIGNED");
 		header("ATT_IMAGE_ID: " . ($att->info->photoid ?? "0"));
 		echo $att->info->fullName();
@@ -54,7 +54,7 @@ if (isset($_POST['populate'])) {
 		while ($row = $r->fetch_assoc()) {
 
 			$photo = $row['up_id'] != null ? "download/?id={$row['up_id']}&pr=t" : "static/images/user-r.jpg";
-			//System\Template\Body::AttendanceTicketPlot(null, $photo, $row['lbr_id'], $row['usr_firstname']);
+			System\Layout\Body::AttendanceTicketPlot(null, $photo, $row['lbr_id'], $row['usr_firstname']);
 		}
 	}
 	exit;

@@ -1,4 +1,3 @@
-
 class SmartListObjectHandler {
 	initial = null;
 	output = null;
@@ -36,18 +35,25 @@ class SmartListObjectHandler {
 	toString() {
 		return (this.output === false) ? "" : this.output;
 	}
-	itemGenerator(title = "", return_id = "", return_value = "", highlight = null, embedIndex = 0) {
-		let output = "";
-		output += `<div data-return_id="${return_id}" data-embedIndex="${embedIndex}">`;
-		output += `<div>${title}</div>`;
-		output += highlight != null && highlight != "" ? `<span>${highlight}</span>` : ``;
 
-		if (typeof return_value == "object") {
-			output += `<p>` + return_value.join(this.join_delimiter) + `</p>`;
+	switching(object, wrapper) {
+		if (object == undefined || object == null) {
+			return "";
+		} else if (typeof object == "object") {
+			return `<${wrapper}>${Object.values(object).join(this.join_delimiter)}</${wrapper}>`;
 		} else {
-			output += `<p>${return_value}</p>`;
+			return `<${wrapper}>${object}</${wrapper}>`;;
 		}
-		output += `</div>`;
+	}
+
+	itemGenerator(title = "", return_id = "", return_value = "", highlight = null, embedIndex = 0) {
+		let output = `
+			<div data-return_id="${return_id}" data-embedIndex="${embedIndex}">
+			${this.switching(title, "div")}
+			${this.switching(highlight, "span")}
+			${this.switching(return_value, "p")}
+			</div>
+		`;
 		return output;
 	}
 }
@@ -131,6 +137,7 @@ class DatabaseHandler extends SmartListObjectHandler {
 		return [0, ""];
 	}
 }
+
 class ListHandler extends SmartListObjectHandler {
 	isLoading = true;
 	dataset = [];
@@ -175,6 +182,7 @@ class ListHandler extends SmartListObjectHandler {
 					initial[0].value = error;
 				});
 		} else {
+
 			this.isLoading = false;
 			/**
 			 * Read predefined HTML DataList elements
@@ -188,7 +196,7 @@ class ListHandler extends SmartListObjectHandler {
 					selected: this.getAttribute("selected") == null ? false : true
 				});
 				if (this.getAttribute("selected") != null) {
-					selected_buffer = buffer[buffer.length - 1]
+					selected_buffer = buffer[buffer.length - 1];
 				}
 			});
 			this.current = selected_buffer;
@@ -286,6 +294,10 @@ class ListHandler extends SmartListObjectHandler {
 			});
 		}
 		return buffer;
+	}
+	toString(leading_zero = true) {
+		if (this.current === false) return "";
+		return [this.current.id, this.current.value];
 	}
 }
 
@@ -625,16 +637,18 @@ class SmartListObject {
 		} else {
 			asynchandler = true;
 			this.handler = new DatabaseHandler(this.htmltext);
-			this.stamp(stamp.unvalid)
+			this.stamp(stamp.empty)
 		}
 		this.handler.setItemsLimit(this.items_limit);
 		//Set current selection to the first element without displaying the selection window
-		if (!asynchandler && this.handler.validate(this.htmltext.val(), true)) {
-			this.set(this.handler.toString(true)[0], this.handler.toString(true)[1]);
-			this.stamped = true;
+
+		if (!asynchandler) {
+			if (this.handler.validate(this.htmltext.val(), true)) {
+				this.set(this.handler.toString(true)[0], this.handler.toString(true)[1]);
+				this.stamped = true;
+			}
 		}
 	}
-
 
 	disable() {
 		this.disabled = true;
@@ -642,11 +656,13 @@ class SmartListObject {
 		this.htmltext.prop("disabled", true);
 		this.selection_win.css({ "visibility": "hidden", "display": "none" });
 	}
+
 	enable() {
 		this.disabled = false;
 		this.htmlhidden.prop("disabled", false);
 		this.htmltext.prop("disabled", false);
 	}
+
 	stamp(stamp) {
 		switch (stamp) {
 			case true:
@@ -663,6 +679,7 @@ class SmartListObject {
 				break;
 		}
 	}
+
 	show() {
 		if (this.disabled) {
 			return;
@@ -678,6 +695,7 @@ class SmartListObject {
 		}
 		this.selection_win.css({ "visibility": "visible", "position": "absolute" });
 	}
+
 	hide() {
 		this.state = state.idle;
 		this.selection_win.removeClass("listvisibletop");
@@ -686,6 +704,7 @@ class SmartListObject {
 		if (this.xhttp != null)
 			this.xhttp.abort();
 	}
+
 	focus(display_win = false) {
 		if (this.disabled) return;
 		this.hadfocus = true;
@@ -697,6 +716,7 @@ class SmartListObject {
 			this.populate();
 		}
 	}
+
 	set(id, value = null) {
 		this.selection_win.css("display", "none");
 		this.state = state.idle;
@@ -731,12 +751,14 @@ class SmartListObject {
 			}
 		}
 	}
+
 	get() {
 		return {
 			"id": this.htmlhidden.val(),
 			"value": this.htmltext.val()
 		}
 	}
+
 	clear(raise_events) {
 		this.hide();
 		this.state = state.idle;
@@ -748,6 +770,7 @@ class SmartListObject {
 			this.call_ondeselect();
 		}
 	}
+
 	call_ondeselect() {
 		if (typeof (this.events.ondeselect) == "function") {
 			this.events.ondeselect.call(this, {
@@ -757,6 +780,7 @@ class SmartListObject {
 			});
 		}
 	}
+
 	call_onselect() {
 
 		/* static\javascript\modules\invoicing\MaterialQuotation.js */
@@ -776,6 +800,7 @@ class SmartListObject {
 			});
 		}
 	}
+
 	commit(enter_key_event) {
 		if (this.selection == null) { return }
 		this.htmltext.val(this.selection.find("p").html());

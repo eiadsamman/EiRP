@@ -262,6 +262,7 @@ $grem->terminate(true);
 
 				this.partAddMaterial = $(this.partAddMaterial).slo({
 					onselect: (data) => {
+						console.log(data)
 						this.partSelected = {
 							"material": {
 								"id": parseInt(data.key),

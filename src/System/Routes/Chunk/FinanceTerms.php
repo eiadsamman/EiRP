@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
-namespace System\Views\Chunk;
+namespace System\Routes\Chunk;
 use System\Controller\Financeerm;
 use System\Controller\Finance\Term\Asset;
 use System\Controller\Finance\Term\Equity;
 use System\Controller\Finance\Term\IncomeStatement;
 use System\Controller\Finance\Term\Liability;
 
-class FinanceTerms extends \System\Views\Chunk\Chunk
+class FinanceTerms extends \System\Routes\Chunk\Chunk
 {
 	protected function json(): void
 	{

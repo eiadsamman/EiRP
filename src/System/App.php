@@ -37,7 +37,6 @@ class App
 	public string $http_root;
 	public Core\Settings $settings;
 
-	public ?Views $view;
 	public ?Routes $route;
 
 	public \System\Core\FileSystem\Page $file;
@@ -103,7 +102,6 @@ class App
 		}
 		$this->unit              = new Unit();
 		$this->permissions_array = array();
-		$this->view              = null;
 
 		/* Handle cache */
 		header('Content-Type: text/html; charset=utf-8', true);
@@ -324,13 +322,13 @@ class App
 
 	public function viewVendor(string $viewName): bool
 	{
-		if (class_exists('System\\Views\\' . $viewName)) {
-			$className  = 'System\\Views\\' . $viewName;
-			$this->view = new $className($this);
+		if (class_exists('System\\Routes\\' . $viewName)) {
+			$className  = 'System\\Routes\\' . $viewName;
+			$this->route = new $className($this);
 			
 			return true;
 		} else {
-			$this->view = null;
+			$this->route = null;
 		}
 		return false;
 	}
