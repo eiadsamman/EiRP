@@ -3,7 +3,7 @@
 use System\Core\FileSystem\Page;
 
 if (isset($_POST['glyph'])) {
-	if ($app->db->query("UPDATE pagefile SET trd_attrib4=" . ($_POST['glyph'] == "" ? "NULL" : "'{$_POST['glyph']}'") . " WHERE trd_id=" . ((int)$_POST['id']) . "")) {
+	if ($app->db->query("UPDATE pagefile SET trd_attrib4=" . ($_POST['glyph'] == "" ? "NULL" : "'{$_POST['glyph']}'") . " WHERE trd_id=" . ((int) $_POST['id']) . "")) {
 		echo '1';
 	} else {
 		echo '0';
@@ -11,7 +11,7 @@ if (isset($_POST['glyph'])) {
 	exit;
 }
 if (isset($_POST['color'])) {
-	if ($app->db->query("UPDATE pagefile SET trd_attrib5=" . ($_POST['color'] == "" ? "NULL" : "'{$_POST['color']}'") . " WHERE trd_id=" . ((int)$_POST['id']) . "")) {
+	if ($app->db->query("UPDATE pagefile SET trd_attrib5=" . ($_POST['color'] == "" ? "NULL" : "'{$_POST['color']}'") . " WHERE trd_id=" . ((int) $_POST['id']) . "")) {
 		echo '1';
 	} else {
 		echo '0';
@@ -25,7 +25,7 @@ $glypharray = array('900', '903', '904', '906', '90a', '90d', '915', '91c', '91f
 		font-family: icomoon4;
 		font-size: 18px;
 		display: inline-block;
-		padding:10px;
+		padding: 10px;
 		cursor: pointer;
 		border-radius: 3px;
 		min-width: 40px;
@@ -103,7 +103,7 @@ $glypharray = array('900', '903', '904', '906', '90a', '90d', '915', '91c', '91f
 		<span style="background-color:#fff" data-color=""></span>
 		<?php
 		$start = 0;
-		$step = 6;
+		$step  = 6;
 		echo "";
 		for ($r = $start; $r < 16; $r += $step)
 			for ($g = $start; $g < 16; $g += $step)
@@ -121,11 +121,12 @@ function inner(Page $fs, int $id)
 {
 	static $cnt = 1;
 	$check = true;
-	$f = new  \System\Core\FileSystem\Data();
+	$f     = new \System\Core\FileSystem\Data();
+	/** @var \System\Core\FileSystem\Data $file */
 	foreach ($fs->children($id) as $file_id => $file) {
 
 		$cnt += $check ? 1 : 0;
-		$f = $file;
+		$f   = $file;
 		if ($f->visible == true) {
 
 			echo "<tr id=\"{$f->id}\"><td>{$f->id}</td>";
@@ -136,7 +137,7 @@ function inner(Page $fs, int $id)
 			echo "<td><div style=\"margin-left:" . (($cnt) * 20) . "px;\"><a href=\"{$f->dir}\" target=\"_blank\">{$f->title}</a></div></td>";
 			echo "</tr>";
 
-			inner($fs, (int)$f->id);
+			inner($fs, (int) $f->id);
 		}
 		$cnt -= $check ? 1 : 0;
 		$check = false;
@@ -154,7 +155,8 @@ function inner(Page $fs, int $id)
 	<tbody id="jQoutput">
 		<?php
 
-		$f = new  \System\Core\FileSystem\Data();
+		$f = new \System\Core\FileSystem\Data();
+		/** @var \System\Core\FileSystem\Data $file */
 		foreach ($fs->children(0) as $file_id => $file) {
 			$f = $file;
 			if ($f->visible == true) {
@@ -163,21 +165,21 @@ function inner(Page $fs, int $id)
 					data-id=\"{$f->id}\" class=\"cssColor\"><span style=\"background-color:#" . ($f->color == null ? "fff" : $f->color) . "\"></span></button></td>";
 				echo "<td><a href=\"{$f->dir}\" target=\"_blank\">" . $f->title . "</a></td>";
 				echo "</tr>";
-				inner($fs, (int)$f->id);
+				inner($fs, (int) $f->id);
 			}
 		}
 		?>
 	</tbody>
 </table>
 <script>
-	$(document).ready(function(e) {
+	$(document).ready(function (e) {
 		var $pop = $("#glyph");
 		var $col = $("#colorList");
 		var $current = null;
-		$("#jQcancel").on('click', function() {
+		$("#jQcancel").on('click', function () {
 			$pop.hide();
 		});
-		$("#glyph").find("span").on('click', function() {
+		$("#glyph").find("span").on('click', function () {
 			var _glyph = $(this).attr("data-glyph");
 
 			$current.html("&#xe" + _glyph + ";");
@@ -188,7 +190,7 @@ function inner(Page $fs, int $id)
 					'glyph': _glyph
 				},
 				type: "POST"
-			}).done(function(data) {
+			}).done(function (data) {
 				if (data == '1') {
 					messagesys.success("Updated successfully");
 				} else {
@@ -197,7 +199,7 @@ function inner(Page $fs, int $id)
 				$pop.hide();
 			});
 		});
-		$("#colorList").find("span").on('click', function() {
+		$("#colorList").find("span").on('click', function () {
 			var _color = $(this).attr("data-color");
 			$current.find("span").css("background-color", "#" + (_color == "" ? "fff" : _color));
 			$.ajax({
@@ -207,7 +209,7 @@ function inner(Page $fs, int $id)
 					'color': _color
 				},
 				type: "POST"
-			}).done(function(data) {
+			}).done(function (data) {
 				if (data == '1') {
 					messagesys.success("Updated successfully");
 				} else {
@@ -216,7 +218,7 @@ function inner(Page $fs, int $id)
 				$col.hide();
 			});
 		});
-		$(".cssGlyph").on('click', function(e) {
+		$(".cssGlyph").on('click', function (e) {
 			$pop.hide();
 			$col.hide();
 			$current = $(this);
@@ -236,7 +238,7 @@ function inner(Page $fs, int $id)
 				'top': pos.y + pos.h
 			});
 		});
-		$(".cssColor").on('click', function(e) {
+		$(".cssColor").on('click', function (e) {
 			$pop.hide();
 			$col.hide();
 			$current = $(this);
@@ -256,7 +258,7 @@ function inner(Page $fs, int $id)
 				'top': pos.y + pos.h
 			});
 		});
-		$("#jQcancelColor").on('click', function() {
+		$("#jQcancelColor").on('click', function () {
 			$col.hide();
 		});
 	});

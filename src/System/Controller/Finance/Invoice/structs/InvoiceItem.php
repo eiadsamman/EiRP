@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 namespace System\Controller\Finance\Invoice\structs;
+use System\Enum\UnitSystem;
 use System\Profiles\MaterialProfile;
+use System\Profiles\UnitProfile;
 
 class InvoiceItem
 {
@@ -20,14 +22,18 @@ class InvoiceItem
 	public ?float $vatValue = null;
 	public ?float $taxValue = null;
 
-	public array $subItems = []; 
+	public UnitProfile $unit;
+
+	public array $subItems = [];
 
 	public function __debugInfo(): array
 	{
 		return [
-			$this->material,
-			$this->isGroupingItem,
-			$this->relatedItem
+			"Material" => $this->material->id,
+			"Unit" => $this->unit->symbol,
+			"Quantity" => $this->quantity,
+			"GroupingItem" => $this->isGroupingItem,
+			"RelatedItem" => $this->subItems
 		];
 	}
 

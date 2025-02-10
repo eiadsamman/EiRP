@@ -98,6 +98,7 @@ class Page extends Data
 	}
 	public function children(int $id): \Generator
 	{
+		/** @var Data $file */
 		foreach ($this->files as $file) {
 			if ($file->parent == $id && $file->id != 0) {
 				yield $file->id => $file;

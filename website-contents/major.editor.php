@@ -145,9 +145,9 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['operator'
 		if ($fieldv[4] != "file") {
 			if ($fieldv[6] == true) { /*Allow field value updating*/
 				if (($fieldv[4] == 'hidden' || $fieldv[4] == 'text' || $fieldv[4] == 'textarea' || $fieldv[4] == 'enum')) {
-					if($fieldv[4] == 'enum'){
+					if ($fieldv[4] == 'enum') {
 						$q .= $smart . sqlvalue($fieldv[5], $_POST[$database['hash']['r'][$fieldk]][1], isset($_POST[$database['hash']['r'][$fieldk]][1]));
-					}else{
+					} else {
 						$q .= $smart . sqlvalue($fieldv[5], $_POST[$database['hash']['r'][$fieldk]], isset($_POST[$database['hash']['r'][$fieldk]]));
 					}
 				} elseif (($fieldv[4] == 'slo')) {
@@ -359,8 +359,10 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 				
 				</div>";
 		} elseif ($fieldv[4] == 'enum' && enum_exists($fieldv[7])) {
-			$enum = $fieldv[7]::tryFrom((int)$cleaned[$fieldk])->toString();
-
+			$enum = $fieldv[7]::tryFrom((int) $cleaned[$fieldk]);
+			if ($enum) {
+				$enum = $enum->toString();
+			}
 			echo "<div class=\"form\">
 				<label>
 					<h1>{$fieldv[1]}</h1>
@@ -368,7 +370,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 						<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" 
 							data-source=\"{$fieldv[8]}\"
 							data-slo=\":LIST\" class=\"flex\" style=\"min-width:250px;\"
-							" . (isset($cleaned[$fieldk]) ? " value=\"$enum\" data-slodefaultid=\"{$cleaned[$fieldk]}\" " : "") . " 
+							" . (!empty($cleaned[$fieldk]) ? " value=\"$enum\" data-slodefaultid=\"{$cleaned[$fieldk]}\" " : "") . " 
 							name=\"{$database['hash']['r'][$fieldk]}\" />
 					</div>
 				</label>
@@ -381,8 +383,8 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 						<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" 
 							data-source=\"{$fieldv[8]}\"
 							data-slo=\"{$fieldv[7]}\" class=\"flex\" style=\"min-width:250px;\"
-							" . (isset($cleaned[$fieldk]) ? " value=\"" . $cleaned[$fieldk] . "\" " : "") . " 
-							" . (isset($cleaned[$fieldv[8]]) ? " data-slodefaultid=\"" . $cleaned[$fieldv[8]] . "\" " : "") . " name=\"{$database['hash']['r'][$fieldk]}\" />
+							" . (!empty($cleaned[$fieldk]) ? " value=\"" . $cleaned[$fieldk] . "\" " : "") . " 
+							" . (!empty($cleaned[$fieldv[8]]) ? " data-slodefaultid=\"" . $cleaned[$fieldv[8]] . "\" " : "") . " name=\"{$database['hash']['r'][$fieldk]}\" />
 					</div>
 				</label>
 				</div>";
@@ -391,7 +393,7 @@ if ($fs()->permission->edit && $fs()->permission->add && isset($_POST['ea_prepar
 						<h1>{$fieldv[1]}</h1>
 						<div class=\"btn-set\">
 							<input type=\"text\" $autofocus id=\"{$database['hash']['r'][$fieldk]}\" data-slo=\"{$fieldv[7]}\" class=\"flex\" style=\"min-width:250px;\"
-								" . (isset($cleaned[$fieldk]) ? " value=\"" . $cleaned[$fieldk] . "\" " : "") . " " . (isset($cleaned[$fieldv[8]]) ? " data-slodefaultid=\"" . $cleaned[$fieldv[8]] . "\" " : "") . " name=\"{$database['hash']['r'][$fieldk]}\" />
+								" . (!empty($cleaned[$fieldk]) ? " value=\"" . $cleaned[$fieldk] . "\" " : "") . " " . (!empty($cleaned[$fieldv[8]]) != "" ? " data-slodefaultid=\"" . $cleaned[$fieldv[8]] . "\" " : "") . " name=\"{$database['hash']['r'][$fieldk]}\" />
 						</div>
 					</label>
 					</div>";
@@ -616,8 +618,9 @@ if (isset($_POST['method'], $_POST['page']) && $_POST['method'] == "populate") {
 							echo (htmlentities(is_null($row[$fieldk]) ? "" : $row[$fieldk])); //nl2br
 						} elseif ($fieldv[4] == "enum") {
 							if (enum_exists($fieldv[7])) {
-								$enum = $fieldv[7]::tryFrom((int)$row[$fieldk])->toString();
-								echo htmlentities($enum);
+								$enum = $fieldv[7]::tryFrom((int) $row[$fieldk]);
+								if ($enum)
+									echo htmlentities($enum->toString());
 							} else {
 								echo "-";
 							}
@@ -701,7 +704,7 @@ $grem_main->article()->open();
 
 <table class="hover" id="jQmtable" style="margin-top:1px;">
 	<thead>
-		<tr data-id="0" style="position: sticky; top: calc(var(--root--menubar-height) + 100px - var(--gremium-header-toggle));z-index:99">
+		<tr data-id="0" style="position: sticky; top: calc(var(--root--menubar-height) + 100px - var(--gremium-header-toggle));z-index: 20;">
 			<?php
 			$colspan = 0
 				+ ($fs()->permission->delete && !(isset($database['disable-delete']) && $database['disable-delete']) ? 1 : 0)
@@ -1011,7 +1014,7 @@ $grem_main->terminate();
 									modal.destroy();
 									Populate();
 								}
-								
+
 							} else {
 								messagesys.failure(json.string);
 							}

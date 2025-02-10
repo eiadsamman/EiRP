@@ -11,7 +11,7 @@ class PurchaseQuotationRoute extends Routes
 	public function __construct(protected App &$app)
 	{
 		$this->name          = "InvMaterialQuotation";
-		$this->javascriptLib = './invoicing/MaterialQuotation.js';
+		$this->javascriptLib = './invoicing/PurchaseQuotation.js';
 		$this->title         = "Quotations";
 		$this->sidePanelUrl  = $this->app->file->find(241)->dir;
 		$this->assets        = [["css", "style/pagefile/Invoicing.css"]];

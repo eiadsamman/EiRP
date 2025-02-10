@@ -7,12 +7,14 @@ use System\Layout\Gremium\Gremium;
 use System\Controller\Timeline\Action;
 use System\Controller\Timeline\Module;
 use System\Controller\Timeline\Timeline;
+use System\Unit;
 
 const ERROR_ROOT = 230000;
 if ($app->xhttp) {
 
 	if (isset($_POST['method']) && $_POST['method'] == "post") {
-		header("Content-Type: application/json; charset=utf-8");
+		//header("Content-Type: application/json; charset=utf-8");
+
 
 		$invoice = new PurchaseRequest($app);
 		try {
@@ -26,7 +28,7 @@ if ($app->xhttp) {
 				throw new Exception("Select requesting departement", ERROR_ROOT + 110);
 			}
 
-			if (isset($_POST['costcenter'])) {
+			if (isset($_POST['costcenter']) && (int) $_POST['costcenter'] > 0) {
 				$invoice->costCenter((int) $_POST['costcenter']);
 			} else {
 				$costCenter        = new CostCenter($app);
@@ -41,25 +43,25 @@ if ($app->xhttp) {
 			$materialServicies = [];
 			//$app->errorHandler->customError(print_r($_POST,true));
 
-			foreach ($_POST['inv_material'] as $key => $material) {
+			foreach ($_POST['material']['id'] as $index => $materialId) {
 				$item                 = new \System\Controller\Finance\Invoice\structs\InvoiceItem();
-				$item->isGroupingItem = !strpos($key, "@") ? false : true;
+				$item->isGroupingItem = $_POST['material']['extract'][$index] && $_POST['material']['extract'][$index] == "1" ? true : false;
 
-				if (is_array($material)) {
-					$qty                     = reset($material);
-					$item->material          = new MaterialProfile();
-					$item->material->id      = (int) key($material);
-					$item->quantity          = (float) $qty;
-					$item->quantityDelivered = null;
-				}
+
+				$item->material          = (new Material($app))->load((int) $materialId);
+				$item->quantity          = (float) $_POST['material']['qty'][$index];
+				$item->unit              = $app->unit->getUnit($item->material->unitSystem->value, (int) $_POST['material']['unit'][$index]) ?? null;
+				$item->quantityDelivered = null;
+
 				//Load material BOM and assign parent quantities for each part
 				if ($item->isGroupingItem) {
-					$subMaterials = new Material($app);
-					foreach ($subMaterials->parts($item->material->id) as $material) {
+					/** @var \System\Profiles\MaterialPartProfile $material */
+					foreach ((new Material($app))->parts($item->material->id) as $material) {
 						$subItem                    = new \System\Controller\Finance\Invoice\structs\InvoiceItem();
 						$subItem->material          = $material;
 						$subItem->quantity          = $item->quantity * $material->bomPortion;
 						$subItem->quantityDelivered = $item->quantity * $material->bomPortion;
+						$subItem->unit              = $material->unit;
 						$item->subItems[]           = $subItem;
 					}
 				}
@@ -92,6 +94,12 @@ if ($app->xhttp) {
 		$qty      = (float) $_POST['qty'];
 		$mat      = $material->load($id);
 		if (false !== $mat) {
+			$defaultUnit = "";
+			if ($unitDefault = $app->unit->defaultUnit((int) $mat->unitSystem->value)) {
+				if ($unitProfile = $app->unit->getUnit((int) $mat->unitSystem->value, $unitDefault)) {
+					$defaultUnit = " data-unitdefaultid=\"{$unitProfile->id}\" data-unitdefaultsymbol=\"{$unitProfile->symbol}\" ";
+				}
+			}
 			echo <<<HTML
 				<div class="mainMaterial" style="display: none;"
 					data-id		= "{$mat->id}"
@@ -100,6 +108,8 @@ if ($app->xhttp) {
 					data-unit	= "{$mat->unitSystem->name}"
 					data-type	= "{$mat->category->name}"
 					data-qty	= "{$qty}"
+					data-unitsystemid = "{$mat->unitSystem->value}"
+					$defaultUnit
 				></div>
 				<h1>Requested material is part of a manufacturing scheme<br /><br />How do you want to import it?</h1>
 				<div class="btn-set"><label style="white-space: wrap"><input type="radio" tabindex="20" name="importStyle" value="1" checked />Import requested material as it is.</label></div>
@@ -109,6 +119,7 @@ if ($app->xhttp) {
 			HTML;
 
 			echo "<table><tbody>";
+			/** @var \System\Profiles\MaterialPartProfile $mat */
 			foreach ($material->parts($id) as $mat) {
 				echo "<tr>";
 				echo "<td class=\"subMaterial\"
@@ -118,6 +129,10 @@ if ($app->xhttp) {
 					data-unit	 = \"{$mat->unit->name}\"
 					data-type	 = \"{$mat->category->name}\"
 					data-portion = \"{$mat->bomPortion}\"
+					data-unitsystemid = \"{$mat->unitSystem->value}\"
+					data-unitdefaultid = \"{$mat->unit->id}\"
+					data-unitdefaultsymbol = \"{$mat->unit->symbol}\"
+
 				><div>{$mat->longId}</div><span>{$mat->category->group->name}: {$mat->category->name}</span><div>{$mat->name}</div></td>";
 				echo "</tr>";
 			}
@@ -147,16 +162,17 @@ if ($app->xhttp) {
 				$output['id']                = $mat->id;
 				$output['longId']            = $mat->longId;
 				$output['name']              = $mat->name;
-				$output['unitSystemId']      = $mat->unitSystem->value;
-				$output['unitDefaultId']     = 0;
-				$output['unitDefaultSymbol'] = "";
+				$output['unitsystemid']      = $mat->unitSystem->value;
+				$output['unitdefaultid']     = 0;
+				$output['unitdefaultsymbol'] = "";
 				$output['type']              = $mat->category->group->name . ": " . $mat->category->name;
 				$output['qty']               = $qty;
 
+
 				if ($unitDefault = $app->unit->defaultUnit((int) $mat->unitSystem->value)) {
 					if ($unitProfile = $app->unit->getUnit((int) $mat->unitSystem->value, $unitDefault)) {
-						$output['unitDefaultId']     = $unitProfile->id;
-						$output['unitDefaultSymbol'] = $unitProfile->symbol;
+						$output['unitdefaultid']     = $unitProfile->id;
+						$output['unitdefaultsymbol'] = $unitProfile->symbol;
 					}
 				}
 
@@ -264,10 +280,6 @@ if ($app->xhttp) {
 				<div>Part Number</div>
 				<div></div>
 			</header>
-
-			<!-- <tbody id="materialsList">
-		</tbody> -->
-
 		</div>
 	</form>
 

@@ -114,6 +114,8 @@ try {
 		$rowNumber     = 1;
 		$showRowNumber = true;
 
+
+		/** @param \System\Controller\Finance\Invoice\structs\InvoiceItem $item */
 		function parseItem($item, $rowNumber)
 		{
 			$cssDefinition = "";
@@ -132,9 +134,10 @@ try {
 				<main class="{$cssDefinition}">
 					<div>{$showRowNumber}</div>
 					<div class="ellipsis">{$item->material->longId}<br />{$item->material->name}</div>
-					<div class="n">{$quantity}<br />{$item->material->unit->name}</div>
+					<div class="n">{$quantity}<br />{$item->unit->symbol}</div>
 				</main>
 			HTML;
+			//$item->material->unitSystem->name
 			return $item->isGroupingItem ? $rowNumber : $rowNumber + 1;
 		}
 		foreach ($children as $item) {

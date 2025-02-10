@@ -418,7 +418,7 @@ class VisualReport
 
 
 				if (isset($this->_arrabsntnotice[$datek])) {
-					echo "<th class=\"calendar-point ccode002\"><div>&#xe953;</div><span>";
+					//echo "<th class=\"calendar-point ccode002\"><div>&#xe953;</div><span>";
 					foreach ($this->_arrabsntnotice[$datek] as $value) {
 						echo "<div class=\"calendar-absent-table\">
 								<div><span>Type:</span><span>{$value['type']}</span></div>
@@ -429,9 +429,7 @@ class VisualReport
 								<div><span>Comments:</span><span>{$value['comments']}</span></div>
 							</div>";
 					}
-					echo "</span></th>";
-				} else {
-					echo "<th></th>";
+					//echo "</span></th>";
 				}
 
 

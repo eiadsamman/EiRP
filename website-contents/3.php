@@ -8,7 +8,6 @@ function replaceARABIC($str)
 	$str = str_replace(["ى", "ي"], "[يى]+", $str);
 	return $str;
 }
-
 if (!isset($_POST['limit']) || !isset($_POST['role'])) {
 	exit;
 }
@@ -18,7 +17,7 @@ if ($limit > 15) {
 	$limit = 15;
 }
 
-$rl = array();
+$rl = [];
 require_once("website-contents/slo.database.php");
 if (!isset($rl[$role])) {
 	exit;
@@ -30,15 +29,15 @@ header("Content-Type: application/json; charset=utf-8");
 $q     = preg_replace('/[^\p{Arabic}\da-z_\- ]/ui', " ", $_POST['query']);
 $sq    = ' ';
 $i     = 0;
-$sJS   = "";
 $cols  = $rl[$role]['search'];
 $q     = trim($q);
 $smart = "";
+
 //Handle various search keys
 if ($q == "") {
 	$sq .= "(";
 	foreach ($cols as $k => $v) {
-		$sq .= $smart . " $k RLIKE '.*' ";
+		$sq .= "$smart $k RLIKE '.*' ";
 		$smart = " OR ";
 	}
 	$sq .= " )";
@@ -57,13 +56,11 @@ if ($q == "") {
 	}
 }
 
-if (!isset($rl[$role]['hide'])) {
-	$rl[$role]['hide'] = array();
-}
+$rl[$role]['hide'] ??= [];
 
 $select_statment = array_merge(
 	$rl[$role]['select'],
-	$rl[$role]['minselect'],
+	$rl[$role]['details'],
 	$rl[$role]['id'],
 	$rl[$role]['value'],
 	$rl[$role]['params'] ?? [],
@@ -100,27 +97,27 @@ $q  =
 		" . (isset($rl[$role]['order']) && is_array($rl[$role]['order']) ? " ORDER BY " . implode(",", $rl[$role]['order']) : "") . "
 	LIMIT 0, $limit";
 $li = [];
-
 if ($r = $app->db->query($q)) {
 	while ($row = $r->fetch_assoc()) {
 		$item = [
 			"id" => "",
 			"value" => [],
 			"select" => [],
-			"minselect" => [],
+			"details" => [],
 			"params" => []
 		];
 
 		foreach ($item as $key => $data) {
-			foreach ($rl[$role][$key] as $msel => $msev) {
-				if (isset($row[$msel]) && !is_null($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
-					if (is_array($item[$key])) {
-						$item[$key][$msel] = $row[$msel];
-					} else {
-						$item[$key] = $row[$msel];
+			if (array_key_exists($key, $rl[$role]))
+				foreach ($rl[$role][$key] as $msel => $msev) {
+					if (isset($row[$msel]) && !is_null($row[$msel]) && !in_array($msel, $rl[$role]['hide'])) {
+						if (is_array($item[$key])) {
+							$item[$key][$msel] = $row[$msel];
+						} else {
+							$item[$key] = $row[$msel];
+						}
 					}
 				}
-			}
 		}
 
 		$li[] = $item;

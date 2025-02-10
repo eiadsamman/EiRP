@@ -1,15 +1,6 @@
 <?php
-use System\Unit;
-
-$unit = new Unit();
-echo "<pre>";
-
-foreach ($unit->list(\System\Enum\UnitSystem::Mass->value) as $u) {
-	var_dump($u->symbol);
-}
 
 
-exit;
 use System\Lib\Upload\File;
 use System\Models\Material;
 $material   = $prd = new Material($app);
@@ -73,9 +64,7 @@ function ph($dateTime)
 		}
 
 		/* target the first page only */
-		@page :first {
-			margin-top: 0.2cm;
-		}
+		@page :first {}
 
 		@page :blank {
 			@top-center {
@@ -84,6 +73,13 @@ function ph($dateTime)
 		}
 
 		@media print {
+			html {
+				height: 100%;
+				padding: 0;
+				margin: 0;
+
+			}
+
 			#pageId {
 				display: none;
 			}
@@ -94,16 +90,23 @@ function ph($dateTime)
 				margin: 0;
 				padding: 0px;
 				color: #000;
+				height: 100%;
 			}
 
 			#label {
+				height: 100vh;
+				height: 100dvh;
+				box-sizing: border-box;
+
+				border-collapse: collapse;
 				display: grid;
 				grid-template-columns: 1fr 1.2cm 1.2cm 1.5cm;
-				grid-template-rows: 1.5cm 1cm 0.5cm 0.5cm 1.2cm 0.6cm 2.8cm;
+				grid-template-rows: 1.5cm 1cm 0.5cm 0.5cm 1.2cm 0.6cm 1fr;
 				grid-column-gap: 0px;
 				grid-row-gap: 0px;
 				border-top: solid var(--cell-border-width) black;
 				border-left: solid var(--cell-border-width) black;
+				border-right: solid var(--cell-border-width) black;
 			}
 
 			#label>div {
@@ -186,10 +189,9 @@ function ph($dateTime)
 </head>
 
 <body>
-	<!-- https://cssgrid-generator.netlify.app/ -->
 	<?php
-
-
+	//https://cssgrid-generator.netlify.app/
+	
 	echo "<div id=\"pageId\"><div><div style=\"font-size:0.5em\">Printing...</div>{$matProfile->longId}</div></div>";
 	//var_dump($matProfile->brand->name);
 	$files = new File($app);
@@ -255,7 +257,7 @@ function ph($dateTime)
 			XXXX XXX XXXX
 		</div>
 		<div class="div8" style="">
-			1CT/<?= $matProfile->unitsPerBox . $matProfile->unit->name; ?>
+			1CT/<?= $matProfile->unitsPerBox . $matProfile->unitSystem->toString(); ?>
 		</div>
 		<div class="div9" style="">
 			<?= str_pad($matProfile->brand->id, 3, "0", STR_PAD_LEFT) . " " . str_pad($matProfile->category->group->id, 3, "0", STR_PAD_LEFT) . " " . str_pad($matProfile->category->id, 3, "0", STR_PAD_LEFT) . " " . str_pad($matProfile->id, 5, "0", STR_PAD_LEFT); ?>

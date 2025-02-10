@@ -96,7 +96,12 @@ class Material
 			}
 		}
 	}
-
+	/**
+	 * List all material parts
+	 * @
+	 * @param int $mat_id
+	 * @return \Generator<int, MaterialPartProfile, mixed, void>
+	 */
 	public function parts(int $mat_id): \Generator
 	{
 		$r = $this->app->db->execute_query(
@@ -135,13 +140,13 @@ class Material
 				$output->creationDate = new \DateTime((string) $row['mat_date']);
 				$output->type         = new MaterialTypeProfile((string) $row['mattyp_name'], (string) $row['mattyp_description']);
 				$output->unit         = $this->app->unit->getUnit((int) $row['mat_bom_unitsystem'], (int) $row['mat_bom_unit']) ?? null;
-				$output->category = new MaterialGategoryProfile(
+				$output->category     = new MaterialGategoryProfile(
 					(int) $row['matcat_id'],
 					$row['matcat_name'],
 					new MaterialGroupProfile((int) $row['matcatgrp_id'], $row['matcatgrp_name'])
 				);
-				$output->brand    = is_null($row['brand_id']) ? null : new BrandProfile((int) $row['brand_id'], $row['brand_name']);
-				yield $output;
+				$output->brand        = is_null($row['brand_id']) ? null : new BrandProfile((int) $row['brand_id'], $row['brand_name']);
+				yield (int) $row['mat_id'] => $output;
 			}
 		}
 	}

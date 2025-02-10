@@ -188,11 +188,15 @@ abstract class Invoice
 		return $this->information->id;
 	}
 
+	public function getInvoiceItems(): array
+	{
+		return $this->items;
+	}
 	private function insertInvoiceItem(InvoiceItem $invoiceItem, ?int $owner = null): int
 	{
 		$itemInsert = $this->app->db->execute_query(
-			"INSERT INTO inv_records (pols_po_id,pols_item_id,pols_issued_qty,pols_delivered_qty,pols_grouping_item,pols_rel_id,pols_prt_id,pols_price,pols_discount) 
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+			"INSERT INTO inv_records (pols_po_id, pols_item_id, pols_issued_qty, pols_delivered_qty, pols_grouping_item, pols_rel_id, pols_prt_id, pols_price, pols_discount, pols_unitsystem, pols_unit) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 			,
 			[
 				$this->information->id,
@@ -204,7 +208,9 @@ abstract class Invoice
 				$owner,
 				$invoiceItem->accountId,
 				$invoiceItem->value,
-				$invoiceItem->discount
+				$invoiceItem->discount,
+				$invoiceItem->material->unitSystem->value,
+				$invoiceItem->unit->id
 			]
 		);
 		if (!$itemInsert) {
@@ -226,6 +232,7 @@ abstract class Invoice
 	public function costCenter(CostCenterProfile|int $costCenter): void
 	{
 		if ($costCenter instanceof CostCenterProfile) {
+			/* Should check if Cost Center is valid for user */
 			$this->information->costCenter = $costCenter;
 		} else {
 			if ($costCenter <= 0) {

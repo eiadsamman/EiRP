@@ -37,15 +37,18 @@ class SmartListObjectHandler {
 	}
 
 	switching(object, wrapper) {
-		if (object == undefined || object == null) {
+		if (object === undefined || object === null) {
 			return "";
-		} else if (typeof object == "object") {
+		} else if (typeof object == "object" && object instanceof Array && (object.length > 0)) {
+			return `<${wrapper}>${Object.values(object).join(this.join_delimiter)}</${wrapper}>`;
+		} else if (typeof object == "object" && Object.keys(object).length > 0) {
 			return `<${wrapper}>${Object.values(object).join(this.join_delimiter)}</${wrapper}>`;
 		} else if (typeof object == "string" && object.length > 0) {
-			return `<${wrapper}>${object}</${wrapper}>`;;
-		}else{
-			return "";
+			return `<${wrapper}>${object}</${wrapper}>`;
+		} else if (typeof object == "number") {
+			return `<${wrapper}>${object}</${wrapper}>`;
 		}
+		return "";
 	}
 
 	itemGenerator(title = "", return_id = "", return_value = "", highlight = null, embedIndex = 0) {
@@ -128,7 +131,7 @@ class DatabaseHandler extends SmartListObjectHandler {
 				index++;
 				/* Use `value` instead of `id` when the loader dosen't provide an `id` attribute*/
 				this.items_embeds[index] = listitem;
-				buffer += super.itemGenerator(listitem.value, listitem.id ?? listitem.value, listitem.value, listitem.highlight, index);
+				buffer += super.itemGenerator(listitem.value, listitem.id ?? listitem.value, listitem.value, listitem.details, index);
 			});
 		}
 		return buffer;
@@ -541,7 +544,7 @@ class DateHandler extends SmartListObjectHandler {
 }
 
 const state = { 'idle': 0, 'up': 1, 'busy': 2 };
-const stamp = { 'valid': true, 'unvalid': false, 'empty': null };
+const stamp = { 'valid': true, 'invalid': false, 'empty': null };
 const slomerge = function (a, b) {
 	var out = {};
 	for (var attname in b) { out[attname] = b[attname]; }
@@ -550,7 +553,8 @@ const slomerge = function (a, b) {
 };
 
 class SmartListObject {
-	constructor(object) {
+
+	constructor(object, names) {
 		this.id = null;
 		this.object = object;
 		this.htmltext = $(object);
@@ -559,6 +563,7 @@ class SmartListObject {
 		this.selection_win = $("<div />");
 		this.htmltext.wrap($("<span />"));
 		this.container = this.htmltext.parent();
+		this.names = names;
 		this.htmlhidden.insertAfter(this.htmltext);
 		this.selection_win.insertAfter(this.htmltext);
 		this.selection = false;
@@ -603,13 +608,23 @@ class SmartListObject {
 		});
 
 		if (this.htmltext.attr("name") != undefined) {
-			this.htmlhidden.attr("name", this.htmltext.attr("name") + "[1]");
-			this.htmltext.attr("name", this.htmltext.attr("name") + "[0]");
+			if (this.names.id && this.names.value) {
+				this.htmlhidden.attr("name", this.htmltext.attr("name") + "[1]");
+				this.htmltext.attr("name", this.htmltext.attr("name") + "[0]");
+			} else if (this.names.id) {
+				this.htmlhidden.attr("name", this.htmltext.attr("name"));
+				this.htmltext.removeAttr("name");
+			}
 		}
 
 		if (this.htmltext.attr("id") != undefined) {
 			this.id = this.htmltext.attr("id");
-			this.htmlhidden.attr("id", this.htmltext.attr("id") + "_1");
+			if (this.names.id && this.names.value) {
+				this.htmlhidden.attr("id", this.htmltext.attr("id") + "_1");
+			} else if (this.names.id) {
+				this.htmltext.removeAttr("id");
+				this.htmlhidden.attr("id", this.htmltext.attr("id"));
+			}
 		}
 		if (this.htmltext.attr('class') != undefined) {
 			$.each(this.htmltext.attr('class').split(/\s+/), (index, class_name) => {
@@ -668,15 +683,15 @@ class SmartListObject {
 	stamp(stamp) {
 		switch (stamp) {
 			case true:
-				this.container.removeClass("unvalid").addClass("valid");
+				this.container.removeClass("invalid").addClass("valid");
 				this.stamped = true;
 				break;
 			case false:
-				this.container.removeClass("valid").addClass("unvalid");
+				this.container.removeClass("valid").addClass("invalid");
 				this.stamped = false;
 				break;
 			default:
-				this.container.removeClass("valid").removeClass("unvalid");
+				this.container.removeClass("valid").removeClass("invalid");
 				this.stamped = null;
 				break;
 		}
@@ -734,7 +749,7 @@ class SmartListObject {
 					this.stamp(stamp.valid)
 					this.stamped = true;
 				} else {
-					this.stamp(stamp.unvalid)
+					this.stamp(stamp.invalid)
 				}
 			} else {
 				this.htmlhidden.val(id);
@@ -764,7 +779,7 @@ class SmartListObject {
 	clear(raise_events) {
 		this.hide();
 		this.state = state.idle;
-		this.stamp(stamp.idle);
+		this.stamp(stamp.invalid);
 		this.htmlhidden.removeAttr('value');
 		this.htmltext.val('');
 
@@ -785,7 +800,7 @@ class SmartListObject {
 
 	call_onselect() {
 
-		/* static\javascript\modules\invoicing\MaterialQuotation.js */
+		/* static\javascript\modules\invoicing\PurchaseQuotation.js */
 		if (typeof (this.events.onselect) == "function") {
 			let embededIndex = this.selection.attr("data-embedIndex");
 			let embededObject = {};
@@ -830,6 +845,7 @@ class SmartListObject {
 			ondeselect: function () { },
 			onkeydown: function (e) { },
 			onkeyup: function (e) { },
+			names: { 'id': true, 'value': true },
 			align: "left",
 			limit: 5,
 			dropdown: false
@@ -901,7 +917,7 @@ class SmartListObject {
 		this.init = function () {
 			$jq.each(function () {
 				//#region - Initialize
-				this.slo = new SmartListObject(this);
+				this.slo = new SmartListObject(this, slosettings.names);
 
 				this.enter_key_event = false;
 				this.slo.events.ondeselect = slosettings.ondeselect;
@@ -921,7 +937,7 @@ class SmartListObject {
 					if (!safeClearTrigger && !this.slo.disabled) {
 						this.slo.state = state.idle;
 						this.slo.htmlhidden.val("");
-						this.slo.stamp(stamp.unvalid)
+						this.slo.stamp(stamp.invalid)
 						this.slo.call_ondeselect();
 						this.slo.populate();
 					}

@@ -11,7 +11,7 @@ class PurchaseRequestRoute extends Routes
 	public function __construct(protected App &$app)
 	{
 		$this->name          = "InvMaterialRequest";
-		$this->javascriptLib = './invoicing/MaterialRequest.js';
+		$this->javascriptLib = './invoicing/PurchaseRequest.js';
 		$this->title         = "Requests";
 		$this->sidePanelUrl  = $this->app->file->find(238)->dir;
 		$this->assets        = [["css", "style/pagefile/Invoicing.css"]];

@@ -29,6 +29,12 @@ class Bookmark extends Personalization
 		$stmt->close();
 		return true;
 	}
+
+	/**
+	 * Generator<TKey,TValue,TSend,TReturn>
+	 * Summary of list
+	 * @return \Generator<int, array|bool|null, mixed, void>
+	 */
 	public function list(): \Generator
 	{
 		try {
@@ -56,7 +62,7 @@ class Bookmark extends Personalization
 			);
 			if ($result) {
 				while ($row = $result->fetch_assoc()) {
-					yield $row;
+					yield (int) $row['trd_id'] => $row;
 				}
 			}
 		} catch (\mysqli_sql_exception $e) {

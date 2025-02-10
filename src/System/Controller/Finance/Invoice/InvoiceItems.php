@@ -29,6 +29,8 @@ class InvoiceItems
 				pols_prt_id,
 				pols_price,
 				pols_discount,
+				pols_unitsystem,
+				pols_unit,
 
 				/* Material  */
 				mat_id,mat_name, mat_long_id,mat_longname,
@@ -78,6 +80,10 @@ class InvoiceItems
 		$invoiceItem->quantityDelivered = is_null($itemRow['pols_delivered_qty']) ? null : (float) $itemRow['pols_delivered_qty'];
 		$invoiceItem->value             = (float) ($itemRow['pols_price']);
 		$invoiceItem->discount          = is_null($itemRow['pols_discount']) ? null : (float) $itemRow['pols_discount'];
+
+
+		$invoiceItem->material->unitSystem = \System\Enum\UnitSystem::tryFrom((int) $itemRow['pols_unitsystem']);
+		$invoiceItem->unit                 = $this->app->unit->getUnit((int) $itemRow['pols_unitsystem'], (int) $itemRow['pols_unit']) ?? null;
 		$this->getSubItems($invoiceItem);
 		return $invoiceItem;
 	}

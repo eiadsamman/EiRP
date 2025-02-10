@@ -8,6 +8,7 @@ function getAttendanceReport(&$app, $dateFrom, $dateTo, $employeeID)
 {
 	$attendance = new VisualReport($app);
 	$attendance->getAttendaceList($employeeID, $dateFrom, $dateTo, true);
+	//$app->errorHandler->customError((microtime(true)-$t));
 	$attendance->PrintTable();
 }
 
@@ -75,28 +76,44 @@ $_tmk = mktime(0, 0, 0, date("m") + 1, 0, date("Y"));
 $grem = new Gremium(true);
 $grem->header()->serve("<h1>{$fs()->title}</h1>");
 
-$grem->legend()->serve("<span class=\"flex\">Query employee attendance</span><button class=\"edge-left\" type=\"button\" id=\"attendanceReportSearch\">Search</button>");
 $grem->article()->open();
 echo "
-<div class=\"form predefined\" id=\"jQformTable\">
+<div class=\"form\">
 	<label style=\"min-width:200px;\">
 		<h1>Employee</h1>
 		<div class=\"btn-set\">
 			<input id=\"employeIDFormSearch\" type=\"text\" data-slo=\":LIST\" data-list=\"emplist\" class=\"flex\" placeholder=\"Employee ID or name\"  />
 		</div>
 	</label>
-	<label style=\"min-width:300px;\">
+</div>
+<div class=\"form\">
+	<label style=\"min-width:100px;\">
 		<h1>Date range</h1>
 		<div class=\"btn-set\">
 			<input class=\"flex\" id=\"dateFrom\" data-slo=\":DATE\" value=\"" . date("Y-m-d", $_tmp) . "\" data-rangestart=\"2000-01-01\" type=\"text\" placeholder=\"Start date\" />
+		</div>
+	</label>
+	<label style=\"min-width:100px;\">
+		<h1>Date range</h1>
+		<div class=\"btn-set\">
 			<input class=\"flex\" id=\"dateTo\" data-slo=\":DATE\" value=\"" . date("Y-m-d", $_tmk) . "\" data-rangestart=\"2000-01-01\" type=\"text\" placeholder=\"End date\" />
 		</div>
 	</label>
 </div>
+<div>
+	<label style=\"min-width:100px;\">
+		<div class=\"btn-set\">
+			<span class=\"flex\"></span>
+			<button class=\"edge-left edge-right\" type=\"button\" id=\"attendanceReportSearch\">Search</button>
+		</div>
+	</label>
+</div>
+
 ";
 $grem->getLast()->close();
 
-echo "<br />";
+
+$grem->title()->serve("Attendance report");
 $grem->article()->serve("<div id=\"jQoutput\">No queries applied!<br /><br />To start chose an employee from the list above and set the desired attendance date range</div>");
 $grem->terminate();
 

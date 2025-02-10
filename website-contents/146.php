@@ -19,6 +19,7 @@ $database = array(
 
 	'fields' => array(
 		'mat_id' => array(null, 'ID', true, null, 'primary', 'int', true, null, null),
+		'mat_name' => array(null, 'Name', true, null, 'text', 'string', true, null, null, '<b>text</b> material short name'),
 		'mat_long_id' => array(null, 'Part Number', true, null, 'text', 'string', false, null, null, '<b>char(32)</b> part number'),
 
 		'file_image' => array(null, 'image', true, null, 'file', \System\Lib\Upload\Type::Material->value, true, null, null, '<b>file</b> Product images'),
@@ -33,13 +34,12 @@ $database = array(
 		'brand_name' => array(null, 'Brand', true, null, 'slo', 'string', false, 'BRANDS', 'mat_brand_id', '<b>list</b> type'),
 		'mat_brand_id' => array(null, '', false, null, 'sloref', 'int', true, null, null),
 
+		'mat_unitsystem' => array(null, 'Unit', true, null, 'enum', 'int', true, \System\Enum\UnitSystem::class, '_/Units/slo/' . md5($app->id . $app->user->company->id) . '/slo_Units.a', ''),
 
-		'mat_name' => array(null, 'Name', true, null, 'text', 'string', true, null, null, '<b>text</b> material short name'),
+		'mat_featured' => array(null, 'Featured', true, null, 'bool', 'int', true, null, null, '<b>bool</b> repeat calendar record yearly in georgian calendar'),
+		'mat_ispackage' => array(null, 'Packing', true, null, 'bool', 'int', true, null, null, '<b>bool</b> repeat calendar record yearly in georgian calendar'),
 
-		'mat_unitsystem' => array(null, 'Unit', true, null, 'enum', 'int', true,  \System\Enum\UnitSystem::class, '_/Units/slo/' . md5($app->id . $app->user->company->id) . '/slo_Units.a', ''),
-
-
-		'mat_perbox' => array(null, 'Units per box', false, null, 'text', 'string', true, null, null, '<b>float</b> Units per box'),
+		//'mat_perbox' => array(null, 'Units per box', false, null, 'text', 'string', true, null, null, '<b>float</b> Units per box'),
 
 		'mat_ean' => array(null, 'EAN Code', false, null, 'text', 'string', true, null, null, '<b>float</b> EAN Code'),
 
@@ -73,3 +73,48 @@ $database = array(
 
 
 include("website-contents/major.editor.php");
+
+//Search for materials by ID and their owner packing material
+/*
+SELECT b.mat_long_id, b.mat_name, a.mat_long_id, a.mat_name FROM 
+	
+	`mat_bom`  
+		JOIN `mat_materials` a ON a.mat_id = mat_bom_mat_id AND a.mat_ispackage = 1 AND a.mat_reversable = 1
+		JOIN `mat_materials` b ON b.mat_id = `mat_bom_part_id` 
+WHERE
+	b.mat_long_id='121270000010' 
+
+UNION 
+
+SELECT b.mat_long_id, b.mat_name, NULL, NULL
+FROM
+	`mat_materials` b
+WHERE
+	b.mat_long_id='121270000010' 
+	
+	*/
+
+
+//Search for featured materials and their owner packing material
+/* SELECT b.mat_long_id, b.mat_name, a.mat_long_id, a.mat_name FROM 
+   
+   `mat_bom`  
+	   JOIN `mat_materials` a ON a.mat_id = mat_bom_mat_id AND a.mat_ispackage = 1 AND a.mat_reversable = 1
+	   JOIN `mat_materials` b ON b.mat_id = `mat_bom_part_id` 
+WHERE
+   b.mat_featured=1
+
+UNION 
+
+SELECT b.mat_long_id, b.mat_name, NULL, NULL
+FROM
+   `mat_materials` b
+WHERE
+   b.mat_featured=1 */
+
+
+/* 
+When printing labels I can use the mat_ispacking to print masters
+OR
+Print individual material labels (Different template)
+ */

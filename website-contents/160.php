@@ -134,6 +134,8 @@ if (isset($_POST['method'], $_POST['id']) && $_POST['method'] == "show") {
 		$output['description']['type']         = (string) $loadedMaterial->type;
 		$output['description']['category']     = $loadedMaterial->category->group->name . ": " . $loadedMaterial->category->name;
 		$output['description']['name']         = $loadedMaterial->name;
+
+		/** @var \System\Profiles\MaterialPartProfile $part */
 		foreach ($material->parts($loadedMaterial->id) as $part) {
 			$output['items'][] = [
 				'id' => "{$part->id}",

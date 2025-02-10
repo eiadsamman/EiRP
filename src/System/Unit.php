@@ -53,7 +53,7 @@ class Unit
 	{
 		$this->map[\System\Enum\UnitSystem::Length->value] =
 			[
-				1 => new UnitProfile(1, "m", "metre", 1),
+				1 => new UnitProfile(1, "m", "Metre", 1),
 				2 => new UnitProfile(2, "cm", "Centi Metre", pow(10, -2)),
 				3 => new UnitProfile(3, "mm", "Mili Metre", pow(10, -3)),
 				4 => new UnitProfile(4, "μm", "Micro Metre", pow(10, -6)),

@@ -26,6 +26,7 @@ abstract class Personalization
 		}
 		return false;
 	}
+	
 	public function list(): \Generator
 	{
 		return new \Generator;

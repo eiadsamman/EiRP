@@ -8,7 +8,6 @@ use System\Enum\UnitSystem;
 class MaterialPartProfile extends MaterialProfile
 {
 
-	public UnitSystem|null $unitSystem = null;
 	public UnitProfile $unit;
 	public float $quantity;
 	public int $level;

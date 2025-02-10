@@ -53,7 +53,6 @@ foreach ($bookmark->list() as $bookmark) {
 	//color:#{$bookmark['trd_attrib5']}
 	//<span style=\"font-family:icomoon4;flex:0 1 auto;min-width:30px;display:inline-block;color:#555\">&#xe{$bookmark['trd_attrib4']};</span>
 	if (!$firstocc) {
-
 		$firstocc = true;
 	}
 
